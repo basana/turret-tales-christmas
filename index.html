@@ -88,6 +88,19 @@
   .xmas-list { padding-left: 18px; }
   .xmas-list li { margin-bottom: 8px; }
   .xmas-small { font-size: 14px; opacity: 0.8; }
+  .xmas-gps-btn { display: block; width: 100%; padding: 12px; margin: 0 0 10px; border-radius: 12px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 15px; cursor: pointer; }
+  .xmas-gps-btn.active { background: #7A1026; color: #F5ECD6; }
+  .xmas-gps-panel { font-family: var(--sans); font-size: 14px; margin: 0 0 14px; }
+  .xmas-gps-row { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #c8a878; }
+  .xmas-gps-row small { color: var(--ink-soft); margin-left: 4px; }
+  .xmas-gps-ship span { font-weight: 700; }
+  .xmas-gps-time { margin: 8px 0; padding: 8px 10px; border-radius: 8px; }
+  .xmas-gps-time.ok { background: #e6f1e4; }
+  .xmas-gps-time.late { background: #f6e0dc; }
+  .xmas-gps-save, .xmas-gps-clear { margin: 8px 0; padding: 8px 12px; border-radius: 999px; border: 1px solid #7A1026; background: transparent; color: #7A1026; cursor: pointer; font-family: var(--sans); }
+  .xmas-gps-depart { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .xmas-lock { color: var(--terracotta); font-size: 11px; }
+  .xmas-berth { background: #1f4e79; color: #fff; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
   .xmas-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
   .xmas-chip { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 14px; }
   .xmas-chip.active { background: #7A1026; color: #fff; }
@@ -2330,7 +2343,133 @@ function xmasDrawMap(opts) {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
     if (p.onClick) m.on('click', p.onClick);
   });
+  xmasDrawGpsLayers();
   setTimeout(() => xmasMapObj && xmasMapObj.invalidateSize(), 60);
+}
+
+
+// Причалы Viking: координаты заполнить по согласованным местам (name, ll=[lat,lng]). Пока пусто.
+const VIKING_BERTHS = { koblenz: [], oberwesel: [], boppard: [], bacharach: [], lahnstein: [] };
+
+const XG = {
+  de: {btn:'GPS · Entfernungen', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Mein Schiff ist hier', clearShip:'Schiff entfernen', min:'Min. zu Fuß', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
+  fr: {btn:'GPS · Distances', locating:'Localisation…', err:'GPS indisponible', ship:'Votre bateau / point de rendez-vous', saveShip:'📌 Mon bateau est ici', clearShip:'Supprimer le bateau', min:'min à pied', departLabel:'Heure de départ', enough:'Le temps suffit, environ {n} min de marge', notEnough:'Attention : environ {n} min de retard', popupTitle:'GPS : distances jusqu’aux marchés', popupItems:['Distance entre votre position et chaque marché','Distance jusqu’à votre bateau ou au point de rendez-vous','Si le temps suffit avant le départ'], shipPrompt:'Nom de ce point', shipDefault:'Bateau', berth:'Accostage Viking'},
+  nl: {btn:'GPS · Afstanden', locating:'Locatie wordt bepaald…', err:'GPS niet beschikbaar', ship:'Uw schip / ontmoetingspunt', saveShip:'📌 Mijn schip ligt hier', clearShip:'Schip verwijderen', min:'min lopen', departLabel:'Vertrektijd', enough:'Tijd genoeg, ca. {n} min. marge', notEnough:'Let op: ca. {n} min. te laat', popupTitle:'GPS: afstanden tot de markten', popupItems:['Afstand van uw locatie tot elke markt','Afstand tot uw schip of ontmoetingspunt','Of de tijd tot vertrek genoeg is'], shipPrompt:'Naam van dit punt', shipDefault:'Schip', berth:'Viking-aanlegplaats'},
+  en: {btn:'GPS · Distances', locating:'Locating…', err:'GPS not available', ship:'Your ship / meeting point', saveShip:'📌 My ship is here', clearShip:'Remove ship', min:'min walk', departLabel:'Departure time', enough:'Enough time, about {n} min to spare', notEnough:'Warning: about {n} min too late', popupTitle:'GPS: distances to the markets', popupItems:['Distance from your position to each market','Distance to your ship or meeting point','Whether there is enough time before departure'], shipPrompt:'Name for this point', shipDefault:'Ship', berth:'Viking berth'},
+  ru: {btn:'GPS · Расстояния', locating:'Определяем местоположение…', err:'GPS недоступен', ship:'Ваш корабль / место встречи', saveShip:'📌 Мой корабль здесь', clearShip:'Убрать корабль', min:'мин пешком', departLabel:'Время отхода', enough:'Времени хватает, запас около {n} мин', notEnough:'Не успеваете примерно на {n} мин', popupTitle:'GPS: расстояния до рынков', popupItems:['Расстояние от вашего места до каждого рынка','Расстояние до вашего корабля или места встречи','Хватит ли времени до отхода'], shipPrompt:'Название этой точки', shipDefault:'Корабль', berth:'Причал Viking'}
+};
+const XMAS_DEPART_KEY = 'xmasDepart';
+let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
+
+function xmasG(k) { return (XG[xmasLang] || XG.de)[k]; }
+function xmasWalkMin(d) { return Math.max(1, Math.round(d * 1.3 / 75)); } // Luftlinie x 1,3 Umweg, 75 m/min
+function xmasGpsBtnHtml() {
+  const lock = isPremiumUnlocked() ? '' : ' <span class="xmas-lock">✦</span>';
+  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn">📍 ${xmasG('btn')}${lock}</button><div class="xmas-gps-panel" id="xmasGpsPanel"></div>`;
+}
+function xmasGpsTargets() {
+  if (!xmasTown) return Object.keys(XMAS_GEO).map(k => ({ label: XMAS_CITY[k].name[xmasLang] || XMAS_CITY[k].name.de, ll: XMAS_GEO[k].center }));
+  const c = XMAS_CITY[xmasTown];
+  const tx = c.text[xmasLang] || c.text.de;
+  return XMAS_GEO[xmasTown].pins.map((ll, i) => ({ label: (tx.cards[i] && tx.cards[i].title) || tx.title, ll }));
+}
+function xmasBerthList() {
+  return xmasTown ? (VIKING_BERTHS[xmasTown] || []) : [];
+}
+
+function xmasDrawGpsLayers() {
+  if (!xmasMapObj || typeof L === 'undefined') return;
+  xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
+  xmasBerthList().forEach(b => {
+    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: `<div class="xmas-berth">⚓</div>`, iconSize: [26, 26], iconAnchor: [13, 13] }) })
+      .bindTooltip(`${xmasG('berth')}: ${b.name}`).addTo(xmasMapObj));
+  });
+  if (xmasGpsPos) {
+    xmasGpsMarker = L.marker([xmasGpsPos.lat, xmasGpsPos.lng], { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [22, 22], iconAnchor: [11, 11] }), zIndexOffset: 1000 }).addTo(xmasMapObj);
+  }
+  const sp = getSavedSpot();
+  if (sp) {
+    xmasSpotMarker = L.marker([sp.lat, sp.lng], { icon: L.divIcon({ className: '', html: '<div class="saved-spot-marker">📌</div>', iconSize: [30, 30], iconAnchor: [15, 28] }), zIndexOffset: 900 }).addTo(xmasMapObj);
+  }
+}
+
+function xmasStartGps() {
+  if (!navigator.geolocation) { xmasSetGpsLabel(xmasG('err')); return; }
+  if (xmasGpsWatch !== null) return;
+  xmasSetGpsLabel(xmasG('locating'), true);
+  xmasGpsWatch = navigator.geolocation.watchPosition(pos => {
+    xmasGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    xmasSetGpsLabel(xmasG('btn'), true);
+    if (xmasMapObj) {
+      if (xmasGpsMarker) xmasGpsMarker.setLatLng([xmasGpsPos.lat, xmasGpsPos.lng]);
+      else xmasDrawGpsLayers();
+    }
+    xmasUpdateGpsPanel();
+  }, () => {
+    xmasSetGpsLabel(xmasG('err'));
+    if (xmasGpsWatch !== null) navigator.geolocation.clearWatch(xmasGpsWatch);
+    xmasGpsWatch = null;
+  }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
+}
+function xmasStopGps() {
+  if (xmasGpsWatch !== null && navigator.geolocation) navigator.geolocation.clearWatch(xmasGpsWatch);
+  xmasGpsWatch = null; xmasGpsPos = null;
+  if (xmasGpsMarker && xmasMapObj) xmasMapObj.removeLayer(xmasGpsMarker);
+  xmasGpsMarker = null;
+  xmasSetGpsLabel(xmasG('btn'));
+  const panel = document.getElementById('xmasGpsPanel'); if (panel) panel.innerHTML = '';
+}
+function xmasSetGpsLabel(text, on) {
+  const b = document.getElementById('xmasGpsBtn');
+  if (!b) return;
+  const lock = isPremiumUnlocked() ? '' : ' <span class="xmas-lock">✦</span>';
+  b.classList.toggle('active', !!on || xmasGpsWatch !== null);
+  b.innerHTML = `📍 ${text}${lock}`;
+}
+
+function xmasUpdateGpsPanel() {
+  const panel = document.getElementById('xmasGpsPanel');
+  if (!panel) return;
+  if (!xmasGpsPos) { panel.innerHTML = ''; return; }
+  const p = xmasGpsPos;
+  const fmt = (ll) => {
+    const d = distanceMeters(p.lat, p.lng, ll[0], ll[1]);
+    return `<b>${formatDistance(d)} ${bearingCompass(p.lat, p.lng, ll[0], ll[1])}</b> <small>${xmasWalkMin(d)} ${xmasG('min')}</small>`;
+  };
+  const rows = xmasGpsTargets().map(t => ({ t, d: distanceMeters(p.lat, p.lng, t.ll[0], t.ll[1]) })).sort((a, b) => a.d - b.d);
+  let html = rows.map(r => `<div class="xmas-gps-row"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
+  xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row"><span>⚓ ${xmasG('berth')}: ${b.name}</span>${fmt(b.ll)}</div>`; });
+  const sp = getSavedSpot();
+  let depart = ''; try { depart = localStorage.getItem(XMAS_DEPART_KEY) || ''; } catch (e) {}
+  if (sp) {
+    const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
+    html += `<div class="xmas-gps-row xmas-gps-ship"><span>📌 ${sp.label}</span>${fmt([sp.lat, sp.lng])}</div>`;
+    if (depart && /^\d{2}:\d{2}$/.test(depart)) {
+      const [hh, mm] = depart.split(':').map(Number);
+      const dep = new Date(); dep.setHours(hh, mm, 0, 0);
+      const margin = Math.round((dep - new Date()) / 60000 - xmasWalkMin(d));
+      html += `<div class="xmas-gps-time ${margin >= 0 ? 'ok' : 'late'}">${(margin >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
+    }
+    html += `<button class="xmas-gps-clear" id="xmasShipClear">${xmasG('clearShip')}</button>`;
+  } else {
+    html += `<button class="xmas-gps-save" id="xmasShipSave">${xmasG('saveShip')}</button>`;
+  }
+  html += `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>`;
+  panel.innerHTML = html;
+  const save = document.getElementById('xmasShipSave');
+  if (save) save.addEventListener('click', () => {
+    const label = window.prompt(xmasG('shipPrompt'), xmasG('shipDefault'));
+    if (label === null) return;
+    setSavedSpot({ lat: p.lat, lng: p.lng, label: (label || xmasG('shipDefault')).trim() });
+    xmasDrawGpsLayers(); xmasUpdateGpsPanel();
+  });
+  const clr = document.getElementById('xmasShipClear');
+  if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
+  const dep = document.getElementById('xmasDepart');
+  if (dep) dep.addEventListener('change', () => {
+    try { localStorage.setItem(XMAS_DEPART_KEY, dep.value); } catch (e) {}
+    xmasUpdateGpsPanel();
+  });
 }
 
 function renderChristmas(townKey) {
@@ -2342,7 +2481,7 @@ function renderChristmas(townKey) {
     `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
   const chips = Object.keys(XMAS_CITY).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = '<div id="xmasMap" class="xmas-map"></div>';
+  const mapHtml = '<div id="xmasMap" class="xmas-map"></div>' + xmasGpsBtnHtml();
   let body = '';
   if (!xmasTown) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + mapHtml;
@@ -2372,6 +2511,13 @@ function renderChristmas(townKey) {
   }));
   el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
 
+  const gpsBtn = document.getElementById('xmasGpsBtn');
+  if (gpsBtn) gpsBtn.addEventListener('click', () => {
+    if (xmasGpsWatch !== null) xmasStopGps();
+    else if (isPremiumUnlocked()) xmasStartGps();
+    else openPremiumPopup('xmas');
+  });
+  xmasUpdateGpsPanel();
   if (!xmasTown) {
     const keys = Object.keys(XMAS_GEO);
     xmasDrawMap({
@@ -3429,6 +3575,11 @@ function openPremiumPopup(kind) {
     if (pTeaser) pTeaser.style.display = '';
   }
   renderPremiumFeatures(pText, t);
+  if (kind === 'xmas') {
+    if (pTitle) pTitle.textContent = xmasG('popupTitle');
+    if (pTeaser) pTeaser.style.display = 'none';
+    if (pText) pText.innerHTML = xmasG('popupItems').map(x => `<li>${x}</li>`).join('');
+  }
   if (isPremiumUnlocked() && kind === 'view') {
     showPremiumUnlockedView();
   } else {
@@ -3476,6 +3627,9 @@ if (premiumUnlockBtn) {
       if (premiumPopupKind === 'gps') {
         premiumPopupEl.classList.remove('open');
         toggleGps();
+      } else if (premiumPopupKind === 'xmas') {
+        premiumPopupEl.classList.remove('open');
+        xmasStartGps();
       } else if (premiumPopupKind === 'route') {
         premiumPopupEl.classList.remove('open');
       } else {

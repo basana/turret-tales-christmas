@@ -95,7 +95,8 @@
   .xmas-card { margin-bottom: 14px; }
   .xmas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
   .xmas-cell { aspect-ratio: 4 / 3; border: 1.5px dashed #c8a878; border-radius: 10px; background: rgba(245,236,214,0.6); }
-  .xmas-hero { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 120px; margin: 0 0 14px; border: none; border-radius: 12px; background: #7A1026; color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; }
+  .xmas-hero { display: block; width: 100%; aspect-ratio: 1 / 1; margin: 0 0 14px; padding: 16px 12px; border: none; border-radius: 12px; background: #2a2640 url('xmas-hero.webp') center / cover no-repeat; color: #fff; font-size: 20px; font-weight: 700; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,0.7); cursor: pointer; }
+  .xmas-banner { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; display: block; margin: 0 0 12px; }
   #view-guide .station-title, #view-guide .stats, #view-guide .story-block { display: none !important; }
 
   .pill-btn {
@@ -2315,7 +2316,7 @@ function renderChristmas(townKey) {
   } else {
     const c = XMAS_CITY[xmasTown];
     const T = L(c.text);
-    body = `<h2 class="xmas-title">${T.title}</h2><p class="xmas-intro">${T.intro}</p>` +
+    body = (xmasTown === 'koblenz' ? '<img class="xmas-banner" src="xmas-koblenz-pyramid.webp" alt="" loading="lazy">' : '') + `<h2 class="xmas-title">${T.title}</h2><p class="xmas-intro">${T.intro}</p>` +
       T.cards.map((k, i) => `
         <div class="route-card xmas-card">
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>

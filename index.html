@@ -2485,7 +2485,8 @@ function renderChristmas(townKey) {
   const T_ = (o) => o[xmasLang] || o.de;
   const langBtns = Object.keys(XMAS_LANG_LABELS).map(k =>
     `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
-  const chips = Object.keys(XMAS_CITY).map(k =>
+  const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта' }[xmasLang] || 'Map';
+  const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + Object.keys(XMAS_CITY).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
   const mapHtml = '<div id="xmasMap" class="xmas-map"></div>' + xmasGpsBtnHtml();
   let body = '';
@@ -2515,7 +2516,7 @@ function renderChristmas(townKey) {
     try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
     renderChristmas();
   }));
-  el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
+  el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc || null)));
 
   const gpsBtn = document.getElementById('xmasGpsBtn');
   if (gpsBtn) gpsBtn.addEventListener('click', () => {

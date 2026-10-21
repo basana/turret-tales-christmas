@@ -88,6 +88,13 @@
   .xmas-list { padding-left: 18px; }
   .xmas-list li { margin-bottom: 8px; }
   .xmas-small { font-size: 14px; opacity: 0.8; }
+  .xmas-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .xmas-chip { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 14px; }
+  .xmas-chip.active { background: #7A1026; color: #fff; }
+  .xmas-photo { min-height: 140px; border: 1.5px dashed #c8a878; border-radius: 10px; margin: 8px 0; background: rgba(245,236,214,0.6); }
+  .xmas-card { margin-bottom: 14px; }
+  .xmas-hero { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 120px; margin: 0 0 14px; border: none; border-radius: 12px; background: #7A1026; color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; }
+  #view-guide .station-title, #view-guide .stats, #view-guide .story-block { display: none !important; }
 
   .pill-btn {
     background: var(--parchment-deep); border: 1px solid var(--gold);
@@ -872,6 +879,7 @@
   <div class="content">
     <!-- ГИД -->
     <div class="view active" id="view-guide">
+      <button class="xmas-hero" id="qlChristmas"><span>🎄</span><span id="qlChristmasLabel">Christmas markets</span></button>
       <div class="photo">
         <img id="mainPhoto" src="" alt="Location photo">
         <div class="badge" id="badge"></div>
@@ -913,10 +921,6 @@
           <span class="quick-link-label" id="qlAboutLabel">About me</span>
         </button>
       </div>
-      <button class="quick-link" id="qlChristmas" style="--ql-color:#7A1026; width:100%; margin:-8px 0 18px; flex-direction:row; justify-content:center; gap:8px;">
-        <span class="quick-link-icon">🎄</span>
-        <span class="quick-link-label" id="qlChristmasLabel">Christmas markets</span>
-      </button>
 
       <div class="stats">
         <div class="stat"><p id="statTownLabel"></p><p id="statTown"></p></div>
@@ -1766,232 +1770,573 @@ document.getElementById('tabs').addEventListener('scroll', updateTabArrows);
 window.addEventListener('resize', updateTabArrows);
 
 let currentView = 'guide';
-const XMAS = {
- "de": {
-  "title": "Weihnachtsmarkt in Koblenz",
-  "intro": "Koblenz im Advent. Die Altstadt leuchtet. Auf den Plätzen stehen Holzhütten, und es riecht nach Glühwein.",
-  "places": [
-   {
-    "name": "Jesuitenplatz",
-    "text": "Hier beginnt die Altstadt. Am Rathaus hängt ein Adventskalender: Jeden Abend öffnet sich ein Türchen."
+const XMAS_CITY = {
+ "koblenz": {
+  "name": {
+   "de": "Koblenz",
+   "en": "Koblenz",
+   "fr": "Coblence",
+   "nl": "Koblenz",
+   "ru": "Кобленц"
+  },
+  "text": {
+   "de": {
+    "title": "Weihnachtsmarkt in Koblenz",
+    "intro": "Koblenz im Advent. Die Altstadt leuchtet. Auf den Plätzen stehen Holzhütten, und es riecht nach Glühwein. Die Märkte liegen nah beieinander, man kann sie zu Fuß in einem Rundgang besuchen.",
+    "cards": [
+     {
+      "title": "Jesuitenplatz",
+      "place": "Altstadt, Start des Rundgangs",
+      "text": "Hier beginnt die Altstadt. Am Rathaus hängt ein Adventskalender: Jeden Abend öffnet sich ein Türchen.",
+      "photo": "koblenz-jesuitenplatz"
+     },
+     {
+      "title": "Am Plan",
+      "place": "Der ursprüngliche Markt",
+      "text": "Hier begann der Markt. Heute steht hier die große Weihnachtspyramide. Ein schöner Ort für ein Foto.",
+      "photo": "koblenz-am-plan"
+     },
+     {
+      "title": "Görresplatz",
+      "place": "Familienplatz",
+      "text": "Eine kleine Eisenbahn für Kinder. Gut für eine Pause, wenn die Kleinen müde werden.",
+      "photo": "koblenz-goerresplatz"
+     },
+     {
+      "title": "Münzplatz",
+      "place": "Größter und lebendigster Platz",
+      "text": "Hier stehen die meisten Stände und hier gibt es das meiste zu essen. Am Abend ist es hier am vollsten.",
+      "photo": "koblenz-muenzplatz"
+     },
+     {
+      "title": "Willi-Hörter-Platz und Rathaushof",
+      "place": "Glühwein und Krippe",
+      "text": "Eine Glühwein-Bar und eine Krippe. Ein ruhiger Ort zum Aufwärmen.",
+      "photo": "koblenz-hoerter"
+     },
+     {
+      "title": "Zentralplatz",
+      "place": "Am Bahnhof",
+      "text": "Nah am Bahnhof, mit einem großen Riesenrad aus Holz. Ein guter Anfang oder ein guter Schluss des Besuchs.",
+      "photo": "koblenz-zentralplatz"
+     },
+     {
+      "title": "Liebfrauenkirche",
+      "place": "Kleinster Platz",
+      "text": "Am Wochenende gibt es Geschichten und Lieder im Koblenzer Dialekt. Ein Erlebnis für Ohr und Herz.",
+      "photo": "koblenz-liebfrauen"
+     },
+     {
+      "title": "Festung Ehrenbreitstein",
+      "place": "Auf dem Berg über dem Rhein",
+      "text": "Der Weihnachtsgarten mit Licht und Klang am Abend. Eintritt ist nötig. Von oben sieht man Rhein und Mosel.",
+      "photo": "koblenz-festung"
+     },
+     {
+      "title": "Essen und Trinken",
+      "place": "Überall in der Altstadt",
+      "text": "Glühwein, Feuerzangenbowle, Flammlachs, Schneeball, Baumstriezel und Koblenzer Winter-Rosé. Geschenke aus Holz, Olivenholz und Glas.",
+      "photo": "koblenz-essen"
+     }
+    ],
+    "practical": "Pfandbecher 5 € (Stand 2025/26). Termine und Öffnungszeiten 2026/27 folgen, bitte vor dem Besuch prüfen."
    },
-   {
-    "name": "Am Plan",
-    "text": "Der ursprüngliche Platz, mit der Weihnachtspyramide."
+   "fr": {
+    "title": "Marché de Noël à Coblence",
+    "intro": "Coblence en Avent. La vieille ville brille. Sur les places, des chalets en bois et une odeur de vin chaud. Les marchés sont proches les uns des autres, on peut les faire à pied.",
+    "cards": [
+     {
+      "title": "Jesuitenplatz",
+      "place": "Vieille ville, départ du parcours",
+      "text": "Ici commence la vieille ville. Au calendrier de l'Avent, à l'hôtel de ville, une petite porte s'ouvre chaque soir.",
+      "photo": "koblenz-jesuitenplatz"
+     },
+     {
+      "title": "Am Plan",
+      "place": "Le marché d'origine",
+      "text": "Le marché a commencé ici. Aujourd'hui, la grande pyramide de Noël se trouve sur cette place. Un bel endroit pour une photo.",
+      "photo": "koblenz-am-plan"
+     },
+     {
+      "title": "Görresplatz",
+      "place": "Place des familles",
+      "text": "Un petit train pour les enfants. Bien pour une pause quand les petits sont fatigués.",
+      "photo": "koblenz-goerresplatz"
+     },
+     {
+      "title": "Münzplatz",
+      "place": "La plus grande et la plus animée",
+      "text": "C'est ici que se trouvent la plupart des stands et la plupart des choses à manger. Le soir, c'est là qu'il y a le plus de monde.",
+      "photo": "koblenz-muenzplatz"
+     },
+     {
+      "title": "Willi-Hörter-Platz et Rathaushof",
+      "place": "Vin chaud et crèche",
+      "text": "Un bar à vin chaud et une crèche. Un endroit calme pour se réchauffer.",
+      "photo": "koblenz-hoerter"
+     },
+     {
+      "title": "Zentralplatz",
+      "place": "Près de la gare",
+      "text": "Près de la gare, avec une grande roue en bois. Un bon début ou une bonne fin de visite.",
+      "photo": "koblenz-zentralplatz"
+     },
+     {
+      "title": "Liebfrauenkirche",
+      "place": "La plus petite place",
+      "text": "Le week-end, des histoires et des chansons en dialecte de Coblence. Un plaisir pour les oreilles et le cœur.",
+      "photo": "koblenz-liebfrauen"
+     },
+     {
+      "title": "Forteresse d'Ehrenbreitstein",
+      "place": "Sur la colline au-dessus du Rhin",
+      "text": "Le jardin de Noël, avec lumière et son le soir. L'entrée est payante. Depuis le haut, on voit le Rhin et la Moselle.",
+      "photo": "koblenz-festung"
+     },
+     {
+      "title": "Gourmandises",
+      "place": "Partout dans la vieille ville",
+      "text": "Vin chaud, Feuerzangenbowle, saumon flambé, Schneeball, Baumstriezel et rosé d'hiver de Coblence. Cadeaux en bois, en bois d'olivier et en verre.",
+      "photo": "koblenz-essen"
+     }
+    ],
+    "practical": "Gobelet consigné 5 € (saison 2025/26). Dates et horaires 2026/27 à venir, à vérifier avant la visite."
    },
-   {
-    "name": "Görresplatz",
-    "text": "Ein Familienplatz mit einer kleinen Eisenbahn für Kinder."
+   "nl": {
+    "title": "Kerstmarkt in Koblenz",
+    "intro": "Koblenz in de advent. De oude stad schittert. Op de pleinen staan houten kraampjes en het ruikt naar glühwein. De markten liggen dicht bij elkaar, je kunt ze te voet bezoeken.",
+    "cards": [
+     {
+      "title": "Jesuitenplatz",
+      "place": "Oude stad, start van de route",
+      "text": "Hier begint de oude stad. Aan het stadhuis hangt een adventskalender: elke avond gaat er een deurtje open.",
+      "photo": "koblenz-jesuitenplatz"
+     },
+     {
+      "title": "Am Plan",
+      "place": "De oorspronkelijke markt",
+      "text": "Hier begon de markt. Vandaag staat hier de grote kerstpiramide. Een mooie plek voor een foto.",
+      "photo": "koblenz-am-plan"
+     },
+     {
+      "title": "Görresplatz",
+      "place": "Gezinsplein",
+      "text": "Een klein treintje voor kinderen. Goed voor een pauze als de kleintjes moe worden.",
+      "photo": "koblenz-goerresplatz"
+     },
+     {
+      "title": "Münzplatz",
+      "place": "Het grootste en levendigste plein",
+      "text": "Hier staan de meeste kraampjes en hier is het meeste te eten. 's Avonds is het hier het drukst.",
+      "photo": "koblenz-muenzplatz"
+     },
+     {
+      "title": "Willi-Hörter-Platz en Rathaushof",
+      "place": "Glühwein en kerststal",
+      "text": "Een glühweinbar en een kerststal. Een rustige plek om op te warmen.",
+      "photo": "koblenz-hoerter"
+     },
+     {
+      "title": "Zentralplatz",
+      "place": "Bij het station",
+      "text": "Dicht bij het station, met een groot reuzenrad van hout. Een goed begin of een goed einde van je bezoek.",
+      "photo": "koblenz-zentralplatz"
+     },
+     {
+      "title": "Liebfrauenkirche",
+      "place": "Kleinste plein",
+      "text": "In het weekend verhalen en liedjes in het Koblenzer dialect. Een belevenis voor oor en hart.",
+      "photo": "koblenz-liebfrauen"
+     },
+     {
+      "title": "Festung Ehrenbreitstein",
+      "place": "Op de berg boven de Rijn",
+      "text": "De kerstuin met licht en geluid in de avond. Toegang is betalend. Van bovenaf zie je de Rijn en de Moezel.",
+      "photo": "koblenz-festung"
+     },
+     {
+      "title": "Lekkernijen",
+      "place": "Overal in de oude stad",
+      "text": "Glühwein, Feuerzangenbowle, vlammende zalm, Schneeball, Baumstriezel en Koblenzer winter-rosé. Geschenken van hout, olijfhout en glas.",
+      "photo": "koblenz-essen"
+     }
+    ],
+    "practical": "Pantgeldbeker 5 € (seizoen 2025/26). Data en openingsuren 2026/27 volgen, controleer ze vóór je bezoek."
    },
-   {
-    "name": "Münzplatz",
-    "text": "Der größte und lebendigste Platz. Hier gibt es viel zu essen."
+   "en": {
+    "title": "Christmas market in Koblenz",
+    "intro": "Koblenz in Advent. The old town glows. Wooden huts stand on the squares, and it smells of mulled wine. The markets are close together, so you can visit them on foot.",
+    "cards": [
+     {
+      "title": "Jesuit Square (Jesuitenplatz)",
+      "place": "Old town, start of the walk",
+      "text": "Here the old town begins. On the town hall there is an Advent calendar: every evening one little door opens.",
+      "photo": "koblenz-jesuitenplatz"
+     },
+     {
+      "title": "The Plan Square (Am Plan)",
+      "place": "The original market",
+      "text": "The market started here. Today the big Christmas pyramid stands here. A nice place for a photo.",
+      "photo": "koblenz-am-plan"
+     },
+     {
+      "title": "Görres Square (Görresplatz)",
+      "place": "Family square",
+      "text": "A small train for children. Good for a break when the little ones get tired.",
+      "photo": "koblenz-goerresplatz"
+     },
+     {
+      "title": "Coin Square (Münzplatz)",
+      "place": "The largest and liveliest square",
+      "text": "Most of the stalls and most of the food are here. In the evening it is busiest here.",
+      "photo": "koblenz-muenzplatz"
+     },
+     {
+      "title": "Willi Hörter Square and Town Hall Courtyard (Willi-Hörter-Platz und Rathaushof)",
+      "place": "Mulled wine and nativity scene",
+      "text": "A mulled wine bar and a nativity scene. A quiet place to warm up.",
+      "photo": "koblenz-hoerter"
+     },
+     {
+      "title": "Central Square (Zentralplatz)",
+      "place": "Near the station",
+      "text": "Close to the station, with a big wooden Ferris wheel. A good start or a good end to your visit.",
+      "photo": "koblenz-zentralplatz"
+     },
+     {
+      "title": "Church of Our Lady (Liebfrauenkirche)",
+      "place": "The smallest square",
+      "text": "On weekends: stories and songs in the Koblenz dialect. An experience for the ears and the heart.",
+      "photo": "koblenz-liebfrauen"
+     },
+     {
+      "title": "Ehrenbreitstein Fortress (Festung Ehrenbreitstein)",
+      "place": "On the hill above the Rhine",
+      "text": "The Christmas garden with light and sound in the evening. Entry is paid. From the top you see the Rhine and the Moselle.",
+      "photo": "koblenz-festung"
+     },
+     {
+      "title": "Food and drink",
+      "place": "All over the old town",
+      "text": "Mulled wine, Feuerzangenbowle, flambéed salmon, Schneeball, Baumstriezel and Koblenz winter rosé. Gifts made of wood, olive wood and glass.",
+      "photo": "koblenz-essen"
+     }
+    ],
+    "practical": "Deposit cup: 5 € (season 2025/26). Dates and opening hours 2026/27 to follow. Please check before your visit."
    },
-   {
-    "name": "Willi-Hörter-Platz und Rathaushof",
-    "text": "Eine Glühwein-Bar und eine Krippe."
-   },
-   {
-    "name": "Zentralplatz",
-    "text": "Nah am Bahnhof, mit einem großen Riesenrad aus Holz."
-   },
-   {
-    "name": "Liebfrauenkirche",
-    "text": "Der kleinste Platz. Am Wochenende gibt es Geschichten und Lieder im Koblenzer Dialekt."
+   "ru": {
+    "title": "Рождественский рынок в Кобленце",
+    "intro": "Кобленц в Адвенте. Старый город сияет. На площадях стоят деревянные домики, пахнет глинтвейном. Рынки стоят недалеко друг от друга, их можно обойти пешком.",
+    "cards": [
+     {
+      "title": "Иезуитская площадь (Jesuitenplatz)",
+      "place": "Старый город, начало маршрута",
+      "text": "Здесь начинается старый город. На ратуше висит адвент-календарь: каждый вечер открывается одна дверца.",
+      "photo": "koblenz-jesuitenplatz"
+     },
+     {
+      "title": "Площадь Ам-План (Am Plan)",
+      "place": "Первоначальный рынок",
+      "text": "Здесь начинался рынок. Сегодня здесь стоит большая рождественская пирамида. Хорошее место для фото.",
+      "photo": "koblenz-am-plan"
+     },
+     {
+      "title": "Площадь Гёрреса (Görresplatz)",
+      "place": "Семейная площадь",
+      "text": "Маленький поезд для детей. Хорошо для перерыва, когда малыши устают.",
+      "photo": "koblenz-goerresplatz"
+     },
+     {
+      "title": "Монетная площадь (Münzplatz)",
+      "place": "Самая большая и оживлённая площадь",
+      "text": "Здесь больше всего ларьков и больше всего еды. Вечером здесь самое людное место.",
+      "photo": "koblenz-muenzplatz"
+     },
+     {
+      "title": "Площадь Вилли Хёртера и двор ратуши (Willi-Hörter-Platz und Rathaushof)",
+      "place": "Глинтвейн и вертеп",
+      "text": "Бар с глинтвейном и рождественский вертеп. Спокойное место, чтобы согреться.",
+      "photo": "koblenz-hoerter"
+     },
+     {
+      "title": "Центральная площадь (Zentralplatz)",
+      "place": "Рядом с вокзалом",
+      "text": "Рядом с вокзалом, с большим деревянным колесом обозрения. Хорошее начало или хороший конец визита.",
+      "photo": "koblenz-zentralplatz"
+     },
+     {
+      "title": "Церковь Богородицы (Liebfrauenkirche)",
+      "place": "Самая маленькая площадь",
+      "text": "По выходным истории и песни на кобленцском диалекте. Впечатления для слуха и сердца.",
+      "photo": "koblenz-liebfrauen"
+     },
+     {
+      "title": "Крепость Эренбрайтштайн (Festung Ehrenbreitstein)",
+      "place": "На холме над Рейном",
+      "text": "Рождественский сад со светом и звуком вечером. Вход платный. Сверху видно Рейн и Мозель.",
+      "photo": "koblenz-festung"
+     },
+     {
+      "title": "Еда и напитки",
+      "place": "По всей старой части города",
+      "text": "Глинтвейн, Feuerzangenbowle, запечённый в огне лосось, Schneeball, Baumstriezel и зимнее розе из Кобленца. Подарки из дерева, оливкового дерева и стекла.",
+      "photo": "koblenz-essen"
+     }
+    ],
+    "practical": "Залог за кружку: 5 € (сезон 2025/26). Даты и часы работы 2026/27 будут позже. Проверьте перед визитом."
    }
-  ],
-  "festungTitle": "Festung Ehrenbreitstein:",
-  "festung": "Der Weihnachtsgarten mit Licht und Klang am Abend. Eintritt ist nötig.",
-  "foodTitle": "Essen und Trinken:",
-  "food": "Glühwein, Feuerzangenbowle, Flammlachs, Schneeball, Baumstriezel und Koblenzer Winter-Rosé. Geschenke aus Holz, Olivenholz und Glas.",
-  "practical": "Pfandbecher 5 € (Stand 2025/26). Termine und Öffnungszeiten 2026/27 folgen."
+  }
  },
- "fr": {
-  "title": "Marché de Noël à Coblence",
-  "intro": "Coblence en Avent. La vieille ville brille. Sur les places, des chalets en bois et une odeur de vin chaud.",
-  "places": [
-   {
-    "name": "Jesuitenplatz",
-    "text": "Ici commence la vieille ville. Au calendrier de l'Avent, à l'hôtel de ville, une petite porte s'ouvre chaque soir."
+ "oberwesel": {
+  "name": {
+   "de": "Oberwesel",
+   "en": "Oberwesel",
+   "ru": "Обервезель"
+  },
+  "text": {
+   "de": {
+    "title": "Historischer Weihnachtsmarkt Oberwesel",
+    "intro": "Ein kleiner Markt vor der mittelalterlichen Stadtmauer.",
+    "cards": [
+     {
+      "title": "Markt an der Stadtmauer",
+      "place": "Marktplatz und Rathausstraße, 55430",
+      "text": "Mittelalterliche Stadtmauer mit 16 von 21 Türmen. Kutschfahrten an der Mauer, kleiner Markt mit Handwerk. Am Sonntag kommt der Nikolaus.",
+      "photo": "oberwesel-markt"
+     }
+    ],
+    "practical": "Termin: Sa 28.11. und So 29.11.2026 (1. Advent). Zeiten folgen. Quelle: festivalsindeutschland.de"
    },
-   {
-    "name": "Am Plan",
-    "text": "La place d'origine, avec la pyramide de Noël."
+   "en": {
+    "title": "Historic Christmas market Oberwesel",
+    "intro": "A small market in front of the medieval town wall.",
+    "cards": [
+     {
+      "title": "Market by the town wall",
+      "place": "Marktplatz and Rathausstraße, 55430",
+      "text": "Medieval town wall with 16 of its 21 towers. Horse-drawn carriage rides along the wall, a small market with crafts. St. Nicholas comes on Sunday.",
+      "photo": "oberwesel-markt"
+     }
+    ],
+    "practical": "Dates: Sat 28.11. and Sun 29.11.2026 (1st Advent). Times to follow."
    },
-   {
-    "name": "Görresplatz",
-    "text": "Une place pour les familles, avec un petit train pour les enfants."
-   },
-   {
-    "name": "Münzplatz",
-    "text": "La plus grande et la plus animée. Beaucoup à manger."
-   },
-   {
-    "name": "Willi-Hörter-Platz et Rathaushof",
-    "text": "Un bar à vin chaud et une crèche."
-   },
-   {
-    "name": "Zentralplatz",
-    "text": "Près de la gare, avec une grande roue en bois."
-   },
-   {
-    "name": "Liebfrauenkirche",
-    "text": "La plus petite place. Le week-end, des histoires et des chansons en dialecte de Coblence."
+   "ru": {
+    "title": "Исторический рождественский рынок Обервезель",
+    "intro": "Небольшой рынок у средневековой городской стены.",
+    "cards": [
+     {
+      "title": "Рынок у городской стены",
+      "place": "Marktplatz и Rathausstraße, 55430",
+      "text": "Средневековая городская стена с 16 из 21 башни. Поездки в конных экипажах вдоль стены, небольшой рынок с ремёслами. В воскресенье приходит Святой Николай.",
+      "photo": "oberwesel-markt"
+     }
+    ],
+    "practical": "Даты: сб 28.11. и вс 29.11.2026 (1-е воскресенье Адвента). Часы работы будут позже."
    }
-  ],
-  "festungTitle": "Forteresse d'Ehrenbreitstein :",
-  "festung": "Le jardin de Noël, avec lumière et son le soir. L'entrée est payante.",
-  "foodTitle": "Gourmandises :",
-  "food": "Vin chaud, Feuerzangenbowle, saumon flambé, Schneeball, Baumstriezel et rosé d'hiver de Coblence. Cadeaux en bois, en bois d'olivier et en verre.",
-  "practical": "Gobelet consigné 5 € (saison 2025/26). Dates et horaires 2026/27 à venir."
+  }
  },
- "nl": {
-  "title": "Kerstmarkt in Koblenz",
-  "intro": "Koblenz in de advent. De oude stad schittert. Op de pleinen staan houten kraampjes en het ruikt naar glühwein.",
-  "places": [
-   {
-    "name": "Jesuitenplatz",
-    "text": "Hier begint de oude stad. Aan het stadhuis hangt een adventskalender: elke avond gaat er een deurtje open."
+ "boppard": {
+  "name": {
+   "de": "Boppard",
+   "en": "Boppard",
+   "ru": "Боппард"
+  },
+  "text": {
+   "de": {
+    "title": "Bopparder Weihnachtsmarkt",
+    "intro": "Zehn Tage Markt am Rhein.",
+    "cards": [
+     {
+      "title": "Markt am Fuß der Severuskirche",
+      "place": "Historischer Marktplatz, 56154",
+      "text": "Über 50 Hütten, Glüh-Riesling, Kutschfahrten, Nikolaus und Christkind, Bühnenprogramm.",
+      "photo": "boppard-markt"
+     }
+    ],
+    "practical": "Termin: 27.11.–06.12.2026. Öffnung: So–Do 12–20 Uhr, Fr/Sa 12–22 Uhr. Startdatum bitte noch prüfen."
    },
-   {
-    "name": "Am Plan",
-    "text": "Het oorspronkelijke plein, met de kerstpiramide."
+   "en": {
+    "title": "Boppard Christmas market",
+    "intro": "Ten days of market on the Rhine.",
+    "cards": [
+     {
+      "title": "Market at the foot of St. Severus church",
+      "place": "Historic market square, 56154",
+      "text": "More than 50 huts, mulled Riesling, horse-drawn carriage rides, St. Nicholas and the Christ Child, stage program.",
+      "photo": "boppard-markt"
+     }
+    ],
+    "practical": "Dates: 27.11.–06.12.2026. Opening: Sun–Thu 12–20h, Fri/Sat 12–22h. Please check the start date."
    },
-   {
-    "name": "Görresplatz",
-    "text": "Een gezinsplein met een klein treintje voor kinderen."
-   },
-   {
-    "name": "Münzplatz",
-    "text": "Het grootste en levendigste plein. Hier is veel te eten."
-   },
-   {
-    "name": "Willi-Hörter-Platz en Rathaushof",
-    "text": "Een glühweinbar en een kerststal."
-   },
-   {
-    "name": "Zentralplatz",
-    "text": "Dicht bij het station, met een groot reuzenrad van hout."
-   },
-   {
-    "name": "Liebfrauenkirche",
-    "text": "Het kleinste plein. In het weekend verhalen en liedjes in het Koblenzer dialect."
+   "ru": {
+    "title": "Боппардский рождественский рынок",
+    "intro": "Десять дней рынка на Рейне.",
+    "cards": [
+     {
+      "title": "Рынок у подножия церкви Севера",
+      "place": "Исторический рынок, 56154",
+      "text": "Более 50 домиков, глинтвейн из Рислинга, поездки в конных экипажах, Святой Николай и Христкинд, концертная программа.",
+      "photo": "boppard-markt"
+     }
+    ],
+    "practical": "Даты: 27.11.–06.12.2026. Часы: вс–чт 12–20, пт/сб 12–22. Дату начала лучше уточнить."
    }
-  ],
-  "festungTitle": "Festung Ehrenbreitstein:",
-  "festung": "De kerstuin met licht en geluid in de avond. Toegang is betalend.",
-  "foodTitle": "Lekkernijen:",
-  "food": "Glühwein, Feuerzangenbowle, vlammende zalm, Schneeball, Baumstriezel en Koblenzer winter-rosé. Geschenken van hout, olijfhout en glas.",
-  "practical": "Pantgeldbeker 5 € (seizoen 2025/26). Data en openingsuren 2026/27 volgen."
+  }
  },
- "en": {
-  "title": "Christmas market in Koblenz",
-  "intro": "Koblenz in Advent. The old town glows. Wooden huts stand on the squares, and it smells of mulled wine.",
-  "places": [
-   {
-    "name": "Jesuit Square (Jesuitenplatz)",
-    "text": "Here the old town begins. On the town hall there is an Advent calendar: every evening one little door opens."
+ "bacharach": {
+  "name": {
+   "de": "Bacharach",
+   "en": "Bacharach",
+   "ru": "Бахарах"
+  },
+  "text": {
+   "de": {
+    "title": "Adventsmarkt Bacharach",
+    "intro": "Schlendern im Advent, mit Blick auf die Burg.",
+    "cards": [
+     {
+      "title": "Schlender-Advent in der Altstadt",
+      "place": "Marktplatz und Altstadt, 55422",
+      "text": "Ca. 30 geschmückte Stände, Burg Stahleck, Altstadtbeleuchtung, Chöre und Blasmusik. Dazu Bacharacher Riesling.",
+      "photo": "bacharach-markt"
+     }
+    ],
+    "practical": "Termin: Sa 05.12. und So 06.12.2026 (2. Advent). Öffnungszeiten folgen."
    },
-   {
-    "name": "The Plan Square (Am Plan)",
-    "text": "The original square, with the Christmas pyramid."
+   "en": {
+    "title": "Advent market Bacharach",
+    "intro": "Stroll through Advent, with the castle in view.",
+    "cards": [
+     {
+      "title": "Advent stroll in the old town",
+      "place": "Marktplatz and old town, 55422",
+      "text": "About 30 decorated stalls, Stahleck Castle, old town lights, choirs and brass bands. Bacharach Riesling on offer.",
+      "photo": "bacharach-markt"
+     }
+    ],
+    "practical": "Dates: Sat 05.12. and Sun 06.12.2026 (2nd Advent). Times to follow."
    },
-   {
-    "name": "Görres Square (Görresplatz)",
-    "text": "A family square with a small train for children."
-   },
-   {
-    "name": "Coin Square (Münzplatz)",
-    "text": "The largest and liveliest square. Lots of food here."
-   },
-   {
-    "name": "Willi Hörter Square and Town Hall Courtyard (Willi-Hörter-Platz und Rathaushof)",
-    "text": "A mulled wine bar and a nativity scene."
-   },
-   {
-    "name": "Central Square (Zentralplatz)",
-    "text": "Close to the station, with a big wooden Ferris wheel."
-   },
-   {
-    "name": "Church of Our Lady (Liebfrauenkirche)",
-    "text": "The smallest square. On weekends: stories and songs in the Koblenz dialect."
+   "ru": {
+    "title": "Адвент-рынок в Бахарахе",
+    "intro": "Прогулка в Адвенте с видом на замок.",
+    "cards": [
+     {
+      "title": "Адвентская прогулка по старому городу",
+      "place": "Marktplatz и старый город, 55422",
+      "text": "Около 30 украшенных ларьков, замок Штальбек, огни старого города, хоры и духовой оркестр. Бахарахский рислинг.",
+      "photo": "bacharach-markt"
+     }
+    ],
+    "practical": "Даты: сб 05.12. и вс 06.12.2026 (2-е воскресенье Адвента). Часы работы будут позже."
    }
-  ],
-  "festungTitle": "Ehrenbreitstein Fortress:",
-  "festung": "The Christmas garden with light and sound in the evening. Entry is paid.",
-  "foodTitle": "Food and drink:",
-  "food": "Mulled wine, Feuerzangenbowle, flambéed salmon, Schneeball, Baumstriezel and Koblenz winter rosé. Gifts made of wood, olive wood and glass.",
-  "practical": "Deposit cup: 5 € (season 2025/26). Dates and opening hours 2026/27 to follow."
+  }
  },
- "ru": {
-  "title": "Рождественский рынок в Кобленце",
-  "intro": "Кобленц в Адвенте. Старый город сияет. На площадях стоят деревянные домики, пахнет глинтвейном.",
-  "places": [
-   {
-    "name": "Иезуитская площадь (Jesuitenplatz)",
-    "text": "Здесь начинается старый город. На ратуше висит адвент-календарь: каждый вечер открывается одна дверца."
+ "lahnstein": {
+  "name": {
+   "de": "Lahnstein",
+   "en": "Lahnstein",
+   "ru": "Лаонштайн"
+  },
+  "text": {
+   "de": {
+    "title": "Lahnsteiner Winterzauber",
+    "intro": "Sechs kleine Märkte in Ober- und Niederlahnstein.",
+    "cards": [
+     {
+      "title": "Sechs Märkte",
+      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "text": "Kostenlos. Am 1. Advent-Wochenende jeweils 11–20 Uhr.",
+      "photo": "lahnstein-markt"
+     }
+    ],
+    "practical": "Termin vorläufig: 28.11.–20.12.2026. Bitte vor dem Besuch prüfen."
    },
-   {
-    "name": "Площадь Ам-План (Am Plan)",
-    "text": "Самая старая площадь, с рождественской пирамидой."
+   "en": {
+    "title": "Lahnstein Winter Magic",
+    "intro": "Six small markets in Ober- and Niederlahnstein.",
+    "cards": [
+     {
+      "title": "Six markets",
+      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "text": "Free entry. On the 1st Advent weekend, 11–20h each day.",
+      "photo": "lahnstein-markt"
+     }
+    ],
+    "practical": "Dates provisional: 28.11.–20.12.2026. Please check before your visit."
    },
-   {
-    "name": "Площадь Гёрреса (Görresplatz)",
-    "text": "Семейная площадь с маленьким поездом для детей."
-   },
-   {
-    "name": "Монетная площадь (Münzplatz)",
-    "text": "Самая большая и оживлённая площадь. Здесь много еды."
-   },
-   {
-    "name": "Площадь Вилли Хёртера и двор ратуши (Willi-Hörter-Platz und Rathaushof)",
-    "text": "Бар с глинтвейном и рождественский вертеп."
-   },
-   {
-    "name": "Центральная площадь (Zentralplatz)",
-    "text": "Рядом с вокзалом, с большим деревянным колесом обозрения."
-   },
-   {
-    "name": "Церковь Богородицы (Liebfrauenkirche)",
-    "text": "Самая маленькая площадь. По выходным истории и песни на кобленцском диалекте."
+   "ru": {
+    "title": "Зимняя магия Лаонштайна",
+    "intro": "Шесть небольших рынков в Оберлаонштайне и Нидерлаонштайне.",
+    "cards": [
+     {
+      "title": "Шесть рынков",
+      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "text": "Бесплатно. В выходные первого Адвента с 11 до 20 часов.",
+      "photo": "lahnstein-markt"
+     }
+    ],
+    "practical": "Даты предварительные: 28.11.–20.12.2026. Проверьте перед визитом."
    }
-  ],
-  "festungTitle": "Крепость Эренбрайтштайн:",
-  "festung": "Рождественский сад со светом и звуком вечером. Вход платный.",
-  "foodTitle": "Еда и напитки:",
-  "food": "Глинтвейн, Feuerzangenbowle, запечённый в огне лосось, Schneeball, Baumstriezel и зимнее розе из Кобленца. Подарки из дерева, оливкового дерева и стекла.",
-  "practical": "Залог за кружку: 5 € (сезон 2025/26). Даты и часы работы 2026/27 будут позже."
+  }
  }
 };
-const XMAS_LABELS = {de:'DE', fr:'FR', nl:'NL', en:'EN', ru:'RU'};
+const XMAS_TOWN = {"Koblenz": "koblenz", "Oberwesel": "oberwesel", "Boppard": "boppard", "Bacharach": "bacharach", "Lahnstein": "lahnstein"};
 
+const XMAS_OVERVIEW = {de:'Wählen Sie einen Markt.', en:'Choose a market.', ru:'Выберите рынок.'};
 let xmasLang = (function() {
-  try { const s = localStorage.getItem('xmasLang'); if (s && XMAS[s]) return s; } catch (e) {}
+  try { const s = localStorage.getItem('xmasLang'); if (s && ['de','fr','nl','en','ru'].includes(s)) return s; } catch (e) {}
   return (typeof lang !== 'undefined' && lang === 'ru') ? 'ru' : 'en';
 })();
+let xmasTown = 'koblenz'; // null = Übersicht
+const XMAS_LANG_LABELS = {de:'DE', fr:'FR', nl:'NL', en:'EN', ru:'RU'};
 
-function renderChristmas() {
+function xmasTownFromStation() {
+  const st = (typeof castles !== 'undefined' && castles[index]) ? castles[index] : null;
+  const name = st && st.town;
+  if (name && XMAS_TOWN[name]) return XMAS_TOWN[name];
+  if (name === 'Town' || name === 'Город' || !name) return 'koblenz'; // Einstieg = Koblenz
+  return null; // andere Orte ohne eigenen Marktteil -> Übersicht
+}
+
+function renderChristmas(townKey) {
+  if (townKey !== undefined) xmasTown = townKey;
   const el = document.getElementById('view-christmas');
   if (!el) return;
-  const t = XMAS[xmasLang];
-  const btns = Object.keys(XMAS_LABELS).map(k =>
-    `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LABELS[k]}</button>`).join('');
-  const places = t.places.map(p => `<li><strong>${p.name}</strong> — ${p.text}</li>`).join('');
+  const L = (o) => o[xmasLang] || o.de;
+  const langBtns = Object.keys(XMAS_LANG_LABELS).map(k =>
+    `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
+  const chips = Object.keys(XMAS_CITY).map(k =>
+    `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${L(XMAS_CITY[k].name)}</button>`).join('');
+  let body = '';
+  if (!xmasTown) {
+    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>`;
+  } else {
+    const c = XMAS_CITY[xmasTown];
+    const T = L(c.text);
+    body = `<h2 class="xmas-title">${T.title}</h2><p class="xmas-intro">${T.intro}</p>` +
+      T.cards.map((k, i) => `
+        <div class="route-card xmas-card">
+          <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
+          <div class="castle-name">${k.title}</div>
+          <div class="route-place">${k.place}</div>
+          <div class="xmas-photo" data-photo="${k.photo}"></div>
+          <p style="margin:6px 0;">${k.text}</p>
+        </div>`).join('') +
+      `<div class="xmas-block xmas-small">${T.practical}</div>`;
+  }
   el.innerHTML = `<div class="xmas-wrap">
-    <div class="xmas-langs">${btns}</div>
-    <h2 class="xmas-title">${t.title}</h2>
-    <p class="xmas-intro">${t.intro}</p>
-    <ul class="xmas-list">${places}</ul>
-    <div class="xmas-block"><strong>${t.festungTitle}</strong> ${t.festung}</div>
-    <div class="xmas-block"><strong>${t.foodTitle}</strong> ${t.food}</div>
-    <div class="xmas-block xmas-small">${t.practical}</div>
+    <div class="xmas-langs">${langBtns}</div>
+    <div class="xmas-chips">${chips}</div>
+    ${body}
   </div>`;
   el.querySelectorAll('.xmas-lang').forEach(b => b.addEventListener('click', () => {
     xmasLang = b.dataset.xl;
     try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
     renderChristmas();
   }));
+  el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
 }
+
 
 function switchView(viewName) {
   currentView = viewName;
@@ -2310,7 +2655,7 @@ if (qlToursBtn) qlToursBtn.addEventListener('click', () => openInfoPopup('tours'
 const qlContactBtn = document.getElementById('qlContact');
 if (qlContactBtn) qlContactBtn.addEventListener('click', () => openInfoPopup('contact'));
 const qlChristmasBtn = document.getElementById('qlChristmas');
-if (qlChristmasBtn) qlChristmasBtn.addEventListener('click', () => switchView('christmas'));
+if (qlChristmasBtn) qlChristmasBtn.addEventListener('click', () => { xmasTown = xmasTownFromStation(); switchView('christmas'); });
 const qlAboutBtn = document.getElementById('qlAbout');
 if (qlAboutBtn) qlAboutBtn.addEventListener('click', () => openInfoPopup('about'));
 

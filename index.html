@@ -100,7 +100,7 @@
   .xmas-gps-save, .xmas-gps-clear { margin: 8px 0; padding: 8px 12px; border-radius: 999px; border: 1px solid #7A1026; background: transparent; color: #7A1026; cursor: pointer; font-family: var(--sans); }
   .xmas-gps-depart { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
   .xmas-lock { color: var(--terracotta); font-size: 11px; }
-  .xmas-berth { background: #1f4e79; color: #fff; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
+  .xmas-berth { background: #1f4e79; color: #fff; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.45); transform: translate(-50%, -50%); }
   .xmas-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
   .xmas-chip { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 14px; }
   .xmas-chip.active { background: #7A1026; color: #fff; }
@@ -2381,7 +2381,7 @@ function xmasDrawGpsLayers() {
   if (!xmasMapObj || typeof L === 'undefined') return;
   xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
   xmasBerthList().forEach(b => {
-    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: `<div class="xmas-berth">⚓</div>`, iconSize: [26, 26], iconAnchor: [13, 13] }) })
+    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: '<div class="xmas-berth">⚓ VIKING PIER</div>', iconSize: null, iconAnchor: [0, 0] }) })
       .bindTooltip(`${xmasG('berth')}: ${b.name}`).addTo(xmasMapObj));
   });
   if (xmasGpsPos) {

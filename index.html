@@ -2354,7 +2354,8 @@ function xmasDrawMap(opts) {
 
 
 // Причалы Viking: координаты заполнить по согласованным местам (name, ll=[lat,lng]). Пока пусто.
-const VIKING_BERTHS = { koblenz: [], oberwesel: [], boppard: [], bacharach: [], lahnstein: [] };
+// Koblenz: KD 1 am Deutschen Eck (Kaiser-Wilhelm-Denkmal). Punkt ungefähr, genaue Koordinaten nachtragen.
+const VIKING_BERTHS = { koblenz: [{ name: 'KD 1', ll: [50.3616, 7.6000] }], oberwesel: [], boppard: [], bacharach: [], lahnstein: [] };
 
 const XG = {
   de: {btn:'GPS · Entfernungen', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Mein Schiff ist hier', clearShip:'Schiff entfernen', min:'Min. zu Fuß', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
@@ -2817,6 +2818,7 @@ function renderQuickLinksText() {
   setLbl('qlMapLabel', t.tabs[6]);
   setLbl('qlInfoLabel', t.tabs[4]);
   xmasWhereUpdate();
+  xmasSyncLangFromApp();
   setLbl('qlChristmasLabel', lang === 'ru' ? 'Рождественские рынки' : 'Christmas markets');
   setLbl('qlToursLabel', t.qlTours);
   setLbl('qlContactLabel', t.qlContact);
@@ -2852,6 +2854,15 @@ function closeMoreMenu() {
 
 const qlLocationsBtn = document.getElementById('qlLocations');
 if (qlLocationsBtn) qlLocationsBtn.addEventListener('click', () => switchView('castles'));
+function xmasSyncLangFromApp() {
+  if (typeof xmasLang === 'undefined') return;
+  const next = lang === 'ru' ? 'ru' : 'en';
+  if (next === xmasLang) return;
+  xmasLang = next;
+  try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
+  const v = document.getElementById('view-christmas');
+  if (v && v.classList.contains('active')) renderChristmas();
+}
 function xmasWhereUpdate() {
   const t = document.getElementById('xmasWhereTitle');
   if (!t) return;

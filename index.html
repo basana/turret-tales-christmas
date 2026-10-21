@@ -74,7 +74,9 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
     color: #7A1026;
   }
-  .header-controls { flex: 0 0 auto; }
+  .header { position: relative; }
+  .header-branch { position: absolute; top: -8px; right: -6px; width: 84px; height: auto; pointer-events: none; z-index: 0; }
+  .header-controls { flex: 0 0 auto; position: relative; z-index: 1; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
 
   .pill-btn {
@@ -837,6 +839,7 @@
 
 <div class="app">
   <div class="header">
+    <img class="header-branch" src="weihnachts-zweig.webp" alt="">
     <div class="app-name-row">
       <img class="app-emblem" src="emblem.png" alt="">
       <p class="app-name">Rhine Guide</p>

@@ -95,9 +95,14 @@
   .xmas-card { margin-bottom: 14px; }
   .xmas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
   .xmas-cell { aspect-ratio: 4 / 3; border: 1.5px dashed #c8a878; border-radius: 10px; background: rgba(245,236,214,0.6); }
-  .xmas-hero { display: block; width: 100%; aspect-ratio: 1 / 1; margin: 0 0 14px; padding: 16px 12px; border: none; border-radius: 12px; background: #2a2640 url('xmas-hero.webp') center / cover no-repeat; color: #fff; font-size: 20px; font-weight: 700; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,0.7); cursor: pointer; }
+  .xmas-hero { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; margin: 0 0 14px; padding: 16px 12px; border: none; border-radius: 12px; background: #2a2640 url('xmas-hero.webp') center / cover no-repeat; color: #fff; font-size: 20px; font-weight: 700; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,0.7); cursor: pointer; }
   .xmas-banner { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; display: block; margin: 0 0 12px; }
   #view-guide .station-title, #view-guide .stats, #view-guide .story-block { display: none !important; }
+  #view-guide .photo, #view-guide #tourBadge { display: none !important; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .xmas-map { width: 100%; height: 300px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
+  .xmas-pin { background: #7A1026; color: #fff; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
+  .xmas-pin-town { width: auto; height: auto; border-radius: 999px; padding: 4px 10px; line-height: 1.3; white-space: nowrap; font-size: 13px; transform: translate(-50%, -50%); }
 
   .pill-btn {
     background: var(--parchment-deep); border: 1px solid var(--gold);
@@ -882,7 +887,7 @@
   <div class="content">
     <!-- ГИД -->
     <div class="view active" id="view-guide">
-      <button class="xmas-hero" id="qlChristmas"><span>🎄</span><span id="qlChristmasLabel">Christmas markets</span></button>
+      <button class="xmas-hero" id="qlChristmas"><span class="sr-only">🎄</span><span class="sr-only" id="qlChristmasLabel">Christmas markets</span></button>
       <div class="photo">
         <img id="mainPhoto" src="" alt="Location photo">
         <div class="badge" id="badge"></div>
@@ -2301,23 +2306,49 @@ function xmasTownFromStation() {
   return null; // andere Orte ohne eigenen Marktteil -> Übersicht
 }
 
+// Koordinaten: Stadtmitte und Marktplätze. ANNÄHERUNG, vor Veröffentlichung auf der Karte prüfen.
+const XMAS_GEO = {
+  koblenz:   {center:[50.3569,7.5890], zoom:15, pins:[[50.3577,7.5912],[50.3555,7.5918],[50.3580,7.5920],[50.3565,7.5866],[50.3595,7.5886],[50.3524,7.5977],[50.3574,7.5853],[50.3785,7.5963],[50.3569,7.5890]]},
+  oberwesel: {center:[50.1985,7.7253], zoom:16, pins:[[50.1985,7.7253]]},
+  boppard:   {center:[50.2281,7.5858], zoom:16, pins:[[50.2281,7.5858]]},
+  bacharach: {center:[50.0572,7.7790], zoom:16, pins:[[50.0572,7.7790]]},
+  lahnstein: {center:[50.3000,7.5950], zoom:15, pins:[[50.3000,7.5950]]}
+};
+let xmasMapObj = null;
+
+function xmasDrawMap(opts) {
+  const el = document.getElementById('xmasMap');
+  if (!el || typeof L === 'undefined') return;
+  if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
+  xmasMapObj = L.map(el, { scrollWheelZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
+  if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [30, 30] });
+  else xmasMapObj.setView(opts.center, opts.zoom);
+  opts.pins.forEach(p => {
+    const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
+    if (p.onClick) m.on('click', p.onClick);
+  });
+  setTimeout(() => xmasMapObj && xmasMapObj.invalidateSize(), 60);
+}
+
 function renderChristmas(townKey) {
   if (townKey !== undefined) xmasTown = townKey;
   const el = document.getElementById('view-christmas');
   if (!el) return;
-  const L = (o) => o[xmasLang] || o.de;
+  const T_ = (o) => o[xmasLang] || o.de;
   const langBtns = Object.keys(XMAS_LANG_LABELS).map(k =>
     `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
   const chips = Object.keys(XMAS_CITY).map(k =>
-    `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${L(XMAS_CITY[k].name)}</button>`).join('');
+    `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
+  const mapHtml = '<div id="xmasMap" class="xmas-map"></div>';
   let body = '';
   if (!xmasTown) {
-    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>`;
+    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + mapHtml;
   } else {
     const c = XMAS_CITY[xmasTown];
-    const T = L(c.text);
-    body = (xmasTown === 'koblenz' ? '<img class="xmas-banner" src="xmas-koblenz-pyramid.webp" alt="" loading="lazy">' : '') + `<h2 class="xmas-title">${T.title}</h2><p class="xmas-intro">${T.intro}</p>` +
-      T.cards.map((k, i) => `
+    const TX = T_(c.text);
+    body = `<h2 class="xmas-title">${TX.title}</h2><p class="xmas-intro">${TX.intro}</p>` + mapHtml +
+      TX.cards.map((k, i) => `
         <div class="route-card xmas-card">
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
           <div class="castle-name">${k.title}</div>
@@ -2325,7 +2356,7 @@ function renderChristmas(townKey) {
           <div class="xmas-grid" data-photo="${k.photo}"><div class="xmas-cell"></div><div class="xmas-cell"></div></div>
           <p style="margin:6px 0;">${k.text}</p>
         </div>`).join('') +
-      `<div class="xmas-block xmas-small">${T.practical}</div>`;
+      `<div class="xmas-block xmas-small">${TX.practical}</div>`;
   }
   el.innerHTML = `<div class="xmas-wrap">
     <div class="xmas-langs">${langBtns}</div>
@@ -2338,8 +2369,26 @@ function renderChristmas(townKey) {
     renderChristmas();
   }));
   el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
-}
 
+  if (!xmasTown) {
+    const keys = Object.keys(XMAS_GEO);
+    xmasDrawMap({
+      bounds: keys.map(k => XMAS_GEO[k].center),
+      pins: keys.map(k => ({
+        ll: XMAS_GEO[k].center,
+        html: `<div class="xmas-pin xmas-pin-town">${T_(XMAS_CITY[k].name)}</div>`,
+        anchor: [0, 0],
+        onClick: () => renderChristmas(k)
+      }))
+    });
+  } else {
+    const g = XMAS_GEO[xmasTown];
+    xmasDrawMap({
+      center: g.center, zoom: g.zoom,
+      pins: g.pins.map((ll, i) => ({ ll, html: `<div class="xmas-pin">${i + 1}</div>` }))
+    });
+  }
+}
 
 function switchView(viewName) {
   currentView = viewName;

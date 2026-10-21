@@ -93,6 +93,8 @@
   .xmas-chip.active { background: #7A1026; color: #fff; }
   .xmas-photo { min-height: 140px; border: 1.5px dashed #c8a878; border-radius: 10px; margin: 8px 0; background: rgba(245,236,214,0.6); }
   .xmas-card { margin-bottom: 14px; }
+  .xmas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+  .xmas-cell { aspect-ratio: 4 / 3; border: 1.5px dashed #c8a878; border-radius: 10px; background: rgba(245,236,214,0.6); }
   .xmas-hero { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 120px; margin: 0 0 14px; border: none; border-radius: 12px; background: #7A1026; color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; }
   #view-guide .station-title, #view-guide .stats, #view-guide .story-block { display: none !important; }
 
@@ -2319,7 +2321,7 @@ function renderChristmas(townKey) {
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
           <div class="castle-name">${k.title}</div>
           <div class="route-place">${k.place}</div>
-          <div class="xmas-photo" data-photo="${k.photo}"></div>
+          <div class="xmas-grid" data-photo="${k.photo}"><div class="xmas-cell"></div><div class="xmas-cell"></div></div>
           <p style="margin:6px 0;">${k.text}</p>
         </div>`).join('') +
       `<div class="xmas-block xmas-small">${T.practical}</div>`;

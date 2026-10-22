@@ -75,8 +75,8 @@
     color: #7A1026;
   }
   .header { position: relative; }
-  .header-branch { position: absolute; top: -34px; right: -24px; width: 260px; height: auto; pointer-events: none; z-index: 0; opacity: 0.85; }
-  .header-controls { flex: 0 0 auto; position: relative; z-index: 1; }
+  .header-branch { position: absolute; top: -34px; right: -24px; width: 260px; height: auto; pointer-events: none; z-index: 5; opacity: 0.85; }
+  .header-controls { flex: 0 0 auto; position: relative; z-index: 7; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
 
   .xmas-wrap { padding: 16px; line-height: 1.5; }
@@ -136,7 +136,7 @@
   .pill-btn.active { background: var(--terracotta); color: var(--cream-text); border-color: var(--terracotta); }
 
   /* ОБНОВЛЕННАЯ НАВИГАЦИОННАЯ ЛЕНТА СО СТРЕЛКАМИ */
-  .tabs-wrapper {
+  .tabs-wrapper { position: relative; z-index: 6;
     flex: 0 0 auto;
     display: flex;
     align-items: center;

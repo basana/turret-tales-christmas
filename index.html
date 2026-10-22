@@ -468,8 +468,6 @@
   /* Эмблема — в родных цветах (красный штамп), без подложки и прозрачности */
   body.xmas-on .splash img.splash-watermark { mix-blend-mode: normal; opacity: 1; }
   /* Еловая ветка слева под эмблемой — зеркально к правой гирлянде шапки */
-  .splash-branch { position: absolute; z-index: 0; top: 150px; left: 0; width: 150px; transform: scaleX(-1); pointer-events: none; display: none; }
-  body.xmas-on .splash-branch { display: block; }
   .splash img {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover; object-position: center 48%;
@@ -841,7 +839,6 @@
 
 <div class="splash" id="splash">
   <img id="splashImg" src="hero-bacharach.jpg" alt="Bacharach, Rhine Gorge">
-  <img class="splash-branch" src="weihnachts-zweig.webp" alt="">
   <div class="splash-gradient"></div>
   <div class="splash-watermark-wrap">
     <div class="splash-rays"></div>

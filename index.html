@@ -2667,6 +2667,10 @@ function switchView(viewName) {
   currentView = viewName;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + viewName).classList.add('active');
+  // Каждый новый экран начинается сверху (прокручивается контейнер .content)
+  const scrollBox = document.querySelector('.content');
+  if (scrollBox) scrollBox.scrollTop = 0;
+  window.scrollTo(0, 0);
   if (viewName === 'christmas') renderChristmas();
   renderTabs();
   if (viewName === 'map') {

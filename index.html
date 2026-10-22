@@ -150,6 +150,7 @@
   .tab.tab-xmas-light { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
+  .xmas-dot { width: 12px; height: 12px; border-radius: 50%; background: #7A1026; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.45); transform: translate(-50%, -50%); }
   .xmas-pin { background: #7A1026; color: #fff; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
   .xmas-pin-town { width: auto; height: auto; border-radius: 999px; padding: 4px 10px; line-height: 1.3; white-space: nowrap; font-size: 13px; transform: translate(-50%, -50%); }
 
@@ -2661,7 +2662,15 @@ function renderChristmas(townKey) {
         html: `<div class="xmas-pin xmas-pin-town">${T_(XMAS_CITY[k].name)}</div>`,
         anchor: [0, 0],
         onClick: () => renderChristmas(k)
-      }))
+      })).concat(
+        // Точки самих рынков — видны и при приближении (например, в Кобленце)
+        keys.flatMap(k => XMAS_GEO[k].pins.map(ll => ({
+          ll,
+          html: '<div class="xmas-dot"></div>',
+          anchor: [0, 0],
+          onClick: () => renderChristmas(k)
+        })))
+      )
     });
   } else {
     const g = XMAS_GEO[xmasTown];

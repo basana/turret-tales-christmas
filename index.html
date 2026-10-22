@@ -458,9 +458,15 @@
   body.xmas-on .splash { background: #1a100a; }
   body.xmas-on .splash > img { object-fit: cover; object-position: center; }
   body.xmas-on .splash-gradient { display: none; }
-  /* Ветка-декорация слева вверху (зеркально от правой ветки шапки); в стандартной версии не показываем */
-  .splash-branch { position: absolute; z-index: 0; top: 0; left: 0; width: 210px; transform: scaleX(-1); pointer-events: none; display: none; }
-  body.xmas-on .splash-branch { display: block; }
+  /* Рождественская заставка: тише и чище — без лучей и без ветки, эмблема на светлой подложке */
+  body.xmas-on .splash-rays { display: none; }
+  body.xmas-on .splash-gradient {
+    display: block;
+    background: linear-gradient(180deg, rgba(12,8,4,0) 45%, rgba(12,8,4,0.55) 72%, rgba(12,8,4,0.85) 100%);
+  }
+  body.xmas-on .splash-watermark {
+    mix-blend-mode: normal; background: #F4EAD5; border-radius: 50%; padding: 6px; box-sizing: border-box;
+  }
   .splash img {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover; object-position: center 48%;
@@ -832,7 +838,6 @@
 
 <div class="splash" id="splash">
   <img id="splashImg" src="hero-bacharach.jpg" alt="Bacharach, Rhine Gorge">
-  <img class="splash-branch" src="weihnachts-zweig.webp" alt="">
   <div class="splash-gradient"></div>
   <div class="splash-watermark-wrap">
     <div class="splash-rays"></div>

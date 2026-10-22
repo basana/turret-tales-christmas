@@ -118,6 +118,10 @@
   #view-guide .actions { justify-content: center; }
   #view-guide .actions .btn-check { display: none !important; }
   #view-guide .actions .btn-play { flex: 0 1 auto; min-width: 60%; }
+  .xmas-speech { display: none; margin: 0 0 16px; padding: 14px 16px; border-radius: 12px; background: #F5ECD6; border: 1px solid #c8a878; font-size: 15px; line-height: 1.55; color: var(--ink); }
+  #view-guide .xmas-speech { display: block; }
+  .xmas-speech p { margin: 0 0 8px; }
+  .xmas-speech p:last-child { margin: 0; }
   .xmas-where { margin: 0 0 14px; padding: 14px; border-radius: 12px; background: #F5ECD6; border: 1px solid #c8a878; font-family: var(--sans); }
   .xmas-where h4 { margin: 0 0 6px; color: #7A1026; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
   .xmas-where p { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--ink); }
@@ -981,6 +985,7 @@
         <button class="btn-play" id="playBtn">▶ <span id="playLabel">Listen</span></button>
         <button class="btn-check" id="checkBtn" aria-label="Mark as visited">✓</button>
       </div>
+      <div class="xmas-speech" id="xmasSpeechText"></div>
     </div>
 
     <!-- ТОЧКИ И ЗАМКИ -->
@@ -2838,6 +2843,7 @@ function renderQuickLinksText() {
   setLbl('qlInfoLabel', t.tabs[4]);
   xmasWhereUpdate();
   xmasSyncLangFromApp();
+  xmasSpeechRender();
   setLbl('qlChristmasLabel', lang === 'ru' ? 'Рождественские рынки' : 'Christmas markets');
   setLbl('qlToursLabel', t.qlTours);
   setLbl('qlContactLabel', t.qlContact);
@@ -3530,8 +3536,17 @@ document.querySelectorAll('.splash-lang-btn').forEach(b => b.classList.toggle('a
 document.getElementById('fontMinus').addEventListener('click', () => { scale = Math.max(0.85, scale - 0.1); renderGuide(); });
 document.getElementById('fontPlus').addEventListener('click', () => { scale = Math.min(1.3, scale + 0.1); renderGuide(); });
 
+function xmasSpeechRender() {
+  try {
+    const el = document.getElementById('xmasSpeechText');
+    if (!el || typeof XMAS_SPEECH === 'undefined') return;
+    const parts = lang === 'ru' ? XMAS_SPEECH.ru : XMAS_SPEECH.en;
+    el.innerHTML = parts.map(t => `<p>${t}</p>`).join('');
+  } catch (e) {}
+}
 // Озвучка экрана 2: короткие фразы, каждая отдельным отрезком, между ними паузы
 const XMAS_SPEECH = {"en": ["Christmas markets on the Middle Rhine.", "The tradition is old.", "In the late Middle Ages, towns held winter markets before Christmas. Toymakers and bakers sold their goods.", "The first real Christmas market is documented in Dresden in 1434. During the Reformation it was renamed Christkindlmarkt. Nuremberg's market dates from 1628.", "The big change came in the 1990s. Chalets, rides and lights were added, and the markets grew bigger.", "Today the Middle Rhine has markets in several towns.", "Koblenz has stalls on seven squares, and the largest Advent calendar on the town hall.", "Rüdesheim has the Market of Nations.", "Oberwesel, Boppard, Bacharach and Lahnstein have smaller markets.", "Tap a market number on the map to find it. Please check opening times before you go."], "ru": ["Рождественские рынки на Среднем Рейне.", "Традиция очень старая.", "В позднем Средневековье города проводили зимние ярмарки перед Рождеством. Мастера продавали игрушки, сладости и корзины.", "Первый настоящий рождественский рынок задокументирован в Дрездене в 1434 году. Во время Реформации его переименовали в Христкиндльмаркт. Нюрнбергский рынок известен с 1628 года.", "Большие перемены пришли в 1990-е: появились домики, карусели и много света, рынки стали крупнее.", "Сегодня на Среднем Рейне рынки есть во многих городах.", "В Кобленце домики стоят на семи площадях, а на ратуше самый большой адвент-календарь.", "В Рюдесхайме — Рынок Наций.", "В Обервезеле, Боппарде, Бахарахе и Лаонштайне рынки меньше.", "Нажмите номер на карте, чтобы найти рынок. Часы работы уточняйте перед визитом."]};
+xmasSpeechRender();
 let isSpeaking = false;
 document.getElementById('playBtn').addEventListener('click', () => {
   if (!('speechSynthesis' in window)) return;

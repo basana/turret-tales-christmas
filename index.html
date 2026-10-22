@@ -144,6 +144,7 @@
   body.station-open #view-guide .story-block { display: block !important; }
   body.station-open #view-guide .xmas-hero, body.station-open #view-guide .xmas-home { display: none !important; }
   a.castle-card { display: block; color: inherit; text-decoration: none; cursor: pointer; }
+  a.station-link { display: inline-block; margin-top: 8px; color: var(--terracotta); font-weight: 700; font-family: var(--sans); text-decoration: none; }
   .tab.tab-xmas { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .tab.tab-xmas-light { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
@@ -3309,6 +3310,21 @@ function setPhoto(idx) {
   updateActivePhoto();
 }
 
+// Ссылки на страницы станций: одна делегированная обработка для всех списков
+function stationIndexById(id) { return id ? castles.findIndex(c => c.id === id) : -1; }
+function stationLinkHtml(id) {
+  const i = stationIndexById(id);
+  if (i < 0) return '';
+  const label = lang === 'ru' ? 'Открыть страницу' : 'Open the page';
+  return `<a class="station-link" href="#${id}" data-station="${i}">${label} →</a>`;
+}
+document.addEventListener('click', (e) => {
+  const a = e.target && e.target.closest ? e.target.closest('a[data-station]') : null;
+  if (!a) return;
+  e.preventDefault();
+  openStation(Number(a.dataset.station));
+});
+
 function renderCastlesList() {
   const el = document.getElementById('view-castles');
   // Входной экран (koblenz_altstadt) не показываем отдельной карточкой —
@@ -3320,23 +3336,21 @@ function renderCastlesList() {
       <div class="castle-town">${c.town} • ${lang === 'ru' ? c.builtRu : c.built}</div>
     </a>
   `).join('');
-  el.querySelectorAll('a.castle-card').forEach(a => a.addEventListener('click', (e) => {
-    e.preventDefault();
-    openStation(Number(a.dataset.station));
-  }));
 }
 
 function renderLegendsList() {
   const el = document.getElementById('view-legends');
   // Та же логика, что и в списке «Точки» — входной экран не дублируем.
-  const withLegends = castles.filter(c => c.legend && c.id !== 'koblenz_altstadt');
-  el.innerHTML = withLegends.map(c => `
-    <div class="castle-card">
+  const withLegends = castles.map((c, i) => ({ c, i })).filter(({ c }) => c.legend && c.id !== 'koblenz_altstadt');
+  el.innerHTML = withLegends.map(({ c, i }) => `
+    <a class="castle-card" href="#${c.id}" data-station="${i}">
       <div class="castle-name">${c.name}</div>
       <p style="margin:6px 0 0; line-height:1.5;">${lang === 'ru' ? c.legendRu : c.legend}</p>
-    </div>
+    </a>
   `).join('');
 }
+
+const ROUTE_STATION_IDS = ["koblenz_city", "koblenz_city", "lahneck", null, "braubach", "boppard", "rheinfels", "katz", "loreley", "schoenburg", "bacharach", "pfalzgrafenstein", "pfalzgrafenstein", "reichenstein", null, "maeuseturm", "ruedesheim", null, null];
 
 function renderRouteList() {
   const el = document.getElementById('view-route');
@@ -3349,6 +3363,7 @@ function renderRouteList() {
       <p style="margin:6px 0;">${lang === 'ru' ? r.textRu : r.text}</p>
       <p style="margin:6px 0; color:var(--ink-soft);">${lang === 'ru' ? r.extraRu : r.extra}</p>
       <div class="route-hook">${lang === 'ru' ? r.hookRu : r.hook}</div>
+      ${stationLinkHtml(ROUTE_STATION_IDS[i])}
     </div>
   `).join('') + `
     <button class="route-open-btn" id="routeReadMoreBtn" style="display:block; width:100%; margin:4px 0 18px; padding:10px 14px; border-radius:8px; border:1px solid var(--gold); background:transparent; color:var(--terracotta); font-family:var(--sans); font-size:0.9rem; font-weight:600; cursor:pointer;">${t.routeReadMore}</button>

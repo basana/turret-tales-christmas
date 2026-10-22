@@ -143,6 +143,8 @@
   body.station-open #view-guide .stats { display: flex !important; }
   body.station-open #view-guide .story-block { display: block !important; }
   body.station-open #view-guide .xmas-hero, body.station-open #view-guide .xmas-home { display: none !important; }
+  .tab.tab-xmas { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
+  .tab.tab-xmas-light { background: #fff !important; color: #7A1026 !important; border: 1px solid #7A1026 !important; font-weight: 700; }
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
   .xmas-pin { background: #7A1026; color: #fff; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
@@ -1813,24 +1815,36 @@ function renderTabs() {
   const tabsEl = document.getElementById('tabs');
   tabsEl.innerHTML = '';
   const tabKeys = ['christmas', 'guide', 'castles', 'legends', 'info', 'route', 'map', 'about'];
-  UI[lang].tabs.forEach((label, i) => {
-    const key = tabKeys[i];
-    if (XMAS_MODE && key === 'guide') return; // в рождественской версии «Christmas» — это и есть второй экран
-    if (!XMAS_MODE && key === 'christmas') return;
+  const xl = lang === 'ru'
+    ? { list: 'Рождественские локации', map: 'Карта рынков' }
+    : { list: 'Christmas locations', map: 'Christmas market map' };
+  const addTab = (label, key, cls, active, onclick) => {
     const s = document.createElement('span');
-    let active = key === currentView;
-    if (XMAS_MODE) active = (key === 'christmas' && currentView === 'guide') || (key === 'map' && (currentView === 'christmas' || currentView === 'map'));
-    s.className = 'tab' + (active ? ' active' : '');
-    s.style.setProperty('--tab-color', TAB_COLORS[key] || 'var(--terracotta)');
+    s.className = 'tab' + (cls ? ' ' + cls : '') + (active ? ' active' : '');
+    s.style.setProperty('--tab-color', TAB_COLORS[key] || '#7A1026');
     s.textContent = label;
-    // «Контакты» — не отдельный экран, а всплывающее окно поверх текущего
-    if (key === 'about') s.onclick = () => openInfoPopup('guideInfo');
-    else if (XMAS_MODE && key === 'christmas') s.onclick = () => openXmasHome();
-    else if (key === 'guide') s.onclick = () => openStation(index);
-    else if (XMAS_MODE && key === 'map') s.onclick = () => xmasOpen(null);
-    else s.onclick = () => switchView(key);
+    s.onclick = onclick;
     tabsEl.appendChild(s);
-  });
+  };
+  if (XMAS_MODE) {
+    // Рождественская версия: Christmas → рождественские локации → карта рынков → основная карта → замки → остальное → контакты
+    addTab(UI[lang].tabs[0], 'christmas', 'tab-xmas', currentView === 'guide', () => openXmasHome());
+    addTab(xl.list, 'xlist', 'tab-xmas-light', currentView === 'christmas' && xmasListOnly, () => xmasOpenList());
+    addTab(xl.map, 'xmap', 'tab-xmas-light', currentView === 'christmas' && !xmasListOnly, () => xmasOpen(null));
+    addTab(UI[lang].tabs[6], 'map', '', currentView === 'map', () => switchView('map'));
+    addTab(UI[lang].tabs[2], 'castles', '', currentView === 'castles', () => switchView('castles'));
+    [3, 4, 5].forEach(i => addTab(UI[lang].tabs[i], tabKeys[i], '', currentView === tabKeys[i], () => switchView(tabKeys[i])));
+    addTab(UI[lang].tabs[7], 'about', '', false, () => openInfoPopup('guideInfo'));
+  } else {
+    UI[lang].tabs.forEach((label, i) => {
+      const key = tabKeys[i];
+      if (key === 'christmas') return;
+      addTab(label, key, '', key === currentView,
+        key === 'about' ? () => openInfoPopup('guideInfo')
+        : key === 'guide' ? () => openStation(index)
+        : () => switchView(key));
+    });
+  }
   updateTabArrows();
 }
 
@@ -2385,7 +2399,9 @@ function xmasTownFromStation() {
   return null; // andere Orte ohne eigenen Marktteil -> Übersicht
 }
 
-function xmasOpen(townKey) { xmasTown = townKey; switchView('christmas'); }
+let xmasListOnly = false; // true = только список рынков (кнопка «Рождественские локации»)
+function xmasOpen(townKey) { xmasTown = townKey; xmasListOnly = false; switchView('christmas'); }
+function xmasOpenList() { xmasTown = null; xmasListOnly = true; switchView('christmas'); }
 // Экран 2 в двух режимах: «станция» (фото, текст — из раздела Locations/карты) и «главный» (кнопки Christmas)
 function openStation(i) { index = i; document.body.classList.add('station-open'); switchView('guide'); renderGuide(); }
 function openXmasHome() { document.body.classList.remove('station-open'); switchView('guide'); }
@@ -2581,7 +2597,9 @@ function renderChristmas(townKey) {
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
   const mapHtml = xmasExplainHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
   let body = '';
-  if (!xmasTown) {
+  if (!xmasTown && xmasListOnly) {
+    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
+  } else if (!xmasTown) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + mapHtml;
   } else {
     const c = XMAS_CITY[xmasTown];
@@ -2621,7 +2639,9 @@ function renderChristmas(townKey) {
     else openPremiumPopup('xmas');
   });
   xmasUpdateGpsPanel();
-  if (!xmasTown) {
+  if (!xmasTown && xmasListOnly) {
+    // только список: карту не рисуем
+  } else if (!xmasTown) {
     const keys = Object.keys(XMAS_GEO);
     xmasDrawMap({
       bounds: keys.map(k => XMAS_GEO[k].center),
@@ -2660,7 +2680,7 @@ function switchView(viewName) {
 // История браузера: кнопка «назад» возвращает на предыдущий экран приложения
 let navRestoring = false;
 function navSnapshot() {
-  return { view: currentView, index, station: document.body.classList.contains('station-open'), xmasTown };
+  return { view: currentView, index, station: document.body.classList.contains('station-open'), xmasTown, xl: xmasListOnly };
 }
 function navPush() {
   if (navRestoring) return;
@@ -2677,6 +2697,7 @@ window.addEventListener('popstate', (e) => {
   try {
     index = st.index;
     xmasTown = st.xmasTown;
+    xmasListOnly = !!st.xl;
     document.body.classList.toggle('station-open', !!st.station);
     switchView(st.view);
     if (st.view === 'guide') renderGuide();

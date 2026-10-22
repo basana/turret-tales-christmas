@@ -1118,7 +1118,7 @@
 // Режим: рождественская версия по умолчанию; стандартная — по ссылке ?mode=std
 const XMAS_MODE = new URLSearchParams(location.search).get('mode') !== 'std';
 document.body.classList.toggle('xmas-on', XMAS_MODE);
-if (XMAS_MODE) { const sImg = document.getElementById('splashImg'); if (sImg) sImg.src = 'xmas-splash.webp'; }
+if (XMAS_MODE) { const sImg = document.getElementById('splashImg'); if (sImg) sImg.src = 'xmas-splash.webp'; const sWm = document.querySelector('.splash-watermark'); if (sWm) sWm.src = 'emblem-stamp-red.png'; }
 const castles = [
   {
     // Входной экран (сразу после сплэша, с плитками-указателями). У него

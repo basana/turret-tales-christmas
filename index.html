@@ -128,8 +128,17 @@
   .xmas-where-btn { display: block; width: 100%; padding: 11px; border: none; border-radius: 10px; background: #7A1026; color: #F5ECD6; font-weight: 700; font-size: 15px; cursor: pointer; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .xmas-map-big { height: 62vh; min-height: 480px; }
-  .xmas-towns { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
-  .xmas-town-btn { padding: 9px 13px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 14px; cursor: pointer; }
+  .xmas-town-list { display: grid; gap: 10px; margin: 0 0 14px; }
+  .xmas-town-list .route-card { margin: 0; }
+  .xmas-town-btn { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 14px; cursor: pointer; margin-top: 6px; }
+  body:not(.xmas-on) .xmas-hero, body:not(.xmas-on) .xmas-home, body:not(.xmas-on) .xmas-where { display: none !important; }
+  body.xmas-on .xmas-where, body.xmas-on .xmas-hero-label { display: none !important; }
+  .xmas-home { display: flex; flex-direction: column; gap: 10px; margin: 0 0 16px; }
+  .xmas-home-title, .xmas-home-koblenz { width: 100%; border-radius: 12px; cursor: pointer; font-family: var(--sans); font-weight: 700; text-align: center; padding: 14px 12px; }
+  .xmas-home-title { border: 0; background: #7A1026; color: #F4EAD5; font-size: 17px; }
+  .xmas-home-sub { display: block; font-size: 13px; font-weight: 400; opacity: 0.9; margin-top: 4px; }
+  .xmas-home-koblenz { border: 1px solid #7A1026; background: #fff; color: #7A1026; font-size: 15px; }
+  .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
   .xmas-pin { background: #7A1026; color: #fff; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
   .xmas-pin-town { width: auto; height: auto; border-radius: 999px; padding: 4px 10px; line-height: 1.3; white-space: nowrap; font-size: 13px; transform: translate(-50%, -50%); }
@@ -809,7 +818,7 @@
 <body>
 
 <div class="splash" id="splash">
-  <img src="hero-bacharach.jpg" alt="Bacharach, Rhine Gorge">
+  <img id="splashImg" src="hero-bacharach.jpg" alt="Bacharach, Rhine Gorge">
   <div class="splash-gradient"></div>
   <div class="splash-watermark-wrap">
     <div class="splash-rays"></div>
@@ -918,6 +927,10 @@
     <!-- ГИД -->
     <div class="view active" id="view-guide">
       <button class="xmas-hero" id="qlChristmas"><img src="xmas-hero.webp" alt=""><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
+      <div class="xmas-home" id="xmasHome">
+        <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
+        <button class="xmas-home-koblenz" id="xmasHomeKoblenz"><span id="xmasHomeKoblenzLabel">Christmas market Koblenz →</span></button>
+      </div>
       <div class="photo">
         <img id="mainPhoto" src="" alt="Location photo">
         <div class="badge" id="badge"></div>
@@ -1082,6 +1095,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
+// Режим: рождественская версия по умолчанию; стандартная — по ссылке ?mode=std
+const XMAS_MODE = new URLSearchParams(location.search).get('mode') !== 'std';
+document.body.classList.toggle('xmas-on', XMAS_MODE);
+if (XMAS_MODE) { const sImg = document.getElementById('splashImg'); if (sImg) sImg.src = 'xmas-koblenz-pyramid.webp'; }
 const castles = [
   {
     // Входной экран (сразу после сплэша, с плитками-указателями). У него
@@ -1773,16 +1790,22 @@ const TAB_COLORS = {
 function renderTabs() {
   const tabsEl = document.getElementById('tabs');
   tabsEl.innerHTML = '';
+  const tabKeys = ['christmas', 'guide', 'castles', 'legends', 'info', 'route', 'map', 'about'];
   UI[lang].tabs.forEach((label, i) => {
-    const s = document.createElement('span');
-    const tabKeys = ['christmas', 'guide', 'castles', 'legends', 'info', 'route', 'map', 'about'];
     const key = tabKeys[i];
-    s.className = 'tab' + (key === currentView ? ' active' : '');
+    if (XMAS_MODE && key === 'guide') return; // в рождественской версии «Christmas» — это и есть второй экран
+    if (!XMAS_MODE && key === 'christmas') return;
+    const s = document.createElement('span');
+    let active = key === currentView;
+    if (XMAS_MODE) active = (key === 'christmas' && currentView === 'guide') || (key === 'map' && (currentView === 'christmas' || currentView === 'map'));
+    s.className = 'tab' + (active ? ' active' : '');
     s.style.setProperty('--tab-color', TAB_COLORS[key] || 'var(--terracotta)');
     s.textContent = label;
     // «Контакты» — не отдельный экран, а всплывающее окно поверх текущего
-    // (доступно с любой станции), поэтому не меняет currentView.
-    s.onclick = (key === 'about') ? (() => openInfoPopup('guideInfo')) : (() => switchView(key));
+    if (key === 'about') s.onclick = () => openInfoPopup('guideInfo');
+    else if (XMAS_MODE && key === 'christmas') s.onclick = () => switchView('guide');
+    else if (XMAS_MODE && key === 'map') s.onclick = () => xmasOpen(null);
+    else s.onclick = () => switchView(key);
     tabsEl.appendChild(s);
   });
   updateTabArrows();
@@ -2339,6 +2362,8 @@ function xmasTownFromStation() {
   return null; // andere Orte ohne eigenen Marktteil -> Übersicht
 }
 
+function xmasOpen(townKey) { xmasTown = townKey; switchView('christmas'); }
+const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’accueil', nl: '← Terug naar start', en: '← Back to start', ru: '← На главный экран' };
 // Koordinaten: Stadtmitte und Marktplätze. ANNÄHERUNG, vor Veröffentlichung auf der Karte prüfen.
 const XMAS_GEO = {
   koblenz:   {center:[50.3569,7.5890], zoom:15, pins:[[50.3577,7.5912],[50.3555,7.5918],[50.3580,7.5920],[50.3565,7.5866],[50.3595,7.5886],[50.3524,7.5977],[50.3574,7.5853],[50.3785,7.5963],[50.3569,7.5890]]},
@@ -2401,8 +2426,9 @@ function xmasExplainHtml() {
 }
 function xmasTownListHtml() {
   const T = (o) => o[xmasLang] || o.de;
-  return '<div class="xmas-towns">' + Object.keys(XMAS_GEO).map(k =>
-    `<button class="xmas-town-btn" data-xc="${k}">${T(XMAS_CITY[k].name)}</button>`).join('') + '</div>';
+  const go = { de: 'Zum Markt →', fr: 'Voir le marché →', nl: 'Naar de markt →', en: 'Open market →', ru: 'К рынку →' }[xmasLang] || 'Open market →';
+  return '<div class="xmas-town-list">' + Object.keys(XMAS_GEO).map((k, i) =>
+    `<div class="route-card xmas-card"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`).join('') + '</div>';
 }
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
 
@@ -2545,7 +2571,9 @@ function renderChristmas(townKey) {
         </div>`).join('') +
       `<div class="xmas-block xmas-small">${TX.practical}</div>`;
   }
+  const backBtn = XMAS_MODE ? `<button class="xmas-back" id="xmasBack">${XMAS_BACK[xmasLang] || XMAS_BACK.de}</button>` : '';
   el.innerHTML = `<div class="xmas-wrap">
+    ${backBtn}
     <div class="xmas-langs">${langBtns}</div>
     <div class="xmas-chips">${chips}</div>
     ${body}
@@ -2557,6 +2585,8 @@ function renderChristmas(townKey) {
   }));
   el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc || null)));
   el.querySelectorAll('.xmas-town-btn').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
+  const bk = document.getElementById('xmasBack');
+  if (bk) bk.addEventListener('click', () => switchView('guide'));
 
   const gpsBtn = document.getElementById('xmasGpsBtn');
   if (gpsBtn) gpsBtn.addEventListener('click', () => {
@@ -2862,6 +2892,8 @@ function renderQuickLinksText() {
   xmasSyncLangFromApp();
   xmasSpeechRender();
   setLbl('qlChristmasLabel', lang === 'ru' ? 'Рождественские рынки' : 'Christmas markets');
+  const xh = lang === 'ru' ? ['Рождественские рынки Среднего Рейна', 'Общая карта →', 'Рождественский рынок Кобленц →'] : ['Christmas markets Middle Rhine', 'Map of all markets →', 'Christmas market Koblenz →'];
+  setLbl('xmasHomeTitle', xh[0]); setLbl('xmasHomeSub', xh[1]); setLbl('xmasHomeKoblenzLabel', xh[2]);
   setLbl('qlToursLabel', t.qlTours);
   setLbl('qlContactLabel', t.qlContact);
   setLbl('qlAboutLabel', t.qlAbout);
@@ -2926,7 +2958,11 @@ if (qlToursBtn) qlToursBtn.addEventListener('click', () => openInfoPopup('tours'
 const qlContactBtn = document.getElementById('qlContact');
 if (qlContactBtn) qlContactBtn.addEventListener('click', () => openInfoPopup('contact'));
 const qlChristmasBtn = document.getElementById('qlChristmas');
-if (qlChristmasBtn) qlChristmasBtn.addEventListener('click', () => { xmasTown = xmasTownFromStation(); switchView('christmas'); });
+if (qlChristmasBtn) qlChristmasBtn.addEventListener('click', () => xmasOpen('koblenz'));
+const xmasHomeMapBtn = document.getElementById('xmasHomeMap');
+if (xmasHomeMapBtn) xmasHomeMapBtn.addEventListener('click', () => xmasOpen(null));
+const xmasHomeKoblenzBtn = document.getElementById('xmasHomeKoblenz');
+if (xmasHomeKoblenzBtn) xmasHomeKoblenzBtn.addEventListener('click', () => xmasOpen('koblenz'));
 const qlAboutBtn = document.getElementById('qlAbout');
 if (qlAboutBtn) qlAboutBtn.addEventListener('click', () => openInfoPopup('about'));
 
@@ -3070,7 +3106,7 @@ function applyStaticText() {
   const sTitle = document.getElementById('splashTitle');
   const sTagline = document.getElementById('splashTagline');
   const sEnter = document.getElementById('splashEnterLabel');
-  if (sEyebrow) sEyebrow.textContent = t.splashEyebrow;
+  if (sEyebrow) sEyebrow.textContent = XMAS_MODE ? (lang === 'ru' ? 'Рождественские рынки · Средний Рейн' : 'Christmas markets · Middle Rhine') : t.splashEyebrow;
   if (sTitle) sTitle.innerHTML = t.splashTitle;
   if (sTagline) sTagline.innerHTML = t.splashTagline;
   if (sEnter) sEnter.textContent = t.splashEnter;

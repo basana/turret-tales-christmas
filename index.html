@@ -453,6 +453,16 @@
     background: #000;
   }
   .splash.hide { display: none; }
+  /* Рождественская заставка: квадратное фото целиком вверху (без обрезки),
+     внизу плавно переходит в тёмный фон, где стоят текст и кнопка */
+  body.xmas-on .splash { background: #1a100a; }
+  body.xmas-on .splash img {
+    top: 0; bottom: auto; height: auto; aspect-ratio: 1 / 1;
+    object-fit: contain; object-position: center top;
+    -webkit-mask-image: linear-gradient(#000 62%, transparent 100%);
+    mask-image: linear-gradient(#000 62%, transparent 100%);
+  }
+  body.xmas-on .splash img.splash-watermark { object-fit: initial; }
   .splash img {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover; object-position: center 48%;

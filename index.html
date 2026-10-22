@@ -2637,7 +2637,35 @@ function switchView(viewName) {
     }, 50);
   }
   trackNavForConfusion(viewName);
+  navPush();
 }
+
+// История браузера: кнопка «назад» возвращает на предыдущий экран приложения
+let navRestoring = false;
+function navSnapshot() {
+  return { view: currentView, index, station: document.body.classList.contains('station-open'), xmasTown };
+}
+function navPush() {
+  if (navRestoring) return;
+  try {
+    const snap = navSnapshot();
+    if (JSON.stringify(history.state) === JSON.stringify(snap)) return;
+    history.pushState(snap, '');
+  } catch (e) {}
+}
+window.addEventListener('popstate', (e) => {
+  const st = e.state;
+  if (!st) return;
+  navRestoring = true;
+  try {
+    index = st.index;
+    xmasTown = st.xmasTown;
+    document.body.classList.toggle('station-open', !!st.station);
+    switchView(st.view);
+    if (st.view === 'guide') renderGuide();
+  } finally { navRestoring = false; }
+});
+try { history.replaceState(navSnapshot(), ''); } catch (e) {}
 
 /* ============================================================
    ПОМОЩНИК-ПОДСКАЗКА (пробная версия)

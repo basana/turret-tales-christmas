@@ -143,6 +143,7 @@
   body.station-open #view-guide .stats { display: flex !important; }
   body.station-open #view-guide .story-block { display: block !important; }
   body.station-open #view-guide .xmas-hero, body.station-open #view-guide .xmas-home { display: none !important; }
+  a.castle-card { display: block; color: inherit; text-decoration: none; cursor: pointer; }
   .tab.tab-xmas { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .tab.tab-xmas-light { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
@@ -3314,11 +3315,15 @@ function renderCastlesList() {
   // чтобы Кобленц не дублировался, в списке только "настоящая" станция
   // koblenz_city.
   el.innerHTML = castles.map((c, i) => ({ c, i })).filter(({ c }) => c.id !== 'koblenz_altstadt').map(({ c, i }) => `
-    <div class="castle-card" onclick="openStation(${i});" style="cursor:pointer;">
+    <a class="castle-card" href="#${c.id}" data-station="${i}">
       <div class="castle-name">${c.name}</div>
       <div class="castle-town">${c.town} • ${lang === 'ru' ? c.builtRu : c.built}</div>
-    </div>
+    </a>
   `).join('');
+  el.querySelectorAll('a.castle-card').forEach(a => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    openStation(Number(a.dataset.station));
+  }));
 }
 
 function renderLegendsList() {

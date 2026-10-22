@@ -127,6 +127,9 @@
   .xmas-where p { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--ink); }
   .xmas-where-btn { display: block; width: 100%; padding: 11px; border: none; border-radius: 10px; background: #7A1026; color: #F5ECD6; font-weight: 700; font-size: 15px; cursor: pointer; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .xmas-map-big { height: 62vh; min-height: 480px; }
+  .xmas-towns { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+  .xmas-town-btn { padding: 9px 13px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 14px; cursor: pointer; }
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
   .xmas-pin { background: #7A1026; color: #fff; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
   .xmas-pin-town { width: auto; height: auto; border-radius: 999px; padding: 4px 10px; line-height: 1.3; white-space: nowrap; font-size: 13px; transform: translate(-50%, -50%); }
@@ -2379,14 +2382,27 @@ const XG = {
 };
 const XMAS_DEPART_KEY = 'xmasDepart';
 const XMAS_EXPLAIN = {
-  de: '<b>So finden Sie Ihren Weg:</b> Tippen Sie auf die Zahlen auf der Karte, dann springen Sie zum Markt. Mit „GPS“ sehen Sie, wie weit es zu jedem Markt und zum Viking-Anleger ist. Mit „Mein Schiff ist hier“ merken Sie sich Ihr Schiff, dann sehen Sie auch, ob die Zeit bis zur Abfahrt reicht.',
-  fr: '<b>Comment vous orienter :</b> touchez les numéros sur la carte pour aller au marché. Avec « GPS », vous voyez la distance jusqu’à chaque marché et jusqu’à l’accostage Viking. Avec « Mon bateau est ici », vous mémorisez votre bateau et vous voyez si le temps suffit avant le départ.',
-  nl: '<b>Zo vindt u de weg:</b> tik op de cijfers op de kaart om naar de markt te gaan. Met „GPS“ ziet u hoe ver het is naar elke markt en naar de Viking-aanlegplaats. Met „Mijn schip ligt hier“ onthoudt u uw schip, dan ziet u ook of de tijd tot vertrek genoeg is.',
-  en: '<b>How to find your way:</b> tap the numbers on the map to jump to a market. With “GPS” you see the distance to every market and to the Viking pier. With “My ship is here” you save your ship, then you also see whether there is enough time before departure.',
-  ru: '<b>Как пользоваться:</b> нажмите на номер на карте, и страница прокрутится к нужному рынку. Кнопка «GPS» покажет расстояние до каждого рынка и до причала Viking. Кнопка «Мой корабль здесь» запомнит ваш корабль, и тогда видно, хватит ли времени до отхода.'
+  de: '<b><u>Tippen Sie</u></b> auf die Zahlen auf der Karte, dann <b><u>springen</u></b> Sie zum Markt. Mit „GPS“ sehen Sie, wie weit es zu jedem Markt und zum Viking-Anleger ist. Mit „Mein Schiff ist hier“ merken Sie sich Ihr Schiff, dann sehen Sie auch, ob die Zeit bis zur Abfahrt reicht.',
+  fr: '<b><u>Touchez</u></b> les numéros sur la carte, puis <b><u>allez</u></b> au marché. Avec « GPS », vous voyez la distance jusqu’à chaque marché et jusqu’à l’accostage Viking. Avec « Mon bateau est ici », vous mémorisez votre bateau et vous voyez si le temps suffit avant le départ.',
+  nl: '<b><u>Tik</u></b> op de cijfers op de kaart, dan <b><u>spring</u></b> je naar de markt. Met „GPS“ ziet u hoe ver het is naar elke markt en naar de Viking-aanlegplaats. Met „Mijn schip ligt hier“ onthoudt u uw schip, dan ziet u ook of de tijd tot vertrek genoeg is.',
+  en: '<b><u>Tap</u></b> the numbers on the map, then <b><u>jump</u></b> to a market. With “GPS” you see the distance to every market and to the Viking pier. With “My ship is here” you save your ship, then you also see whether there is enough time before departure.',
+  ru: '<b><u>Нажмите</u></b> на номер на карте, и страница <b><u>прокрутится</u></b> к нужному рынку. Кнопка «GPS» покажет расстояние до каждого рынка и до причала Viking. Кнопка «Мой корабль здесь» запомнит ваш корабль, и тогда видно, хватит ли времени до отхода.'
+};
+const XMAS_EXPLAIN_OVERVIEW = {
+  de: '<b><u>Tippen Sie</u></b> auf einen Ortsnamen auf der Karte oder in der Liste darunter, dann <b><u>springen</u></b> Sie zur Marktseite des Ortes. Mit „GPS“ sehen Sie, wie weit jeder Ort entfernt ist. Mit „Mein Schiff ist hier“ merken Sie sich Ihr Schiff.',
+  fr: '<b><u>Touchez</u></b> un nom de ville sur la carte ou dans la liste ci-dessous, puis <b><u>allez</u></b> à la page de son marché. Avec « GPS », vous voyez la distance jusqu’à chaque ville. Avec « Mon bateau est ici », vous mémorisez votre bateau.',
+  nl: '<b><u>Tik</u></b> op een plaatsnaam op de kaart of in de lijst eronder, dan <b><u>spring</u></b> je naar de marktpagina van die plaats. Met „GPS“ ziet u hoe ver elke plaats is. Met „Mijn schip ligt hier“ onthoudt u uw schip.',
+  en: '<b><u>Tap</u></b> a town name on the map or in the list below to <b><u>jump</u></b> to its market page. With “GPS” you see how far each town is from you. With “My ship is here” you save your ship.',
+  ru: '<b><u>Нажмите</u></b> на название города на карте или в списке ниже, чтобы <b><u>перейти</u></b> к странице его рынка. Кнопка «GPS» покажет, как далеко каждый город. Кнопка «Мой корабль здесь» запомнит ваш корабль.'
 };
 function xmasExplainHtml() {
-  return `<div class="xmas-explain">${XMAS_EXPLAIN[xmasLang] || XMAS_EXPLAIN.en}</div>`;
+  const dict = xmasTown ? XMAS_EXPLAIN : XMAS_EXPLAIN_OVERVIEW;
+  return `<div class="xmas-explain">${dict[xmasLang] || dict.en}</div>`;
+}
+function xmasTownListHtml() {
+  const T = (o) => o[xmasLang] || o.de;
+  return '<div class="xmas-towns">' + Object.keys(XMAS_GEO).map(k =>
+    `<button class="xmas-town-btn" data-xc="${k}">${T(XMAS_CITY[k].name)}</button>`).join('') + '</div>';
 }
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
 
@@ -2511,7 +2527,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + Object.keys(XMAS_CITY).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = xmasExplainHtml() + xmasGpsBtnHtml() + '<div id="xmasMap" class="xmas-map"></div><div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
+  const mapHtml = xmasExplainHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
   let body = '';
   if (!xmasTown) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + mapHtml;
@@ -2540,6 +2556,7 @@ function renderChristmas(townKey) {
     renderChristmas();
   }));
   el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc || null)));
+  el.querySelectorAll('.xmas-town-btn').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
 
   const gpsBtn = document.getElementById('xmasGpsBtn');
   if (gpsBtn) gpsBtn.addEventListener('click', () => {

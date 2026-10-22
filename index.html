@@ -3527,6 +3527,8 @@ document.querySelectorAll('.splash-lang-btn').forEach(b => b.classList.toggle('a
 document.getElementById('fontMinus').addEventListener('click', () => { scale = Math.max(0.85, scale - 0.1); renderGuide(); });
 document.getElementById('fontPlus').addEventListener('click', () => { scale = Math.min(1.3, scale + 0.1); renderGuide(); });
 
+// Озвучка экрана 2: короткие фразы, каждая отдельным отрезком, между ними паузы
+const XMAS_SPEECH = {"en": ["Christmas markets on the Middle Rhine.", "The tradition is old.", "In the late Middle Ages, towns held winter markets before Christmas. Toymakers and bakers sold their goods.", "The first real Christmas market is documented in Dresden in 1434. During the Reformation it was renamed Christkindlmarkt. Nuremberg's market dates from 1628.", "The big change came in the 1990s. Chalets, rides and lights were added, and the markets grew bigger.", "Today the Middle Rhine has markets in several towns.", "Koblenz has stalls on seven squares, and the largest Advent calendar on the town hall.", "Rüdesheim has the Market of Nations.", "Oberwesel, Boppard, Bacharach and Lahnstein have smaller markets.", "Tap a market number on the map to find it. Please check opening times before you go."], "ru": ["Рождественские рынки на Среднем Рейне.", "Традиция очень старая.", "В позднем Средневековье города проводили зимние ярмарки перед Рождеством. Мастера продавали игрушки, сладости и корзины.", "Первый настоящий рождественский рынок задокументирован в Дрездене в 1434 году. Во время Реформации его переименовали в Христкиндльмаркт. Нюрнбергский рынок известен с 1628 года.", "Большие перемены пришли в 1990-е: появились домики, карусели и много света, рынки стали крупнее.", "Сегодня на Среднем Рейне рынки есть во многих городах.", "В Кобленце домики стоят на семи площадях, а на ратуше самый большой адвент-календарь.", "В Рюдесхайме — Рынок Наций.", "В Обервезеле, Боппарде, Бахарахе и Лаонштайне рынки меньше.", "Нажмите номер на карте, чтобы найти рынок. Часы работы уточняйте перед визитом."]};
 let isSpeaking = false;
 document.getElementById('playBtn').addEventListener('click', () => {
   if (!('speechSynthesis' in window)) return;
@@ -3540,25 +3542,20 @@ document.getElementById('playBtn').addEventListener('click', () => {
   }
 
   window.speechSynthesis.cancel();
-  const c = castles[index];
-  const text = (lang === 'ru' ? (c.factsRu + '. ' + (c.legendRu || '')) : (c.facts + '. ' + (c.legend || '')));
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = lang === 'ru' ? 'ru-RU' : 'en-US';
-  utterance.rate = 0.9;
-
+  const parts = lang === 'ru' ? XMAS_SPEECH.ru : XMAS_SPEECH.en;
   isSpeaking = true;
   playLabel.textContent = lang === 'ru' ? 'Стоп' : 'Stop';
 
-  utterance.onend = () => {
-    isSpeaking = false;
-    playLabel.textContent = UI[lang].play;
-  };
-  utterance.onerror = () => {
-    isSpeaking = false;
-    playLabel.textContent = UI[lang].play;
-  };
-
-  window.speechSynthesis.speak(utterance);
+  parts.forEach((txt, i) => {
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = lang === 'ru' ? 'ru-RU' : 'en-US';
+    u.rate = 0.85;
+    if (i === parts.length - 1) {
+      u.onend = () => { isSpeaking = false; playLabel.textContent = UI[lang].play; };
+      u.onerror = () => { isSpeaking = false; playLabel.textContent = UI[lang].play; };
+    }
+    window.speechSynthesis.speak(u);
+  });
 });
 
 renderGuide();

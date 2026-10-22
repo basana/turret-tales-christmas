@@ -789,6 +789,25 @@
   .help-bubble-backdrop.show { display: block; }
   .help-bubble-backdrop.visible { opacity: 1; }
 
+  /* Подсказка «держите телефон вертикально» — только на экранах с навигацией и только в альбомной ориентации */
+  .rotate-hint {
+    position: fixed; inset: 0; z-index: 1500; display: none; align-items: center; justify-content: center;
+    padding: 16px; box-sizing: border-box; background: rgba(20,14,6,0.6);
+  }
+  .rotate-hint.show { display: flex; }
+  .rotate-hint-box {
+    background: var(--parchment); border: 1px solid var(--gold); padding: 22px 20px;
+    max-width: 360px; text-align: center; font-family: var(--sans); color: var(--ink);
+    box-shadow: 0 14px 36px rgba(20,14,6,0.45);
+  }
+  .rotate-hint-icon { display: block; font-size: 32px; line-height: 1; margin-bottom: 10px; }
+  .rotate-hint-text { margin: 0 0 16px; font-family: 'EB Garamond', serif; font-size: 18px; font-weight: 700; line-height: 1.35; }
+  .rotate-hint-text small { display: block; margin-top: 8px; font-family: var(--sans); font-size: 14px; font-weight: 400; color: var(--ink-soft); }
+  .rotate-hint-btn {
+    background: linear-gradient(135deg, var(--terracotta), #8f4a22); color: #fff; border: none;
+    border-radius: 12px; padding: 12px 24px; font-family: var(--sans); font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+
   .help-bubble {
     position: fixed; left: 16px; right: 16px; top: 50%; transform: translateY(-50%) scale(0.96);
     z-index: 1400;
@@ -926,6 +945,14 @@
   <div class="help-bubble-actions">
     <button class="help-bubble-btn" id="helpBubbleShow">Да, покажи</button>
     <button class="help-bubble-btn secondary" id="helpBubbleDismiss">Нет, спасибо</button>
+  </div>
+</div>
+
+<div class="rotate-hint" id="rotateHint" role="dialog" aria-modal="true">
+  <div class="rotate-hint-box">
+    <span class="rotate-hint-icon">📱</span>
+    <p class="rotate-hint-text">Для навигации удобнее держать телефон вертикально.<small>For navigation, hold your phone upright.</small></p>
+    <button class="rotate-hint-btn" id="rotateHintClose">OK</button>
   </div>
 </div>
 
@@ -4143,6 +4170,45 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
+</script>
+<script>
+// Подсказка о вертикальном положении телефона: показывается один раз за загрузку страницы,
+// только в альбомной ориентации и только на экранах навигации (Гид, Замки, Карта, Рождество).
+(function () {
+  const hint = document.getElementById('rotateHint');
+  const closeBtn = document.getElementById('rotateHintClose');
+  if (!hint || !closeBtn) return;
+  const NAV_VIEWS = ['view-guide', 'view-castles', 'view-map', 'view-christmas'];
+  let dismissed = false;
+
+  function isLandscapePhone() {
+    return window.matchMedia('(orientation: landscape)').matches && window.innerHeight <= 500;
+  }
+  function splashVisible() {
+    const s = document.getElementById('splash');
+    if (!s) return false;
+    const cs = getComputedStyle(s);
+    return cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > 0;
+  }
+  function navViewActive() {
+    const v = document.querySelector('.view.active');
+    return !!v && NAV_VIEWS.indexOf(v.id) !== -1;
+  }
+  function update() {
+    const show = !dismissed && isLandscapePhone() && !splashVisible() && navViewActive();
+    hint.classList.toggle('show', show);
+  }
+  function dismiss() {
+    dismissed = true;
+    hint.classList.remove('show');
+  }
+  closeBtn.addEventListener('click', dismiss);
+  window.addEventListener('resize', update);
+  window.addEventListener('orientationchange', update);
+  // Смена экрана или выход из заставки происходит кликом — проверяем после перерисовки
+  document.addEventListener('click', function () { setTimeout(update, 700); }, true);
+  update();
+})();
 </script>
 </body>
 </html>

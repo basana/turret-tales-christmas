@@ -101,7 +101,8 @@
   .xmas-gps-save, .xmas-gps-clear { margin: 8px 0; padding: 8px 12px; border-radius: 999px; border: 1px solid #7A1026; background: transparent; color: #7A1026; cursor: pointer; font-family: var(--sans); }
   .xmas-gps-depart { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
   .xmas-lock { color: var(--terracotta); font-size: 11px; }
-  .xmas-berth { background: #1f4e79; color: #fff; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.45); transform: translate(-50%, -50%); }
+  .xmas-berth { display: flex; align-items: center; gap: 6px; background: #fff; color: #222; border: 2px solid var(--bc, #1F4E79); border-radius: 999px; padding: 2px 9px 2px 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
+  .xmas-berth-letter { width: 24px; height: 24px; border-radius: 50%; background: var(--bc, #1F4E79); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex: 0 0 auto; }
   .xmas-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
   .xmas-chip { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 14px; }
   .xmas-chip.active { background: #7A1026; color: #fff; }
@@ -2440,6 +2441,14 @@ function xmasDrawMap(opts) {
 // Koblenz: KD 1 am Deutschen Eck (Kaiser-Wilhelm-Denkmal). Punkt ungefähr, genaue Koordinaten nachtragen.
 // Причалы: co = компания, name = адрес, ll = [lat, lng] или null (пока без точки на карте).
 // Майнц (Rheinstreet 68, Viking) и Кауб (Rheinuferstreet 6, Viking) пока без страницы города.
+// Значки причалов: одна буква и свой цвет у каждой компании (рыночные метки — красные, для различения)
+const XMAS_COMPANY_STYLE = {
+  Viking: { bg: '#1F4E79', letter: 'V' },
+  KD:     { bg: '#B8860B', letter: 'K' }
+};
+function xmasCompanyStyle(co) {
+  return XMAS_COMPANY_STYLE[co] || { bg: '#555555', letter: (co || '?').charAt(0).toUpperCase() };
+}
 const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer 81', ll: [50.3616, 7.6000] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
 
 const XG = {
@@ -2496,7 +2505,7 @@ function xmasDrawGpsLayers() {
   if (!xmasMapObj || typeof L === 'undefined') return;
   xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
   xmasBerthList().forEach(b => {
-    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: `<div class="xmas-berth">⚓ ${b.co} PIER</div>`, iconSize: null, iconAnchor: [0, 0] }) })
+    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: `<div class="xmas-berth" style="--bc:${xmasCompanyStyle(b.co).bg}"><span class="xmas-berth-letter">${xmasCompanyStyle(b.co).letter}</span>${b.co} PIER</div>`, iconSize: null, iconAnchor: [0, 0] }) })
       .bindTooltip(`${b.co} PIER: ${b.name}`).addTo(xmasMapObj));
   });
   if (xmasGpsPos) {

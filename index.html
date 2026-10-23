@@ -318,6 +318,7 @@
     border-radius: 12px; padding: 10px 6px; cursor: pointer; color: var(--ql-color, var(--ink));
   }
   .quick-link-icon { font-size: 21px; line-height: 1; }
+  img.quick-link-icon { width: 40px; height: 40px; object-fit: contain; display: block; }
   .quick-link-label { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.15; }
 
   /* Всплывающее окно с содержимым пункта (Экскурсии / Контакты / Обо мне) */
@@ -1017,27 +1018,27 @@
            не нужно листать/угадывать, что есть в приложении -->
       <div class="quick-links" id="quickLinks">
         <button class="quick-link" id="qlLocations" style="--ql-color:#C08A2E">
-          <span class="quick-link-icon">📍</span>
+          <img class="quick-link-icon" src="icon-castles.png" alt="">
           <span class="quick-link-label" id="qlLocationsLabel">Castles</span>
         </button>
         <button class="quick-link" id="qlMap" style="--ql-color:#3a6ea5">
-          <span class="quick-link-icon">🗺️</span>
+          <img class="quick-link-icon" src="icon-map.png" alt="">
           <span class="quick-link-label" id="qlMapLabel">Map</span>
         </button>
         <button class="quick-link" id="qlInfo" style="--ql-color:#4A6B4E">
-          <span class="quick-link-icon">📖</span>
+          <img class="quick-link-icon" src="icon-info.png" alt="">
           <span class="quick-link-label" id="qlInfoLabel">Facts</span>
         </button>
         <button class="quick-link" id="qlTours" style="--ql-color:#B5602E">
-          <span class="quick-link-icon">🧭</span>
+          <img class="quick-link-icon" src="icon-tours.png" alt="">
           <span class="quick-link-label" id="qlToursLabel">Tours</span>
         </button>
         <button class="quick-link" id="qlContact" style="--ql-color:#A83232">
-          <span class="quick-link-icon">✉️</span>
+          <img class="quick-link-icon" src="icon-contact.png" alt="">
           <span class="quick-link-label" id="qlContactLabel">Contact</span>
         </button>
         <button class="quick-link" id="qlAbout" style="--ql-color:#7B4B8A">
-          <span class="quick-link-icon">👤</span>
+          <img class="quick-link-icon" src="icon-about.png" alt="">
           <span class="quick-link-label" id="qlAboutLabel">About me</span>
         </button>
       </div>

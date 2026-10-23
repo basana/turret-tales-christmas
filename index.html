@@ -150,6 +150,9 @@
   .tab.tab-xmas-light { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
+  .xmas-dot-angel, .xmas-pin-angel { background: #B8860B !important; border-color: #fff; }
+  .xmas-dot-angel { font-size: 16px; }
+  .xmas-pin-angel { font-size: 18px; }
   .xmas-dot { width: 28px; height: 28px; border-radius: 50%; background: #7A1026; border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; transform: translate(-50%, -50%); }
   .xmas-pin { background: #7A1026; color: #fff; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
   .xmas-pin-town { width: auto; height: auto; border-radius: 999px; padding: 4px 10px; line-height: 1.3; white-space: nowrap; font-size: 13px; transform: translate(-50%, -50%); }
@@ -1916,6 +1919,12 @@ const XMAS_CITY = {
     "intro": "Koblenz im Advent. Hütten auf sieben Plätzen und der größte Adventskalender am Rathaus. Die Altstadt leuchtet. Auf den Plätzen stehen Holzhütten, und es riecht nach Glühwein. Die Märkte liegen nah beieinander, man kann sie zu Fuß in einem Rundgang besuchen.",
     "cards": [
      {
+      "title": "Schängelbar (Willi-Hörter-Platz 5)",
+      "place": "Engel-Pavillons und Glühwein vom Winzer",
+      "text": "Die Schängelbar ist etwas ganz Besonderes. Hier schenken die Winzer aus der Region Glühwein aus ihrem eigenen Wein aus. Die Pavillons sind mit barocken Engeln geschmückt. Im Rathaushof gibt es außerdem eine Krippe.",
+      "photo": "koblenz-hoerter"
+     },
+     {
       "title": "Jesuitenplatz",
       "place": "Altstadt, Start des Rundgangs",
       "text": "Hier beginnt die Altstadt. Am Rathaus hängt ein Adventskalender: Jeden Abend öffnet sich ein Türchen.",
@@ -1938,12 +1947,6 @@ const XMAS_CITY = {
       "place": "Größter und lebendigster Platz",
       "text": "Hier stehen die meisten Stände und hier gibt es das meiste zu essen. Am Abend ist es hier am vollsten.",
       "photo": "koblenz-muenzplatz"
-     },
-     {
-      "title": "Schängelbar (Willi-Hörter-Platz 5)",
-      "place": "Engel-Pavillons und Glühwein vom Winzer",
-      "text": "Die Schängelbar ist etwas ganz Besonderes. Hier schenken die Winzer aus der Region Glühwein aus ihrem eigenen Wein aus. Die Pavillons sind mit barocken Engeln geschmückt. Im Rathaushof gibt es außerdem eine Krippe.",
-      "photo": "koblenz-hoerter"
      },
      {
       "title": "Zentralplatz",
@@ -1977,6 +1980,12 @@ const XMAS_CITY = {
     "intro": "Coblence en Avent. Chalets sur sept places et le plus grand calendrier de l’Avent à l’hôtel de ville. La vieille ville brille. Sur les places, des chalets en bois et une odeur de vin chaud. Les marchés sont proches les uns des autres, on peut les faire à pied.",
     "cards": [
      {
+      "title": "Willi-Hörter-Platz et Rathaushof",
+      "place": "Vin chaud et crèche",
+      "text": "Un bar à vin chaud et une crèche. Un endroit calme pour se réchauffer.",
+      "photo": "koblenz-hoerter"
+     },
+     {
       "title": "Jesuitenplatz",
       "place": "Vieille ville, départ du parcours",
       "text": "Ici commence la vieille ville. Au calendrier de l'Avent, à l'hôtel de ville, une petite porte s'ouvre chaque soir.",
@@ -1999,12 +2008,6 @@ const XMAS_CITY = {
       "place": "La plus grande et la plus animée",
       "text": "C'est ici que se trouvent la plupart des stands et la plupart des choses à manger. Le soir, c'est là qu'il y a le plus de monde.",
       "photo": "koblenz-muenzplatz"
-     },
-     {
-      "title": "Willi-Hörter-Platz et Rathaushof",
-      "place": "Vin chaud et crèche",
-      "text": "Un bar à vin chaud et une crèche. Un endroit calme pour se réchauffer.",
-      "photo": "koblenz-hoerter"
      },
      {
       "title": "Zentralplatz",
@@ -2038,6 +2041,12 @@ const XMAS_CITY = {
     "intro": "Koblenz in de advent. Kraampjes op zeven pleinen en het grootste adventskalender aan het stadhuis. De oude stad schittert. Op de pleinen staan houten kraampjes en het ruikt naar glühwein. De markten liggen dicht bij elkaar, je kunt ze te voet bezoeken.",
     "cards": [
      {
+      "title": "Willi-Hörter-Platz en Rathaushof",
+      "place": "Glühwein en kerststal",
+      "text": "Een glühweinbar en een kerststal. Een rustige plek om op te warmen.",
+      "photo": "koblenz-hoerter"
+     },
+     {
       "title": "Jesuitenplatz",
       "place": "Oude stad, start van de route",
       "text": "Hier begint de oude stad. Aan het stadhuis hangt een adventskalender: elke avond gaat er een deurtje open.",
@@ -2060,12 +2069,6 @@ const XMAS_CITY = {
       "place": "Het grootste en levendigste plein",
       "text": "Hier staan de meeste kraampjes en hier is het meeste te eten. 's Avonds is het hier het drukst.",
       "photo": "koblenz-muenzplatz"
-     },
-     {
-      "title": "Willi-Hörter-Platz en Rathaushof",
-      "place": "Glühwein en kerststal",
-      "text": "Een glühweinbar en een kerststal. Een rustige plek om op te warmen.",
-      "photo": "koblenz-hoerter"
      },
      {
       "title": "Zentralplatz",
@@ -2099,6 +2102,12 @@ const XMAS_CITY = {
     "intro": "Koblenz in Advent. Huts on seven squares and the largest Advent calendar on the town hall. The old town glows. Wooden huts stand on the squares, and it smells of mulled wine. The markets are close together, so you can visit them on foot.",
     "cards": [
      {
+      "title": "Schängelbar (Willi-Hörter-Platz 5)",
+      "place": "Angel pavilions and mulled wine",
+      "text": "The Schängelbar is something special in Koblenz. Local winegrowers serve mulled wine made from their own wine. The pavilions are decorated with baroque angels. The town hall courtyard has a nativity scene.",
+      "photo": "koblenz-hoerter"
+     },
+     {
       "title": "Jesuit Square (Jesuitenplatz)",
       "place": "Old town, start of the walk",
       "text": "Here the old town begins. On the town hall there is an Advent calendar: every evening one little door opens.",
@@ -2121,12 +2130,6 @@ const XMAS_CITY = {
       "place": "The largest and liveliest square",
       "text": "Most of the stalls and most of the food are here. In the evening it is busiest here.",
       "photo": "koblenz-muenzplatz"
-     },
-     {
-      "title": "Schängelbar (Willi-Hörter-Platz 5)",
-      "place": "Angel pavilions and mulled wine",
-      "text": "The Schängelbar is something special in Koblenz. Local winegrowers serve mulled wine made from their own wine. The pavilions are decorated with baroque angels. The town hall courtyard has a nativity scene.",
-      "photo": "koblenz-hoerter"
      },
      {
       "title": "Central Square (Zentralplatz)",
@@ -2160,6 +2163,12 @@ const XMAS_CITY = {
     "intro": "Кобленц в Адвенте. Домики на семи площадях и крупнейший адвент-календарь на ратуше. Старый город сияет. На площадях стоят деревянные домики, пахнет глинтвейном. Рынки стоят недалеко друг от друга, их можно обойти пешком.",
     "cards": [
      {
+      "title": "Schängelbar (Willi-Hörter-Platz 5)",
+      "place": "Ангельские павильоны и глинтвейн",
+      "text": "Schängelbar — особенный рынок Кобленца. Местные виноделы предлагают глинтвейн из настоящего вина собственного производства. Павильоны украшены барочными ангелами. Во дворе ратуши есть рождественский вертеп.",
+      "photo": "koblenz-hoerter"
+     },
+     {
       "title": "Иезуитская площадь (Jesuitenplatz)",
       "place": "Старый город, начало маршрута",
       "text": "Здесь начинается старый город. На ратуше висит адвент-календарь: каждый вечер открывается одна дверца.",
@@ -2182,12 +2191,6 @@ const XMAS_CITY = {
       "place": "Самая большая и оживлённая площадь",
       "text": "Здесь больше всего ларьков и больше всего еды. Вечером здесь самое людное место.",
       "photo": "koblenz-muenzplatz"
-     },
-     {
-      "title": "Schängelbar (Willi-Hörter-Platz 5)",
-      "place": "Ангельские павильоны и глинтвейн",
-      "text": "Schängelbar — особенный рынок Кобленца. Местные виноделы предлагают глинтвейн из настоящего вина собственного производства. Павильоны украшены барочными ангелами. Во дворе ратуши есть рождественский вертеп.",
-      "photo": "koblenz-hoerter"
      },
      {
       "title": "Центральная площадь (Zentralplatz)",
@@ -2439,13 +2442,15 @@ function openXmasHome() { document.body.classList.remove('station-open'); switch
 const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’accueil', nl: '← Terug naar start', en: '← Back to start', ru: '← На главный экран' };
 // Koordinaten: Stadtmitte und Marktplätze. ANNÄHERUNG, vor Veröffentlichung auf der Karte prüfen.
 const XMAS_GEO = {
-  koblenz:   {center:[50.36012,7.59728], zoom:15, pins:[[50.360611,7.598306],[50.36041,7.59506],[50.35988,7.60123],[50.35991,7.59612],[50.36011,7.59836],[50.35879,7.59651],[50.36111,7.59537]]},
+  koblenz:   {center:[50.36012,7.59728], zoom:15, pins:[[50.36011,7.59836],[50.360611,7.598306],[50.36041,7.59506],[50.35988,7.60123],[50.35991,7.59612],[50.35879,7.59651],[50.36111,7.59537]]},
   oberwesel: {center:[50.1985,7.7253], zoom:16, pins:[[50.1985,7.7253]]},
   boppard:   {center:[50.2281,7.5858], zoom:16, pins:[[50.2281,7.5858]]},
   bacharach: {center:[50.0572,7.7790], zoom:16, pins:[[50.0572,7.7790]]},
   lahnstein: {center:[50.3000,7.5950], zoom:15, pins:[[50.3000,7.5950]]},
   ruedesheim: {center:[49.9913,7.9163], zoom:16, pins:[[49.9913,7.9163]]}
 };
+// Рынок с особым значком (ангел): город → индекс точки в XMAS_GEO и карточке в XMAS_CITY (Schängelbar — первый)
+const XMAS_ANGEL_PIN = { koblenz: 0 };
 let xmasMapObj = null;
 
 function xmasDrawMap(opts) {
@@ -2691,9 +2696,9 @@ function renderChristmas(townKey) {
         onClick: () => renderChristmas(k)
       })).concat(
         // Точки самих рынков — видны и при приближении (например, в Кобленце)
-        keys.flatMap(k => XMAS_GEO[k].pins.map(ll => ({
+        keys.flatMap(k => XMAS_GEO[k].pins.map((ll, i) => ({
           ll,
-          html: '<div class="xmas-dot">🎄</div>',
+          html: XMAS_ANGEL_PIN[k] === i ? '<div class="xmas-dot xmas-dot-angel">👼</div>' : '<div class="xmas-dot">🎄</div>',
           anchor: [0, 0],
           onClick: () => renderChristmas(k)
         })))
@@ -2703,7 +2708,7 @@ function renderChristmas(townKey) {
     const g = XMAS_GEO[xmasTown];
     xmasDrawMap({
       center: g.center, zoom: g.zoom,
-      pins: g.pins.map((ll, i) => ({ ll, html: `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
+      pins: g.pins.map((ll, i) => ({ ll, html: XMAS_ANGEL_PIN[xmasTown] === i ? '<div class="xmas-pin xmas-pin-angel">👼</div>' : `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
     });
   }
 }

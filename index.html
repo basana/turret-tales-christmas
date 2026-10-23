@@ -157,8 +157,8 @@
   .xmas-hero { position: relative; }
   .xmas-hero-caption {
     position: absolute; right: 0; bottom: 0; background: #7A1026; color: #fff;
-    font-family: var(--sans); font-size: 12px; font-weight: 600; line-height: 1.2;
-    padding: 6px 12px; border-radius: 10px 0 0 0; text-align: right;
+    font-family: var(--sans); font-size: 11px; font-weight: 600; line-height: 1.2;
+    padding: 4px 9px; border-radius: 8px 0 0 0; text-align: right; max-width: 85%;
   }
   /* Значок ангела (schaengel-angel.svg) для Schängelbar: вместо 🎄 на обзорной карте и вместо номера в городе */
   .xmas-dot-angel, .xmas-pin-angel { display: block; width: 36px; height: 36px; transform: translate(-50%, -50%); filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5)); }
@@ -2436,6 +2436,18 @@ let xmasLang = (function() {
 })();
 let xmasTown = 'koblenz'; // null = Übersicht
 const XMAS_LANG_LABELS = {de:'DE', fr:'FR', nl:'NL', en:'EN', ru:'RU'};
+// Подпись на красной плашке главного рождественского фото — на языке раздела
+const XMAS_HERO_CAPTION = {
+  de: 'Weihnachtsmarkt Koblenz, Zentralplatz',
+  fr: 'Marché de Noël Coblence, Zentralplatz',
+  nl: 'Kerstmarkt Koblenz, Zentralplatz',
+  en: 'Christmas Market Koblenz, Zentralplatz',
+  ru: 'Рождественский рынок Кобленц, Zentralplatz'
+};
+function xmasHeroCaption() {
+  const el = document.querySelector('.xmas-hero-caption');
+  if (el) el.textContent = XMAS_HERO_CAPTION[xmasLang] || XMAS_HERO_CAPTION.de;
+}
 
 function xmasTownFromStation() {
   const st = (typeof castles !== 'undefined' && castles[index]) ? castles[index] : null;
@@ -2646,6 +2658,7 @@ function renderChristmas(townKey) {
   const el = document.getElementById('view-christmas');
   if (!el) return;
   const T_ = (o) => o[xmasLang] || o.de;
+  xmasHeroCaption();
   const langBtns = Object.keys(XMAS_LANG_LABELS).map(k =>
     `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта' }[xmasLang] || 'Map';
@@ -3035,6 +3048,7 @@ function renderQuickLinksText() {
   xmasSyncLangFromApp();
   xmasSpeechRender();
   setLbl('qlChristmasLabel', lang === 'ru' ? 'Рождественские рынки' : 'Christmas markets');
+  xmasHeroCaption();
   const xh = lang === 'ru' ? ['Рождественские рынки Среднего Рейна', 'Общая карта →', 'Рождественский рынок Кобленц →'] : ['Christmas markets Middle Rhine', 'Map of all markets →', 'Christmas market Koblenz →'];
   setLbl('xmasHomeTitle', xh[0]); setLbl('xmasHomeSub', xh[1]); setLbl('xmasHomeKoblenzLabel', xh[2]);
   setLbl('qlToursLabel', t.qlTours);

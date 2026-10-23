@@ -2673,7 +2673,7 @@ function renderChristmas(townKey) {
   } else {
     const c = XMAS_CITY[xmasTown];
     const TX = T_(c.text);
-    body = `<h2 class="xmas-title">${TX.title}</h2><p class="xmas-intro">${TX.intro}</p>` + mapHtml +
+    body = `<h2 class="xmas-title">${TX.title}</h2>` + mapHtml + `<p class="xmas-intro">${TX.intro}</p>` +
       TX.cards.map((k, i) => `
         <div class="route-card xmas-card" id="xmasCard${i}">
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>

@@ -155,6 +155,7 @@
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
   /* Красная плашка с подписью на главном рождественском фото (звезда, Zentralplatz) */
   .xmas-hero { position: relative; }
+  .xmas-pin-count { display: inline-block; margin-left: 5px; min-width: 16px; padding: 0 4px; border-radius: 9px; background: #fff; color: #7A1026; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; }
   .leaflet-tooltip.xmas-pin-label { font-size: 8px; font-weight: 400; padding: 1px 4px; line-height: 1.2; background: rgba(255,255,255,.85); border: none; box-shadow: none; color: #3a2a1a; }
   .xmas-hero-caption {
     position: absolute; right: 0; bottom: 0; background: #7A1026; color: #fff;
@@ -2729,7 +2730,7 @@ function renderChristmas(townKey) {
       bounds: keys.map(k => XMAS_GEO[k].center),
       pins: keys.map(k => ({
         ll: XMAS_GEO[k].center,
-        html: `<div class="xmas-pin xmas-pin-town">${T_(XMAS_CITY[k].name)}</div>`,
+        html: `<div class="xmas-pin xmas-pin-town">${T_(XMAS_CITY[k].name)}${XMAS_GEO[k].pins.length > 1 ? `<span class="xmas-pin-count">${XMAS_GEO[k].pins.length}</span>` : ''}</div>`,
         anchor: [0, 0],
         onClick: () => renderChristmas(k)
       })).concat(

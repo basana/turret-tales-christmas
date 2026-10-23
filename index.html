@@ -141,8 +141,7 @@
   .xmas-home-langs { display: flex; justify-content: center; gap: 6px; margin-bottom: 14px; }
   .xmas-home-langs button { padding: 4px 11px; border-radius: 14px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-size: 12px; font-weight: 700; cursor: pointer; }
   .xmas-home-langs button.active { background: #7A1026; color: #fff; }
-  body:not(.xmas-on) .xmas-splash-langs { display: none !important; }
-  .xmas-splash-langs { margin-top: 14px; display: flex; justify-content: center; gap: 6px; }
+  body:not(.xmas-on) .splash-lang-xmas { display: none !important; }
   .xmas-home-title, .xmas-home-koblenz { width: 100%; border-radius: 12px; cursor: pointer; font-family: var(--sans); font-weight: 700; text-align: center; padding: 14px 12px; }
   .xmas-home-title { border: 0; background: #7A1026; color: #F4EAD5; font-size: 17px; }
   .xmas-home-sub { display: block; font-size: 13px; font-weight: 400; opacity: 0.9; margin-top: 4px; }
@@ -893,6 +892,9 @@
   </div>
   <div class="splash-lang">
     <span class="splash-lang-btn" data-lang="en">EN</span>
+    <span class="splash-lang-btn splash-lang-xmas" data-xh="de">DE</span>
+    <span class="splash-lang-btn splash-lang-xmas" data-xh="fr">FR</span>
+    <span class="splash-lang-btn splash-lang-xmas" data-xh="nl">NL</span>
     <span class="splash-lang-btn" data-lang="ru">RU</span>
   </div>
   <div class="splash-content">
@@ -900,7 +902,6 @@
     <h1 class="splash-title" id="splashTitle">Your Pace.<br>Your Story.<br>Your Rhine.</h1>
     <p class="splash-tagline" id="splashTagline">Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.</p>
     <button class="splash-enter" id="splashEnter"><span id="splashEnterLabel">Begin the Journey</span> →</button>
-    <div class="xmas-home-langs xmas-splash-langs"><button data-xh="en">EN</button><button data-xh="de">DE</button><button data-xh="fr">FR</button><button data-xh="nl">NL</button><button data-xh="ru">RU</button></div>
   </div>
 </div>
 
@@ -2446,12 +2447,29 @@ const XMAS_HOME = {
   en: ['Christmas markets Middle Rhine', 'Map of all markets →', 'Christmas market Koblenz →'],
   ru: ['Рождественские рынки Среднего Рейна', 'Общая карта →', 'Рождественский рынок Кобленц →'],
 };
+const XMAS_SPLASH = {
+  de: ['Weihnachtsmärkte · Mittelrhein', 'Ihr Tempo.<br>Ihre Geschichte.<br>Ihr Rhein.', 'Burgen, Sagen und Weinorte zwischen Koblenz und Bingen —<br>in Ihrem eigenen Rhythmus.', 'Reise beginnen'],
+  fr: ['Marchés de Noël · Rhin moyen', 'Votre rythme.<br>Votre histoire.<br>Votre Rhin.', 'Châteaux, légendes et villages viticoles entre Coblence et Bingen —<br>à votre rythme.', 'Commencer le voyage'],
+  nl: ['Kerstmarkten · Middenrijn', 'Uw tempo.<br>Uw verhaal.<br>Uw Rijn.', 'Kastelen, legenden en wijndorpen tussen Koblenz en Bingen —<br>in uw eigen tempo.', 'Begin de reis'],
+  en: ['Christmas markets · Middle Rhine', 'Your Pace.<br>Your Story.<br>Your Rhine.', 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.', 'Begin the Journey'],
+  ru: ['Рождественские рынки · Средний Рейн', 'Твой темп.<br>Твоя история.<br>Твой Рейн.', 'Замки, легенды и винодельческие городки<br>между Кобленцем и Бингеном — в твоём ритме.', 'Начать путешествие'],
+};
+function applyXmasSplash() {
+  if (!document.body.classList.contains('xmas-on')) return;
+  const sp = XMAS_SPLASH[xmasLang] || XMAS_SPLASH.en;
+  const set = (id, fn) => { const el = document.getElementById(id); if (el) fn(el); };
+  set('splashEyebrow', el => el.textContent = sp[0]);
+  set('splashTitle', el => el.innerHTML = sp[1]);
+  set('splashTagline', el => el.innerHTML = sp[2]);
+  set('splashEnterLabel', el => el.textContent = sp[3]);
+}
 function applyXmasHome() {
   const xh = XMAS_HOME[xmasLang] || XMAS_HOME.en;
   const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
   set('xmasHomeTitle', xh[0]); set('xmasHomeSub', xh[1]); set('xmasHomeKoblenzLabel', xh[2]);
   document.querySelectorAll('[data-xh]').forEach(b => b.classList.toggle('active', b.getAttribute('data-xh') === xmasLang));
   if (typeof xmasHeroCaption === 'function') xmasHeroCaption();
+  applyXmasSplash();
 }
 document.querySelectorAll('[data-xh]').forEach(b => b.addEventListener('click', () => {
   xmasLang = b.getAttribute('data-xh');
@@ -3306,10 +3324,11 @@ function applyStaticText() {
   const sTitle = document.getElementById('splashTitle');
   const sTagline = document.getElementById('splashTagline');
   const sEnter = document.getElementById('splashEnterLabel');
-  if (sEyebrow) sEyebrow.textContent = XMAS_MODE ? (lang === 'ru' ? 'Рождественские рынки · Средний Рейн' : 'Christmas markets · Middle Rhine') : t.splashEyebrow;
+  if (sEyebrow) sEyebrow.textContent = t.splashEyebrow;
   if (sTitle) sTitle.innerHTML = t.splashTitle;
   if (sTagline) sTagline.innerHTML = t.splashTagline;
   if (sEnter) sEnter.textContent = t.splashEnter;
+  applyXmasSplash();
 
   const mapSearchEl = document.getElementById('mapSearchInput');
   if (mapSearchEl) mapSearchEl.placeholder = t.mapSearchPlaceholder;
@@ -3791,10 +3810,14 @@ document.querySelectorAll('.pill-btn[data-lang]').forEach(btn => {
   btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
 });
 
-document.querySelectorAll('.splash-lang-btn').forEach(btn => {
+document.querySelectorAll('.splash-lang-btn[data-lang]').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    setLang(btn.getAttribute('data-lang'));
+    const code = btn.getAttribute('data-lang');
+    xmasLang = code;
+    try { localStorage.setItem('xmasLang', xmasLang); } catch (err) {}
+    applyXmasHome();
+    setLang(code);
   });
 });
 

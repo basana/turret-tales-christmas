@@ -123,7 +123,7 @@
   #view-guide .actions .btn-check { display: none !important; }
   #view-guide .actions .btn-play { flex: 0 1 auto; min-width: 60%; }
   .xmas-speech { display: none; margin: 0 0 16px; padding: 14px 16px; border-radius: 12px; background: #F5ECD6; border: 1px solid #c8a878; font-size: 15px; line-height: 1.55; color: var(--ink); }
-  #view-guide .xmas-speech { display: block; }
+  body.xmas-on #view-guide .xmas-speech { display: block; }
   .xmas-speech p { margin: 0 0 8px; }
   .xmas-speech p:last-child { margin: 0; }
   .xmas-where { margin: 0 0 14px; padding: 14px; border-radius: 12px; background: #F5ECD6; border: 1px solid #c8a878; font-family: var(--sans); }
@@ -1989,9 +1989,9 @@ const XMAS_CITY = {
     "intro": "Coblence en Avent. Chalets sur sept places et le plus grand calendrier de l’Avent à l’hôtel de ville. La vieille ville brille. Sur les places, des chalets en bois et une odeur de vin chaud. Les marchés sont proches les uns des autres, on peut les faire à pied.",
     "cards": [
      {
-      "title": "Willi-Hörter-Platz et Rathaushof",
-      "place": "Vin chaud et crèche",
-      "text": "Un bar à vin chaud et une crèche. Un endroit calme pour se réchauffer.",
+      "title": "Schängelbar (Willi-Hörter-Platz 5)",
+      "place": "Pavillons d'anges et vin chaud du viticulteur",
+      "text": "La Schängelbar est un endroit très particulier. Ici, les viticulteurs de la région servent du vin chaud fait avec leur propre vin. Les pavillons sont décorés d'anges baroques. Dans la cour de l'hôtel de ville, il y a en plus une crèche.",
       "photo": "koblenz-hoerter"
      },
      {
@@ -2031,7 +2031,7 @@ const XMAS_CITY = {
       "photo": "koblenz-liebfrauen"
      },
      {
-      "title": "Forteresse d'Ehrenbreitstein",
+      "title": "Jardin de Noël – Forteresse d'Ehrenbreitstein",
       "place": "Sur la colline au-dessus du Rhin",
       "text": "Le jardin de Noël, avec lumière et son le soir. L'entrée est payante. Depuis le haut, on voit le Rhin et la Moselle.",
       "photo": "koblenz-festung"
@@ -2050,9 +2050,9 @@ const XMAS_CITY = {
     "intro": "Koblenz in de advent. Kraampjes op zeven pleinen en het grootste adventskalender aan het stadhuis. De oude stad schittert. Op de pleinen staan houten kraampjes en het ruikt naar glühwein. De markten liggen dicht bij elkaar, je kunt ze te voet bezoeken.",
     "cards": [
      {
-      "title": "Willi-Hörter-Platz en Rathaushof",
-      "place": "Glühwein en kerststal",
-      "text": "Een glühweinbar en een kerststal. Een rustige plek om op te warmen.",
+      "title": "Schängelbar (Willi-Hörter-Platz 5)",
+      "place": "Engelenpaviljoens en glühwein van de wijnboer",
+      "text": "De Schängelbar is heel bijzonder. Hier schenken de wijnboeren uit de streek glühwein uit hun eigen wijn. De paviljoens zijn versierd met barokke engelen. In de binnenplaats van het stadhuis staat bovendien een kerststal.",
       "photo": "koblenz-hoerter"
      },
      {
@@ -2092,7 +2092,7 @@ const XMAS_CITY = {
       "photo": "koblenz-liebfrauen"
      },
      {
-      "title": "Festung Ehrenbreitstein",
+      "title": "Kerstuin – Festung Ehrenbreitstein",
       "place": "Op de berg boven de Rijn",
       "text": "De kerstuin met licht en geluid in de avond. Toegang is betalend. Van bovenaf zie je de Rijn en de Moezel.",
       "photo": "koblenz-festung"

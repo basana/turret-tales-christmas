@@ -110,6 +110,9 @@
   .xmas-card { margin-bottom: 14px; }
   .xmas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
   .xmas-cell { aspect-ratio: 4 / 3; border: 1.5px dashed #c8a878; border-radius: 10px; background: rgba(245,236,214,0.6); }
+  .xmas-cell-img { position: relative; margin: 0; padding: 0; border: none; overflow: hidden; background: #7A1026; }
+  .xmas-cell-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .xmas-cell-img figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 10px; background: #7A1026; color: #fff; font-family: 'EB Garamond', serif; font-size: 16px; font-weight: 700; text-align: center; }
   .xmas-hero { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #7A1026; color: #F5ECD6; cursor: pointer; }
   .xmas-hero img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
   .xmas-hero-label { display: block; padding: 14px 12px 16px; font-family: 'EB Garamond', serif; font-size: 28px; font-weight: 700; letter-spacing: 0.02em; text-align: center; }
@@ -2338,7 +2341,8 @@ const XMAS_CITY = {
       "title": "Schlender-Advent in der Altstadt",
       "place": "Marktplatz und Altstadt, 55422",
       "text": "Ca. 30 geschmückte Stände, Burg Stahleck, Altstadtbeleuchtung, Chöre und Blasmusik. Dazu Bacharacher Riesling.",
-      "photo": "bacharach-markt"
+      "photo": "bacharach-markt",
+      "image": "xmas-bacharach.jpg"
      }
     ],
     "practical": "Termin: Sa 05.12. und So 06.12.2026 (2. Advent). Öffnungszeiten folgen."
@@ -2351,7 +2355,8 @@ const XMAS_CITY = {
       "title": "Advent stroll in the old town",
       "place": "Marktplatz and old town, 55422",
       "text": "About 30 decorated stalls, Stahleck Castle, old town lights, choirs and brass bands. Bacharach Riesling on offer.",
-      "photo": "bacharach-markt"
+      "photo": "bacharach-markt",
+      "image": "xmas-bacharach.jpg"
      }
     ],
     "practical": "Dates: Sat 05.12. and Sun 06.12.2026 (2nd Advent). Times to follow."
@@ -2364,7 +2369,8 @@ const XMAS_CITY = {
       "title": "Адвентская прогулка по старому городу",
       "place": "Marktplatz и старый город, 55422",
       "text": "Около 30 украшенных ларьков, замок Штальбек, огни старого города, хоры и духовой оркестр. Бахарахский рислинг.",
-      "photo": "bacharach-markt"
+      "photo": "bacharach-markt",
+      "image": "xmas-bacharach.jpg"
      }
     ],
     "practical": "Даты: сб 05.12. и вс 06.12.2026 (2-е воскресенье Адвента). Часы работы будут позже."
@@ -2660,7 +2666,7 @@ function renderChristmas(townKey) {
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
           <div class="castle-name">${k.title}</div>
           <div class="route-place">${k.place}</div>
-          <div class="xmas-grid" data-photo="${k.photo}"><div class="xmas-cell"></div><div class="xmas-cell"></div></div>
+          <div class="xmas-grid" data-photo="${k.photo}">${k.image ? `<figure class="xmas-cell xmas-cell-img"><img src="${k.image}" alt=""><figcaption>Bacharach</figcaption></figure>` : '<div class="xmas-cell"></div>'}<div class="xmas-cell"></div></div>
           <p style="margin:6px 0;">${k.text}</p>
         </div>`).join('') +
       `<div class="xmas-block xmas-small">${TX.practical}</div>`;

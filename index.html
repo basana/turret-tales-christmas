@@ -2524,6 +2524,7 @@ function xmasDrawMap(opts) {
   xmasMapObj = L.map(el, { scrollWheelZoom: false });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
   if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [30, 30] });
+  else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [4, 4], maxZoom: opts.zoom });
   else xmasMapObj.setView(opts.center, opts.zoom);
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);

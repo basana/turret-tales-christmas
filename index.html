@@ -155,6 +155,7 @@
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
   /* Красная плашка с подписью на главном рождественском фото (звезда, Zentralplatz) */
   .xmas-hero { position: relative; }
+  .leaflet-tooltip.xmas-pin-label { font-size: 8px; font-weight: 400; padding: 1px 4px; line-height: 1.2; background: rgba(255,255,255,.85); border: none; box-shadow: none; color: #3a2a1a; }
   .xmas-hero-caption {
     position: absolute; right: 0; bottom: 0; background: #7A1026; color: #fff;
     font-family: var(--sans); font-size: 7px; font-weight: 400; line-height: 1.2;
@@ -2430,6 +2431,17 @@ XMAS_CITY.ruedesheim = {"name": {"de": "Rüdesheim", "en": "Rüdesheim", "fr": "
 const XMAS_TOWN = {"Koblenz": "koblenz", "Oberwesel": "oberwesel", "Boppard": "boppard", "Bacharach": "bacharach", "Lahnstein": "lahnstein", "Rüdesheim": "ruedesheim"};
 
 const XMAS_OVERVIEW = {de:'Wählen Sie einen Markt.', fr:'Choisissez un marché.', nl:'Kies een markt.', en:'Choose a market.', ru:'Выберите рынок.'};
+const XMAS_PHOTOS = {
+  'koblenz-hoerter': ['koblenz-hoerter-1.webp','koblenz-hoerter-2.webp','koblenz-hoerter-3.webp'],
+  'koblenz-jesuitenplatz': ['koblenz-jesuitenplatz-1.webp'],
+  'koblenz-am-plan': ['koblenz-am-plan-1.webp'],
+  'koblenz-goerresplatz': ['koblenz-goerresplatz-1.webp','koblenz-goerresplatz-2.webp'],
+  'koblenz-muenzplatz': ['koblenz-muenzplatz-1.webp','koblenz-muenzplatz-2.webp'],
+  'koblenz-zentralplatz': ['koblenz-zentralplatz-1.webp','koblenz-zentralplatz-2.webp'],
+  'koblenz-liebfrauen': ['koblenz-liebfrauen-1.webp'],
+  'koblenz-festung': ['ehrenbreitstein-xmas-1.webp','ehrenbreitstein-xmas-2.webp','ehrenbreitstein-xmas-3.webp','ehrenbreitstein-xmas-4.webp','ehrenbreitstein-xmas-5.webp','ehrenbreitstein-xmas-6.webp'],
+  'lahnstein-markt': ['lahnstein-markt-1.webp','lahnstein-markt-2.webp'],
+};
 let xmasLang = (function() {
   try { const s = localStorage.getItem('xmasLang'); if (s && ['de','fr','nl','en','ru'].includes(s)) return s; } catch (e) {}
   return (typeof lang !== 'undefined' && lang === 'ru') ? 'ru' : 'en';
@@ -2488,6 +2500,7 @@ function xmasDrawMap(opts) {
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
     if (p.onClick) m.on('click', p.onClick);
+    if (p.label) m.bindTooltip(String(p.label).split(' (')[0], { permanent: true, direction: 'bottom', offset: [0, 10], className: 'xmas-pin-label' });
   });
   xmasDrawGpsLayers();
   setTimeout(() => xmasMapObj && xmasMapObj.invalidateSize(), 60);
@@ -2679,7 +2692,7 @@ function renderChristmas(townKey) {
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
           <div class="castle-name">${k.title}</div>
           <div class="route-place">${k.place}</div>
-          <div class="xmas-grid" data-photo="${k.photo}">${k.image ? `<figure class="xmas-cell xmas-cell-img"><img src="${k.image}" alt=""><figcaption>Bacharach</figcaption></figure>` : '<div class="xmas-cell"></div>'}<div class="xmas-cell"></div></div>
+          <div class="xmas-grid" data-photo="${k.photo}">${(XMAS_PHOTOS[k.photo] || []).map(f => `<figure class="xmas-cell xmas-cell-img"><img src="${f}" alt="" loading="lazy"></figure>`).join('')}</div>
           <p style="margin:6px 0;">${k.text}</p>
         </div>`).join('') +
       `<div class="xmas-block xmas-small">${TX.practical}</div>`;
@@ -2733,7 +2746,7 @@ function renderChristmas(townKey) {
     const g = XMAS_GEO[xmasTown];
     xmasDrawMap({
       center: g.center, zoom: g.zoom,
-      pins: g.pins.map((ll, i) => ({ ll, html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' :`<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
+      pins: g.pins.map((ll, i) => ({ ll, label: (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.de).cards[i] && (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.de).cards[i].title, html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' :`<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
     });
   }
 }

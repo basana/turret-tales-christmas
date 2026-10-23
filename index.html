@@ -138,6 +138,9 @@
   body:not(.xmas-on) .xmas-hero, body:not(.xmas-on) .xmas-home, body:not(.xmas-on) .xmas-where { display: none !important; }
   body.xmas-on .xmas-where, body.xmas-on .xmas-hero-label { display: none !important; }
   .xmas-home { display: flex; flex-direction: column; gap: 10px; margin: 0 0 16px; }
+  .xmas-home-langs { display: flex; justify-content: center; gap: 6px; margin-bottom: 2px; }
+  .xmas-home-langs button { padding: 4px 11px; border-radius: 14px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-size: 12px; font-weight: 700; cursor: pointer; }
+  .xmas-home-langs button.active { background: #7A1026; color: #fff; }
   .xmas-home-title, .xmas-home-koblenz { width: 100%; border-radius: 12px; cursor: pointer; font-family: var(--sans); font-weight: 700; text-align: center; padding: 14px 12px; }
   .xmas-home-title { border: 0; background: #7A1026; color: #F4EAD5; font-size: 17px; }
   .xmas-home-sub { display: block; font-size: 13px; font-weight: 400; opacity: 0.9; margin-top: 4px; }
@@ -998,6 +1001,7 @@
     <div class="view active" id="view-guide">
       <button class="xmas-hero" id="qlChristmas"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
       <div class="xmas-home" id="xmasHome">
+        <div class="xmas-home-langs" id="xmasHomeLangs"><button data-xh="de">DE</button><button data-xh="fr">FR</button><button data-xh="nl">NL</button><button data-xh="en">EN</button><button data-xh="ru">RU</button></div>
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
         <button class="xmas-home-koblenz" id="xmasHomeKoblenz"><span id="xmasHomeKoblenzLabel">Christmas market Koblenz →</span></button>
       </div>
@@ -2432,6 +2436,25 @@ const XMAS_CITY = {
 XMAS_CITY.ruedesheim = {"name": {"de": "Rüdesheim", "en": "Rüdesheim", "fr": "Rüdesheim", "nl": "Rüdesheim", "ru": "Рюдесхайм"}, "text": {"de": {"title": "Weihnachtsmarkt Rüdesheim", "intro": "Der Markt der Nationen mit internationalen Traditionen.", "cards": [{"title": "Markt der Nationen", "place": "Rüdesheim am Rhein", "text": "Internationale Traditionen und Stände aus vielen Ländern.", "photo": "ruedesheim-markt"}], "practical": "Termin: 19.11.–23.12.2026. Öffnung täglich 11–20 Uhr, am Wochenende bis 21 Uhr. Keine Schließtage."}, "en": {"title": "Rüdesheim Christmas market", "intro": "The Market of Nations with international traditions.", "cards": [{"title": "Market of Nations", "place": "Rüdesheim am Rhein", "text": "International traditions and stalls from many countries.", "photo": "ruedesheim-markt"}], "practical": "Dates: 19 Nov – 23 Dec 2026. Open daily 11:00–20:00, weekends until 21:00. No closing days."}, "fr": {"title": "Marché de Noël de Rüdesheim", "intro": "Le marché des nations, avec des traditions internationales.", "cards": [{"title": "Marché des nations", "place": "Rüdesheim am Rhein", "text": "Traditions internationales et stands venus de nombreux pays.", "photo": "ruedesheim-markt"}], "practical": "Dates : du 19 novembre au 23 décembre 2026. Ouvert tous les jours de 11h à 20h, jusqu’à 21h le week-end. Pas de jours de fermeture."}, "nl": {"title": "Kerstmarkt Rüdesheim", "intro": "De markt der naties met internationale tradities.", "cards": [{"title": "Markt der naties", "place": "Rüdesheim am Rhein", "text": "Internationale tradities en kraampjes uit veel landen.", "photo": "ruedesheim-markt"}], "practical": "Data: 19 november t/m 23 december 2026. Dagelijks open 11–20 uur, in het weekend tot 21 uur. Geen sluitingsdagen."}, "ru": {"title": "Рождественский рынок в Рюдесхайме", "intro": "Рынок Наций с международными традициями.", "cards": [{"title": "Рынок Наций", "place": "Рюдесхайм-на-Рейне", "text": "Международные традиции и ларьки из многих стран.", "photo": "ruedesheim-markt"}], "practical": "Даты: 19 ноября – 23 декабря 2026. Ежедневно 11–20, по выходным до 21. Без перерывов."}}};
 const XMAS_TOWN = {"Koblenz": "koblenz", "Oberwesel": "oberwesel", "Boppard": "boppard", "Bacharach": "bacharach", "Lahnstein": "lahnstein", "Rüdesheim": "ruedesheim"};
 
+const XMAS_HOME = {
+  de: ['Weihnachtsmärkte am Mittelrhein', 'Übersicht aller Märkte →', 'Weihnachtsmarkt Koblenz →'],
+  fr: ['Marchés de Noël du Rhin moyen', 'Carte de tous les marchés →', 'Marché de Noël de Coblence →'],
+  nl: ['Kerstmarkten Middenrijn', 'Kaart van alle markten →', 'Kerstmarkt Koblenz →'],
+  en: ['Christmas markets Middle Rhine', 'Map of all markets →', 'Christmas market Koblenz →'],
+  ru: ['Рождественские рынки Среднего Рейна', 'Общая карта →', 'Рождественский рынок Кобленц →'],
+};
+function applyXmasHome() {
+  const xh = XMAS_HOME[xmasLang] || XMAS_HOME.en;
+  const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+  set('xmasHomeTitle', xh[0]); set('xmasHomeSub', xh[1]); set('xmasHomeKoblenzLabel', xh[2]);
+  document.querySelectorAll('[data-xh]').forEach(b => b.classList.toggle('active', b.getAttribute('data-xh') === xmasLang));
+  if (typeof xmasHeroCaption === 'function') xmasHeroCaption();
+}
+document.querySelectorAll('[data-xh]').forEach(b => b.addEventListener('click', () => {
+  xmasLang = b.getAttribute('data-xh');
+  try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
+  applyXmasHome();
+}));
 const XMAS_OVERVIEW = {de:'Wählen Sie einen Markt.', fr:'Choisissez un marché.', nl:'Kies een markt.', en:'Choose a market.', ru:'Выберите рынок.'};
 const XMAS_PHOTOS = {
   'koblenz-hoerter': ['koblenz-hoerter-1.webp','koblenz-hoerter-2.webp','koblenz-hoerter-3.webp'],
@@ -3064,8 +3087,7 @@ function renderQuickLinksText() {
   xmasSpeechRender();
   setLbl('qlChristmasLabel', lang === 'ru' ? 'Рождественские рынки' : 'Christmas markets');
   xmasHeroCaption();
-  const xh = lang === 'ru' ? ['Рождественские рынки Среднего Рейна', 'Общая карта →', 'Рождественский рынок Кобленц →'] : ['Christmas markets Middle Rhine', 'Map of all markets →', 'Christmas market Koblenz →'];
-  setLbl('xmasHomeTitle', xh[0]); setLbl('xmasHomeSub', xh[1]); setLbl('xmasHomeKoblenzLabel', xh[2]);
+  applyXmasHome();
   setLbl('qlToursLabel', t.qlTours);
   setLbl('qlContactLabel', t.qlContact);
   setLbl('qlAboutLabel', t.qlAbout);

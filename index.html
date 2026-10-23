@@ -135,7 +135,7 @@
   .xmas-town-list { display: grid; gap: 10px; margin: 0 0 14px; }
   .xmas-town-list .route-card { margin: 0; }
   .xmas-town-btn { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 14px; cursor: pointer; margin-top: 6px; }
-  body:not(.xmas-on) .xmas-hero, body:not(.xmas-on) .xmas-home, body:not(.xmas-on) .xmas-where { display: none !important; }
+  body:not(.xmas-on) .xmas-hero-wrap, body:not(.xmas-on) .xmas-home, body:not(.xmas-on) .xmas-where { display: none !important; }
   body.xmas-on .xmas-where, body.xmas-on .xmas-hero-label { display: none !important; }
   .xmas-home { display: flex; flex-direction: column; gap: 10px; margin: 0 0 16px; }
   .xmas-home-langs { display: flex; justify-content: center; gap: 6px; margin-bottom: 2px; }
@@ -149,7 +149,7 @@
   body.station-open #view-guide .station-title { display: block !important; }
   body.station-open #view-guide .stats { display: flex !important; }
   body.station-open #view-guide .story-block { display: block !important; }
-  body.station-open #view-guide .xmas-hero, body.station-open #view-guide .xmas-home { display: none !important; }
+  body.station-open #view-guide .xmas-hero-wrap, body.station-open #view-guide .xmas-home { display: none !important; }
   a.castle-card { display: block; color: inherit; text-decoration: none; cursor: pointer; }
   a.station-link { display: inline-block; margin-top: 8px; color: var(--terracotta); font-weight: 700; font-family: var(--sans); text-decoration: none; }
   .tab.tab-xmas { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
@@ -158,6 +158,9 @@
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
   /* Красная плашка с подписью на главном рождественском фото (звезда, Zentralplatz) */
   .xmas-hero { position: relative; }
+  .xmas-hero-wrap { position: relative; margin: 0 0 14px; }
+  .xmas-hero-wrap .xmas-hero { margin: 0; }
+  .xmas-hero-branch { position: absolute; top: -34px; right: -12px; width: 120px; height: auto; pointer-events: none; z-index: 5; opacity: 0.9; }
   .xmas-pin-count { display: inline-block; margin-left: 5px; min-width: 16px; padding: 0 4px; border-radius: 9px; background: #fff; color: #7A1026; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; }
   .leaflet-tooltip.xmas-pin-label { font-size: 8px; font-weight: 400; padding: 1px 4px; line-height: 1.2; background: rgba(255,255,255,.85); border: none; box-shadow: none; color: #3a2a1a; }
   .xmas-hero-caption {
@@ -976,7 +979,6 @@
 
 <div class="app">
   <div class="header">
-    <img class="header-branch" src="weihnachts-zweig.webp" alt="">
     <div class="app-name-row">
       <img class="app-emblem" src="emblem.png" alt="">
       <p class="app-name">Rhine Guide</p>
@@ -999,7 +1001,10 @@
   <div class="content">
     <!-- ГИД -->
     <div class="view active" id="view-guide">
+      <div class="xmas-hero-wrap">
+      <img class="xmas-hero-branch" src="weihnachts-zweig.webp" alt="">
       <button class="xmas-hero" id="qlChristmas"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
+      </div>
       <div class="xmas-home" id="xmasHome">
         <div class="xmas-home-langs" id="xmasHomeLangs"><button data-xh="de">DE</button><button data-xh="fr">FR</button><button data-xh="nl">NL</button><button data-xh="en">EN</button><button data-xh="ru">RU</button></div>
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>

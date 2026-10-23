@@ -1,4 +1,4 @@
-const CACHE = 'rhine-design-test-v126';
+const CACHE = 'rhine-design-test-v127';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {

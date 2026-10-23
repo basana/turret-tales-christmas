@@ -150,13 +150,13 @@
   .tab.tab-xmas-light { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
-  /* Красная плашка с подписью фото на заставке — только в рождественской версии */
-  .splash-caption {
-    display: none; position: absolute; right: 0; bottom: calc(env(safe-area-inset-bottom) + 28px); z-index: 3;
-    background: #7A1026; color: #fff; font-family: var(--sans); font-size: 12px; line-height: 1.2;
-    padding: 6px 12px; border-radius: 6px 0 0 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  /* Красная плашка с подписью на главном рождественском фото (звезда, Zentralplatz) */
+  .xmas-hero { position: relative; }
+  .xmas-hero-caption {
+    position: absolute; right: 0; bottom: 0; background: #7A1026; color: #fff;
+    font-family: var(--sans); font-size: 12px; font-weight: 600; line-height: 1.2;
+    padding: 6px 12px; border-radius: 10px 0 0 0; text-align: right;
   }
-  body.xmas-on .splash-caption { display: block; }
   /* Значок ангела (schaengel-angel.svg) для Schängelbar: вместо 🎄 на обзорной карте и вместо номера в городе */
   .xmas-dot-angel, .xmas-pin-angel { display: block; width: 36px; height: 36px; transform: translate(-50%, -50%); filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5)); }
   .xmas-dot { width: 28px; height: 28px; border-radius: 50%; background: #7A1026; border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; transform: translate(-50%, -50%); }
@@ -875,7 +875,6 @@
 
 <div class="splash" id="splash">
   <img id="splashImg" src="hero-bacharach.jpg" alt="Bacharach, Rhine Gorge">
-  <div class="splash-caption" aria-hidden="true">Weihnachtsmarkt Koblenz, Zentralplatz</div>
   <div class="splash-gradient"></div>
   <div class="splash-watermark-wrap">
     <div class="splash-rays"></div>
@@ -991,7 +990,7 @@
   <div class="content">
     <!-- ГИД -->
     <div class="view active" id="view-guide">
-      <button class="xmas-hero" id="qlChristmas"><img src="xmas-hero.webp" alt=""><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
+      <button class="xmas-hero" id="qlChristmas"><img src="xmas-hero.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
       <div class="xmas-home" id="xmasHome">
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
         <button class="xmas-home-koblenz" id="xmasHomeKoblenz"><span id="xmasHomeKoblenzLabel">Christmas market Koblenz →</span></button>

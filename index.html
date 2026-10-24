@@ -2545,6 +2545,21 @@ function xmasOpenList() { xmasTown = null; xmasListOnly = true; switchView('chri
 // Экран 2 в двух режимах: «станция» (фото, текст — из раздела Locations/карты) и «главный» (кнопки Christmas)
 function openStation(i) { index = i; document.body.classList.add('station-open'); switchView('guide'); renderGuide(); }
 function openXmasHome() { document.body.classList.remove('station-open'); switchView('guide'); }
+// Логотип и название «Rhine Guide» в шапке возвращают на начальный экран приложения
+function goStart() {
+  document.body.classList.remove('station-open');
+  xmasTown = 'koblenz'; xmasListOnly = false;
+  index = 0;
+  switchView('guide');
+}
+document.querySelectorAll('.app-emblem, .app-name').forEach(el => {
+  el.style.cursor = 'pointer';
+  el.setAttribute('role', 'button');
+  el.setAttribute('tabindex', '0');
+  el.setAttribute('title', 'Rhine Guide');
+  el.addEventListener('click', goStart);
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goStart(); } });
+});
 const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’accueil', nl: '← Terug naar start', en: '← Back to start', ru: '← На главный экран' };
 // Koordinaten: Stadtmitte und Marktplätze. ANNÄHERUNG, vor Veröffentlichung auf der Karte prüfen.
 const XMAS_ORDER = ['koblenz', 'lahnstein', 'boppard', 'oberwesel', 'bacharach', 'ruedesheim'];

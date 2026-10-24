@@ -2545,10 +2545,14 @@ function xmasDrawMap(opts) {
   const el = document.getElementById('xmasMap');
   if (!el || typeof L === 'undefined') return;
   if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
-  xmasMapObj = L.map(el, { scrollWheelZoom: false });
+  xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0 });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
   if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [4, 4] });
-  else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [4, 4], maxZoom: opts.zoom });
+  else if (opts.pins && opts.pins.length > 1) {
+    const pb = L.latLngBounds(opts.pins.map(p => p.ll));
+    const z = Math.min(xmasMapObj.getBoundsZoom(pb, false, L.point(4, 4)), opts.zoom);
+    xmasMapObj.setView(pb.getCenter(), z + 0.14, { animate: false });
+  }
   else xmasMapObj.setView(opts.center, opts.zoom);
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);

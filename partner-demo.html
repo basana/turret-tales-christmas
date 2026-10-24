@@ -20,10 +20,11 @@
   .live { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 16px 0; }
   .live h2 { font-size: 17px; color: var(--maroon); margin: 0 0 8px; font-weight: 700; }
   table { width: 100%; border-collapse: collapse; font-size: 15px; }
-  th, td { padding: 7px 4px; border-bottom: 1px solid rgba(122,16,38,.15); text-align: right; }
+  th, td { padding: 7px 3px; border-bottom: 1px solid rgba(122,16,38,.15); text-align: right; }
   th:first-child, td:first-child { text-align: left; }
-  th { font-family: Helvetica, Arial, sans-serif; font-size: 11px; color: var(--soft); text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
-  td.n { font-family: Helvetica, Arial, sans-serif; font-weight: 700; color: var(--maroon); font-size: 18px; transition: background .4s; border-radius: 6px; }
+  th:first-child, td:first-child { text-align: left; }
+  th { font-family: Helvetica, Arial, sans-serif; font-size: 9px; white-space: nowrap; color: var(--soft); text-transform: uppercase; letter-spacing: 0; font-weight: 700; }
+  td.n { font-family: Helvetica, Arial, sans-serif; font-weight: 700; color: var(--maroon); font-size: 15px; transition: background .4s; border-radius: 6px; }
   td.n.flash { background: #e9f3e6; color: var(--ok); }
   .sum { font-size: 13px; color: var(--soft); margin-top: 8px; }
 
@@ -58,6 +59,10 @@
   .coupon .state.ok { color: var(--ok); font-weight: 700; }
   .coupon .row { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
   .closer { margin-top: 12px; }
+  .chooser { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 0 0 14px; }
+  .chooser h2 { font-size: 17px; color: var(--maroon); margin: 0 0 10px; font-weight: 700; }
+  .chooser .btns { display: flex; flex-direction: column; gap: 8px; }
+  .chooser a.btn { text-align: center; font-size: 15px; padding: 12px 14px; }
 </style>
 </head>
 <body>
@@ -67,6 +72,14 @@
   <span class="badge ui">DEMO</span>
   <p class="hint">Tippen Sie auf eine Karte, einen Button oder einen Punkt auf der Karte. Die Zahlen unten ändern sich sofort.</p>
 </header>
+
+<section class="chooser ui" id="chooser" hidden>
+  <h2>Live-Demo wählen</h2>
+  <div class="btns">
+    <a class="btn solid" href="?firm=mia">Mia Gelateria</a>
+    <a class="btn solid" href="?firm=reu">Reuffel Bazaar</a>
+  </div>
+</section>
 
 <section class="live">
   <h2 class="ui">Klicks in dieser Vorführung</h2>
@@ -177,6 +190,15 @@ function highlight(cardId) {
   setTimeout(() => c.classList.remove('hl'), 1200);
 }
 
+// Ohne ?firm= zeigt die Seite nur die Auswahl: jede Firma hat ihre eigene Live-Demo mit eigenen Zählern.
+if (firm !== 'mia' && firm !== 'reu') {
+  document.getElementById('chooser').hidden = false;
+  document.getElementById('demo-title').textContent = 'Live-Demo';
+  document.querySelectorAll('body > *').forEach(el => {
+    if (el.tagName === 'SCRIPT' || el.tagName === 'HEADER' || el.id === 'chooser' || el.id === 'map' || el.id === 'demo-title') return;
+    el.style.display = 'none';
+  });
+}
 if (firm === 'mia' || firm === 'reu') {
   const other = firm === 'mia' ? 'reu' : 'mia';
   document.getElementById('p-' + other).style.display = 'none';

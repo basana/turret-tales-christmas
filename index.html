@@ -2534,7 +2534,7 @@ const XMAS_GEO = {
   oberwesel: {center:[50.1065,7.7273], zoom:16, pins:[[50.1065,7.7273]]},
   boppard:   {center:[50.23232,7.59165], zoom:16, pins:[[50.23232,7.59165]]},
   bacharach: {center:[50.0583,7.7686], zoom:16, pins:[[50.0583,7.7686]]},
-  lahnstein: {center:[50.3061,7.5976], zoom:15, pins:[[50.3061,7.5976]]},
+  lahnstein: {center:[50.3088,7.6040], zoom:14, pins:[[50.3015,7.6062],[50.3112,7.6015],[50.3106,7.6167]]},
   ruedesheim: {center:[49.97888,7.92324], zoom:16, pins:[[49.97888,7.92324]]}
 };
 // Рынок с особым значком (ангел): город → индекс точки в XMAS_GEO и карточке в XMAS_CITY (Schängelbar — первый)
@@ -2800,7 +2800,7 @@ function renderChristmas(townKey) {
     const g = XMAS_GEO[xmasTown];
     xmasDrawMap({
       center: g.center, zoom: g.zoom,
-      pins: g.pins.map((ll, i) => ({ ll, label: (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.de).cards[i] && (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.de).cards[i].title, html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' :`<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
+      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.de).cards; return cs.length === g.pins.length && cs[i] ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' :`<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
     });
   }
 }

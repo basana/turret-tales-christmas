@@ -106,7 +106,7 @@
     <div class="valid" id="cp-valid"></div>
     <div class="state" id="cp-state"></div>
     <div class="row"><button class="btn solid" id="cp-redeem"></button></div>
-    <div class="closer"><button class="btn" id="cp-close"></button></div>
+    <div class="closer"><button class="btn" id="cp-reset"></button> <button class="btn" id="cp-close"></button></div>
   </div>
 </div>
 
@@ -311,6 +311,11 @@ function partnerCard(p, n) {
   </article>`;
 }
 
+// Labels for the demo reset button
+const RESET = {
+  de: 'Demo zurücksetzen', en: 'Reset demo', fr: 'Réinitialiser la démo', nl: 'Demo resetten', ru: 'Сбросить демо'
+};
+
 // Coupon window
 let openFor = null;
 const redeemed = {};
@@ -336,6 +341,7 @@ function renderCoupon() {
   const btn = document.getElementById('cp-redeem');
   document.getElementById('cp-redeem').textContent = t.redeem;
   document.getElementById('cp-close').textContent = t.close;
+  document.getElementById('cp-reset').textContent = RESET[lang] || RESET.en;
   if (!openFor) return;
   if (redeemed[openFor]) {
     st.textContent = t.redeemed;
@@ -350,6 +356,10 @@ function renderCoupon() {
 document.getElementById('cp-redeem').addEventListener('click', () => {
   if (!openFor || redeemed[openFor]) return;
   redeemed[openFor] = true;
+  renderCoupon();
+});
+document.getElementById('cp-reset').addEventListener('click', () => {
+  Object.keys(redeemed).forEach(k => delete redeemed[k]);
   renderCoupon();
 });
 document.getElementById('cp-close').addEventListener('click', () => document.getElementById('cp-modal').classList.remove('open'));

@@ -33,6 +33,7 @@
   .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 10px; }
   .gallery img { width: 100%; height: auto; border-radius: 8px; display: block; }
   .gallery img:first-child { grid-column: span 2; }
+  .gallery .gallery-text { font-size: 14px; line-height: 1.4; margin: 0; align-self: start; }
   .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: 14px; margin: 12px 0 10px; }
   .partner-desc { font-size: 17px; line-height: 1.5; margin: 0 0 10px; }
   .partner-meta { font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: var(--ink); margin: 0; }
@@ -240,7 +241,8 @@ const SHOPS = [
     slug: 'reuffel',
     name: 'Reuffel Bazaar',
     icon: 'reuffel-logo.webp',
-    photos: ['reuffel-main.webp', 'reuffel-1.webp', 'reuffel-2.webp', 'reuffel-3.webp', 'reuffel-4.webp'],
+    photos: ['reuffel-main.webp', 'reuffel-1.webp', 'reuffel-2.webp', 'reuffel-4.webp'],
+    textSlot: 3, // Beschreibung rückt auf den frei gewordenen Platz in der Bildergalerie
     cat: { de: 'Bücher · Souvenirs · Postkarten', en: 'Books · souvenirs · postcards', ru: 'Книги · сувениры · открытки', fr: 'Livres · souvenirs · cartes postales', nl: 'Boeken · souvenirs · ansichtkaarten' },
     addr: 'An der Liebfrauenkirche 11, 56068 Koblenz',
     hours: null,
@@ -296,9 +298,13 @@ function avatar(p) {
 function partnerCard(p, n) {
   const t = T[lang];
   const photos = p.photos || [];
+  const descText = p.desc ? (p.desc[lang] || p.desc.en) : '';
+  const hasSlot = p.textSlot !== undefined && photos.length;
+  const cells = photos.map((src, i) =>
+    `<img src="${src}" alt="${i === 0 && p.photoAlt ? p.photoAlt : p.name}" loading="lazy">`);
+  if (hasSlot) cells.splice(p.textSlot, 0, `<div class="gallery-text">${descText}</div>`);
   const photo = photos.length
-    ? `<div class="gallery">${photos.map((src, i) =>
-        `<img src="${src}" alt="${i === 0 && p.photoAlt ? p.photoAlt : p.name}" loading="lazy">`).join('')}</div>`
+    ? `<div class="gallery">${cells.join('')}</div>`
     : `<div class="photo-slot">${t.photoSlot}</div>`;
   const val = v => v ? v : `<span class="pending">${t.pending}</span>`;
   const hours = p.hours ? (p.hours[lang] || p.hours.en) : null;
@@ -319,7 +325,7 @@ function partnerCard(p, n) {
       </div>
     </div>
     ${photo}
-    <p class="partner-desc">${p.desc ? (p.desc[lang] || p.desc.en) : ''}</p>
+    ${hasSlot ? '' : `<p class="partner-desc">${descText}</p>`}
     <dl class="partner-meta">
       <div><dt>${t.addr}:</dt> <dd>${val(p.addr)}</dd></div>
       <div><dt>${t.hours}:</dt> <dd>${val(hours)}</dd></div>

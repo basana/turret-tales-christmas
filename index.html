@@ -79,7 +79,13 @@
   .header-controls { flex: 0 0 auto; position: relative; z-index: 7; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
   /* Всплывающая реклама Food & Drinks (каждые 2 минуты) */
-  .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 360px); box-sizing: border-box; background: #F5ECD6; border: 2px solid #7A1026; border-radius: 16px; padding: 14px 14px 14px 14px; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; gap: 12px; align-items: center; font-family: var(--sans); color: var(--ink); animation: foodPromoIn .35s ease-out; }
+  .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 340px); aspect-ratio: 1; box-sizing: border-box; background: url('frame-vignette.png') center / 100% 100% no-repeat, #F5ECD6; border: 0; border-radius: 0; padding: 15% 12%; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; animation: foodPromoIn .35s ease-out; }
+  .food-promo-q { font-size: clamp(16px, 4.6vw, 19px); line-height: 1.22; margin: 0; }
+  .food-promo-badge { position: relative; width: 46%; aspect-ratio: 1; margin: 2% 0; }
+  .food-promo-arc { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .food-promo-arc text { font-family: 'EB Garamond', Garamond, serif; font-weight: 700; font-size: 25px; fill: #A33A0E; }
+  .food-promo .food-promo-icon { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+  .food-promo-link { font-size: clamp(17px, 4.8vw, 20px); font-weight: 700; color: #4a0f1c; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
   .food-promo[hidden] { display: none; }
   @keyframes foodPromoIn { from { opacity: 0; transform: translate(-50%, -46%); } to { opacity: 1; transform: translate(-50%, -50%); } }
   .food-promo-icon { width: 58px; height: 58px; flex: 0 0 auto; object-fit: contain; border-radius: 50%; background: #fff; border: 1.5px solid #c8a878; padding: 4px; }
@@ -1018,19 +1024,21 @@
 
 <div class="food-promo" id="foodPromo" hidden role="dialog" aria-label="Food & Drinks">
   <button class="food-promo-close" id="foodPromoClose" aria-label="×">×</button>
-  <img class="food-promo-icon" id="foodPromoIcon" src="icon-food.webp" alt="" onerror="this.style.display='none'">
-  <div class="food-promo-text">
-    <div id="foodPromoQ"></div>
-    <button class="food-promo-link" id="foodPromoLink"></button>
+  <div id="foodPromoQ" class="food-promo-q"></div>
+  <div class="food-promo-badge">
+    <img class="food-promo-icon" id="foodPromoIcon" src="icon-food.webp" alt="" onerror="this.style.display='none'">
+    <svg class="food-promo-arc" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="foodArc" d="M 26,100 A 74,74 0 0 1 174,100"/></defs><text><textPath href="#foodArc" startOffset="50%" text-anchor="middle">Food&amp;Drinks</textPath></text></svg>
   </div>
+  <div id="foodPromoTail" class="food-promo-q"></div>
+  <button class="food-promo-link" id="foodPromoLink"></button>
 </div>
 <div class="food-promo" id="shopPromo" hidden role="dialog" aria-label="Souvenirs">
   <button class="food-promo-close" id="shopPromoClose" aria-label="×">×</button>
-  <img class="food-promo-icon" id="shopPromoIcon" src="icon-souvenir.webp" alt="" onerror="this.style.display='none'">
-  <div class="food-promo-text">
-    <div id="shopPromoQ"></div>
-    <button class="food-promo-link" id="shopPromoLink"></button>
+  <div id="shopPromoQ" class="food-promo-q"></div>
+  <div class="food-promo-badge">
+    <img class="food-promo-icon" id="shopPromoIcon" src="icon-souvenir.webp" alt="" onerror="this.style.display='none'">
   </div>
+  <button class="food-promo-link" id="shopPromoLink"></button>
 </div>
 <div class="app">
   <div class="header">
@@ -2734,11 +2742,11 @@ function openStation(i) { index = i; document.body.classList.add('station-open')
 function openXmasHome() { document.body.classList.remove('station-open'); switchView('guide'); }
 // Всплывающая реклама Food & Drinks: показывается каждые 2 минуты, закрывается крестиком
 const FOOD_PROMO = {
-  de: { q: 'Etwas Heißes trinken? Oder einen Happen essen? Dann hierher!', link: 'Food & Drinks →' },
-  en: { q: 'Fancy something hot to drink? Or a bite to eat? This way!', link: 'Food & Drinks →' },
-  fr: { q: "Envie d'une boisson chaude ou d'un petit en-cas ? Par ici !", link: 'Food & Drinks →' },
-  nl: { q: 'Zin in iets warms te drinken? Of een hapje? Hier moet u zijn!', link: 'Food & Drinks →' },
-  ru: { q: 'Выпить что-нибудь горячего? Закусить? Вам сюда', link: 'Food & Drinks →' }
+  de: { q: 'Etwas Heißes trinken? Oder einen Happen essen?', tail: 'Dann hierher!', link: 'Food & Drinks →' },
+  en: { q: 'Fancy something hot to drink? Or a bite to eat?', tail: 'This way!', link: 'Food & Drinks →' },
+  fr: { q: "Envie d'une boisson chaude ou d'un petit en-cas ?", tail: 'Par ici !', link: 'Food & Drinks →' },
+  nl: { q: 'Zin in iets warms te drinken? Of een hapje?', tail: 'Hier moet u zijn!', link: 'Food & Drinks →' },
+  ru: { q: 'Выпить что-нибудь горячего? Закусить?', tail: 'Вам сюда', link: 'Food & Drinks →' }
 };
 // Язык всплывающего текста = язык, который сейчас выбран в шапке (как видит посетитель)
 function foodPromoLang() {
@@ -2750,6 +2758,8 @@ function renderFoodPromoText() {
   const t = FOOD_PROMO[foodPromoLang()];
   const q = document.getElementById('foodPromoQ');
   if (q) q.textContent = t.q;
+  const tail = document.getElementById('foodPromoTail');
+  if (tail) tail.textContent = t.tail;
   const link = document.getElementById('foodPromoLink');
   if (link) link.textContent = t.link;
 }

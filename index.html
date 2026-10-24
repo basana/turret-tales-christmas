@@ -1017,6 +1017,14 @@
     <button class="food-promo-link" id="foodPromoLink"></button>
   </div>
 </div>
+<div class="food-promo" id="shopPromo" hidden role="dialog" aria-label="Souvenirs">
+  <button class="food-promo-close" id="shopPromoClose" aria-label="×">×</button>
+  <img class="food-promo-icon" id="shopPromoIcon" src="icon-souvenir.webp" alt="" onerror="this.style.display='none'">
+  <div class="food-promo-text">
+    <div id="shopPromoQ"></div>
+    <button class="food-promo-link" id="shopPromoLink"></button>
+  </div>
+</div>
 <div class="app">
   <div class="header">
     <img class="header-branch" src="weihnachts-zweig.webp" alt="">
@@ -2741,14 +2749,43 @@ function renderFoodPromoText() {
 function showFoodPromo() {
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return;
+  if (!document.getElementById('shopPromo').hidden) return; // nicht zwei Fenster übereinander
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
   renderFoodPromoText();
   box.hidden = false;
 }
+// Zweites Fenster: Souvenirs und Bücher (Reuffel), alle 3 Minuten
+const SHOP_PROMO = {
+  de: { q: 'Souvenirs, Bücher oder Postkarten? Dann hierher!', link: 'Souvenirs & Bücher →' },
+  en: { q: 'Looking for souvenirs, books or postcards? This way!', link: 'Souvenirs & Books →' },
+  fr: { q: 'Souvenirs, livres ou cartes postales ? Par ici !', link: 'Souvenirs et livres →' },
+  nl: { q: 'Op zoek naar souvenirs, boeken of ansichtkaarten? Hier moet u zijn!', link: 'Souvenirs & boeken →' },
+  ru: { q: 'Ищете сувениры, книги или открытки? Вам сюда', link: 'Сувениры и книги →' }
+};
+function renderShopPromoText() {
+  const active = document.querySelector('.header-controls .pill-btn.active');
+  const l = (active && active.dataset.lang) || lang;
+  const t = SHOP_PROMO[SHOP_PROMO[l] ? l : 'en'];
+  const q = document.getElementById('shopPromoQ'); if (q) q.textContent = t.q;
+  const link = document.getElementById('shopPromoLink'); if (link) link.textContent = t.link;
+}
+function showShopPromo() {
+  const box = document.getElementById('shopPromo');
+  if (!box || !box.hidden) return;
+  if (!document.getElementById('foodPromo').hidden) return;
+  if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
+  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
+  renderShopPromoText();
+  box.hidden = false;
+}
+function hideShopPromo() { const box = document.getElementById('shopPromo'); if (box) box.hidden = true; }
+document.getElementById('shopPromoClose').addEventListener('click', hideShopPromo);
+document.getElementById('shopPromoLink').addEventListener('click', () => { hideShopPromo(); window.open('partner-map.html', '_blank', 'noopener'); });
+setInterval(showShopPromo, 180000);
 // Смена языка (шапка, заставка, рождественские кнопки) сразу меняет текст окна
 document.addEventListener('click', e => {
-  if (e.target.closest && e.target.closest('[data-lang], [data-xl], [data-xh]')) setTimeout(renderFoodPromoText, 0);
+  if (e.target.closest && e.target.closest('[data-lang], [data-xl], [data-xh]')) setTimeout(() => { renderFoodPromoText(); renderShopPromoText(); }, 0);
 });
 function hideFoodPromo() { const box = document.getElementById('foodPromo'); if (box) box.hidden = true; }
 document.getElementById('foodPromoClose').addEventListener('click', hideFoodPromo);

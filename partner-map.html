@@ -67,6 +67,22 @@
   .coupon .state.ok { color: var(--ok); font-weight: 700; }
   .coupon .row { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
   .coupon .closer { margin-top: 12px; }
+  .gps-box { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+  .gps-hint { font-family: Helvetica, Arial, sans-serif; font-size: 13px; color: var(--soft); margin: 8px 0 0; line-height: 1.4; }
+  .gps-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 0; border-top: 1px solid rgba(201,160,92,.4); font-family: Helvetica, Arial, sans-serif; font-size: 14px; }
+  .gps-row:first-child { border-top: 0; }
+  .gps-row .nm { flex: 1 1 100%; font-weight: 700; color: var(--maroon); }
+  .gps-row .nm a { color: var(--maroon); }
+  .gps-row small { color: var(--soft); }
+  .gps-row a.route { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--maroon); }
+  .gps-ship { font-family: Helvetica, Arial, sans-serif; font-size: 14px; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--gold); }
+  .gps-time { font-family: Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; margin: 6px 0; }
+  .gps-time.ok { color: var(--ok); }
+  .gps-time.late { color: #b3261e; }
+  .gps-depart { font-family: Helvetica, Arial, sans-serif; font-size: 13px; color: var(--soft); display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .gps-depart input { font-size: 14px; padding: 4px 6px; border: 1px solid var(--gold); border-radius: 6px; background: #fff; }
+  .gps-user-halo { width: 22px; height: 22px; border-radius: 50%; background: #2a7de1; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(42,125,225,.25), 0 1px 4px rgba(0,0,0,.4); }
+  .saved-spot-marker { font-size: 26px; line-height: 30px; text-align: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
 </style>
 </head>
 <body>
@@ -86,6 +102,9 @@
 <div class="intro" id="t-intro"></div>
 
 <div id="map"></div>
+
+<div class="btns" style="margin:0 0 10px"><button class="btn solid" id="gpsBtn"></button></div>
+<div class="gps-box" id="gpsBox" hidden><div id="gpsPanel"></div></div>
 
 <nav class="secnav" id="secnav"></nav>
 
@@ -369,6 +388,128 @@ document.getElementById('cards').addEventListener('click', e => {
   if (b) openCoupon(b.dataset.coupon);
 });
 
+// GPS navigation: same logic as the main app (straight line x 1.3 detour, 75 m/min walking)
+const GPS = {
+  de: { btn: 'GPS · Entfernungen', locating: 'Standort wird ermittelt …', err: 'GPS nicht verfügbar', saveShip: '📌 Mein Schiff ist hier', clearShip: 'Schiff entfernen', shipPrompt: 'Name für diesen Punkt', shipDefault: 'Schiff', min: 'Min. zu Fuß', departLabel: 'Abfahrtszeit', enough: 'Zeit reicht, ca. {n} Min. Reserve', notEnough: 'Achtung: ca. {n} Min. zu spät', route: 'Route' },
+  en: { btn: 'GPS · Distances', locating: 'Locating…', err: 'GPS not available', saveShip: '📌 My ship is here', clearShip: 'Remove ship', shipPrompt: 'Name for this point', shipDefault: 'Ship', min: 'min walk', departLabel: 'Departure time', enough: 'Enough time, about {n} min to spare', notEnough: 'Warning: about {n} min too late', route: 'Route' },
+  fr: { btn: 'GPS · Distances', locating: 'Localisation…', err: 'GPS indisponible', saveShip: '📌 Mon bateau est ici', clearShip: 'Supprimer le bateau', shipPrompt: 'Nom de ce point', shipDefault: 'Bateau', min: 'min à pied', departLabel: 'Heure de départ', enough: 'Le temps suffit, environ {n} min de marge', notEnough: 'Attention : environ {n} min de retard', route: 'Itinéraire' },
+  nl: { btn: 'GPS · Afstanden', locating: 'Locatie wordt bepaald…', err: 'GPS niet beschikbaar', saveShip: '📌 Mijn schip ligt hier', clearShip: 'Schip verwijderen', shipPrompt: 'Naam van dit punt', shipDefault: 'Schip', min: 'min lopen', departLabel: 'Vertrektijd', enough: 'Tijd genoeg, ca. {n} min. marge', notEnough: 'Let op: ca. {n} min. te laat', route: 'Route' },
+  ru: { btn: 'GPS · Расстояния', locating: 'Определяем местоположение…', err: 'GPS недоступен', saveShip: '📌 Мой корабль здесь', clearShip: 'Убрать корабль', shipPrompt: 'Название этой точки', shipDefault: 'Корабль', min: 'мин пешком', departLabel: 'Время отхода', enough: 'Времени хватает, запас около {n} мин', notEnough: 'Не успеваете примерно на {n} мин', route: 'Маршрут' }
+};
+const GPS_SPOT_KEY = 'rhineGuideSavedSpot';   // same key as the main app, so the ship point is shared
+const GPS_DEPART_KEY = 'xmasDepart';
+const TARGETS = PARTNERS.concat(SHOPS).map((p, i) => ({ slug: p.slug, name: p.name, ll: PLACES[i] }));
+let gpsWatch = null, gpsPos = null, gpsMarker = null, gpsShipMarker = null, gpsOn = false;
+
+function gl(k) { return (GPS[lang] || GPS.en)[k]; }
+function walkMin(d) { return Math.max(1, Math.round(d * 1.3 / 75)); }
+function distanceMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000, toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+function bearingCompass(lat1, lng1, lat2, lng2) {
+  const toRad = d => d * Math.PI / 180, toDeg = r => r * 180 / Math.PI;
+  const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
+  const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(toRad(lng2 - lng1));
+  const deg = (toDeg(Math.atan2(y, x)) + 360) % 360;
+  return ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(deg / 45) % 8];
+}
+function formatDistance(d) {
+  return d < 1000 ? `≈ ${Math.round(d / 10) * 10} m` : `≈ ${(d / 1000).toFixed(1)} km`;
+}
+function getSpot() { try { return JSON.parse(localStorage.getItem(GPS_SPOT_KEY) || 'null'); } catch (e) { return null; } }
+function setSpot(s) { try { localStorage.setItem(GPS_SPOT_KEY, JSON.stringify(s)); } catch (e) {} }
+function getDepart() { try { return localStorage.getItem(GPS_DEPART_KEY) || ''; } catch (e) { return ''; } }
+function setDepart(v) { try { localStorage.setItem(GPS_DEPART_KEY, v); } catch (e) {} }
+
+function drawGpsMarkers() {
+  if (gpsMarker) { map.removeLayer(gpsMarker); gpsMarker = null; }
+  if (gpsShipMarker) { map.removeLayer(gpsShipMarker); gpsShipMarker = null; }
+  if (gpsPos) gpsMarker = L.marker([gpsPos.lat, gpsPos.lng], { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [22, 22], iconAnchor: [11, 11] }), zIndexOffset: 1000 }).addTo(map);
+  const sp = getSpot();
+  if (sp) gpsShipMarker = L.marker([sp.lat, sp.lng], { icon: L.divIcon({ className: '', html: '<div class="saved-spot-marker">📌</div>', iconSize: [30, 30], iconAnchor: [15, 28] }), zIndexOffset: 900 }).addTo(map);
+}
+
+function renderGpsPanel() {
+  const box = document.getElementById('gpsBox');
+  const panel = document.getElementById('gpsPanel');
+  if (!gpsOn) { box.hidden = true; panel.innerHTML = ''; return; }
+  box.hidden = false;
+  if (!gpsPos) { panel.innerHTML = `<p class="gps-hint">${gl('locating')}</p>`; return; }
+  const p = gpsPos;
+  const fmt = ll => {
+    const d = distanceMeters(p.lat, p.lng, ll[0], ll[1]);
+    return `<b>${formatDistance(d)} ${bearingCompass(p.lat, p.lng, ll[0], ll[1])}</b> <small>${walkMin(d)} ${gl('min')}</small>`;
+  };
+  const rows = TARGETS.map(t => ({ t, d: distanceMeters(p.lat, p.lng, t.ll[0], t.ll[1]) })).sort((a, b) => a.d - b.d);
+  let html = rows.map(r => `<div class="gps-row"><span class="nm"><a href="#card-${r.t.slug}">${r.t.name}</a></span>${fmt(r.t.ll)}` +
+    `<a class="route" href="https://www.google.com/maps/dir/?api=1&destination=${r.t.ll[0]},${r.t.ll[1]}&travelmode=walking" target="_blank" rel="noopener">${gl('route')} →</a></div>`).join('');
+  const sp = getSpot();
+  const depart = getDepart();
+  if (sp) {
+    const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
+    html += `<div class="gps-ship"><div class="gps-row" style="border:0;padding:0"><span class="nm">📌 ${sp.label}</span>${fmt([sp.lat, sp.lng])}` +
+      `<a class="route" href="https://www.google.com/maps/dir/?api=1&destination=${sp.lat},${sp.lng}&travelmode=walking" target="_blank" rel="noopener">${gl('route')} →</a></div>`;
+    if (/^\d{2}:\d{2}$/.test(depart)) {
+      const [hh, mm] = depart.split(':').map(Number);
+      const dep = new Date(); dep.setHours(hh, mm, 0, 0);
+      const margin = Math.round((dep - new Date()) / 60000 - walkMin(d));
+      html += `<div class="gps-time ${margin >= 0 ? 'ok' : 'late'}">${(margin >= 0 ? gl('enough') : gl('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
+    }
+    html += `<button class="btn" id="gpsShipClear">${gl('clearShip')}</button></div>`;
+  } else {
+    html += `<div class="gps-ship"><button class="btn solid" id="gpsShipSave">${gl('saveShip')}</button></div>`;
+  }
+  html += `<label class="gps-depart">${gl('departLabel')} <input type="time" id="gpsDepart" value="${depart}"></label>`;
+  panel.innerHTML = html;
+}
+
+function startGps() {
+  if (!navigator.geolocation) { gpsPos = null; document.getElementById('gpsPanel').innerHTML = `<p class="gps-hint">${gl('err')}</p>`; return; }
+  if (gpsWatch !== null) return;
+  gpsWatch = navigator.geolocation.watchPosition(pos => {
+    gpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    drawGpsMarkers();
+    renderGpsPanel();
+  }, () => {
+    gpsPos = null;
+    navigator.geolocation.clearWatch(gpsWatch);
+    gpsWatch = null;
+    document.getElementById('gpsPanel').innerHTML = `<p class="gps-hint">${gl('err')}</p>`;
+  }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
+}
+
+function updateGpsUi() {
+  const b = document.getElementById('gpsBtn');
+  b.textContent = '📍 ' + gl('btn');
+  b.classList.toggle('solid', !gpsOn);
+  renderGpsPanel();
+}
+document.getElementById('gpsBtn').addEventListener('click', () => {
+  gpsOn = !gpsOn;
+  if (gpsOn) { startGps(); if (!gpsPos) renderGpsPanel(); }
+  updateGpsUi();
+});
+document.getElementById('gpsBox').addEventListener('click', e => {
+  if (e.target.id === 'gpsShipSave') {
+    if (!gpsPos) return;
+    const label = window.prompt(gl('shipPrompt'), gl('shipDefault'));
+    if (label === null) return;
+    setSpot({ lat: gpsPos.lat, lng: gpsPos.lng, label: (label || gl('shipDefault')).trim() });
+    drawGpsMarkers(); renderGpsPanel();
+  }
+  if (e.target.id === 'gpsShipClear') {
+    try { localStorage.removeItem(GPS_SPOT_KEY); } catch (err) {}
+    drawGpsMarkers(); renderGpsPanel();
+  }
+});
+document.getElementById('gpsBox').addEventListener('change', e => {
+  if (e.target.id === 'gpsDepart') { setDepart(e.target.value); renderGpsPanel(); }
+});
+setInterval(() => { if (gpsOn && gpsPos) renderGpsPanel(); }, 30000);
+
 function render() {
   const t = T[lang];
   document.documentElement.lang = lang;
@@ -394,6 +535,7 @@ function render() {
   document.getElementById('cp-brand').textContent = t.cpBrand;
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('active', b.dataset.l === lang));
   renderCoupon();
+  updateGpsUi();
 }
 document.querySelectorAll('.langs button').forEach(b => b.addEventListener('click', () => {
   lang = b.dataset.l;

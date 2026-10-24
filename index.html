@@ -168,7 +168,7 @@
   .leaflet-tooltip.xmas-pin-label { font-size: 8px; font-weight: 400; padding: 1px 4px; line-height: 1.2; background: rgba(255,255,255,.85); border: none; box-shadow: none; color: #3a2a1a; }
   .xmas-hero-caption {
     position: absolute; right: 0; top: 86%; background: #7A1026; color: #fff;
-    font-family: var(--sans); font-size: 12px; font-weight: 400; line-height: 1.2;
+    font-family: var(--sans); font-size: 13px; font-weight: 400; line-height: 1.2;
     padding: 4px 9px; border-radius: 6px 0 0 0; text-align: right; max-width: 85%;
   }
   /* Значок ангела (schaengel-angel.svg) для Schängelbar: вместо 🎄 на обзорной карте и вместо номера в городе */
@@ -319,7 +319,7 @@
   /* Указатели к основным разделам — сразу под уменьшенным фото первого экрана */
   .quick-links {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-    margin-bottom: 18px; font-family: var(--sans);
+    margin: 0 6px 18px; font-family: var(--sans);
   }
   .quick-link {
     display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -558,7 +558,7 @@
     object-fit: contain; opacity: 0.6;
     mix-blend-mode: multiply;
   }
-  .splash-content { position: relative; z-index: 1; padding: 0 var(--pad) calc(36px + env(safe-area-inset-bottom)); color: var(--cream-text); }
+  .splash-content { position: relative; z-index: 1; padding: 0 var(--pad) calc(64px + env(safe-area-inset-bottom)); color: var(--cream-text); }
   .splash-eyebrow {
     font-family: var(--sans); font-size: 12.4px; letter-spacing: 0.19em; text-transform: uppercase;
     color: var(--cream-text); font-weight: 700; opacity: 0.86;
@@ -906,7 +906,7 @@
   <div class="splash-content">
     <p class="splash-eyebrow" id="splashEyebrow">Middle Rhine Valley</p>
     <h1 class="splash-title" id="splashTitle">Your Pace.<br>Your Story.<br>Your Rhine.</h1>
-    <p class="splash-tagline" id="splashTagline">Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.</p>
+    <p class="splash-tagline" id="splashTagline">Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.<br>Find routes.</p>
     <button class="splash-enter" id="splashEnter"><span id="splashEnterLabel">Begin the Journey</span> →</button>
   </div>
 </div>
@@ -1735,7 +1735,7 @@ const UI = {
     story: 'Historical Facts', legend: 'Legend & Lore',
     splashEyebrow: 'Middle Rhine Valley',
     splashTitle: 'Your Pace.<br>Your Story.<br>Your Rhine.',
-    splashTagline: 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.',
+    splashTagline: 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.<br>Find routes.',
     splashEnter: 'Begin the Journey',
     legendCastle: 'Castle tour', legendTown: 'Town walk',
     premiumBadge: 'Another view',
@@ -1783,7 +1783,7 @@ const UI = {
     story: 'Исторические факты', legend: 'Легенды и предания',
     splashEyebrow: 'Средний Рейн',
     splashTitle: 'Твой темп.<br>Твоя история.<br>Твой Рейн.',
-    splashTagline: 'Замки, легенды и винодельческие городки между Кобленцем и Бингеном — в твоём собственном ритме.',
+    splashTagline: 'Замки, легенды и винодельческие городки между Кобленцем и Бингеном — в твоём собственном ритме.<br>Найти маршруты.',
     splashEnter: 'Начать путешествие',
     legendCastle: 'Экскурсия в замке', legendTown: 'Прогулка по городу',
     premiumBadge: 'Другой взгляд',
@@ -2456,10 +2456,10 @@ const XMAS_HOME = {
   ru: ['Рождественские рынки Среднего Рейна', 'Общая карта →', 'Рождественский рынок Кобленц →'],
 };
 const XMAS_SPLASH = {
-  de: ['Weihnachtsmärkte · Mittelrhein', 'Ihr Tempo.<br>Ihre Geschichte.<br>Ihr Rhein.', 'Burgen, Sagen und Weinorte zwischen Koblenz und Bingen —<br>in Ihrem eigenen Rhythmus.', 'Reise beginnen'],
-  fr: ['Marchés de Noël · Rhin moyen', 'Votre rythme.<br>Votre histoire.<br>Votre Rhin.', 'Châteaux, légendes et villages viticoles entre Coblence et Bingen —<br>à votre rythme.', 'Commencer le voyage'],
-  nl: ['Kerstmarkten · Middenrijn', 'Uw tempo.<br>Uw verhaal.<br>Uw Rijn.', 'Kastelen, legenden en wijndorpen tussen Koblenz en Bingen —<br>in uw eigen tempo.', 'Begin de reis'],
-  en: ['Christmas markets · Middle Rhine', 'Your Pace.<br>Your Story.<br>Your Rhine.', 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.', 'Begin the Journey'],
+  de: ['Weihnachtsmärkte · Mittelrhein', 'Ihr Tempo.<br>Ihre Geschichte.<br>Ihr Rhein.', 'Burgen, Sagen und Weinorte zwischen Koblenz und Bingen —<br>in Ihrem eigenen Rhythmus.<br>Wege finden.', 'Reise beginnen'],
+  fr: ['Marchés de Noël · Rhin moyen', 'Votre rythme.<br>Votre histoire.<br>Votre Rhin.', 'Châteaux, légendes et villages viticoles entre Coblence et Bingen —<br>à votre rythme.<br>Trouver sa route.', 'Commencer le voyage'],
+  nl: ['Kerstmarkten · Middenrijn', 'Uw tempo.<br>Uw verhaal.<br>Uw Rijn.', 'Kastelen, legenden en wijndorpen tussen Koblenz en Bingen —<br>in uw eigen tempo.<br>Routes vinden.', 'Begin de reis'],
+  en: ['Christmas markets · Middle Rhine', 'Your Pace.<br>Your Story.<br>Your Rhine.', 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.<br>Find routes.', 'Begin the Journey'],
   ru: ['Рождественские рынки · Средний Рейн', 'Твой темп.<br>Твоя история.<br>Твой Рейн.', 'Замки, легенды и винодельческие городки<br>между Кобленцем и Бингеном — в твоём ритме.', 'Начать путешествие'],
 };
 function applyXmasSplash() {

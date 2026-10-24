@@ -2559,6 +2559,38 @@ const XMAS_GEO = {
 // Рынок с особым значком (ангел): город → индекс точки в XMAS_GEO и карточке в XMAS_CITY (Schängelbar — первый)
 const XMAS_ANGEL_PIN = { koblenz: 0 };
 let xmasMapObj = null;
+let xmasPendingFocus = null;
+const XMAS_SEARCH_PH = { de: 'Markt oder Stadt suchen …', en: 'Search a market or town …', fr: 'Chercher un marché ou une ville …', nl: 'Zoek een markt of stad …', ru: 'Поиск рынка или города …' };
+// Alle Suchbegriffe: Städte und einzelne Märkte (Titel der Karten)
+function xmasSearchEntries() {
+  const out = [];
+  XMAS_ORDER.forEach(k => {
+    if (!XMAS_CITY[k] || !XMAS_GEO[k]) return;
+    const c = XMAS_CITY[k];
+    const tx = c.text[xmasLang] || c.text.de;
+    out.push({ label: c.name[xmasLang] || c.name.de, key: k, ll: XMAS_GEO[k].center });
+    XMAS_GEO[k].pins.forEach((ll, i) => {
+      const t = tx.cards && tx.cards[i] && tx.cards[i].title;
+      if (t) out.push({ label: t, key: k, ll: ll });
+    });
+  });
+  return out;
+}
+function xmasSearchHtml() {
+  const opts = xmasSearchEntries().map(e => `<option value="${e.label.replace(/"/g, '&quot;')}">`).join('');
+  return `<div class="map-search-wrap xmas-search"><span class="map-search-icon">🔎</span><input type="text" class="map-search-input" id="xmasSearch" list="xmasSearchList" autocomplete="off" autocapitalize="off" placeholder="${XMAS_SEARCH_PH[xmasLang] || XMAS_SEARCH_PH.en}"><datalist id="xmasSearchList">${opts}</datalist></div>`;
+}
+function xmasSearchPick(val) {
+  const v = (val || '').trim().toLowerCase();
+  if (!v) return false;
+  const e = xmasSearchEntries().find(x => x.label.toLowerCase() === v);
+  if (!e) return false;
+  if (xmasTown !== e.key) { xmasPendingFocus = e.ll; xmasOpen(e.key); }
+  else if (xmasMapObj) xmasMapObj.setView(e.ll, 17, { animate: true });
+  return true;
+}
+document.addEventListener('change', e => { if (e.target && e.target.id === 'xmasSearch' && xmasSearchPick(e.target.value)) e.target.value = ''; });
+document.addEventListener('input', e => { if (e.target && e.target.id === 'xmasSearch' && xmasSearchPick(e.target.value)) e.target.value = ''; });
 
 function xmasDrawMap(opts) {
   const el = document.getElementById('xmasMap');
@@ -2573,6 +2605,7 @@ function xmasDrawMap(opts) {
     xmasMapObj.setView(pb.getCenter(), z + 0.14, { animate: false });
   }
   else xmasMapObj.setView(opts.center, opts.zoom);
+  if (xmasPendingFocus) { xmasMapObj.setView(xmasPendingFocus, 17, { animate: false }); xmasPendingFocus = null; }
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
     if (p.onClick) m.on('click', p.onClick);
@@ -2753,7 +2786,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = xmasExplainHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
+  const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';

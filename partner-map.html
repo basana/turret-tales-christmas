@@ -390,11 +390,11 @@ document.getElementById('cards').addEventListener('click', e => {
 
 // GPS navigation: same logic as the main app (straight line x 1.3 detour, 75 m/min walking)
 const GPS = {
-  de: { btn: 'GPS · Entfernungen', locating: 'Standort wird ermittelt …', err: 'GPS nicht verfügbar', saveShip: '📌 Mein Schiff ist hier', clearShip: 'Schiff entfernen', shipPrompt: 'Name für diesen Punkt', shipDefault: 'Schiff', min: 'Min. zu Fuß', departLabel: 'Abfahrtszeit', enough: 'Zeit reicht, ca. {n} Min. Reserve', notEnough: 'Achtung: ca. {n} Min. zu spät', route: 'Route' },
-  en: { btn: 'GPS · Distances', locating: 'Locating…', err: 'GPS not available', saveShip: '📌 My ship is here', clearShip: 'Remove ship', shipPrompt: 'Name for this point', shipDefault: 'Ship', min: 'min walk', departLabel: 'Departure time', enough: 'Enough time, about {n} min to spare', notEnough: 'Warning: about {n} min too late', route: 'Route' },
-  fr: { btn: 'GPS · Distances', locating: 'Localisation…', err: 'GPS indisponible', saveShip: '📌 Mon bateau est ici', clearShip: 'Supprimer le bateau', shipPrompt: 'Nom de ce point', shipDefault: 'Bateau', min: 'min à pied', departLabel: 'Heure de départ', enough: 'Le temps suffit, environ {n} min de marge', notEnough: 'Attention : environ {n} min de retard', route: 'Itinéraire' },
-  nl: { btn: 'GPS · Afstanden', locating: 'Locatie wordt bepaald…', err: 'GPS niet beschikbaar', saveShip: '📌 Mijn schip ligt hier', clearShip: 'Schip verwijderen', shipPrompt: 'Naam van dit punt', shipDefault: 'Schip', min: 'min lopen', departLabel: 'Vertrektijd', enough: 'Tijd genoeg, ca. {n} min. marge', notEnough: 'Let op: ca. {n} min. te laat', route: 'Route' },
-  ru: { btn: 'GPS · Расстояния', locating: 'Определяем местоположение…', err: 'GPS недоступен', saveShip: '📌 Мой корабль здесь', clearShip: 'Убрать корабль', shipPrompt: 'Название этой точки', shipDefault: 'Корабль', min: 'мин пешком', departLabel: 'Время отхода', enough: 'Времени хватает, запас около {n} мин', notEnough: 'Не успеваете примерно на {n} мин', route: 'Маршрут' }
+  de: { btn: 'GPS · Entfernungen', locating: 'Standort wird ermittelt …', err: 'GPS nicht verfügbar', saveShip: 'Meinen Ort merken', clearShip: 'Ort entfernen', shipPrompt: 'Name für diesen Ort (z. B. „Schiff“, „Bus“):', shipDefault: 'Mein Ort', min: 'Min. zu Fuß', departLabel: 'Abfahrtszeit', enough: 'Zeit reicht, ca. {n} Min. Reserve', notEnough: 'Achtung: ca. {n} Min. zu spät', route: 'Route', tap: 'Oder tippen Sie auf die Karte, um Ihren Punkt zu setzen.' },
+  en: { btn: 'GPS · Distances', locating: 'Locating…', err: 'GPS not available', saveShip: 'Save my spot', clearShip: 'Remove spot', shipPrompt: 'Label this spot (e.g. "Ship", "Bus"):', shipDefault: 'My spot', min: 'min walk', departLabel: 'Departure time', enough: 'Enough time, about {n} min to spare', notEnough: 'Warning: about {n} min too late', route: 'Route', tap: 'Or tap the map to set your spot.' },
+  fr: { btn: 'GPS · Distances', locating: 'Localisation…', err: 'GPS indisponible', saveShip: 'Mémoriser ce lieu', clearShip: 'Supprimer le lieu', shipPrompt: 'Nom de ce lieu (ex. « Bateau », « Bus ») :', shipDefault: 'Mon lieu', min: 'min à pied', departLabel: 'Heure de départ', enough: 'Le temps suffit, environ {n} min de marge', notEnough: 'Attention : environ {n} min de retard', route: 'Itinéraire', tap: 'Ou touchez la carte pour placer votre point.' },
+  nl: { btn: 'GPS · Afstanden', locating: 'Locatie wordt bepaald…', err: 'GPS niet beschikbaar', saveShip: 'Mijn plek opslaan', clearShip: 'Plek verwijderen', shipPrompt: 'Naam voor deze plek (bv. "Schip", "Bus"):', shipDefault: 'Mijn plek', min: 'min lopen', departLabel: 'Vertrektijd', enough: 'Tijd genoeg, ca. {n} min. marge', notEnough: 'Let op: ca. {n} min. te laat', route: 'Route', tap: 'Of tik op de kaart om uw punt te zetten.' },
+  ru: { btn: 'GPS · Расстояния', locating: 'Определяем местоположение…', err: 'GPS недоступен', saveShip: 'Запомнить место', clearShip: 'Убрать место', shipPrompt: 'Название места (например, «Корабль», «Автобус»):', shipDefault: 'Моё место', min: 'мин пешком', departLabel: 'Время отхода', enough: 'Времени хватает, запас около {n} мин', notEnough: 'Не успеваете примерно на {n} мин', route: 'Маршрут', tap: 'Или нажмите на карту, чтобы поставить свою точку.' }
 };
 const GPS_SPOT_KEY = 'rhineGuideSavedSpot';   // same key as the main app, so the ship point is shared
 const GPS_DEPART_KEY = 'xmasDepart';
@@ -435,9 +435,16 @@ function drawGpsMarkers() {
 function renderGpsPanel() {
   const box = document.getElementById('gpsBox');
   const panel = document.getElementById('gpsPanel');
-  if (!gpsOn) { box.hidden = true; panel.innerHTML = ''; return; }
+  const sp0 = getSpot();
+  if (!gpsOn && !sp0) { box.hidden = true; panel.innerHTML = ''; return; }
   box.hidden = false;
-  if (!gpsPos) { panel.innerHTML = `<p class="gps-hint">${gl('locating')}</p>`; return; }
+  if (!gpsPos) {
+    let h = gpsOn ? `<p class="gps-hint">${gl('locating')}</p>` : '';
+    h += `<p class="gps-hint">${gl('tap')}</p>`;
+    if (sp0) h += `<div class="gps-ship"><div class="gps-row" style="border:0;padding:0"><span class="nm">📌 ${sp0.label}</span></div><button class="btn" id="gpsShipClear">${gl('clearShip')}</button></div>`;
+    panel.innerHTML = h;
+    return;
+  }
   const p = gpsPos;
   const fmt = ll => {
     const d = distanceMeters(p.lat, p.lng, ll[0], ll[1]);
@@ -507,6 +514,13 @@ document.getElementById('gpsBox').addEventListener('click', e => {
 });
 document.getElementById('gpsBox').addEventListener('change', e => {
   if (e.target.id === 'gpsDepart') { setDepart(e.target.value); renderGpsPanel(); }
+});
+// Eigene Position per Antippen der Karte setzen (ohne GPS möglich)
+map.on('click', e => {
+  const label = window.prompt(gl('shipPrompt'), gl('shipDefault'));
+  if (label === null) return;
+  setSpot({ lat: e.latlng.lat, lng: e.latlng.lng, label: (label || gl('shipDefault')).trim() });
+  drawGpsMarkers(); renderGpsPanel();
 });
 setInterval(() => { if (gpsOn && gpsPos) renderGpsPanel(); }, 30000);
 

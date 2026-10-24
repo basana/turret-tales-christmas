@@ -159,7 +159,7 @@ const SHOPS = [
   {
     slug: 'reuffel',
     name: 'Reuffel Bazaar',
-    initial: 'R',
+    icon: 'reuffel-logo.webp',
     photos: ['reuffel-1.webp', 'reuffel-2.webp', 'reuffel-3.webp', 'reuffel-4.webp'],
     cat: { de: 'Bücher · Souvenirs · Postkarten', en: 'Books · souvenirs · postcards', ru: 'Книги · сувениры · открытки', fr: 'Livres · souvenirs · cartes postales', nl: 'Boeken · souvenirs · ansichtkaarten' },
     addr: 'An der Liebfrauenkirche 11, 56068 Koblenz',
@@ -193,7 +193,7 @@ map.fitBounds(L.latLngBounds(PLACES), { padding: [6, 6], maxZoom: 16 });
 // The first two points carry the partners' logos (Mia, Reuffel); the rest stay as red dots.
 const PIN_LOGOS = [
   { html: '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria">', card: 'card-mia' },
-  { html: '<span>R</span>', card: 'card-reuffel' }
+  { html: '<img src="reuffel-logo.webp" alt="Reuffel Bazaar">', card: 'card-reuffel' }
 ];
 PLACES.forEach((ll, i) => {
   const logo = PIN_LOGOS[i];

@@ -78,6 +78,11 @@
   .header-branch { position: absolute; top: -34px; right: -42px; width: 247px; height: auto; pointer-events: none; z-index: 5; opacity: 0.75; }
   .header-controls { flex: 0 0 auto; position: relative; z-index: 7; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
+  .header-controls { gap: 4px; }
+  .header-controls .pill-btn { padding: 4px 6px; font-size: 11px; letter-spacing: 0; }
+  @media (max-width: 420px) { .header-controls .pill-btn { padding: 3px 5px; font-size: 10.5px; } }
+  /* Узкие экраны: язык и размер шрифта — во второй строке шапки, название приложения читается целиком */
+  @media (max-width: 420px) { .header { flex-wrap: wrap; } .header-controls { width: 100%; justify-content: flex-end; margin-top: 8px; } }
 
   .xmas-wrap { padding: 16px; line-height: 1.5; }
   .xmas-langs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -1003,6 +1008,9 @@
       <p class="app-name">Rhine Guide</p>
     </div>
     <div class="header-controls">
+      <span class="pill-btn" data-lang="de">DE</span>
+      <span class="pill-btn" data-lang="fr">FR</span>
+      <span class="pill-btn" data-lang="nl">NL</span>
       <span class="pill-btn active" data-lang="en">EN</span>
       <span class="pill-btn" data-lang="ru">RU</span>
       <span class="pill-btn" id="fontMinus">A-</span>
@@ -1840,6 +1848,150 @@ const UI = {
     qlTours: 'Экскурсии', qlContact: 'Контакты', qlAbout: 'Обо мне',
     mapSearchPlaceholder: 'Найти город или замок…',
     mapSearchNotFound: 'Не найдено. Попробуйте другое название.'
+  },
+  de: {
+    tabs: ['Weihnachten', 'Führer', 'Burgen', 'Sagen', 'Info', 'Route', 'Karte', 'Kontakt'],
+    stationLabel: (n, t) => `Station ${n} von ${t}`,
+    built: 'Erbaut', town: 'Stadt', play: 'Anhören', check: 'Besucht',
+    story: 'Historische Fakten', legend: 'Sage & Überlieferung',
+    splashEyebrow: 'Mittelrheintal',
+    splashTitle: 'Ihr Tempo.<br>Ihre Geschichte.<br>Ihr Rhein.',
+    splashTagline: 'Burgen, Sagen und Weinorte zwischen Koblenz und Bingen — in Ihrem eigenen Rhythmus.',
+    splashEnter: 'Reise beginnen',
+    legendCastle: 'Burgführung', legendTown: 'Stadtrundgang',
+    premiumBadge: 'Ein anderer Blick',
+    premiumTitle: 'Ein anderer Blick',
+    premiumFeatures: [
+      'Ein handgemaltes Bild der großen Sehenswürdigkeiten — nicht nur ein Foto',
+      'GPS findet Ihren Standort und öffnet die passende Station von selbst — ohne Blättern und Suchen',
+      'Die ganze Geschichte von Anfang bis Ende — jede Station, jede Sage, jede Erzählung'
+    ],
+    premiumLocked: 'Gesperrt',
+    premiumCodePlaceholder: 'Zugangscode',
+    premiumUnlockBtn: 'Freischalten',
+    premiumAskHint: 'Kein Code? Fragen Sie Ihren Guide →',
+    premiumCodeWrong: 'Falscher Code. Bitte versuchen Sie es erneut.',
+    premiumUnlockedIntro: 'Zugang freigeschaltet — hier ist Ihr Bild.',
+    premiumOpenLink: 'Bild öffnen →',
+    premiumUnlockedFallback: 'Das Bild für diesen Ort kommt bald — schauen Sie später wieder vorbei.',
+    premiumTitleGps: 'GPS-Automatik',
+    premiumTitleRoute: 'Weiterlesen',
+    routeReadMore: 'Weiterlesen →',
+    gpsToggle: 'GPS', gpsOn: 'GPS EIN',
+    gpsLocating: 'Wird ermittelt …',
+    gpsError: 'Ihr Standort konnte nicht ermittelt werden. Bitte prüfen Sie die Standortfreigabe.',
+    gpsDistanceTo: (name) => `bis ${name}`,
+    gpsArrived: 'Sie sind hier',
+    gpsSaveSpot: 'Meinen Ort merken',
+    gpsSaveSpotPrompt: 'Name für diesen Ort (z. B. „Schiff“, „Bus“):',
+    gpsSaveSpotDefault: 'Mein Ort',
+    gpsSpotTo: (name) => `${name} —`,
+    gpsSpotArrived: 'Sie sind zurück',
+    legendCafe: 'Café', legendSouvenir: 'Souvenirs',
+    gpsRouteNear: (name, dist) => `${dist} bis zur nächsten Station — ${name}`,
+    helpBubbleText: 'Nicht gefunden, was Sie suchen? Ich zeige Ihnen das Menü.',
+    helpBubbleShow: 'Menü zeigen', helpBubbleDismiss: 'Nein, danke',
+    helpBubbleTextGps: 'Die GPS-Entfernung zur nächsten Burg gehört zur Bonus-Version.',
+    helpBubbleShowGps: 'Mehr erfahren',
+    qlTours: 'Führungen', qlContact: 'Kontakt', qlAbout: 'Über mich',
+    mapSearchPlaceholder: 'Stadt oder Burg suchen …',
+    mapSearchNotFound: 'Nicht gefunden. Versuchen Sie einen anderen Namen.'
+  },
+  fr: {
+    tabs: ['Noël', 'Guide', 'Châteaux', 'Légendes', 'Infos', 'Itinéraire', 'Carte', 'Contact'],
+    stationLabel: (n, t) => `Étape ${n} sur ${t}`,
+    built: 'Construit', town: 'Ville', play: 'Écouter', check: 'Visité',
+    story: 'Faits historiques', legend: 'Légende et tradition',
+    splashEyebrow: 'Vallée du Rhin moyen',
+    splashTitle: 'Votre rythme.<br>Votre histoire.<br>Votre Rhin.',
+    splashTagline: 'Châteaux, légendes et villages viticoles entre Coblence et Bingen — à votre rythme.',
+    splashEnter: 'Commencer le voyage',
+    legendCastle: 'Visite du château', legendTown: 'Balade en ville',
+    premiumBadge: 'Un autre regard',
+    premiumTitle: 'Un autre regard',
+    premiumFeatures: [
+      'Une peinture originale des grands sites — pas seulement une photo',
+      'Le GPS trouve votre position et ouvre tout seul la bonne étape — sans faire défiler ni chercher',
+      'Toute l\'histoire, du début à la fin — chaque étape, chaque légende, chaque récit'
+    ],
+    premiumLocked: 'Verrouillé',
+    premiumCodePlaceholder: 'Code d\'accès',
+    premiumUnlockBtn: 'Débloquer',
+    premiumAskHint: 'Pas de code ? Demandez à votre guide →',
+    premiumCodeWrong: 'Code incorrect. Veuillez réessayer.',
+    premiumUnlockedIntro: 'Accès accordé — voici votre tableau.',
+    premiumOpenLink: 'Ouvrir le tableau →',
+    premiumUnlockedFallback: 'Le tableau de ce lieu arrive bientôt — revenez plus tard.',
+    premiumTitleGps: 'Localisation GPS automatique',
+    premiumTitleRoute: 'Continuer la lecture',
+    routeReadMore: 'Continuer la lecture →',
+    gpsToggle: 'GPS', gpsOn: 'GPS ACTIF',
+    gpsLocating: 'Localisation…',
+    gpsError: 'Impossible de déterminer votre position. Vérifiez l\'autorisation de localisation.',
+    gpsDistanceTo: (name) => `jusqu’à ${name}`,
+    gpsArrived: 'Vous êtes ici',
+    gpsSaveSpot: 'Mémoriser ce lieu',
+    gpsSaveSpotPrompt: 'Nom de ce lieu (ex. « Bateau », « Bus ») :',
+    gpsSaveSpotDefault: 'Mon lieu',
+    gpsSpotTo: (name) => `${name} —`,
+    gpsSpotArrived: 'Vous êtes de retour',
+    legendCafe: 'Café', legendSouvenir: 'Souvenirs',
+    gpsRouteNear: (name, dist) => `${dist} jusqu’à l’étape la plus proche — ${name}`,
+    helpBubbleText: 'Vous ne trouvez pas ce que vous cherchez ? Je vous montre le menu.',
+    helpBubbleShow: 'Afficher le menu', helpBubbleDismiss: 'Non, merci',
+    helpBubbleTextGps: 'La distance GPS jusqu’au château le plus proche fait partie de l’édition bonus.',
+    helpBubbleShowGps: 'En savoir plus',
+    qlTours: 'Visites', qlContact: 'Contact', qlAbout: 'À propos',
+    mapSearchPlaceholder: 'Chercher une ville ou un château…',
+    mapSearchNotFound: 'Introuvable. Essayez un autre nom.'
+  },
+  nl: {
+    tabs: ['Kerst', 'Gids', 'Kastelen', 'Legenden', 'Info', 'Route', 'Kaart', 'Contact'],
+    stationLabel: (n, t) => `Halte ${n} van ${t}`,
+    built: 'Gebouwd', town: 'Stad', play: 'Beluisteren', check: 'Bezocht',
+    story: 'Historische feiten', legend: 'Legende & overlevering',
+    splashEyebrow: 'Middenrijndal',
+    splashTitle: 'Uw tempo.<br>Uw verhaal.<br>Uw Rijn.',
+    splashTagline: 'Kastelen, legenden en wijndorpen tussen Koblenz en Bingen — in uw eigen tempo.',
+    splashEnter: 'Begin de reis',
+    legendCastle: 'Kasteelrondleiding', legendTown: 'Stadswandeling',
+    premiumBadge: 'Een andere blik',
+    premiumTitle: 'Een andere blik',
+    premiumFeatures: [
+      'Een met de hand geschilderd beeld van de grote bezienswaardigheden — niet alleen een foto',
+      'GPS vindt uw locatie en opent de juiste halte vanzelf — zonder scrollen of zoeken',
+      'Het hele verhaal, van begin tot eind — elke halte, elke legende, elk verhaal'
+    ],
+    premiumLocked: 'Vergrendeld',
+    premiumCodePlaceholder: 'Toegangscode',
+    premiumUnlockBtn: 'Ontgrendelen',
+    premiumAskHint: 'Geen code? Vraag het aan uw gids →',
+    premiumCodeWrong: 'Onjuiste code. Probeer het opnieuw.',
+    premiumUnlockedIntro: 'Toegang verleend — hier is uw kunstwerk.',
+    premiumOpenLink: 'Kunstwerk openen →',
+    premiumUnlockedFallback: 'Het kunstwerk voor deze plek komt er snel aan — kijk later nog eens.',
+    premiumTitleGps: 'GPS-automatisch',
+    premiumTitleRoute: 'Verder lezen',
+    routeReadMore: 'Verder lezen →',
+    gpsToggle: 'GPS', gpsOn: 'GPS AAN',
+    gpsLocating: 'Locatie bepalen…',
+    gpsError: 'Uw locatie kon niet worden bepaald. Controleer de locatietoestemming.',
+    gpsDistanceTo: (name) => `naar ${name}`,
+    gpsArrived: 'U bent hier',
+    gpsSaveSpot: 'Mijn plek opslaan',
+    gpsSaveSpotPrompt: 'Naam voor deze plek (bv. "Schip", "Bus"):',
+    gpsSaveSpotDefault: 'Mijn plek',
+    gpsSpotTo: (name) => `${name} —`,
+    gpsSpotArrived: 'U bent terug',
+    legendCafe: 'Café', legendSouvenir: 'Souvenirs',
+    gpsRouteNear: (name, dist) => `${dist} tot de dichtstbijzijnde halte — ${name}`,
+    helpBubbleText: 'Niet gevonden wat u zoekt? Ik laat u het menu zien.',
+    helpBubbleShow: 'Menu tonen', helpBubbleDismiss: 'Nee, bedankt',
+    helpBubbleTextGps: 'De GPS-afstand tot het dichtstbijzijnde kasteel hoort bij de bonusversie.',
+    helpBubbleShowGps: 'Meer weten',
+    qlTours: 'Rondleidingen', qlContact: 'Contact', qlAbout: 'Over mij',
+    mapSearchPlaceholder: 'Zoek een stad of kasteel…',
+    mapSearchNotFound: 'Niet gevonden. Probeer een andere naam.'
   }
 };
 

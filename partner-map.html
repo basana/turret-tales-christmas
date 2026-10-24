@@ -34,6 +34,7 @@
   .gallery img { width: 100%; height: auto; border-radius: 8px; display: block; }
   .gallery img:first-child { grid-column: span 2; }
   .gallery .gallery-text { font-size: 14px; line-height: 1.4; margin: 0; align-self: start; }
+  .gallery .gallery-text .partner-meta { margin: 8px 0 0; font-size: 13px; }
   .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: 14px; margin: 12px 0 10px; }
   .partner-desc { font-size: 17px; line-height: 1.5; margin: 0 0 10px; }
   .partner-meta { font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: var(--ink); margin: 0; }
@@ -219,6 +220,7 @@ const PARTNERS = [
     name: 'Mia Gelateria',
     icon: 'mia-gelateria-icon.webp',
     photos: ['mia-gelateria-main.webp', 'mia-gelateria-1.webp'],
+    textSlot: 2, // Text rechts neben dem zweiten Foto, im freien Platz der Galerie
     photoAlt: 'Mia Gelateria: Becher mit Softeis, Beeren und Schokolade',
     cat: { de: 'Eisdiele · Selbstbedienung', en: 'Ice cream parlour · self-service', ru: 'Мороженое · самообслуживание', fr: 'Glacier · libre-service', nl: 'IJssalon · zelfbediening' },
     addr: 'Rheinstr. 17, 56068 Koblenz (Altstadt)',
@@ -298,20 +300,26 @@ function avatar(p) {
 function partnerCard(p, n) {
   const t = T[lang];
   const photos = p.photos || [];
-  const descText = p.desc ? (p.desc[lang] || p.desc.en) : '';
-  const hasSlot = p.textSlot !== undefined && photos.length;
-  const cells = photos.map((src, i) =>
-    `<img src="${src}" alt="${i === 0 && p.photoAlt ? p.photoAlt : p.name}" loading="lazy">`);
-  if (hasSlot) cells.splice(p.textSlot, 0, `<div class="gallery-text">${descText}</div>`);
-  const photo = photos.length
-    ? `<div class="gallery">${cells.join('')}</div>`
-    : `<div class="photo-slot">${t.photoSlot}</div>`;
   const val = v => v ? v : `<span class="pending">${t.pending}</span>`;
   const hours = p.hours ? (p.hours[lang] || p.hours.en) : null;
   const phoneRow = p.phone
     ? `<div><dt>${t.phone}:</dt> <dd><a href="tel:${p.phone.replace(/\s/g, '')}">${p.phone}</a></dd></div>` : '';
   const webRow = p.web
     ? `<div><dt>Web:</dt> <dd><a href="${p.web}" target="_blank" rel="noopener">${p.web.replace('https://', '')}</a></dd></div>` : '';
+  const meta = `<dl class="partner-meta">
+      <div><dt>${t.addr}:</dt> <dd>${val(p.addr)}</dd></div>
+      <div><dt>${t.hours}:</dt> <dd>${val(hours)}</dd></div>
+      ${phoneRow}
+      ${webRow}
+    </dl>`;
+  const descText = p.desc ? (p.desc[lang] || p.desc.en) : '';
+  const hasSlot = p.textSlot !== undefined && photos.length;
+  const cells = photos.map((src, i) =>
+    `<img src="${src}" alt="${i === 0 && p.photoAlt ? p.photoAlt : p.name}" loading="lazy">`);
+  if (hasSlot) cells.splice(p.textSlot, 0, `<div class="gallery-text">${descText}${meta}</div>`);
+  const photo = photos.length
+    ? `<div class="gallery">${cells.join('')}</div>`
+    : `<div class="photo-slot">${t.photoSlot}</div>`;
   const link = p.gmaps
     ? `<a class="partner-link" href="${p.gmaps}" target="_blank" rel="noopener">${t.gmaps} →</a>` : '';
   const coupon = COUPON[p.slug]
@@ -326,12 +334,7 @@ function partnerCard(p, n) {
     </div>
     ${photo}
     ${hasSlot ? '' : `<p class="partner-desc">${descText}</p>`}
-    <dl class="partner-meta">
-      <div><dt>${t.addr}:</dt> <dd>${val(p.addr)}</dd></div>
-      <div><dt>${t.hours}:</dt> <dd>${val(hours)}</dd></div>
-      ${phoneRow}
-      ${webRow}
-    </dl>
+    ${hasSlot ? '' : meta}
     <div class="btns">${link}${coupon}</div>
   </article>`;
 }

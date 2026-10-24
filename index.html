@@ -80,8 +80,8 @@
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
   /* Всплывающая реклама Food & Drinks (каждые 2 минуты) */
   .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 340px); aspect-ratio: 1; box-sizing: border-box; background: url('frame-vignette.png') center / 100% 100% no-repeat, #F5ECD6; border: 0; border-radius: 0; padding: 10% 12% 11%; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; animation: foodPromoIn .35s ease-out; }
-  .food-promo-q { font-size: clamp(16px, 4.6vw, 19px); line-height: 1.22; margin: 0; padding: 0 7%; }
-  .food-promo-badge { position: relative; width: 44%; aspect-ratio: 1; margin: 0; }
+  .food-promo-q { font-size: clamp(15px, 4.3vw, 18px); line-height: 1.22; margin: 0; padding: 0 9%; }
+  .food-promo-badge { position: relative; width: 54%; aspect-ratio: 1; margin: 0; }
   .food-promo-arc { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .food-promo-arc text { font-family: 'EB Garamond', Garamond, serif; font-weight: 700; font-size: 25px; fill: #A33A0E; }
   .food-promo .food-promo-icon { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
@@ -95,7 +95,17 @@
   .food-promo { position: fixed; }
   .food-mia { display: flex; gap: 12px; align-items: flex-start; }
   .food-mia-pic { flex: 0 0 44%; margin: 0; position: relative; }
-  .food-coupon { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); white-space: nowrap; font-family: Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; color: #7A1026; background: #fff; border: 1px solid #7A1026; border-radius: 10px; padding: 2px 8px; text-decoration: none; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .food-coupon { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); white-space: nowrap; font-family: Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; color: #7A1026; background: #fff; border: 1px solid #7A1026; border-radius: 10px; padding: 2px 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .mv-overlay { position: fixed; inset: 0; background: rgba(40,20,10,.55); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 75; }
+  .mv-overlay.open { display: flex; }
+  .mv-card { background: #F5ECD6; border: 2px solid #7A1026; border-radius: 14px; padding: 18px; width: 100%; max-width: 340px; text-align: center; position: relative; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; }
+  .mv-brand { font-family: Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #6b5a48; }
+  .mv-card h3 { font-size: 24px; color: #7A1026; margin: 6px 0 4px; }
+  .mv-offer { font-size: 17px; margin: 0 0 10px; }
+  .mv-qr { display: inline-block; padding: 8px; background: #fff; border: 1px solid #c8a878; border-radius: 8px; min-height: 60px; }
+  .mv-code { font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .08em; margin: 10px 0 2px; }
+  .mv-valid { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #6b5a48; }
+  .mv-close { margin-top: 14px; font-family: Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 14px; border: 1px solid #7A1026; background: #7A1026; color: #fff; cursor: pointer; }
   .food-mia-pic img { display: block; width: 100%; height: auto; border-radius: 10px; }
   .food-mia-text { flex: 1 1 auto; min-width: 0; }
   .food-pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #7A1026, 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -1040,6 +1050,17 @@
   </div>
   <button class="food-promo-link" id="shopPromoLink"></button>
 </div>
+<div class="mv-overlay" id="miaVoucher" role="dialog" aria-modal="true" aria-labelledby="mvTitle">
+  <div class="mv-card">
+    <div class="mv-brand" id="mvBrand"></div>
+    <h3 id="mvTitle">Mia Gelateria</h3>
+    <p class="mv-offer" id="mvOffer"></p>
+    <div class="mv-qr" id="mvQr"></div>
+    <div class="mv-code" id="mvCode">TT-DEMO-MIA-10</div>
+    <div class="mv-valid" id="mvValid"></div>
+    <button class="mv-close" id="mvClose" type="button"></button>
+  </div>
+</div>
 <div class="app">
   <div class="header">
     <img class="header-branch" src="weihnachts-zweig.webp" alt="">
@@ -1238,6 +1259,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/davidshimjs-qrcodejs/0.0.2/qrcode.min.js"></script>
 <script>
 // Режим: рождественская версия по умолчанию; стандартная — по ссылке ?mode=std
 const XMAS_MODE = new URLSearchParams(location.search).get('mode') !== 'std';
@@ -2773,6 +2795,32 @@ function showFoodPromo() {
   renderFoodPromoText();
   box.hidden = false;
 }
+
+// Gutschein Mia (Food & Drinks): eigenes Fenster, ohne Karte
+const MIA_VOUCHER = {
+  de: { brand: 'Turret Tales · Gutschein', offer: '10 % auf Ihren Eisbecher', valid: 'Gültig bis 31.12.2026 · Beispiel', close: 'Schließen' },
+  en: { brand: 'Turret Tales · Voucher', offer: '10% off your ice cream', valid: 'Valid until 31 Dec 2026 · Example', close: 'Close' },
+  fr: { brand: 'Turret Tales · Bon', offer: '10 % sur votre glace', valid: 'Valable jusqu’au 31.12.2026 · Exemple', close: 'Fermer' },
+  nl: { brand: 'Turret Tales · Kortingsbon', offer: '10% korting op uw ijs', valid: 'Geldig tot 31.12.2026 · Voorbeeld', close: 'Sluiten' },
+  ru: { brand: 'Turret Tales · Купон', offer: '10 % на ваш стаканчик мороженого', valid: 'Действителен до 31.12.2026 · Пример', close: 'Закрыть' }
+};
+function openMiaVoucher() {
+  const l = MIA_VOUCHER[xmasLang] ? xmasLang : 'en';
+  const t = MIA_VOUCHER[l];
+  document.getElementById('mvBrand').textContent = t.brand;
+  document.getElementById('mvOffer').textContent = t.offer;
+  document.getElementById('mvValid').textContent = t.valid;
+  document.getElementById('mvClose').textContent = t.close;
+  const qr = document.getElementById('mvQr');
+  qr.innerHTML = '';
+  try { new QRCode(qr, { text: 'TT-DEMO-MIA-10', width: 180, height: 180, colorDark: '#3a2a1a', colorLight: '#ffffff' }); } catch (e) { qr.textContent = 'TT-DEMO-MIA-10'; }
+  document.getElementById('miaVoucher').classList.add('open');
+}
+function closeMiaVoucher() { document.getElementById('miaVoucher').classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-mia-voucher]')) { openMiaVoucher(); return; }
+  if (e.target.closest('#mvClose') || e.target.id === 'miaVoucher') closeMiaVoucher();
+});
 // Zweites Fenster: Souvenirs und Bücher (Reuffel), alle 3 Minuten
 const SHOP_PROMO = {
   de: { q: 'Souvenirs, Bücher oder Postkarten? Dann hierher!', link: 'Souvenirs & Bücher →' },
@@ -3171,7 +3219,7 @@ function renderFood() {
     if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
     const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
     const couponLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон' }[xmasLang] || 'Get voucher';
-    const couponLink = `<a class="food-coupon" href="partner-map.html?coupon=mia">${couponLbl}</a>`;
+    const couponLink = `<button type="button" class="food-coupon" data-mia-voucher>${couponLbl}</button>`;
     const pic = mainPhoto ? `<figure class="food-mia-pic"><img src="${mainPhoto}" alt="${miaCard.title}" loading="lazy">${couponLink}</figure>` : '';
     return `<div class="route-card xmas-card">${kicker}<div class="food-mia">${pic}` +
       `<div class="food-mia-text"><h3 class="castle-name" style="margin:0 0 4px">${miaCard.title}</h3>` +

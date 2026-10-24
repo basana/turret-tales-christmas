@@ -79,9 +79,9 @@
   .header-controls { flex: 0 0 auto; position: relative; z-index: 7; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
   /* Всплывающая реклама Food & Drinks (каждые 2 минуты) */
-  .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 340px); aspect-ratio: 1; box-sizing: border-box; background: url('frame-vignette.png') center / 100% 100% no-repeat, #F5ECD6; border: 0; border-radius: 0; padding: 15% 12%; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; animation: foodPromoIn .35s ease-out; }
-  .food-promo-q { font-size: clamp(16px, 4.6vw, 19px); line-height: 1.22; margin: 0; }
-  .food-promo-badge { position: relative; width: 46%; aspect-ratio: 1; margin: 2% 0; }
+  .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 340px); aspect-ratio: 1; box-sizing: border-box; background: url('frame-vignette.png') center / 100% 100% no-repeat, #F5ECD6; border: 0; border-radius: 0; padding: 10% 12% 11%; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; animation: foodPromoIn .35s ease-out; }
+  .food-promo-q { font-size: clamp(16px, 4.6vw, 19px); line-height: 1.22; margin: 0; padding: 0 7%; }
+  .food-promo-badge { position: relative; width: 44%; aspect-ratio: 1; margin: 0; }
   .food-promo-arc { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .food-promo-arc text { font-family: 'EB Garamond', Garamond, serif; font-weight: 700; font-size: 25px; fill: #A33A0E; }
   .food-promo .food-promo-icon { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }

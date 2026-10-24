@@ -2804,7 +2804,7 @@ function renderChristmas(townKey) {
     const g = XMAS_GEO[xmasTown];
     xmasDrawMap({
       center: g.center, zoom: g.zoom,
-      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.de).cards; return cs.length === g.pins.length && cs[i] ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' :`<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
+      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' :`<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
     });
   }
 }

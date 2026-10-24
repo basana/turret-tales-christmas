@@ -81,7 +81,7 @@
 </section>
 
 <div id="map"></div>
-<p class="mapnote ui">Punkte sind Platzhalter, bis die genauen Koordinaten vorliegen.</p>
+<p class="mapnote ui">Karte: Mia Gelateria und Reuffel Bazaar, Koblenz Altstadt.</p>
 
 <article class="partner" id="p-mia">
   <div class="head">
@@ -105,13 +105,13 @@
   <div class="head">
     <div class="av">R</div>
     <div>
-      <h3 class="name">Reuffel</h3>
+      <h3 class="name">Reuffel Bazaar</h3>
       <div class="cat ui">Bücher · Souvenirs · Postkarten</div>
     </div>
   </div>
   <div class="photo" style="height:160px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--maroon);color:var(--maroon);font-size:14px;font-family:Helvetica,Arial,sans-serif;">Fotos folgen</div>
   <p class="desc">Bücher, Souvenirs und Postkarten aus Koblenz. Hier gibt es auch Postkarten von Turret Tales.</p>
-  <p class="meta ui"><b>Adresse:</b> folgt<br><b>Öffnungszeiten:</b> folgt</p>
+  <p class="meta ui"><b>Adresse:</b> An der Liebfrauenkirche 11, 56068 Koblenz<br><b>Öffnungszeiten:</b> folgt<br><b>Telefon:</b> 0261 94292194<br><b>Web:</b> www.reuffel.de</p>
   <div class="btns ui">
     <button class="btn solid" data-place="reu" data-act="maps">Auf Google Maps öffnen</button>
     <button class="btn" data-place="reu" data-act="phone">Anrufen</button>
@@ -142,8 +142,8 @@
 <script>
 // Demo-Ereignisse. Der Pfad beginnt mit "demo-", damit man sie im Auswertungskonto von echten Klicks trennen kann.
 const PLACES = {
-  mia: { name: 'Mia Gelateria', code: 'TT-DEMO-MIA-10', ll: [50.36139, 7.59636], card: 'p-mia' },
-  reu: { name: 'Reuffel', code: 'TT-DEMO-REU-10', ll: [50.36106, 7.59460], card: 'p-reu' }
+  mia: { name: 'Mia Gelateria', code: 'TT-DEMO-MIA-10', ll: [50.35825, 7.59779], card: 'p-mia' },
+  reu: { name: 'Reuffel Bazaar', code: 'TT-DEMO-REU-10', ll: [50.36098, 7.59604], card: 'p-reu' }
 };
 const counts = {};
 const redeemed = {};
@@ -180,7 +180,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18,
 const bounds = [PLACES.mia.ll, PLACES.reu.ll];
 map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
 Object.keys(PLACES).forEach(p => {
-  const icon = L.divIcon({ className: '', html: '<div style="width:16px;height:16px;border-radius:50%;background:#C0202A;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)"></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
+  const logo = p === 'mia'
+    ? '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria" style="width:100%;height:100%;object-fit:cover;display:block">'
+    : '<span style="font-family:Helvetica,Arial,sans-serif;font-size:24px;font-weight:700;color:#7A1026">R</span>';
+  const icon = L.divIcon({ className: '', html: `<div style="width:56px;height:56px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #7A1026,0 3px 8px rgba(0,0,0,.35);overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer">${logo}</div>`, iconSize: [56, 56], iconAnchor: [28, 28] });
   L.marker(PLACES[p].ll, { icon: icon }).addTo(map).on('click', () => { bump(p, 'map'); highlight(PLACES[p].card); });
 });
 

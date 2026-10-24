@@ -45,6 +45,9 @@
   .contact a { color: var(--maroon); }
   .legal { margin-top: 18px; padding-top: 10px; border-top: 1px solid rgba(122,16,38,.25); font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); text-align: center; }
   .dot { width: 14px; height: 14px; border-radius: 50%; background: #C0202A; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+  .pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--maroon), 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pin span { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: var(--maroon); }
 </style>
 </head>
 <body>
@@ -106,6 +109,7 @@ const T = {
 // Cafés and restaurants with full cards. Placeholder cards fill the remaining map dots.
 const PARTNERS = [
   {
+    slug: 'mia',
     name: 'Mia Gelateria',
     icon: 'mia-gelateria-icon.webp',
     photo: 'mia-gelateria-1.webp',
@@ -126,14 +130,16 @@ const PARTNERS = [
 // Souvenir shops and bookshops. Details marked as pending until confirmed with the owner.
 const SHOPS = [
   {
-    name: 'Reuffel',
+    slug: 'reuffel',
+    name: 'Reuffel Bazaar',
     initial: 'R',
     photo: null,
     cat: { de: 'Bücher · Souvenirs · Postkarten', en: 'Books · souvenirs · postcards', ru: 'Книги · сувениры · открытки' },
-    addr: null,
+    addr: 'An der Liebfrauenkirche 11, 56068 Koblenz',
     hours: null,
-    phone: null,
-    gmaps: null,
+    phone: '+49 261 94292194',
+    web: 'https://www.reuffel.de',
+    gmaps: 'https://maps.app.goo.gl/1BWsWVnWy1G8EJHT7',
     desc: {
       de: 'Bücher, Souvenirs und Postkarten aus Koblenz. Hier gibt es auch Postkarten von Turret Tales.',
       en: 'Books, souvenirs and postcards from Koblenz. Turret Tales postcards are sold here too.',
@@ -144,8 +150,10 @@ const SHOPS = [
 
 // Map dots (placeholder positions for the planned partners).
 const PLACES = [
-  [50.36139, 7.59636], [50.36133, 7.59590], [50.36106, 7.59460], [50.36178, 7.59470],
-  [50.36070, 7.59684], [50.36183, 7.59597], [50.36144, 7.60450]
+  [50.35825, 7.59779],  // Mia Gelateria
+  [50.36098, 7.59604],  // Reuffel Bazaar
+  [50.36133, 7.59590], [50.36106, 7.59460], [50.36178, 7.59470],
+  [50.36070, 7.59684], [50.36183, 7.59597]
 ];
 let lang = 'de';
 try { const s = localStorage.getItem('partnerLang'); if (s && T[s]) lang = s; } catch (e) {}
@@ -153,7 +161,22 @@ try { const s = localStorage.getItem('partnerLang'); if (s && T[s]) lang = s; } 
 const map = L.map('map', { scrollWheelZoom: false, zoomSnap: 0 });
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
 map.fitBounds(L.latLngBounds(PLACES), { padding: [6, 6], maxZoom: 16 });
-PLACES.forEach(ll => L.marker(ll, { icon: L.divIcon({ className: '', html: '<div class="dot"></div>', iconSize: [14, 14], iconAnchor: [7, 7] }) }).addTo(map));
+// The first two points carry the partners' logos (Mia, Reuffel); the rest stay as red dots.
+const PIN_LOGOS = [
+  { html: '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria">', card: 'card-mia' },
+  { html: '<span>R</span>', card: 'card-reuffel' }
+];
+PLACES.forEach((ll, i) => {
+  const logo = PIN_LOGOS[i];
+  const icon = logo
+    ? L.divIcon({ className: '', html: `<div class="pin">${logo.html}</div>`, iconSize: [56, 56], iconAnchor: [28, 28] })
+    : L.divIcon({ className: '', html: '<div class="dot"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
+  const m = L.marker(ll, { icon: icon }).addTo(map);
+  if (logo) m.on('click', () => {
+    const c = document.getElementById(logo.card);
+    if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+});
 
 function avatar(p) {
   return p.icon
@@ -170,9 +193,11 @@ function partnerCard(p, n) {
   const hours = p.hours ? (p.hours[lang] || p.hours.en) : null;
   const phoneRow = p.phone
     ? `<div><dt>${t.phone}:</dt> <dd><a href="tel:${p.phone.replace(/\s/g, '')}">${p.phone}</a></dd></div>` : '';
+  const webRow = p.web
+    ? `<div><dt>Web:</dt> <dd><a href="${p.web}" target="_blank" rel="noopener">${p.web.replace('https://', '')}</a></dd></div>` : '';
   const link = p.gmaps
     ? `<a class="partner-link" href="${p.gmaps}" target="_blank" rel="noopener">${t.gmaps} →</a>` : '';
-  return `<article class="partner">
+  return `<article class="partner" id="card-${p.slug}">
     <div class="partner-head">
       ${avatar(p)}
       <div>
@@ -186,6 +211,7 @@ function partnerCard(p, n) {
       <div><dt>${t.addr}:</dt> <dd>${val(p.addr)}</dd></div>
       <div><dt>${t.hours}:</dt> <dd>${val(hours)}</dd></div>
       ${phoneRow}
+      ${webRow}
     </dl>
     ${link}
   </article>`;
@@ -203,7 +229,7 @@ function render() {
     `<a href="#sec-cafe">${t.navCafe}</a><a href="#sec-shop">${t.navShop}</a>`;
 
   const cafes = PARTNERS.map((p, i) => partnerCard(p, i + 1)).join('');
-  const placeholders = PLACES.slice(PARTNERS.length).map((_, i) =>
+  const placeholders = PLACES.slice(PARTNERS.length + SHOPS.length).map((_, i) =>
     `<div class="card"><div class="num">${String(i + PARTNERS.length + 1).padStart(2, '0')}</div><div class="ph">${t.ph}</div></div>`).join('');
   const shops = SHOPS.map((p, i) => partnerCard(p, i + 1)).join('');
 

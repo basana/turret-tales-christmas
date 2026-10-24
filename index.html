@@ -2725,20 +2725,31 @@ const FOOD_PROMO = {
   nl: { q: 'Zin in iets warms te drinken? Of een hapje? Hier moet u zijn!', link: 'Food & Drinks →' },
   ru: { q: 'Выпить что-нибудь горячего? Закусить? Вам сюда', link: 'Food & Drinks →' }
 };
+// Язык всплывающего текста = язык, который сейчас выбран в шапке (как видит посетитель)
 function foodPromoLang() {
-  const l = document.body.classList.contains('xmas-on') ? xmasLang : lang;
+  const active = document.querySelector('.header-controls .pill-btn.active');
+  const l = (active && active.dataset.lang) || lang;
   return FOOD_PROMO[l] ? l : 'en';
+}
+function renderFoodPromoText() {
+  const t = FOOD_PROMO[foodPromoLang()];
+  const q = document.getElementById('foodPromoQ');
+  if (q) q.textContent = t.q;
+  const link = document.getElementById('foodPromoLink');
+  if (link) link.textContent = t.link;
 }
 function showFoodPromo() {
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return;
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
-  const t = FOOD_PROMO[foodPromoLang()];
-  document.getElementById('foodPromoQ').textContent = t.q;
-  document.getElementById('foodPromoLink').textContent = t.link;
+  renderFoodPromoText();
   box.hidden = false;
 }
+// Смена языка (шапка, заставка, рождественские кнопки) сразу меняет текст окна
+document.addEventListener('click', e => {
+  if (e.target.closest && e.target.closest('[data-lang], [data-xl], [data-xh]')) setTimeout(renderFoodPromoText, 0);
+});
 function hideFoodPromo() { const box = document.getElementById('foodPromo'); if (box) box.hidden = true; }
 document.getElementById('foodPromoClose').addEventListener('click', hideFoodPromo);
 document.getElementById('foodPromoLink').addEventListener('click', () => { hideFoodPromo(); switchView('food'); });

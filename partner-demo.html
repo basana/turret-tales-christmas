@@ -63,12 +63,16 @@
   .chooser h2 { font-size: 17px; color: var(--maroon); margin: 0 0 10px; font-weight: 700; }
   .chooser .btns { display: flex; flex-direction: column; gap: 8px; }
   .chooser a.btn { text-align: center; font-size: 15px; padding: 12px 14px; }
+  .chooser .alt { font-size: 14px; margin: 10px 0 0; color: var(--soft); }
+  .chooser .alt a { color: var(--maroon); font-weight: 700; }
+  .back { display: inline-block; margin: 8px 0 0; font-size: 14px; font-weight: 700; color: var(--maroon); text-decoration: none; }
 </style>
 </head>
 <body>
 <header>
   <div class="brand ui">Turret Tales · Partnerkarte</div>
   <h1 id="demo-title">Live-Demo</h1>
+  <a class="back ui" id="backLink" href="partner-demo.html" hidden>← Alle Live-Demos</a>
   <span class="badge ui">DEMO</span>
   <p class="hint">Tippen Sie auf eine Karte, einen Button oder einen Punkt auf der Karte. Die Zahlen unten ändern sich sofort.</p>
 </header>
@@ -79,6 +83,7 @@
     <a class="btn solid" href="?firm=mia">Mia Gelateria</a>
     <a class="btn solid" href="?firm=reu">Reuffel Bazaar</a>
   </div>
+  <p class="alt">Oder direkt: <a href="?firm=mia">Mia Gelateria</a> · <a href="?firm=reu">Reuffel Bazaar</a> — oder tippen Sie unten auf einen Punkt der Karte.</p>
 </section>
 
 <section class="live">
@@ -200,6 +205,7 @@ if (firm !== 'mia' && firm !== 'reu') {
   });
 }
 if (firm === 'mia' || firm === 'reu') {
+  document.getElementById('backLink').hidden = false;
   const other = firm === 'mia' ? 'reu' : 'mia';
   document.getElementById('p-' + other).style.display = 'none';
   document.getElementById('row-' + other).style.display = 'none';
@@ -217,7 +223,7 @@ Object.keys(PLACES).filter(p => !((firm === 'mia' || firm === 'reu') && p !== fi
     ? '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria" style="width:100%;height:100%;object-fit:cover;display:block">'
     : '<img src="reuffel-logo.webp" alt="Reuffel Bazaar" style="width:100%;height:100%;object-fit:cover;display:block">';
   const icon = L.divIcon({ className: '', html: `<div style="width:56px;height:56px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #7A1026,0 3px 8px rgba(0,0,0,.35);overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer">${logo}</div>`, iconSize: [56, 56], iconAnchor: [28, 28] });
-  L.marker(PLACES[p].ll, { icon: icon }).addTo(map).on('click', () => { bump(p, 'map'); highlight(PLACES[p].card); });
+  L.marker(PLACES[p].ll, { icon: icon }).addTo(map).on('click', () => { if (!firm) { location.href = '?firm=' + p; return; } bump(p, 'map'); highlight(PLACES[p].card); });
 });
 
 // Buttons

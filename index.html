@@ -572,9 +572,14 @@
     font-size: clamp(30px, 8.3vw, 42px); line-height: 1.05; margin: 0 0 9px;
     text-shadow: 0 2px 16px rgba(0,0,0,0.45);
   }
-  .splash-find { font-weight: 700; letter-spacing: 0.1em; }
+  .splash-find {
+    display: block; text-align: right; margin: 0 0 26px;
+    font-family: 'EB Garamond', serif; font-weight: 700; letter-spacing: 0.1em;
+    font-size: clamp(30px, 8.3vw, 42px); line-height: 1.05;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.45);
+  }
   .splash-tagline {
-    font-size: clamp(19px, 5vw, 21px); line-height: 1.42; margin: 0 0 26px;
+    font-size: clamp(19px, 5vw, 21px); line-height: 1.42; margin: 0 0 14px;
     max-width: 34ch; color: rgba(252,239,221,0.92);
   }
   .splash-enter {
@@ -907,7 +912,8 @@
   <div class="splash-content">
     <p class="splash-eyebrow" id="splashEyebrow">Middle Rhine Valley</p>
     <h1 class="splash-title" id="splashTitle">Your Pace.<br>Your Story.<br>Your Rhine.</h1>
-    <p class="splash-tagline" id="splashTagline">Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.<br><span class="splash-find">Find routes.</span></p>
+    <p class="splash-tagline" id="splashTagline">Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.</p>
+    <p class="splash-find" id="splashFind">Find routes.</p>
     <button class="splash-enter" id="splashEnter"><span id="splashEnterLabel">Begin the Journey</span> →</button>
   </div>
 </div>
@@ -1728,6 +1734,12 @@ const routePlaces = [
   }
 ];
 
+const SPLASH_FIND = { de: 'Wege finden.', en: 'Find routes.', fr: 'Trouver sa route.', nl: 'Routes vinden.', ru: 'Найти маршруты.' };
+function setSplashFind(l) {
+  const el = document.getElementById('splashFind');
+  if (el) el.textContent = SPLASH_FIND[l] || SPLASH_FIND.en;
+}
+
 const UI = {
   en: {
     tabs: ['Christmas', 'Guide', 'Castles', 'Legends', 'Info', 'Route', 'Map', 'Contact'],
@@ -1736,7 +1748,7 @@ const UI = {
     story: 'Historical Facts', legend: 'Legend & Lore',
     splashEyebrow: 'Middle Rhine Valley',
     splashTitle: 'Your Pace.<br>Your Story.<br>Your Rhine.',
-    splashTagline: 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.<br><span class="splash-find">Find routes.</span>',
+    splashTagline: 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.',
     splashEnter: 'Begin the Journey',
     legendCastle: 'Castle tour', legendTown: 'Town walk',
     premiumBadge: 'Another view',
@@ -1784,7 +1796,7 @@ const UI = {
     story: 'Исторические факты', legend: 'Легенды и предания',
     splashEyebrow: 'Средний Рейн',
     splashTitle: 'Твой темп.<br>Твоя история.<br>Твой Рейн.',
-    splashTagline: 'Замки, легенды и винодельческие городки между Кобленцем и Бингеном — в твоём собственном ритме.<br><span class="splash-find">Найти маршруты.</span>',
+    splashTagline: 'Замки, легенды и винодельческие городки между Кобленцем и Бингеном — в твоём собственном ритме.',
     splashEnter: 'Начать путешествие',
     legendCastle: 'Экскурсия в замке', legendTown: 'Прогулка по городу',
     premiumBadge: 'Другой взгляд',
@@ -2457,10 +2469,10 @@ const XMAS_HOME = {
   ru: ['Рождественские рынки Среднего Рейна', 'Общая карта →', 'Рождественский рынок Кобленц →'],
 };
 const XMAS_SPLASH = {
-  de: ['Weihnachtsmärkte · Mittelrhein', 'Ihr Tempo.<br>Ihre Geschichte.<br>Ihr Rhein.', 'Burgen, Sagen und Weinorte zwischen Koblenz und Bingen —<br>in Ihrem eigenen Rhythmus.<br><span class="splash-find">Wege finden.</span>', 'Reise beginnen'],
-  fr: ['Marchés de Noël · Rhin moyen', 'Votre rythme.<br>Votre histoire.<br>Votre Rhin.', 'Châteaux, légendes et villages viticoles entre Coblence et Bingen —<br>à votre rythme.<br><span class="splash-find">Trouver sa route.</span>', 'Commencer le voyage'],
-  nl: ['Kerstmarkten · Middenrijn', 'Uw tempo.<br>Uw verhaal.<br>Uw Rijn.', 'Kastelen, legenden en wijndorpen tussen Koblenz en Bingen —<br>in uw eigen tempo.<br><span class="splash-find">Routes vinden.</span>', 'Begin de reis'],
-  en: ['Christmas markets · Middle Rhine', 'Your Pace.<br>Your Story.<br>Your Rhine.', 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.<br><span class="splash-find">Find routes.</span>', 'Begin the Journey'],
+  de: ['Weihnachtsmärkte · Mittelrhein', 'Ihr Tempo.<br>Ihre Geschichte.<br>Ihr Rhein.', 'Burgen, Sagen und Weinorte zwischen Koblenz und Bingen —<br>in Ihrem eigenen Rhythmus.', 'Reise beginnen'],
+  fr: ['Marchés de Noël · Rhin moyen', 'Votre rythme.<br>Votre histoire.<br>Votre Rhin.', 'Châteaux, légendes et villages viticoles entre Coblence et Bingen —<br>à votre rythme.', 'Commencer le voyage'],
+  nl: ['Kerstmarkten · Middenrijn', 'Uw tempo.<br>Uw verhaal.<br>Uw Rijn.', 'Kastelen, legenden en wijndorpen tussen Koblenz en Bingen —<br>in uw eigen tempo.', 'Begin de reis'],
+  en: ['Christmas markets · Middle Rhine', 'Your Pace.<br>Your Story.<br>Your Rhine.', 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.', 'Begin the Journey'],
   ru: ['Рождественские рынки · Средний Рейн', 'Твой темп.<br>Твоя история.<br>Твой Рейн.', 'Замки, легенды и винодельческие городки<br>между Кобленцем и Бингеном — в твоём ритме.', 'Начать путешествие'],
 };
 function applyXmasSplash() {
@@ -2470,6 +2482,7 @@ function applyXmasSplash() {
   set('splashEyebrow', el => el.textContent = sp[0]);
   set('splashTitle', el => el.innerHTML = sp[1]);
   set('splashTagline', el => el.innerHTML = sp[2]);
+  setSplashFind(xmasLang);
   set('splashEnterLabel', el => el.textContent = sp[3]);
 }
 function applyXmasHome() {
@@ -3382,6 +3395,7 @@ function applyStaticText() {
   if (sEyebrow) sEyebrow.textContent = t.splashEyebrow;
   if (sTitle) sTitle.innerHTML = t.splashTitle;
   if (sTagline) sTagline.innerHTML = t.splashTagline;
+  setSplashFind(lang);
   if (sEnter) sEnter.textContent = t.splashEnter;
   applyXmasSplash();
 

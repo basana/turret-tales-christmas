@@ -78,6 +78,15 @@
   .header-branch { position: absolute; top: -34px; right: -42px; width: 247px; height: auto; pointer-events: none; z-index: 5; opacity: 0.75; }
   .header-controls { flex: 0 0 auto; position: relative; z-index: 7; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
+  /* Всплывающая реклама Food & Drinks (каждые 2 минуты) */
+  .food-promo { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 60; width: min(92vw, 360px); box-sizing: border-box; background: #F5ECD6; border: 2px solid #7A1026; border-radius: 16px; padding: 14px 14px 14px 14px; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; gap: 12px; align-items: center; font-family: var(--sans); color: var(--ink); animation: foodPromoIn .35s ease-out; }
+  .food-promo[hidden] { display: none; }
+  @keyframes foodPromoIn { from { opacity: 0; transform: translate(-50%, 16px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  .food-promo-icon { width: 58px; height: 58px; flex: 0 0 auto; object-fit: contain; border-radius: 50%; background: #fff; border: 1.5px solid #c8a878; padding: 4px; }
+  .food-promo-text { flex: 1 1 auto; font-size: 15px; line-height: 1.35; }
+  .food-promo-link { display: inline-block; margin-top: 6px; font-weight: 700; color: #7A1026; text-decoration: none; border-bottom: 1px solid #7A1026; cursor: pointer; background: none; border-top: 0; border-left: 0; border-right: 0; padding: 0; font-size: 15px; font-family: inherit; }
+  .food-promo-close { position: absolute; top: 4px; right: 8px; background: none; border: 0; color: #7A1026; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
+  .food-promo { position: fixed; }
   .header-controls { gap: 4px; }
   .header-controls .pill-btn { padding: 4px 6px; font-size: 11px; letter-spacing: 0; }
   @media (max-width: 420px) { .header-controls .pill-btn { padding: 3px 5px; font-size: 10.5px; } }
@@ -1000,6 +1009,14 @@
   </div>
 </div>
 
+<div class="food-promo" id="foodPromo" hidden role="dialog" aria-label="Food & Drinks">
+  <button class="food-promo-close" id="foodPromoClose" aria-label="×">×</button>
+  <img class="food-promo-icon" id="foodPromoIcon" src="icon-food.webp" alt="" onerror="this.style.display='none'">
+  <div class="food-promo-text">
+    <div id="foodPromoQ"></div>
+    <button class="food-promo-link" id="foodPromoLink"></button>
+  </div>
+</div>
 <div class="app">
   <div class="header">
     <img class="header-branch" src="weihnachts-zweig.webp" alt="">
@@ -2700,6 +2717,33 @@ function xmasOpenList() { xmasTown = null; xmasListOnly = true; switchView('chri
 // Экран 2 в двух режимах: «станция» (фото, текст — из раздела Locations/карты) и «главный» (кнопки Christmas)
 function openStation(i) { index = i; document.body.classList.add('station-open'); switchView('guide'); renderGuide(); }
 function openXmasHome() { document.body.classList.remove('station-open'); switchView('guide'); }
+// Всплывающая реклама Food & Drinks: показывается каждые 2 минуты, закрывается крестиком
+const FOOD_PROMO = {
+  de: { q: 'Etwas Heißes trinken? Oder einen Happen essen? Dann hierher!', link: 'Food & Drinks →' },
+  en: { q: 'Fancy something hot to drink? Or a bite to eat? This way!', link: 'Food & Drinks →' },
+  fr: { q: "Envie d'une boisson chaude ou d'un petit en-cas ? Par ici !", link: 'Food & Drinks →' },
+  nl: { q: 'Zin in iets warms te drinken? Of een hapje? Hier moet u zijn!', link: 'Food & Drinks →' },
+  ru: { q: 'Выпить что-нибудь горячего? Закусить? Вам сюда', link: 'Food & Drinks →' }
+};
+function foodPromoLang() {
+  const l = document.body.classList.contains('xmas-on') ? xmasLang : lang;
+  return FOOD_PROMO[l] ? l : 'en';
+}
+function showFoodPromo() {
+  const box = document.getElementById('foodPromo');
+  if (!box || !box.hidden) return;
+  if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
+  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
+  const t = FOOD_PROMO[foodPromoLang()];
+  document.getElementById('foodPromoQ').textContent = t.q;
+  document.getElementById('foodPromoLink').textContent = t.link;
+  box.hidden = false;
+}
+function hideFoodPromo() { const box = document.getElementById('foodPromo'); if (box) box.hidden = true; }
+document.getElementById('foodPromoClose').addEventListener('click', hideFoodPromo);
+document.getElementById('foodPromoLink').addEventListener('click', () => { hideFoodPromo(); switchView('food'); });
+setInterval(showFoodPromo, 120000);
+
 // Логотип и название «Rhine Guide» в шапке возвращают на начальный экран приложения
 function goStart() {
   document.body.classList.remove('station-open');

@@ -63,7 +63,7 @@
 <body>
 <header>
   <div class="brand ui">Turret Tales · Partnerkarte</div>
-  <h1>Live-Demo</h1>
+  <h1 id="demo-title">Live-Demo</h1>
   <span class="badge ui">DEMO</span>
   <p class="hint">Tippen Sie auf eine Karte, einen Button oder einen Punkt auf der Karte. Die Zahlen unten ändern sich sofort.</p>
 </header>
@@ -73,8 +73,8 @@
   <table class="ui">
     <thead><tr><th>Ort</th><th>Karte</th><th>Maps</th><th>Anruf</th><th>Gutschein</th><th>Einlös.</th></tr></thead>
     <tbody>
-      <tr><td>Mia Gelateria</td><td class="n" id="c-mia-map">0</td><td class="n" id="c-mia-maps">0</td><td class="n" id="c-mia-phone">0</td><td class="n" id="c-mia-coupon">0</td><td class="n" id="c-mia-redeem">0</td></tr>
-      <tr><td>Reuffel</td><td class="n" id="c-reu-map">0</td><td class="n" id="c-reu-maps">0</td><td class="n" id="c-reu-phone">0</td><td class="n" id="c-reu-coupon">0</td><td class="n" id="c-reu-redeem">0</td></tr>
+      <tr id="row-mia"><td>Mia Gelateria</td><td class="n" id="c-mia-map">0</td><td class="n" id="c-mia-maps">0</td><td class="n" id="c-mia-phone">0</td><td class="n" id="c-mia-coupon">0</td><td class="n" id="c-mia-redeem">0</td></tr>
+      <tr id="row-reu"><td>Reuffel</td><td class="n" id="c-reu-map">0</td><td class="n" id="c-reu-maps">0</td><td class="n" id="c-reu-phone">0</td><td class="n" id="c-reu-coupon">0</td><td class="n" id="c-reu-redeem">0</td></tr>
     </tbody>
   </table>
   <p class="sum ui">Zählung in dieser Sitzung. Die Zahlen im Auswertungskonto kommen mit kurzer Verzögerung dazu.</p>
@@ -142,6 +142,8 @@
 <script async data-goatcounter="https://rhine-guide.goatcounter.com/count" src="//gc.zgo.at/count.js"></script>
 <script>
 // Demo-Ereignisse. Der Pfad beginnt mit "demo-", damit man sie im Auswertungskonto von echten Klicks trennen kann.
+// ?firm=mia or ?firm=reu shows a separate demo for one firm only. Without it, both firms are shown.
+const firm = new URLSearchParams(location.search).get('firm');
 const PLACES = {
   mia: { name: 'Mia Gelateria', code: 'TT-DEMO-MIA-10', offer: '10 % auf Ihren Eisbecher', ll: [50.36000, 7.60203], card: 'p-mia' },
   reu: { name: 'Reuffel Bazaar', code: 'TT-DEMO-REU-10', offer: '10 % auf Ihren Einkauf', ll: [50.36098, 7.59604], card: 'p-reu' }
@@ -175,12 +177,20 @@ function highlight(cardId) {
   setTimeout(() => c.classList.remove('hl'), 1200);
 }
 
+if (firm === 'mia' || firm === 'reu') {
+  const other = firm === 'mia' ? 'reu' : 'mia';
+  document.getElementById('p-' + other).style.display = 'none';
+  document.getElementById('row-' + other).style.display = 'none';
+  document.getElementById('demo-title').textContent = 'Live-Demo · ' + PLACES[firm].name;
+  document.title = 'Live-Demo · ' + PLACES[firm].name + ' · Turret Tales';
+}
+
 // Karte mit Punkten
 const map = L.map('map', { scrollWheelZoom: false });
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
-const bounds = [PLACES.mia.ll, PLACES.reu.ll];
+const bounds = (firm === 'mia' || firm === 'reu') ? [PLACES[firm].ll] : [PLACES.mia.ll, PLACES.reu.ll];
 map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
-Object.keys(PLACES).forEach(p => {
+Object.keys(PLACES).filter(p => !((firm === 'mia' || firm === 'reu') && p !== firm)).forEach(p => {
   const logo = p === 'mia'
     ? '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria" style="width:100%;height:100%;object-fit:cover;display:block">'
     : '<img src="reuffel-logo.webp" alt="Reuffel Bazaar" style="width:100%;height:100%;object-fit:cover;display:block">';

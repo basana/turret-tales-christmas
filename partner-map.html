@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Partnerkarte Koblenz · Turret Tales</title>
+<title>Food, Drinks & More · Turret Tales</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
   :root { --cream:#F5ECD6; --paper:#FBF6EA; --maroon:#7A1026; --ink:#3a2a1a; --soft:#6b5a4a; --gold:#c9a05c; }
@@ -39,6 +39,9 @@
   .partner-meta dd { display: inline; margin: 0; }
   .partner-meta div { margin: 0 0 2px; }
   .partner-meta a { color: var(--maroon); }
+  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 10px; }
+  .gallery img { width: 100%; height: auto; border-radius: 8px; display: block; }
+  .gallery img:first-child { grid-column: span 2; }
   .pending { color: var(--soft); font-style: italic; }
   .partner-link { display: inline-block; margin-top: 10px; font-family: Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 14px; background: var(--maroon); color: #fff; text-decoration: none; }
   .contact { margin-top: 22px; background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: 16px; line-height: 1.5; }
@@ -53,11 +56,13 @@
 <body>
 <header>
   <div class="brand">Turret Tales · Tours All Year Round</div>
-  <h1 id="t-title">Partnerkarte Koblenz</h1>
+  <h1 id="t-title">Food, Drinks & More</h1>
   <p class="sub" id="t-sub">Cafés und Restaurants in der Altstadt</p>
   <div class="langs">
     <button data-l="de" class="active">DE</button>
     <button data-l="en">EN</button>
+    <button data-l="fr">FR</button>
+    <button data-l="nl">NL</button>
     <button data-l="ru">RU</button>
   </div>
 </header>
@@ -77,29 +82,49 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 const T = {
+  fr: {
+    title: 'Food, Drinks & More', sub: 'Cafés, restaurants et souvenirs dans la vieille ville',
+    intro: 'Ici nous présentons les cafés, restaurants et boutiques de souvenirs que les visiteurs de Turret Tales peuvent recommander. Les points rouges indiquent les lieux sur la carte. Le programme partenaires démarre avec les marchés de Noël 2026.',
+    ph: 'Partenaire à venir · description et photos à venir',
+    secCafe: 'Cafés et restaurants', secShop: 'Souvenirs et livres', secMore: 'Autres partenaires',
+    navCafe: 'Cafés & restaurants', navShop: 'Souvenirs & livres',
+    addr: 'Adresse', hours: 'Horaires', phone: 'Téléphone', gmaps: 'Ouvrir dans Google Maps',
+    pending: 'à venir', photoSlot: 'Photos à venir',
+    contact: 'Intéressé par un partenariat ? Écrivez à <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> ou appelez : <a href="tel:+491772850207">+49 177 285 0207</a>.'
+  },
+  nl: {
+    title: 'Food, Drinks & More', sub: 'Cafés, restaurants en souvenirs in de oude stad',
+    intro: 'Hier tonen we cafés, restaurants en souvenirwinkels die gasten van Turret Tales kunnen aanbevelen. De rode stippen tonen de plekken op de kaart. Het partnerprogramma start met de kerstmarkten 2026.',
+    ph: "Partner volgt · beschrijving en foto's volgen",
+    secCafe: 'Cafés en restaurants', secShop: 'Souvenirs en boeken', secMore: 'Meer partners',
+    navCafe: 'Cafés & restaurants', navShop: 'Souvenirs & boeken',
+    addr: 'Adres', hours: 'Openingstijden', phone: 'Telefoon', gmaps: 'Openen in Google Maps',
+    pending: 'volgt', photoSlot: "Foto's volgen",
+    contact: 'Interesse in een samenwerking? Schrijf naar <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> of bel: <a href="tel:+491772850207">+49 177 285 0207</a>.'
+  },
   de: {
-    title: 'Partnerkarte Koblenz', sub: 'Cafés, Restaurants und Souvenirs in der Altstadt',
+    title: 'Food, Drinks & More', sub: 'Cafés, Restaurants und Souvenirs in der Altstadt',
     intro: 'Hier zeigen wir Cafés, Restaurants und Souvenirgeschäfte, die Gäste von Turret Tales empfehlen. Die roten Punkte zeigen die Orte auf der Karte. Das Partnerprogramm startet mit den Weihnachtsmärkten 2026.',
     ph: 'Partner folgt · Beschreibung und Fotos folgen',
-    secCafe: 'Cafés und Restaurants', secShop: 'Souvenirs und Bücher', navCafe: 'Cafés & Restaurants', navShop: 'Souvenirs & Bücher',
+    secCafe: 'Cafés und Restaurants', secShop: 'Souvenirs und Bücher', secMore: 'Weitere Partner', navCafe: 'Cafés & Restaurants', navShop: 'Souvenirs & Bücher',
     addr: 'Adresse', hours: 'Öffnungszeiten', phone: 'Telefon', gmaps: 'Auf Google Maps öffnen',
     pending: 'folgt', photoSlot: 'Fotos folgen',
     contact: 'Interesse an einer Partnerschaft? Schreiben Sie an <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> oder rufen Sie an: <a href="tel:+491772850207">+49 177 285 0207</a>.'
   },
   en: {
-    title: 'Partner map Koblenz', sub: 'Cafés, restaurants and souvenirs in the old town',
+    title: 'Food, Drinks & More', sub: 'Cafés, restaurants and souvenirs in the old town',
     intro: 'Here we show cafés, restaurants and souvenir shops that Turret Tales guests can recommend. The red dots show the places on the map. The partner programme starts with the Christmas markets 2026.',
     ph: 'Partner to follow · description and photos to follow',
-    secCafe: 'Cafés and restaurants', secShop: 'Souvenirs and books', navCafe: 'Cafés & restaurants', navShop: 'Souvenirs & books',
+    secCafe: 'Cafés and restaurants', secShop: 'Souvenirs and books', secMore: 'More partners', navCafe: 'Cafés & restaurants', navShop: 'Souvenirs & books',
     addr: 'Address', hours: 'Opening hours', phone: 'Phone', gmaps: 'Open in Google Maps',
     pending: 'to follow', photoSlot: 'Photos to follow',
     contact: 'Interested in a partnership? Write to <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> or call <a href="tel:+491772850207">+49 177 285 0207</a>.'
   },
   ru: {
-    title: 'Карта партнёров · Кобленц', sub: 'Кафе, рестораны и сувениры в старом городе',
+    title: 'Food, Drinks & More', sub: 'Кафе, рестораны и сувениры в старом городе',
     intro: 'Здесь мы показываем кафе, рестораны и магазины сувениров, которые гостям Turret Tales могут порекомендовать. Красные точки — места на карте. Программа партнёров стартует вместе с рождественскими рынками 2026.',
     ph: 'Партнёр будет добавлен · описание и фото позже',
-    secCafe: 'Кафе и рестораны', secShop: 'Сувениры и книги', navCafe: 'Кафе и рестораны', navShop: 'Сувениры и книги',
+    secCafe: 'Кафе и рестораны', secShop: 'Сувениры и книги', secMore: 'Другие партнёры', navCafe: 'Кафе и рестораны', navShop: 'Сувениры и книги',
     addr: 'Адрес', hours: 'Часы работы', phone: 'Телефон', gmaps: 'Открыть в Google Maps',
     pending: 'скоро', photoSlot: 'Фото будут добавлены',
     contact: 'Интересно партнёрство? Напишите на <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> или позвоните: <a href="tel:+491772850207">+49 177 285 0207</a>.'
@@ -112,17 +137,19 @@ const PARTNERS = [
     slug: 'mia',
     name: 'Mia Gelateria',
     icon: 'mia-gelateria-icon.webp',
-    photo: 'mia-gelateria-1.webp',
+    photos: ['mia-gelateria-1.webp'],
     photoAlt: 'Mia Gelateria: Becher mit Softeis, Beeren und Schokolade',
-    cat: { de: 'Eisdiele · Selbstbedienung', en: 'Ice cream parlour · self-service', ru: 'Мороженое · самообслуживание' },
+    cat: { de: 'Eisdiele · Selbstbedienung', en: 'Ice cream parlour · self-service', ru: 'Мороженое · самообслуживание', fr: 'Glacier · libre-service', nl: 'IJssalon · zelfbediening' },
     addr: 'Rheinstr. 17, 56068 Koblenz (Altstadt)',
-    hours: { de: 'täglich 12–21 Uhr', en: 'daily 12:00–21:00', ru: 'ежедневно 12:00–21:00' },
+    hours: { de: 'täglich 12–21 Uhr', en: 'daily 12:00–21:00', ru: 'ежедневно 12:00–21:00', fr: 'tous les jours 12h–21h', nl: 'dagelijks 12–21 uur' },
     phone: '+49 261 97381344',
     gmaps: 'https://maps.app.goo.gl/sRjWmqWKR9dxL9Lx7',
     desc: {
       de: 'Eis in Selbstbedienung: Sie füllen Ihr Softeis selbst in den Becher und mischen bis zu acht Sorten. Bezahlt wird am Ende nach Gewicht. Auch die Toppings wählen Sie selbst.',
       en: 'Self-service ice cream: fill your soft serve into the cup yourself and mix up to eight flavours. You pay at the end by weight. You choose the toppings yourself too.',
-      ru: 'Мороженое в самообслуживании: сами наливаете софт-мороженое в стаканчик и смешиваете до восьми вкусов. Оплата в конце — по весу. Топпинги тоже выбираете сами.'
+      ru: 'Мороженое в самообслуживании: сами наливаете софт-мороженое в стаканчик и смешиваете до восьми вкусов. Оплата в конце — по весу. Топпинги тоже выбираете сами.',
+      fr: "Glace en libre-service : remplissez vous-même votre soft dans le gobelet et mélangez jusqu'à huit parfums. Vous payez à la fin au poids. Les garnitures se choisissent aussi librement.",
+      nl: 'Zelfbediening-ijs: vul uw softijs zelf in het bakje en meng tot acht smaken. U betaalt aan het eind op gewicht. Ook de toppings kiest u zelf.'
     }
   }
 ];
@@ -133,8 +160,8 @@ const SHOPS = [
     slug: 'reuffel',
     name: 'Reuffel Bazaar',
     initial: 'R',
-    photo: null,
-    cat: { de: 'Bücher · Souvenirs · Postkarten', en: 'Books · souvenirs · postcards', ru: 'Книги · сувениры · открытки' },
+    photos: ['reuffel-1.webp', 'reuffel-2.webp', 'reuffel-3.webp', 'reuffel-4.webp'],
+    cat: { de: 'Bücher · Souvenirs · Postkarten', en: 'Books · souvenirs · postcards', ru: 'Книги · сувениры · открытки', fr: 'Livres · souvenirs · cartes postales', nl: 'Boeken · souvenirs · ansichtkaarten' },
     addr: 'An der Liebfrauenkirche 11, 56068 Koblenz',
     hours: null,
     phone: '+49 261 94292194',
@@ -143,7 +170,9 @@ const SHOPS = [
     desc: {
       de: 'Bücher, Souvenirs und Postkarten aus Koblenz. Hier gibt es auch Postkarten von Turret Tales.',
       en: 'Books, souvenirs and postcards from Koblenz. Turret Tales postcards are sold here too.',
-      ru: 'Книги, сувениры и открытки из Кобленца. Здесь также продаются открытки Turret Tales.'
+      ru: 'Книги, сувениры и открытки из Кобленца. Здесь также продаются открытки Turret Tales.',
+      fr: 'Livres, souvenirs et cartes postales de Coblence. On trouve ici aussi les cartes postales de Turret Tales.',
+      nl: 'Boeken, souvenirs en ansichtkaarten uit Koblenz. Hier zijn ook ansichtkaarten van Turret Tales te koop.'
     }
   }
 ];
@@ -186,8 +215,10 @@ function avatar(p) {
 
 function partnerCard(p, n) {
   const t = T[lang];
-  const photo = p.photo
-    ? `<img class="partner-photo" src="${p.photo}" alt="${p.photoAlt || p.name}" loading="lazy">`
+  const photos = p.photos || [];
+  const photo = photos.length
+    ? `<div class="gallery">${photos.map((src, i) =>
+        `<img src="${src}" alt="${i === 0 && p.photoAlt ? p.photoAlt : p.name}" loading="lazy">`).join('')}</div>`
     : `<div class="photo-slot">${t.photoSlot}</div>`;
   const val = (v, fallback) => v ? v : `<span class="pending">${t.pending}</span>`;
   const hours = p.hours ? (p.hours[lang] || p.hours.en) : null;
@@ -230,12 +261,14 @@ function render() {
 
   const cafes = PARTNERS.map((p, i) => partnerCard(p, i + 1)).join('');
   const placeholders = PLACES.slice(PARTNERS.length + SHOPS.length).map((_, i) =>
-    `<div class="card"><div class="num">${String(i + PARTNERS.length + 1).padStart(2, '0')}</div><div class="ph">${t.ph}</div></div>`).join('');
+    `<div class="card"><div class="num">${String(i + 1).padStart(2, '0')}</div><div class="ph">${t.ph}</div></div>`).join('');
   const shops = SHOPS.map((p, i) => partnerCard(p, i + 1)).join('');
 
+  // Order: cafés, souvenir shops, then the remaining placeholder cards.
   document.getElementById('cards').innerHTML =
-    `<h2 class="sec" id="sec-cafe">${t.secCafe}</h2>${cafes}${placeholders}` +
-    `<h2 class="sec" id="sec-shop">${t.secShop}</h2>${shops}`;
+    `<h2 class="sec" id="sec-cafe">${t.secCafe}</h2>${cafes}` +
+    `<h2 class="sec" id="sec-shop">${t.secShop}</h2>${shops}` +
+    `<h2 class="sec" id="sec-more">${t.secMore}</h2>${placeholders}`;
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('active', b.dataset.l === lang));
 }
 document.querySelectorAll('.langs button').forEach(b => b.addEventListener('click', () => {

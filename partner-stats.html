@@ -41,13 +41,15 @@
 </head>
 <body>
 <header>
-  <div class="brand ui">Turret Tales · Statistik</div>
+  <div class="brand ui" id="t-brand">Turret Tales · Statistik</div>
   <h1 id="t-title">Besucherstatistik 2026</h1>
   <p class="client" id="client">Partner: Mia Gelateria, Koblenz</p>
   <p class="period ui" id="period">Zeitraum: 1. Januar – 31. Dezember 2026</p>
   <div class="langs ui">
     <button data-l="de" class="active">DE</button>
     <button data-l="en">EN</button>
+    <button data-l="fr">FR</button>
+    <button data-l="nl">NL</button>
     <button data-l="ru">RU</button>
   </div>
 </header>
@@ -89,12 +91,31 @@ const DATA = {
   kpi: { views: 412, maps: 37, phone: 9, coupons: 14 },
   rows: [
     { name: 'Mia Gelateria', views: 128, maps: 19, phone: 4 },
-    { name: 'Weitere Partner', views: 284, maps: 18, phone: 5 }
+    { name: { de: 'Weitere Partner', en: 'Other partners', ru: 'Другие партнёры', fr: 'Autres partenaires', nl: 'Overige partners' }, views: 284, maps: 18, phone: 5 }
   ]
 };
 
 const T = {
+  fr: {
+    brand: 'Turret Tales · Statistiques', months: ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'],
+    title: 'Statistiques des visites 2026', client: 'Partenaire', period: 'Période : 1er janvier – 31 décembre 2026',
+    k1: 'Vues de la page', k2: 'Clics sur Google Maps', k3: 'Clics sur le téléphone', k4: 'Bons utilisés',
+    chart: 'Vues par mois', table: 'Actions par partenaire', th1: 'Partenaire', th2: 'Vues', th3: 'Maps', th4: 'Téléphone',
+    demo: 'Exemples de chiffres pour la démonstration. Pas de vraies données.',
+    note: "Ces chiffres comptent de façon anonyme combien de fois les pages sont consultées et les boutons cliqués. Aucun cookie n'est posé et aucune donnée personnelle n'est enregistrée.",
+    foot: 'Mis à jour le : ', foot2: ' · Analyse avec GoatCounter'
+  },
+  nl: {
+    brand: 'Turret Tales · Statistieken', months: ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],
+    title: 'Bezoekersstatistieken 2026', client: 'Partner', period: 'Periode: 1 januari – 31 december 2026',
+    k1: 'Paginaweergaven', k2: 'Klikken op Google Maps', k3: 'Klikken op telefoon', k4: 'Ingeloste kortingsbonnen',
+    chart: 'Weergaven per maand', table: 'Acties per partner', th1: 'Partner', th2: 'Weergaven', th3: 'Maps', th4: 'Telefoon',
+    demo: 'Voorbeeldcijfers voor de demonstratie. Geen echte gegevens.',
+    note: "Deze cijfers tellen anoniem hoe vaak pagina's worden bekeken en knoppen worden aangeklikt. Er worden geen cookies geplaatst en geen persoonsgegevens opgeslagen.",
+    foot: 'Stand: ', foot2: ' · Analyse met GoatCounter'
+  },
   de: {
+    brand: 'Turret Tales · Statistik',
     title: 'Besucherstatistik 2026', client: 'Partner', period: 'Zeitraum: 1. Januar – 31. Dezember 2026',
     k1: 'Seitenaufrufe', k2: 'Klicks Google Maps', k3: 'Klicks Telefon', k4: 'Eingelöste Gutscheine',
     chart: 'Aufrufe pro Monat', table: 'Aktionen nach Partner', th1: 'Partner', th2: 'Aufrufe', th3: 'Maps', th4: 'Telefon',
@@ -103,6 +124,7 @@ const T = {
     foot: 'Stand: ', foot2: ' · Auswertung mit GoatCounter'
   },
   en: {
+    brand: 'Turret Tales · Statistics', months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
     title: 'Visitor statistics 2026', client: 'Partner', period: 'Period: 1 January – 31 December 2026',
     k1: 'Page views', k2: 'Google Maps clicks', k3: 'Phone clicks', k4: 'Redeemed vouchers',
     chart: 'Views per month', table: 'Actions by partner', th1: 'Partner', th2: 'Views', th3: 'Maps', th4: 'Phone',
@@ -111,6 +133,7 @@ const T = {
     foot: 'As of: ', foot2: ' · Analysis with GoatCounter'
   },
   ru: {
+    brand: 'Turret Tales · Статистика', months: ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'],
     title: 'Статистика посещений 2026', client: 'Партнёр', period: 'Период: 1 января – 31 декабря 2026',
     k1: 'Просмотры страницы', k2: 'Клики на Google Maps', k3: 'Клики на телефон', k4: 'Погашенные купоны',
     chart: 'Просмотры по месяцам', table: 'Действия по партнёрам', th1: 'Партнёр', th2: 'Просмотры', th3: 'Maps', th4: 'Телефон',
@@ -128,6 +151,7 @@ function render() {
   document.documentElement.lang = lang;
   document.title = t.title + ' · Turret Tales';
   document.getElementById('t-title').textContent = t.title;
+  document.getElementById('t-brand').textContent = t.brand;
   document.getElementById('client').textContent = t.client + ': ' + DATA.rows[0].name + ', Koblenz';
   document.getElementById('period').textContent = t.period;
   document.getElementById('demo-note').style.display = DATA.demo ? '' : 'none';
@@ -143,9 +167,9 @@ function render() {
   const max = Math.max(1, ...DATA.views);
   document.getElementById('bars').innerHTML = DATA.views.map(v =>
     `<div class="bar" style="height:${Math.max(2, v / max * 100)}%">${v ? `<span>${v}</span>` : ''}</div>`).join('');
-  document.getElementById('axis').innerHTML = DATA.months.map(m => `<div>${m}</div>`).join('');
+  document.getElementById('axis').innerHTML = (t.months || DATA.months).map(m => `<div>${m}</div>`).join('');
   document.getElementById('rows').innerHTML = DATA.rows.map(r =>
-    `<tr><td>${r.name}</td><td class="n">${r.views}</td><td class="n">${r.maps}</td><td class="n">${r.phone}</td></tr>`).join('');
+    `<tr><td>${typeof r.name === 'object' ? (r.name[lang] || r.name.en) : r.name}</td><td class="n">${r.views}</td><td class="n">${r.maps}</td><td class="n">${r.phone}</td></tr>`).join('');
   document.getElementById('t-note').textContent = t.note;
   document.getElementById('t-foot').textContent = t.foot + DATA.updated + t.foot2;
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('active', b.dataset.l === lang));

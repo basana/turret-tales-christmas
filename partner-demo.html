@@ -125,7 +125,7 @@
     <span class="demo ui">DEMO</span>
     <div class="brand2 ui">Turret Tales · Gutschein</div>
     <h3 id="cp-title">Mia Gelateria</h3>
-    <p class="offer">10 % auf Ihren Eisbecher</p>
+    <p class="offer" id="cp-offer"></p>
     <div class="qr" id="qr"></div>
     <div class="code" id="cp-code"></div>
     <div class="valid ui">Gültig bis 31.12.2026 · Beispiel</div>
@@ -143,8 +143,8 @@
 <script>
 // Demo-Ereignisse. Der Pfad beginnt mit "demo-", damit man sie im Auswertungskonto von echten Klicks trennen kann.
 const PLACES = {
-  mia: { name: 'Mia Gelateria', code: 'TT-DEMO-MIA-10', ll: [50.35825, 7.59779], card: 'p-mia' },
-  reu: { name: 'Reuffel Bazaar', code: 'TT-DEMO-REU-10', ll: [50.36098, 7.59604], card: 'p-reu' }
+  mia: { name: 'Mia Gelateria', code: 'TT-DEMO-MIA-10', offer: '10 % auf Ihren Eisbecher', ll: [50.36000, 7.60203], card: 'p-mia' },
+  reu: { name: 'Reuffel Bazaar', code: 'TT-DEMO-REU-10', offer: '10 % auf Ihren Einkauf', ll: [50.36098, 7.59604], card: 'p-reu' }
 };
 const counts = {};
 const redeemed = {};
@@ -201,6 +201,7 @@ function openCoupon(p) {
   openFor = p;
   bump(p, 'coupon');
   document.getElementById('cp-title').textContent = PLACES[p].name;
+  document.getElementById('cp-offer').textContent = PLACES[p].offer;
   document.getElementById('cp-code').textContent = PLACES[p].code;
   const qr = document.getElementById('qr');
   qr.innerHTML = '';

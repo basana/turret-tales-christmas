@@ -115,6 +115,11 @@
   .xmas-cell-img figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 10px; background: #7A1026; color: #fff; font-family: 'EB Garamond', serif; font-size: 16px; font-weight: 700; text-align: center; }
   .xmas-hero { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #7A1026; color: #F5ECD6; cursor: pointer; }
   .xmas-hero img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+  .xmas-hero { pointer-events: none; }
+  .xmas-ph { grid-column: 1 / -1; padding: 28px 12px; text-align: center; border: 1px dashed #7A1026; border-radius: 8px; color: #7A1026; font-size: 13px; }
+  .xmas-hero-pic { position: relative; display: block; }
+  .xmas-hero-strip { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; pointer-events: auto; cursor: pointer; }
+  .xmas-hero-label { pointer-events: auto; }
   .xmas-hero-label { display: block; padding: 14px 12px 16px; font-family: 'EB Garamond', serif; font-size: 28px; font-weight: 700; letter-spacing: 0.02em; text-align: center; }
   .xmas-banner { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; display: block; margin: 0 0 12px; }
   #view-guide .station-title, #view-guide .stats, #view-guide .story-block { display: none !important; }
@@ -493,7 +498,7 @@
   /* Эмблема — в родных цветах (красный штамп), без подложки и прозрачности */
   body.xmas-on .splash img.splash-watermark { mix-blend-mode: normal; opacity: 1; }
   /* Эмблема на 15 % меньше — позиция (верх слева) не меняется */
-  body.xmas-on .splash-watermark-wrap { width: calc(var(--wm) * 0.85); height: calc(var(--wm) * 0.85); }
+  body.xmas-on .splash-watermark-wrap { width: calc(var(--wm) * 0.765); height: calc(var(--wm) * 0.765); }
   /* Еловая ветка слева под эмблемой — зеркально к правой гирлянде шапки */
   .splash img {
     position: absolute; inset: 0; width: 100%; height: 100%;
@@ -1004,7 +1009,7 @@
   <div class="content">
     <!-- ГИД -->
     <div class="view active" id="view-guide">
-      <button class="xmas-hero" id="qlChristmas"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
+      <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
       <div class="xmas-home-langs" id="xmasHomeLangs"><button data-xh="de">DE</button><button data-xh="fr">FR</button><button data-xh="nl">NL</button><button data-xh="en">EN</button><button data-xh="ru">RU</button></div>
       <div class="xmas-home" id="xmasHome">
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
@@ -2527,10 +2532,10 @@ const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’acc
 const XMAS_GEO = {
   koblenz:   {center:[50.36020,7.59850], zoom:16, pins:[[50.36011,7.59836],[50.360611,7.598306],[50.36041,7.59506],[50.35988,7.60123],[50.35991,7.59612],[50.35879,7.59651],[50.36111,7.59537],[50.3653,7.6156]]},
   oberwesel: {center:[50.1065,7.7273], zoom:16, pins:[[50.1065,7.7273]]},
-  boppard:   {center:[50.2312,7.5885], zoom:16, pins:[[50.2312,7.5885]]},
+  boppard:   {center:[50.23232,7.59165], zoom:16, pins:[[50.23232,7.59165]]},
   bacharach: {center:[50.0583,7.7686], zoom:16, pins:[[50.0583,7.7686]]},
   lahnstein: {center:[50.3061,7.5976], zoom:15, pins:[[50.3061,7.5976]]},
-  ruedesheim: {center:[49.9784,7.9208], zoom:16, pins:[[49.9784,7.9208]]}
+  ruedesheim: {center:[49.97888,7.92324], zoom:16, pins:[[49.97888,7.92324]]}
 };
 // Рынок с особым значком (ангел): город → индекс точки в XMAS_GEO и карточке в XMAS_CITY (Schängelbar — первый)
 const XMAS_ANGEL_PIN = { koblenz: 0 };
@@ -2542,7 +2547,7 @@ function xmasDrawMap(opts) {
   if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
   xmasMapObj = L.map(el, { scrollWheelZoom: false });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
-  if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [30, 30] });
+  if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [4, 4] });
   else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [4, 4], maxZoom: opts.zoom });
   else xmasMapObj.setView(opts.center, opts.zoom);
   opts.pins.forEach(p => {
@@ -2598,7 +2603,8 @@ function xmasExplainHtml() {
 function xmasTownListHtml() {
   const T = (o) => o[xmasLang] || o.de;
   const go = { de: 'Zum Markt →', fr: 'Voir le marché →', nl: 'Naar de markt →', en: 'Open market →', ru: 'К рынку →' }[xmasLang] || 'Open market →';
-  return '<div class="xmas-town-list">' + Object.keys(XMAS_GEO).map((k, i) =>
+  const ORDER = ['koblenz', 'lahnstein', 'boppard', 'oberwesel', 'bacharach', 'ruedesheim'];
+  return '<div class="xmas-town-list">' + ORDER.map((k, i) =>
     `<div class="route-card xmas-card"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`).join('') + '</div>';
 }
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
@@ -2715,7 +2721,7 @@ function xmasUpdateGpsPanel() {
 }
 
 function renderChristmas(townKey) {
-  if (townKey !== undefined) xmasTown = townKey;
+  if (townKey !== undefined) { xmasTown = townKey; navPush(); }
   const el = document.getElementById('view-christmas');
   if (!el) return;
   const T_ = (o) => o[xmasLang] || o.de;
@@ -2740,7 +2746,7 @@ function renderChristmas(townKey) {
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
           <div class="castle-name">${k.title}</div>
           <div class="route-place">${k.place}</div>
-          <div class="xmas-grid" data-photo="${k.photo}">${(XMAS_PHOTOS[k.photo] || []).map(f => `<figure class="xmas-cell xmas-cell-img"><img src="${f}" alt="" loading="lazy"></figure>`).join('')}</div>
+          <div class="xmas-grid" data-photo="${k.photo}">${(XMAS_PHOTOS[k.photo] || []).length ? (XMAS_PHOTOS[k.photo]).map(f => `<figure class="xmas-cell xmas-cell-img"><img src="${f}" alt="" loading="lazy"></figure>`).join('') : '<div class="xmas-ph">Placeholder</div>'}</div>
           <p style="margin:6px 0;">${k.text}</p>
         </div>`).join('') +
       `<div class="xmas-block xmas-small">${TX.practical}</div>`;
@@ -3052,12 +3058,14 @@ const INFO_POPUPS = {
   about: {
     en: {
       title: 'About me',
-      body: `<p>Certified tour guide (BVGD), based in Koblenz. I speak Russian, German and English, and work with tour operators (Viking, Kuoni / JTB, Saga) as well as private groups.</p>
+      body: `<p><strong>Team TAYR &amp; Anatoly Basin</strong></p>
+        <p>Certified tour guide (BVGD), based in Koblenz. I speak Russian, German and English, and work with tour operators (Viking, Kuoni / JTB, Saga) as well as private groups.</p>
         <p>Postcards from this app are also available to order — ask via contact.</p>`
     },
     ru: {
       title: 'Обо мне',
-      body: `<p>Сертифицированный гид (BVGD), живу в Кобленце. Говорю по-русски, по-немецки и по-английски, работаю с туроператорами (Viking, Kuoni / JTB, Saga), а также с частными группами.</p>
+      body: `<p><strong>Team TAYR &amp; Anatoly Basin</strong></p>
+        <p>Сертифицированный гид (BVGD), живу в Кобленце. Говорю по-русски, по-немецки и по-английски, работаю с туроператорами (Viking, Kuoni / JTB, Saga), а также с частными группами.</p>
         <p>Открытки из этого приложения тоже можно заказать — напишите через контакты.</p>`
     }
   },

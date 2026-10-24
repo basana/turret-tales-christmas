@@ -75,7 +75,7 @@
     color: #7A1026;
   }
   .header { position: relative; }
-  .header-branch { position: absolute; top: -34px; right: -42px; width: 247px; height: auto; pointer-events: none; z-index: 5; opacity: 0.75; }
+  .header-branch { position: absolute; top: -34px; right: -42px; width: 247px; height: auto; pointer-events: none; z-index: 1000; opacity: 0.75; }
   .header-controls { flex: 0 0 auto; position: relative; z-index: 7; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
   /* Всплывающая реклама Food & Drinks (каждые 2 минуты) */
@@ -87,6 +87,10 @@
   .food-promo-link { display: inline-block; margin-top: 6px; font-weight: 700; color: #7A1026; text-decoration: none; border-bottom: 1px solid #7A1026; cursor: pointer; background: none; border-top: 0; border-left: 0; border-right: 0; padding: 0; font-size: 15px; font-family: inherit; }
   .food-promo-close { position: absolute; top: 4px; right: 8px; background: none; border: 0; color: #7A1026; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
   .food-promo { position: fixed; }
+  .food-mia { display: flex; gap: 12px; align-items: flex-start; }
+  .food-mia-pic { flex: 0 0 44%; margin: 0; }
+  .food-mia-pic img { display: block; width: 100%; height: auto; border-radius: 10px; }
+  .food-mia-text { flex: 1 1 auto; min-width: 0; }
   .header-controls { gap: 4px; }
   .header-controls .pill-btn { padding: 4px 6px; font-size: 11px; letter-spacing: 0; }
   @media (max-width: 420px) { .header-controls .pill-btn { padding: 3px 5px; font-size: 10.5px; } }
@@ -2594,7 +2598,7 @@ const XMAS_CITY = {
   "name": {
    "de": "Lahnstein",
    "en": "Lahnstein",
-   "ru": "Лаонштайн"
+   "ru": "Ланштайн"
   },
   "text": {
    "de": {
@@ -2624,7 +2628,7 @@ const XMAS_CITY = {
     "practical": "Dates provisional: 28.11.–20.12.2026. Please check before your visit."
    },
    "ru": {
-    "title": "Зимняя магия Лаонштайна",
+    "title": "Зимняя магия Ланштайна",
     "intro": "Шесть небольших рынков в Оберлаонштайне и Нидерлаонштайне.",
     "cards": [
      {
@@ -2749,6 +2753,7 @@ function renderFoodPromoText() {
 function showFoodPromo() {
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return;
+  if (currentView === 'food') return; // im Bereich Food & Drinks nicht anzeigen
   if (!document.getElementById('shopPromo').hidden) return; // nicht zwei Fenster übereinander
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
@@ -3150,12 +3155,12 @@ function renderFood() {
   const cards = XMAS_FOOD_PLACES.map((p, i) => {
     const kicker = `<div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>`;
     if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
-    const photos = (XMAS_PHOTOS[miaCard.photo] || []).map(f => `<figure class="xmas-cell xmas-cell-img"><img src="${f}" alt="${miaCard.title}" loading="lazy"></figure>`).join('');
-    return `<div class="route-card xmas-card">${kicker}` +
-      `<div class="xmas-grid">${photos}</div>` +
-      `<h3 class="castle-name" style="margin:6px 0 2px">${miaCard.title}</h3>` +
+    const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
+    const pic = mainPhoto ? `<figure class="food-mia-pic"><img src="${mainPhoto}" alt="${miaCard.title}" loading="lazy"></figure>` : '';
+    return `<div class="route-card xmas-card">${kicker}<div class="food-mia">${pic}` +
+      `<div class="food-mia-text"><h3 class="castle-name" style="margin:0 0 4px">${miaCard.title}</h3>` +
       `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${miaCard.place}</p>` +
-      `<p style="margin:0">${miaCard.text}</p></div>`;
+      `<p style="margin:0">${miaCard.text}</p></div></div></div>`;
   }).join('');
   el.innerHTML = `<p class="xmas-intro">${intro}</p>` +
     `<h2 class="castle-name" style="margin:10px 0">${title}</h2>` +
@@ -3178,7 +3183,7 @@ function switchView(viewName) {
   if (scrollBox) scrollBox.scrollTop = 0;
   window.scrollTo(0, 0);
   if (viewName === 'christmas') renderChristmas();
-  if (viewName === 'food') renderFood();
+  if (viewName === 'food') { renderFood(); hideFoodPromo(); }
   renderTabs();
   if (viewName === 'map') {
     setTimeout(() => {

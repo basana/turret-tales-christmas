@@ -88,9 +88,12 @@
   .food-promo-close { position: absolute; top: 4px; right: 8px; background: none; border: 0; color: #7A1026; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
   .food-promo { position: fixed; }
   .food-mia { display: flex; gap: 12px; align-items: flex-start; }
-  .food-mia-pic { flex: 0 0 44%; margin: 0; }
+  .food-mia-pic { flex: 0 0 44%; margin: 0; position: relative; }
+  .food-coupon { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); white-space: nowrap; font-family: Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; color: #7A1026; background: #fff; border: 1px solid #7A1026; border-radius: 10px; padding: 2px 8px; text-decoration: none; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
   .food-mia-pic img { display: block; width: 100%; height: auto; border-radius: 10px; }
   .food-mia-text { flex: 1 1 auto; min-width: 0; }
+  .food-pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #7A1026, 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .food-pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .header-controls { gap: 4px; }
   .header-controls .pill-btn { padding: 4px 6px; font-size: 11px; letter-spacing: 0; }
   @media (max-width: 420px) { .header-controls .pill-btn { padding: 3px 5px; font-size: 10.5px; } }
@@ -3157,7 +3160,9 @@ function renderFood() {
     const kicker = `<div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>`;
     if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
     const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
-    const pic = mainPhoto ? `<figure class="food-mia-pic"><img src="${mainPhoto}" alt="${miaCard.title}" loading="lazy"></figure>` : '';
+    const couponLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон' }[xmasLang] || 'Get voucher';
+    const couponLink = `<a class="food-coupon" href="partner-map.html?coupon=mia">${couponLbl}</a>`;
+    const pic = mainPhoto ? `<figure class="food-mia-pic"><img src="${mainPhoto}" alt="${miaCard.title}" loading="lazy">${couponLink}</figure>` : '';
     return `<div class="route-card xmas-card">${kicker}<div class="food-mia">${pic}` +
       `<div class="food-mia-text"><h3 class="castle-name" style="margin:0 0 4px">${miaCard.title}</h3>` +
       `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${miaCard.place}</p>` +
@@ -3173,7 +3178,14 @@ function renderFood() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasFoodMapObj);
   const pb = L.latLngBounds(XMAS_FOOD_PLACES.map(p => p.ll));
   xmasFoodMapObj.fitBounds(pb, { padding: [4, 4], maxZoom: 16 });
-  XMAS_FOOD_PLACES.forEach(p => L.circleMarker(p.ll, { radius: 7, color: '#fff', weight: 2, fillColor: '#C0202A', fillOpacity: 1 }).addTo(xmasFoodMapObj));
+  XMAS_FOOD_PLACES.forEach(p => {
+    if (p.mia) {
+      // Mia Gelateria: большой круглый Eis-Logo, как на странице партнёров
+      L.marker(p.ll, { icon: L.divIcon({ className: '', html: '<div class="food-pin"><img src="mia-gelateria-icon.webp" alt="Mia Gelateria"></div>', iconSize: [56, 56], iconAnchor: [28, 28] }) }).addTo(xmasFoodMapObj);
+    } else {
+      L.circleMarker(p.ll, { radius: 7, color: '#fff', weight: 2, fillColor: '#C0202A', fillOpacity: 1 }).addTo(xmasFoodMapObj);
+    }
+  });
 }
 function switchView(viewName) {
   currentView = viewName;

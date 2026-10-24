@@ -387,6 +387,11 @@ document.getElementById('cards').addEventListener('click', e => {
   const b = e.target.closest('[data-coupon]');
   if (b) openCoupon(b.dataset.coupon);
 });
+// Link from the Food & Drinks section (partner-map.html?coupon=mia) opens the coupon directly
+{
+  const qc = new URLSearchParams(location.search).get('coupon');
+  if (qc && COUPON[qc]) openCoupon(qc);
+}
 
 // GPS navigation: same logic as the main app (straight line x 1.3 detour, 75 m/min walking)
 const GPS = {

@@ -6,7 +6,7 @@
 <title>Food, Drinks & More · Turret Tales</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
-  :root { --cream:#F5ECD6; --paper:#FBF6EA; --maroon:#7A1026; --ink:#3a2a1a; --soft:#6b5a4a; --gold:#c9a05c; }
+  :root { --cream:#F5ECD6; --paper:#FBF6EA; --maroon:#7A1026; --ink:#3a2a1a; --soft:#6b5a4a; --gold:#c9a05c; --ok:#2f6b3a; }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--cream); color: var(--ink); font-family: 'EB Garamond', Georgia, serif; }
   body { padding: 0 16px 40px; max-width: 560px; margin: 0 auto; }
@@ -14,7 +14,7 @@
   .brand { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); font-family: Helvetica, Arial, sans-serif; }
   h1 { font-size: 30px; color: var(--maroon); margin: 6px 0 4px; font-weight: 700; }
   .sub { font-size: 17px; color: var(--soft); margin: 0; }
-  .langs { display: flex; justify-content: center; gap: 6px; margin: 14px 0 6px; }
+  .langs { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 14px 0 6px; }
   .langs button { font-family: Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 14px; border: 1px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
   .langs button.active { background: var(--maroon); color: #fff; }
   .intro { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 14px 0; font-size: 17px; line-height: 1.5; }
@@ -25,13 +25,14 @@
   .card { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 12px; margin: 0 0 12px; display: flex; gap: 12px; align-items: center; }
   .card .num { font-family: Helvetica, Arial, sans-serif; font-weight: 700; color: var(--maroon); font-size: 14px; min-width: 26px; }
   .card .ph { flex: 1; border: 1px dashed var(--maroon); border-radius: 8px; padding: 14px 10px; text-align: center; color: var(--maroon); font-size: 15px; }
-  .partner { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px; margin: 0 0 12px; }
+  .partner { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px; margin: 0 0 12px; scroll-margin-top: 12px; }
   .partner-head { display: flex; gap: 12px; align-items: center; }
-  .partner-icon { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--maroon); flex: none; }
-  .partner-initial { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--maroon); flex: none; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; color: var(--maroon); background: #fff; }
+  .partner-icon { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--maroon); flex: none; background: #fff; }
   .partner-name { font-size: 21px; font-weight: 700; color: var(--maroon); margin: 0; line-height: 1.2; }
   .partner-cat { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); margin-top: 2px; }
-  .partner-photo { display: block; width: 100%; height: auto; border-radius: 8px; margin: 12px 0 10px; }
+  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 10px; }
+  .gallery img { width: 100%; height: auto; border-radius: 8px; display: block; }
+  .gallery img:first-child { grid-column: span 2; }
   .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: 14px; margin: 12px 0 10px; }
   .partner-desc { font-size: 17px; line-height: 1.5; margin: 0 0 10px; }
   .partner-meta { font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: var(--ink); margin: 0; }
@@ -39,10 +40,11 @@
   .partner-meta dd { display: inline; margin: 0; }
   .partner-meta div { margin: 0 0 2px; }
   .partner-meta a { color: var(--maroon); }
-  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 10px; }
-  .gallery img { width: 100%; height: auto; border-radius: 8px; display: block; }
-  .gallery img:first-child { grid-column: span 2; }
   .pending { color: var(--soft); font-style: italic; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .btn { font-family: Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 14px; border: 1px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; text-decoration: none; display: inline-block; }
+  .btn.solid { background: var(--maroon); color: #fff; }
+  .btn:disabled { opacity: .5; cursor: default; }
   .partner-link { display: inline-block; margin-top: 10px; font-family: Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 14px; background: var(--maroon); color: #fff; text-decoration: none; }
   .contact { margin-top: 22px; background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: 16px; line-height: 1.5; }
   .contact a { color: var(--maroon); }
@@ -51,13 +53,27 @@
   .pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--maroon), 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .pin span { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: var(--maroon); }
+  .modal { position: fixed; inset: 0; background: rgba(40,20,10,.55); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 10; }
+  .modal.open { display: flex; }
+  .coupon { background: var(--paper); border: 2px solid var(--maroon); border-radius: 14px; padding: 18px; width: 100%; max-width: 380px; text-align: center; position: relative; }
+  .coupon .brand2 { font-family: Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  .coupon h3 { font-size: 24px; color: var(--maroon); margin: 6px 0 4px; }
+  .coupon .offer { font-size: 17px; margin: 0 0 10px; }
+  .coupon .qr { display: inline-block; padding: 8px; background: #fff; border: 1px solid var(--gold); border-radius: 8px; min-height: 60px; }
+  .coupon .code { font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .08em; margin: 10px 0 2px; color: var(--ink); }
+  .coupon .valid { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); }
+  .coupon .demo { position: absolute; top: 10px; right: 10px; font-family: Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; color: #fff; background: var(--maroon); padding: 3px 7px; border-radius: 8px; }
+  .coupon .state { margin-top: 12px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; min-height: 20px; }
+  .coupon .state.ok { color: var(--ok); font-weight: 700; }
+  .coupon .row { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+  .coupon .closer { margin-top: 12px; }
 </style>
 </head>
 <body>
 <header>
-  <div class="brand">Turret Tales · Tours All Year Round</div>
+  <div class="brand" id="t-brand">Turret Tales · Tours All Year Round</div>
   <h1 id="t-title">Food, Drinks & More</h1>
-  <p class="sub" id="t-sub">Cafés und Restaurants in der Altstadt</p>
+  <p class="sub" id="t-sub"></p>
   <div class="langs">
     <button data-l="de" class="active">DE</button>
     <button data-l="en">EN</button>
@@ -79,10 +95,55 @@
 
 <div class="legal">© 2026 Team TAYR &amp; Anatoly Basin</div>
 
+<div class="modal" id="cp-modal" role="dialog" aria-modal="true" aria-labelledby="cp-title">
+  <div class="coupon">
+    <span class="demo" id="cp-demo">DEMO</span>
+    <div class="brand2" id="cp-brand"></div>
+    <h3 id="cp-title"></h3>
+    <p class="offer" id="cp-offer"></p>
+    <div class="qr" id="cp-qr"></div>
+    <div class="code" id="cp-code"></div>
+    <div class="valid" id="cp-valid"></div>
+    <div class="state" id="cp-state"></div>
+    <div class="row"><button class="btn solid" id="cp-redeem"></button></div>
+    <div class="closer"><button class="btn" id="cp-close"></button></div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/davidshimjs-qrcodejs/0.0.2/qrcode.min.js"></script>
 <script>
 const T = {
+  de: {
+    brand: 'Turret Tales · Tours All Year Round',
+    title: 'Food, Drinks & More', sub: 'Cafés, Restaurants und Souvenirs in der Altstadt',
+    intro: 'Hier zeigen wir Cafés, Restaurants und Souvenirgeschäfte, die Gäste von Turret Tales empfehlen. Die roten Punkte zeigen die Orte auf der Karte. Das Partnerprogramm startet mit den Weihnachtsmärkten 2026.',
+    ph: 'Partner folgt · Beschreibung und Fotos folgen',
+    secCafe: 'Cafés und Restaurants', secShop: 'Souvenirs und Bücher', secMore: 'Weitere Partner',
+    navCafe: 'Cafés & Restaurants', navShop: 'Souvenirs & Bücher',
+    addr: 'Adresse', hours: 'Öffnungszeiten', phone: 'Telefon', gmaps: 'Auf Google Maps öffnen',
+    pending: 'folgt', photoSlot: 'Fotos folgen',
+    couponBtn: 'Gutschein holen', redeem: 'Einlösen (nur Personal)', close: 'Schließen',
+    cpBrand: 'Turret Tales · Gutschein', valid: 'Gültig bis 31.12.2026 · Beispiel',
+    notRedeemed: 'Noch nicht eingelöst.', redeemed: 'Eingelöst (Demo). Dieser Code ist jetzt gesperrt.',
+    contact: 'Interesse an einer Partnerschaft? Schreiben Sie an <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> oder rufen Sie an: <a href="tel:+491772850207">+49 177 285 0207</a>.'
+  },
+  en: {
+    brand: 'Turret Tales · Tours All Year Round',
+    title: 'Food, Drinks & More', sub: 'Cafés, restaurants and souvenirs in the old town',
+    intro: 'Here we show cafés, restaurants and souvenir shops that Turret Tales guests can recommend. The red dots show the places on the map. The partner programme starts with the Christmas markets 2026.',
+    ph: 'Partner to follow · description and photos to follow',
+    secCafe: 'Cafés and restaurants', secShop: 'Souvenirs and books', secMore: 'More partners',
+    navCafe: 'Cafés & restaurants', navShop: 'Souvenirs & books',
+    addr: 'Address', hours: 'Opening hours', phone: 'Phone', gmaps: 'Open in Google Maps',
+    pending: 'to follow', photoSlot: 'Photos to follow',
+    couponBtn: 'Get voucher', redeem: 'Redeem (staff only)', close: 'Close',
+    cpBrand: 'Turret Tales · Voucher', valid: 'Valid until 31 Dec 2026 · Example',
+    notRedeemed: 'Not redeemed yet.', redeemed: 'Redeemed (demo). This code is now locked.',
+    contact: 'Interested in a partnership? Write to <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> or call <a href="tel:+491772850207">+49 177 285 0207</a>.'
+  },
   fr: {
+    brand: 'Turret Tales · Tours All Year Round',
     title: 'Food, Drinks & More', sub: 'Cafés, restaurants et souvenirs dans la vieille ville',
     intro: 'Ici nous présentons les cafés, restaurants et boutiques de souvenirs que les visiteurs de Turret Tales peuvent recommander. Les points rouges indiquent les lieux sur la carte. Le programme partenaires démarre avec les marchés de Noël 2026.',
     ph: 'Partenaire à venir · description et photos à venir',
@@ -90,9 +151,13 @@ const T = {
     navCafe: 'Cafés & restaurants', navShop: 'Souvenirs & livres',
     addr: 'Adresse', hours: 'Horaires', phone: 'Téléphone', gmaps: 'Ouvrir dans Google Maps',
     pending: 'à venir', photoSlot: 'Photos à venir',
+    couponBtn: 'Obtenir le bon', redeem: 'Utiliser (personnel uniquement)', close: 'Fermer',
+    cpBrand: 'Turret Tales · Bon', valid: 'Valable jusqu’au 31.12.2026 · Exemple',
+    notRedeemed: 'Pas encore utilisé.', redeemed: 'Utilisé (démo). Ce code est maintenant bloqué.',
     contact: 'Intéressé par un partenariat ? Écrivez à <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> ou appelez : <a href="tel:+491772850207">+49 177 285 0207</a>.'
   },
   nl: {
+    brand: 'Turret Tales · Tours All Year Round',
     title: 'Food, Drinks & More', sub: 'Cafés, restaurants en souvenirs in de oude stad',
     intro: 'Hier tonen we cafés, restaurants en souvenirwinkels die gasten van Turret Tales kunnen aanbevelen. De rode stippen tonen de plekken op de kaart. Het partnerprogramma start met de kerstmarkten 2026.',
     ph: "Partner volgt · beschrijving en foto's volgen",
@@ -100,35 +165,31 @@ const T = {
     navCafe: 'Cafés & restaurants', navShop: 'Souvenirs & boeken',
     addr: 'Adres', hours: 'Openingstijden', phone: 'Telefoon', gmaps: 'Openen in Google Maps',
     pending: 'volgt', photoSlot: "Foto's volgen",
+    couponBtn: 'Kortingsbon ophalen', redeem: 'Inwisselen (alleen personeel)', close: 'Sluiten',
+    cpBrand: 'Turret Tales · Kortingsbon', valid: 'Geldig tot 31.12.2026 · Voorbeeld',
+    notRedeemed: 'Nog niet ingewisseld.', redeemed: 'Ingewisseld (demo). Deze code is nu geblokkeerd.',
     contact: 'Interesse in een samenwerking? Schrijf naar <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> of bel: <a href="tel:+491772850207">+49 177 285 0207</a>.'
   },
-  de: {
-    title: 'Food, Drinks & More', sub: 'Cafés, Restaurants und Souvenirs in der Altstadt',
-    intro: 'Hier zeigen wir Cafés, Restaurants und Souvenirgeschäfte, die Gäste von Turret Tales empfehlen. Die roten Punkte zeigen die Orte auf der Karte. Das Partnerprogramm startet mit den Weihnachtsmärkten 2026.',
-    ph: 'Partner folgt · Beschreibung und Fotos folgen',
-    secCafe: 'Cafés und Restaurants', secShop: 'Souvenirs und Bücher', secMore: 'Weitere Partner', navCafe: 'Cafés & Restaurants', navShop: 'Souvenirs & Bücher',
-    addr: 'Adresse', hours: 'Öffnungszeiten', phone: 'Telefon', gmaps: 'Auf Google Maps öffnen',
-    pending: 'folgt', photoSlot: 'Fotos folgen',
-    contact: 'Interesse an einer Partnerschaft? Schreiben Sie an <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> oder rufen Sie an: <a href="tel:+491772850207">+49 177 285 0207</a>.'
-  },
-  en: {
-    title: 'Food, Drinks & More', sub: 'Cafés, restaurants and souvenirs in the old town',
-    intro: 'Here we show cafés, restaurants and souvenir shops that Turret Tales guests can recommend. The red dots show the places on the map. The partner programme starts with the Christmas markets 2026.',
-    ph: 'Partner to follow · description and photos to follow',
-    secCafe: 'Cafés and restaurants', secShop: 'Souvenirs and books', secMore: 'More partners', navCafe: 'Cafés & restaurants', navShop: 'Souvenirs & books',
-    addr: 'Address', hours: 'Opening hours', phone: 'Phone', gmaps: 'Open in Google Maps',
-    pending: 'to follow', photoSlot: 'Photos to follow',
-    contact: 'Interested in a partnership? Write to <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> or call <a href="tel:+491772850207">+49 177 285 0207</a>.'
-  },
   ru: {
+    brand: 'Turret Tales · Tours All Year Round',
     title: 'Food, Drinks & More', sub: 'Кафе, рестораны и сувениры в старом городе',
     intro: 'Здесь мы показываем кафе, рестораны и магазины сувениров, которые гостям Turret Tales могут порекомендовать. Красные точки — места на карте. Программа партнёров стартует вместе с рождественскими рынками 2026.',
     ph: 'Партнёр будет добавлен · описание и фото позже',
-    secCafe: 'Кафе и рестораны', secShop: 'Сувениры и книги', secMore: 'Другие партнёры', navCafe: 'Кафе и рестораны', navShop: 'Сувениры и книги',
+    secCafe: 'Кафе и рестораны', secShop: 'Сувениры и книги', secMore: 'Другие партнёры',
+    navCafe: 'Кафе и рестораны', navShop: 'Сувениры и книги',
     addr: 'Адрес', hours: 'Часы работы', phone: 'Телефон', gmaps: 'Открыть в Google Maps',
     pending: 'скоро', photoSlot: 'Фото будут добавлены',
+    couponBtn: 'Получить купон', redeem: 'Погасить (только персонал)', close: 'Закрыть',
+    cpBrand: 'Turret Tales · Купон', valid: 'Действителен до 31.12.2026 · Пример',
+    notRedeemed: 'Ещё не погашен.', redeemed: 'Погашен (демо). Этот код теперь заблокирован.',
     contact: 'Интересно партнёрство? Напишите на <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> или позвоните: <a href="tel:+491772850207">+49 177 285 0207</a>.'
   }
+};
+
+// Coupons (demo): same code and wording in every language.
+const COUPON = {
+  mia: { code: 'TT-DEMO-MIA-10', name: 'Mia Gelateria', offer: { de: '10 % auf Ihren Eisbecher', en: '10% off your ice cream', fr: '10 % sur votre glace', nl: '10% korting op uw ijs', ru: '10 % на ваш стаканчик мороженого' } },
+  reuffel: { code: 'TT-DEMO-REU-10', name: 'Reuffel Bazaar', offer: { de: '10 % auf Ihren Einkauf', en: '10% off your purchase', fr: '10 % sur vos achats', nl: '10% korting op uw aankoop', ru: '10 % на вашу покупку' } }
 };
 
 // Cafés and restaurants with full cards. Placeholder cards fill the remaining map dots.
@@ -154,7 +215,7 @@ const PARTNERS = [
   }
 ];
 
-// Souvenir shops and bookshops. Details marked as pending until confirmed with the owner.
+// Souvenir shops and bookshops. Details marked as pending until confirmed.
 const SHOPS = [
   {
     slug: 'reuffel',
@@ -177,24 +238,24 @@ const SHOPS = [
   }
 ];
 
-// Map dots (placeholder positions for the planned partners).
+// Map points: Mia Gelateria and Reuffel Bazaar, then placeholders.
 const PLACES = [
   [50.36000, 7.60203],  // Mia Gelateria
   [50.36098, 7.59604],  // Reuffel Bazaar
   [50.36133, 7.59590], [50.36106, 7.59460], [50.36178, 7.59470],
   [50.36070, 7.59684], [50.36183, 7.59597]
 ];
+const PIN_LOGOS = [
+  { html: '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria">', card: 'card-mia' },
+  { html: '<img src="reuffel-logo.webp" alt="Reuffel Bazaar">', card: 'card-reuffel' }
+];
+
 let lang = 'de';
 try { const s = localStorage.getItem('partnerLang'); if (s && T[s]) lang = s; } catch (e) {}
 
 const map = L.map('map', { scrollWheelZoom: false, zoomSnap: 0 });
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
 map.fitBounds(L.latLngBounds(PLACES), { padding: [6, 6], maxZoom: 16 });
-// The first two points carry the partners' logos (Mia, Reuffel); the rest stay as red dots.
-const PIN_LOGOS = [
-  { html: '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria">', card: 'card-mia' },
-  { html: '<img src="reuffel-logo.webp" alt="Reuffel Bazaar">', card: 'card-reuffel' }
-];
 PLACES.forEach((ll, i) => {
   const logo = PIN_LOGOS[i];
   const icon = logo
@@ -210,7 +271,7 @@ PLACES.forEach((ll, i) => {
 function avatar(p) {
   return p.icon
     ? `<img class="partner-icon" src="${p.icon}" alt="${p.name}" width="64" height="64">`
-    : `<div class="partner-initial" aria-hidden="true">${p.initial || p.name.charAt(0)}</div>`;
+    : `<div class="partner-icon" aria-hidden="true">${p.name.charAt(0)}</div>`;
 }
 
 function partnerCard(p, n) {
@@ -220,7 +281,7 @@ function partnerCard(p, n) {
     ? `<div class="gallery">${photos.map((src, i) =>
         `<img src="${src}" alt="${i === 0 && p.photoAlt ? p.photoAlt : p.name}" loading="lazy">`).join('')}</div>`
     : `<div class="photo-slot">${t.photoSlot}</div>`;
-  const val = (v, fallback) => v ? v : `<span class="pending">${t.pending}</span>`;
+  const val = v => v ? v : `<span class="pending">${t.pending}</span>`;
   const hours = p.hours ? (p.hours[lang] || p.hours.en) : null;
   const phoneRow = p.phone
     ? `<div><dt>${t.phone}:</dt> <dd><a href="tel:${p.phone.replace(/\s/g, '')}">${p.phone}</a></dd></div>` : '';
@@ -228,6 +289,8 @@ function partnerCard(p, n) {
     ? `<div><dt>Web:</dt> <dd><a href="${p.web}" target="_blank" rel="noopener">${p.web.replace('https://', '')}</a></dd></div>` : '';
   const link = p.gmaps
     ? `<a class="partner-link" href="${p.gmaps}" target="_blank" rel="noopener">${t.gmaps} →</a>` : '';
+  const coupon = COUPON[p.slug]
+    ? `<button class="btn solid" data-coupon="${p.slug}">${t.couponBtn}</button>` : '';
   return `<article class="partner" id="card-${p.slug}">
     <div class="partner-head">
       ${avatar(p)}
@@ -237,20 +300,69 @@ function partnerCard(p, n) {
       </div>
     </div>
     ${photo}
-    <p class="partner-desc">${p.desc[lang] || p.desc.en}</p>
+    <p class="partner-desc">${p.desc ? (p.desc[lang] || p.desc.en) : ''}</p>
     <dl class="partner-meta">
       <div><dt>${t.addr}:</dt> <dd>${val(p.addr)}</dd></div>
       <div><dt>${t.hours}:</dt> <dd>${val(hours)}</dd></div>
       ${phoneRow}
       ${webRow}
     </dl>
-    ${link}
+    <div class="btns">${link}${coupon}</div>
   </article>`;
 }
+
+// Coupon window
+let openFor = null;
+const redeemed = {};
+function openCoupon(slug) {
+  const c = COUPON[slug];
+  if (!c) return;
+  openFor = slug;
+  const t = T[lang];
+  document.getElementById('cp-brand').textContent = t.cpBrand;
+  document.getElementById('cp-title').textContent = c.name;
+  document.getElementById('cp-offer').textContent = c.offer[lang] || c.offer.en;
+  document.getElementById('cp-code').textContent = c.code;
+  document.getElementById('cp-valid').textContent = t.valid;
+  const qr = document.getElementById('cp-qr');
+  qr.innerHTML = '';
+  try { new QRCode(qr, { text: c.code, width: 180, height: 180, colorDark: '#3a2a1a', colorLight: '#ffffff' }); } catch (e) { qr.textContent = c.code; }
+  renderCoupon();
+  document.getElementById('cp-modal').classList.add('open');
+}
+function renderCoupon() {
+  const t = T[lang];
+  const st = document.getElementById('cp-state');
+  const btn = document.getElementById('cp-redeem');
+  document.getElementById('cp-redeem').textContent = t.redeem;
+  document.getElementById('cp-close').textContent = t.close;
+  if (!openFor) return;
+  if (redeemed[openFor]) {
+    st.textContent = t.redeemed;
+    st.className = 'state ok';
+    btn.disabled = true;
+  } else {
+    st.textContent = t.notRedeemed;
+    st.className = 'state';
+    btn.disabled = false;
+  }
+}
+document.getElementById('cp-redeem').addEventListener('click', () => {
+  if (!openFor || redeemed[openFor]) return;
+  redeemed[openFor] = true;
+  renderCoupon();
+});
+document.getElementById('cp-close').addEventListener('click', () => document.getElementById('cp-modal').classList.remove('open'));
+document.getElementById('cp-modal').addEventListener('click', e => { if (e.target.id === 'cp-modal') e.target.classList.remove('open'); });
+document.getElementById('cards').addEventListener('click', e => {
+  const b = e.target.closest('[data-coupon]');
+  if (b) openCoupon(b.dataset.coupon);
+});
 
 function render() {
   const t = T[lang];
   document.documentElement.lang = lang;
+  document.getElementById('t-brand').textContent = t.brand;
   document.getElementById('t-title').textContent = t.title;
   document.getElementById('t-sub').textContent = t.sub;
   document.getElementById('t-intro').textContent = t.intro;
@@ -264,12 +376,14 @@ function render() {
     `<div class="card"><div class="num">${String(i + 1).padStart(2, '0')}</div><div class="ph">${t.ph}</div></div>`).join('');
   const shops = SHOPS.map((p, i) => partnerCard(p, i + 1)).join('');
 
-  // Order: cafés, souvenir shops, then the remaining placeholder cards.
   document.getElementById('cards').innerHTML =
     `<h2 class="sec" id="sec-cafe">${t.secCafe}</h2>${cafes}` +
     `<h2 class="sec" id="sec-shop">${t.secShop}</h2>${shops}` +
     `<h2 class="sec" id="sec-more">${t.secMore}</h2>${placeholders}`;
+
+  document.getElementById('cp-brand').textContent = t.cpBrand;
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('active', b.dataset.l === lang));
+  renderCoupon();
 }
 document.querySelectorAll('.langs button').forEach(b => b.addEventListener('click', () => {
   lang = b.dataset.l;

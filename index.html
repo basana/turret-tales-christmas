@@ -2529,6 +2529,7 @@ function openStation(i) { index = i; document.body.classList.add('station-open')
 function openXmasHome() { document.body.classList.remove('station-open'); switchView('guide'); }
 const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’accueil', nl: '← Terug naar start', en: '← Back to start', ru: '← На главный экран' };
 // Koordinaten: Stadtmitte und Marktplätze. ANNÄHERUNG, vor Veröffentlichung auf der Karte prüfen.
+const XMAS_ORDER = ['koblenz', 'lahnstein', 'boppard', 'oberwesel', 'bacharach', 'ruedesheim'];
 const XMAS_GEO = {
   koblenz:   {center:[50.36020,7.59850], zoom:16, pins:[[50.36011,7.59836],[50.360611,7.598306],[50.36041,7.59506],[50.35988,7.60123],[50.35991,7.59612],[50.35879,7.59651],[50.36111,7.59537],[50.3653,7.6156]]},
   oberwesel: {center:[50.1065,7.7273], zoom:16, pins:[[50.1065,7.7273]]},
@@ -2607,8 +2608,7 @@ function xmasExplainHtml() {
 function xmasTownListHtml() {
   const T = (o) => o[xmasLang] || o.de;
   const go = { de: 'Zum Markt →', fr: 'Voir le marché →', nl: 'Naar de markt →', en: 'Open market →', ru: 'К рынку →' }[xmasLang] || 'Open market →';
-  const ORDER = ['koblenz', 'lahnstein', 'boppard', 'oberwesel', 'bacharach', 'ruedesheim'];
-  return '<div class="xmas-town-list">' + ORDER.map((k, i) =>
+  return '<div class="xmas-town-list">' + XMAS_ORDER.map((k, i) =>
     `<div class="route-card xmas-card"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`).join('') + '</div>';
 }
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
@@ -2620,7 +2620,7 @@ function xmasGpsBtnHtml() {
   return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn">📍 ${xmasG('btn')}${lock}</button>`;
 }
 function xmasGpsTargets() {
-  if (!xmasTown) return Object.keys(XMAS_GEO).map(k => ({ label: XMAS_CITY[k].name[xmasLang] || XMAS_CITY[k].name.de, ll: XMAS_GEO[k].center }));
+  if (!xmasTown) return XMAS_ORDER.map(k => ({ label: XMAS_CITY[k].name[xmasLang] || XMAS_CITY[k].name.de, ll: XMAS_GEO[k].center }));
   const c = XMAS_CITY[xmasTown];
   const tx = c.text[xmasLang] || c.text.de;
   return XMAS_GEO[xmasTown].pins.map((ll, i) => ({ label: (tx.cards[i] && tx.cards[i].title) || tx.title, ll }));
@@ -2733,7 +2733,7 @@ function renderChristmas(townKey) {
   const langBtns = Object.keys(XMAS_LANG_LABELS).map(k =>
     `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта' }[xmasLang] || 'Map';
-  const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + Object.keys(XMAS_CITY).map(k =>
+  const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
   const mapHtml = xmasExplainHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
   let body = '';
@@ -2782,7 +2782,7 @@ function renderChristmas(townKey) {
   if (!xmasTown && xmasListOnly) {
     // только список: карту не рисуем
   } else if (!xmasTown) {
-    const keys = Object.keys(XMAS_GEO);
+    const keys = XMAS_ORDER;
     xmasDrawMap({
       bounds: keys.map(k => XMAS_GEO[k].center),
       pins: keys.map(k => ({

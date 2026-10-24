@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Statistik 2026 · Turret Tales</title>
+<style>
+  :root { --cream:#F5ECD6; --paper:#FBF6EA; --maroon:#7A1026; --ink:#3a2a1a; --soft:#6b5a4a; --gold:#c9a05c; --line:rgba(122,16,38,.18); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--cream); color: var(--ink); font-family: 'EB Garamond', Georgia, serif; }
+  body { padding: 0 16px 40px; max-width: 620px; margin: 0 auto; }
+  .ui { font-family: Helvetica, Arial, sans-serif; }
+  header { padding: 24px 0 14px; border-bottom: 1px solid var(--gold); text-align: left; }
+  .brand { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  h1 { font-size: 28px; color: var(--maroon); margin: 6px 0 2px; font-weight: 700; }
+  .client { font-size: 17px; color: var(--ink); margin: 0; }
+  .period { font-size: 14px; color: var(--soft); margin-top: 4px; }
+  .langs { display: flex; gap: 6px; margin-top: 12px; }
+  .langs button { font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 14px; border: 1px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
+  .langs button.active { background: var(--maroon); color: #fff; }
+  .demo { margin: 16px 0 0; padding: 10px 14px; border: 1px dashed var(--maroon); border-radius: 8px; font-size: 13px; color: var(--maroon); text-align: center; }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+  .kpi { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px; }
+  .kpi .v { font-size: 30px; font-weight: 700; color: var(--maroon); line-height: 1.1; }
+  .kpi .l { font-size: 13px; color: var(--soft); margin-top: 4px; }
+  .panel { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 0 0 14px; }
+  .panel h2 { font-size: 18px; color: var(--maroon); margin: 0 0 10px; font-weight: 700; }
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 140px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+  .bar { flex: 1; background: var(--maroon); border-radius: 4px 4px 0 0; min-height: 2px; position: relative; opacity: .85; }
+  .bar span { position: absolute; top: -18px; left: 0; right: 0; text-align: center; font-size: 11px; color: var(--soft); }
+  .axis { display: flex; gap: 8px; font-size: 11px; color: var(--soft); margin-top: 4px; }
+  .axis div { flex: 1; text-align: center; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+  th { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  td.n { text-align: right; font-family: Helvetica, Arial, sans-serif; font-weight: 700; color: var(--maroon); }
+  .note { font-size: 14px; line-height: 1.5; color: var(--soft); margin: 16px 0 0; }
+  .foot { margin-top: 18px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; color: var(--soft); text-align: center; }
+  .foot a { color: var(--maroon); }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand ui">Turret Tales · Statistik</div>
+  <h1 id="t-title">Besucherstatistik 2026</h1>
+  <p class="client" id="client">Partner: Mia Gelateria, Koblenz</p>
+  <p class="period ui" id="period">Zeitraum: 1. Januar – 31. Dezember 2026</p>
+  <div class="langs ui">
+    <button data-l="de" class="active">DE</button>
+    <button data-l="en">EN</button>
+    <button data-l="ru">RU</button>
+  </div>
+</header>
+
+<div class="demo ui" id="demo-note">Beispielzahlen zur Vorführung. Keine echten Daten.</div>
+
+<section class="kpis">
+  <div class="kpi"><div class="v" id="k1">—</div><div class="l ui" id="l1"></div></div>
+  <div class="kpi"><div class="v" id="k2">—</div><div class="l ui" id="l2"></div></div>
+  <div class="kpi"><div class="v" id="k3">—</div><div class="l ui" id="l3"></div></div>
+  <div class="kpi"><div class="v" id="k4">—</div><div class="l ui" id="l4"></div></div>
+</section>
+
+<section class="panel">
+  <h2 id="t-chart">Aufrufe pro Monat</h2>
+  <div class="bars ui" id="bars"></div>
+  <div class="axis ui" id="axis"></div>
+</section>
+
+<section class="panel">
+  <h2 id="t-table">Aktionen nach Partner</h2>
+  <table class="ui">
+    <thead><tr><th id="th1"></th><th class="n" id="th2"></th><th class="n" id="th3"></th><th class="n" id="th4"></th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</section>
+
+<p class="note" id="t-note"></p>
+
+<div class="foot ui" id="t-foot"></div>
+
+<script>
+// Beispieldaten. Vor dem Einsatz mit echten Zahlen aus GoatCounter ersetzen.
+const DATA = {
+  demo: true,
+  updated: '2026-10-24',
+  months: ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],
+  views:  [0,0,0,0,0,0,0,0,0,412,0,0],
+  kpi: { views: 412, maps: 37, phone: 9, coupons: 14 },
+  rows: [
+    { name: 'Mia Gelateria', views: 128, maps: 19, phone: 4 },
+    { name: 'Weitere Partner', views: 284, maps: 18, phone: 5 }
+  ]
+};
+
+const T = {
+  de: {
+    title: 'Besucherstatistik 2026', client: 'Partner', period: 'Zeitraum: 1. Januar – 31. Dezember 2026',
+    k1: 'Seitenaufrufe', k2: 'Klicks Google Maps', k3: 'Klicks Telefon', k4: 'Eingelöste Gutscheine',
+    chart: 'Aufrufe pro Monat', table: 'Aktionen nach Partner', th1: 'Partner', th2: 'Aufrufe', th3: 'Maps', th4: 'Telefon',
+    demo: 'Beispielzahlen zur Vorführung. Keine echten Daten.',
+    note: 'Die Zahlen zählen anonym, wie oft Seiten aufgerufen und Schaltflächen angeklickt werden. Es werden keine Cookies gesetzt und keine personenbezogenen Daten gespeichert.',
+    foot: 'Stand: ', foot2: ' · Auswertung mit GoatCounter'
+  },
+  en: {
+    title: 'Visitor statistics 2026', client: 'Partner', period: 'Period: 1 January – 31 December 2026',
+    k1: 'Page views', k2: 'Google Maps clicks', k3: 'Phone clicks', k4: 'Redeemed vouchers',
+    chart: 'Views per month', table: 'Actions by partner', th1: 'Partner', th2: 'Views', th3: 'Maps', th4: 'Phone',
+    demo: 'Sample figures for demonstration. Not real data.',
+    note: 'These figures count anonymously how often pages are viewed and buttons are clicked. No cookies are set and no personal data is stored.',
+    foot: 'As of: ', foot2: ' · Analysis with GoatCounter'
+  },
+  ru: {
+    title: 'Статистика посещений 2026', client: 'Партнёр', period: 'Период: 1 января – 31 декабря 2026',
+    k1: 'Просмотры страницы', k2: 'Клики на Google Maps', k3: 'Клики на телефон', k4: 'Погашенные купоны',
+    chart: 'Просмотры по месяцам', table: 'Действия по партнёрам', th1: 'Партнёр', th2: 'Просмотры', th3: 'Maps', th4: 'Телефон',
+    demo: 'Примерные цифры для демонстрации. Это не реальные данные.',
+    note: 'Цифры анонимно считают, сколько раз открыли страницы и нажали на кнопки. Cookies не используются, персональные данные не сохраняются.',
+    foot: 'Актуально на: ', foot2: ' · Данные из GoatCounter'
+  }
+};
+
+let lang = 'de';
+try { const s = localStorage.getItem('statsLang'); if (s && T[s]) lang = s; } catch (e) {}
+
+function render() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.title = t.title + ' · Turret Tales';
+  document.getElementById('t-title').textContent = t.title;
+  document.getElementById('client').textContent = t.client + ': ' + DATA.rows[0].name + ', Koblenz';
+  document.getElementById('period').textContent = t.period;
+  document.getElementById('demo-note').style.display = DATA.demo ? '' : 'none';
+  document.getElementById('demo-note').textContent = t.demo;
+  const k = DATA.kpi;
+  [['k1', k.views, 'k1'], ['k2', k.maps, 'k2'], ['k3', k.phone, 'k3'], ['k4', k.coupons, 'k4']].forEach(([id, v, key]) => {
+    document.getElementById(id).textContent = v;
+    document.getElementById('l' + id.slice(1)).textContent = t[key];
+  });
+  document.getElementById('t-chart').textContent = t.chart;
+  document.getElementById('t-table').textContent = t.table;
+  ['th1','th2','th3','th4'].forEach(id => document.getElementById(id).textContent = t[id]);
+  const max = Math.max(1, ...DATA.views);
+  document.getElementById('bars').innerHTML = DATA.views.map(v =>
+    `<div class="bar" style="height:${Math.max(2, v / max * 100)}%">${v ? `<span>${v}</span>` : ''}</div>`).join('');
+  document.getElementById('axis').innerHTML = DATA.months.map(m => `<div>${m}</div>`).join('');
+  document.getElementById('rows').innerHTML = DATA.rows.map(r =>
+    `<tr><td>${r.name}</td><td class="n">${r.views}</td><td class="n">${r.maps}</td><td class="n">${r.phone}</td></tr>`).join('');
+  document.getElementById('t-note').textContent = t.note;
+  document.getElementById('t-foot').textContent = t.foot + DATA.updated + t.foot2;
+  document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('active', b.dataset.l === lang));
+}
+document.querySelectorAll('.langs button').forEach(b => b.addEventListener('click', () => {
+  lang = b.dataset.l;
+  try { localStorage.setItem('statsLang', lang); } catch (e) {}
+  render();
+}));
+render();
+</script>
+</body>
+</html>

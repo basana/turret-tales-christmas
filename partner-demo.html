@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live-Demo Partnerkarte · Turret Tales</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<style>
+  :root { --cream:#F5ECD6; --paper:#FBF6EA; --maroon:#7A1026; --ink:#3a2a1a; --soft:#6b5a4a; --gold:#c9a05c; --ok:#2f6b3a; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--cream); color: var(--ink); font-family: 'EB Garamond', Georgia, serif; }
+  body { padding: 0 16px 40px; max-width: 560px; margin: 0 auto; }
+  .ui { font-family: Helvetica, Arial, sans-serif; }
+  header { padding: 22px 0 12px; text-align: center; }
+  .brand { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  h1 { font-size: 28px; color: var(--maroon); margin: 6px 0 4px; font-weight: 700; }
+  .badge { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 700; letter-spacing: .06em; color: #fff; background: var(--maroon); padding: 4px 10px; border-radius: 10px; }
+  .hint { font-size: 15px; color: var(--soft); margin: 10px 0 0; line-height: 1.45; }
+
+  .live { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 16px 0; }
+  .live h2 { font-size: 17px; color: var(--maroon); margin: 0 0 8px; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { padding: 7px 4px; border-bottom: 1px solid rgba(122,16,38,.15); text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  th { font-family: Helvetica, Arial, sans-serif; font-size: 11px; color: var(--soft); text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
+  td.n { font-family: Helvetica, Arial, sans-serif; font-weight: 700; color: var(--maroon); font-size: 18px; transition: background .4s; border-radius: 6px; }
+  td.n.flash { background: #e9f3e6; color: var(--ok); }
+  .sum { font-size: 13px; color: var(--soft); margin-top: 8px; }
+
+  #map { width: 100%; height: 260px; border-radius: 12px; border: 1px solid var(--gold); margin: 0 0 6px; }
+  .mapnote { font-size: 12px; color: var(--soft); margin: 0 0 14px; }
+
+  .partner { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px; margin: 0 0 14px; scroll-margin-top: 12px; transition: box-shadow .3s; }
+  .partner.hl { box-shadow: 0 0 0 3px rgba(122,16,38,.35); }
+  .head { display: flex; gap: 12px; align-items: center; }
+  .av { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--maroon); flex: none; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--maroon); }
+  .name { font-size: 21px; font-weight: 700; color: var(--maroon); margin: 0; line-height: 1.2; }
+  .cat { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); margin-top: 2px; }
+  .photo { width: 100%; height: auto; border-radius: 8px; margin: 12px 0 10px; display: block; }
+  .desc { font-size: 16px; line-height: 1.5; margin: 0 0 10px; }
+  .meta { font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
+  .meta b { color: var(--maroon); }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn { font-family: Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; padding: 9px 14px; border-radius: 14px; border: 1px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; text-decoration: none; }
+  .btn.solid { background: var(--maroon); color: #fff; }
+
+  .modal { position: fixed; inset: 0; background: rgba(40,20,10,.55); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 10; }
+  .modal.open { display: flex; }
+  .coupon { background: var(--paper); border: 2px solid var(--maroon); border-radius: 14px; padding: 18px; width: 100%; max-width: 380px; text-align: center; position: relative; }
+  .coupon .brand2 { font-family: Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  .coupon h3 { font-size: 24px; color: var(--maroon); margin: 6px 0 4px; }
+  .coupon .offer { font-size: 17px; margin: 0 0 10px; }
+  .coupon .qr { display: inline-block; padding: 8px; background: #fff; border: 1px solid var(--gold); border-radius: 8px; }
+  .coupon .code { font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .08em; margin: 10px 0 2px; color: var(--ink); }
+  .coupon .valid { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); }
+  .coupon .demo { position: absolute; top: 10px; right: 10px; font-family: Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; color: #fff; background: var(--maroon); padding: 3px 7px; border-radius: 8px; }
+  .coupon .state { margin-top: 12px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; min-height: 20px; }
+  .coupon .state.ok { color: var(--ok); font-weight: 700; }
+  .coupon .row { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+  .closer { margin-top: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand ui">Turret Tales · Partnerkarte</div>
+  <h1>Live-Demo</h1>
+  <span class="badge ui">DEMO</span>
+  <p class="hint">Tippen Sie auf eine Karte, einen Button oder einen Punkt auf der Karte. Die Zahlen unten ändern sich sofort.</p>
+</header>
+
+<section class="live">
+  <h2 class="ui">Klicks in dieser Vorführung</h2>
+  <table class="ui">
+    <thead><tr><th>Ort</th><th>Karte</th><th>Maps</th><th>Anruf</th><th>Gutschein</th><th>Einlös.</th></tr></thead>
+    <tbody>
+      <tr><td>Mia Gelateria</td><td class="n" id="c-mia-map">0</td><td class="n" id="c-mia-maps">0</td><td class="n" id="c-mia-phone">0</td><td class="n" id="c-mia-coupon">0</td><td class="n" id="c-mia-redeem">0</td></tr>
+      <tr><td>Reuffel</td><td class="n" id="c-reu-map">0</td><td class="n" id="c-reu-maps">0</td><td class="n" id="c-reu-phone">0</td><td class="n" id="c-reu-coupon">0</td><td class="n" id="c-reu-redeem">0</td></tr>
+    </tbody>
+  </table>
+  <p class="sum ui">Zählung in dieser Sitzung. Die Zahlen im Auswertungskonto kommen mit kurzer Verzögerung dazu.</p>
+</section>
+
+<div id="map"></div>
+<p class="mapnote ui">Punkte sind Platzhalter, bis die genauen Koordinaten vorliegen.</p>
+
+<article class="partner" id="p-mia">
+  <div class="head">
+    <img class="av" src="mia-gelateria-icon.webp" alt="Mia Gelateria">
+    <div>
+      <h3 class="name">Mia Gelateria</h3>
+      <div class="cat ui">Eisdiele · Selbstbedienung</div>
+    </div>
+  </div>
+  <img class="photo" src="mia-gelateria-1.webp" alt="Mia Gelateria: Becher mit Softeis, Beeren und Schokolade">
+  <p class="desc">Eis in Selbstbedienung: Sie füllen Ihr Softeis selbst in den Becher und mischen bis zu acht Sorten. Bezahlt wird am Ende nach Gewicht.</p>
+  <p class="meta ui"><b>Adresse:</b> Rheinstr. 17, 56068 Koblenz (Altstadt)<br><b>Öffnungszeiten:</b> täglich 12–21 Uhr<br><b>Telefon:</b> +49 261 97381344</p>
+  <div class="btns ui">
+    <button class="btn solid" data-place="mia" data-act="maps">Auf Google Maps öffnen</button>
+    <button class="btn" data-place="mia" data-act="phone">Anrufen</button>
+    <button class="btn" data-place="mia" data-act="coupon">Gutschein holen</button>
+  </div>
+</article>
+
+<article class="partner" id="p-reu">
+  <div class="head">
+    <div class="av">R</div>
+    <div>
+      <h3 class="name">Reuffel</h3>
+      <div class="cat ui">Bücher · Souvenirs · Postkarten</div>
+    </div>
+  </div>
+  <div class="photo" style="height:160px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--maroon);color:var(--maroon);font-size:14px;font-family:Helvetica,Arial,sans-serif;">Fotos folgen</div>
+  <p class="desc">Bücher, Souvenirs und Postkarten aus Koblenz. Hier gibt es auch Postkarten von Turret Tales.</p>
+  <p class="meta ui"><b>Adresse:</b> folgt<br><b>Öffnungszeiten:</b> folgt</p>
+  <div class="btns ui">
+    <button class="btn solid" data-place="reu" data-act="maps">Auf Google Maps öffnen</button>
+    <button class="btn" data-place="reu" data-act="phone">Anrufen</button>
+    <button class="btn" data-place="reu" data-act="coupon">Gutschein holen</button>
+  </div>
+</article>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="cp-title">
+  <div class="coupon">
+    <span class="demo ui">DEMO</span>
+    <div class="brand2 ui">Turret Tales · Gutschein</div>
+    <h3 id="cp-title">Mia Gelateria</h3>
+    <p class="offer">10 % auf Ihren Eisbecher</p>
+    <div class="qr" id="qr"></div>
+    <div class="code" id="cp-code"></div>
+    <div class="valid ui">Gültig bis 31.12.2026 · Beispiel</div>
+    <div class="state ui" id="cp-state"></div>
+    <div class="row ui">
+      <button class="btn solid" id="cp-redeem">Einlösen (nur Personal)</button>
+    </div>
+    <div class="closer ui"><button class="btn" id="cp-close">Schließen</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/davidshimjs-qrcodejs/0.0.2/qrcode.min.js"></script>
+<script async data-goatcounter="https://rhine-guide.goatcounter.com/count" src="//gc.zgo.at/count.js"></script>
+<script>
+// Demo-Ereignisse. Der Pfad beginnt mit "demo-", damit man sie im Auswertungskonto von echten Klicks trennen kann.
+const PLACES = {
+  mia: { name: 'Mia Gelateria', code: 'TT-DEMO-MIA-10', ll: [50.36139, 7.59636], card: 'p-mia' },
+  reu: { name: 'Reuffel', code: 'TT-DEMO-REU-10', ll: [50.36106, 7.59460], card: 'p-reu' }
+};
+const counts = {};
+const redeemed = {};
+function key(p, a) { return p + '-' + a; }
+
+function send(p, a) {
+  const path = 'demo-' + (p === 'mia' ? 'mia' : 'reuffel') + '-' + a;
+  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: path, title: 'Demo ' + a, event: true }); } catch (e) {}
+}
+function bump(p, a) {
+  const k = key(p, a);
+  counts[k] = (counts[k] || 0) + 1;
+  const id = 'c-' + (p === 'mia' ? 'mia' : 'reu') + '-' + a;
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = counts[k];
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 600);
+  }
+  send(p, a);
+}
+
+function highlight(cardId) {
+  const c = document.getElementById(cardId);
+  if (!c) return;
+  c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  c.classList.add('hl');
+  setTimeout(() => c.classList.remove('hl'), 1200);
+}
+
+// Karte mit Punkten
+const map = L.map('map', { scrollWheelZoom: false });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+const bounds = [PLACES.mia.ll, PLACES.reu.ll];
+map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+Object.keys(PLACES).forEach(p => {
+  const icon = L.divIcon({ className: '', html: '<div style="width:16px;height:16px;border-radius:50%;background:#C0202A;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)"></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
+  L.marker(PLACES[p].ll, { icon: icon }).addTo(map).on('click', () => { bump(p, 'map'); highlight(PLACES[p].card); });
+});
+
+// Buttons
+document.querySelectorAll('button[data-place]').forEach(b => b.addEventListener('click', () => {
+  const p = b.dataset.place, a = b.dataset.act;
+  if (a === 'coupon') return openCoupon(p);
+  bump(p, a === 'maps' ? 'maps' : 'phone');
+}));
+
+// Gutschein
+let openFor = null;
+function openCoupon(p) {
+  openFor = p;
+  bump(p, 'coupon');
+  document.getElementById('cp-title').textContent = PLACES[p].name;
+  document.getElementById('cp-code').textContent = PLACES[p].code;
+  const qr = document.getElementById('qr');
+  qr.innerHTML = '';
+  try { new QRCode(qr, { text: PLACES[p].code, width: 180, height: 180, colorDark: '#3a2a1a', colorLight: '#ffffff' }); } catch (e) { qr.textContent = PLACES[p].code; }
+  renderState();
+  document.getElementById('modal').classList.add('open');
+}
+function renderState() {
+  const st = document.getElementById('cp-state');
+  const btn = document.getElementById('cp-redeem');
+  if (redeemed[openFor]) {
+    st.textContent = 'Eingelöst (Demo). Dieser Code ist jetzt gesperrt.';
+    st.className = 'state ui ok';
+    btn.disabled = true;
+    btn.style.opacity = .5;
+  } else {
+    st.textContent = 'Noch nicht eingelöst.';
+    st.className = 'state ui';
+    btn.disabled = false;
+    btn.style.opacity = 1;
+  }
+}
+document.getElementById('cp-redeem').addEventListener('click', () => {
+  if (!openFor || redeemed[openFor]) return;
+  redeemed[openFor] = true;
+  bump(openFor, 'redeem');
+  renderState();
+});
+document.getElementById('cp-close').addEventListener('click', () => document.getElementById('modal').classList.remove('open'));
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') e.target.classList.remove('open'); });
+</script>
+</body>
+</html>

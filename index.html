@@ -2865,7 +2865,8 @@ function xmasDrawMap(opts) {
   if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
   xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0 });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
-  if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [4, 4] });
+  // Übersicht: genug Rand, damit Koblenz (oben) und Rüdesheim (rechts) mit ihren Beschriftungen ganz sichtbar bleiben
+  if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
   else if (opts.pins && opts.pins.length > 1) {
     const pb = L.latLngBounds(opts.pins.map(p => p.ll));
     const z = Math.min(xmasMapObj.getBoundsZoom(pb, false, L.point(4, 4)), opts.zoom);

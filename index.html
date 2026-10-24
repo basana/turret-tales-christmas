@@ -3096,6 +3096,7 @@ const XMAS_FOOD_INTRO = {
   ru: 'Кафе, рестораны и винные бары в старом городе. Здесь будут представлены партнёры. Красные точки показывают места на карте.',
 };
 const XMAS_FOOD_PLACES = [
+  { ll: [50.36000, 7.60203], mia: true },
   { ll: [50.36139, 7.59636] }, { ll: [50.36133, 7.59590] }, { ll: [50.36106, 7.59460] },
   { ll: [50.36178, 7.59470] }, { ll: [50.36070, 7.59684] }, { ll: [50.36183, 7.59597] },
   { ll: [50.36144, 7.60450] },
@@ -3107,8 +3108,18 @@ function renderFood() {
   const intro = XMAS_FOOD_INTRO[xmasLang] || XMAS_FOOD_INTRO.en;
   const title = XMAS_FOOD_TITLE[xmasLang] || XMAS_FOOD_TITLE.en;
   const ph = { de: 'Beschreibung und Fotos folgen', fr: 'Description et photos à venir', nl: 'Beschrijving en foto\'s volgen', en: 'Description and photos to follow', ru: 'Описание и фото будут добавлены' }[xmasLang] || 'Description and photos to follow';
-  const cards = XMAS_FOOD_PLACES.map((p, i) =>
-    `<div class="route-card xmas-card"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="xmas-ph">${ph}</div></div>`).join('');
+  // Mia Gelateria: полная карточка из данных рождественской карты Кобленца (та же информация на всех языках)
+  const miaCard = (() => { const tx = XMAS_CITY.koblenz.text[xmasLang] || XMAS_CITY.koblenz.text.de; return tx.cards[tx.cards.length - 1]; })();
+  const cards = XMAS_FOOD_PLACES.map((p, i) => {
+    const kicker = `<div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>`;
+    if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
+    const photos = (XMAS_PHOTOS[miaCard.photo] || []).map(f => `<figure class="xmas-cell xmas-cell-img"><img src="${f}" alt="${miaCard.title}" loading="lazy"></figure>`).join('');
+    return `<div class="route-card xmas-card">${kicker}` +
+      `<div class="xmas-grid">${photos}</div>` +
+      `<h3 class="castle-name" style="margin:6px 0 2px">${miaCard.title}</h3>` +
+      `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${miaCard.place}</p>` +
+      `<p style="margin:0">${miaCard.text}</p></div>`;
+  }).join('');
   el.innerHTML = `<p class="xmas-intro">${intro}</p>` +
     `<h2 class="castle-name" style="margin:10px 0">${title}</h2>` +
     `<div id="xmasFoodMap" class="xmas-map"></div>` + `<div class="xmas-town-list">${cards}</div>`;
@@ -3476,7 +3487,7 @@ const qlLocationsBtn = document.getElementById('qlLocations');
 if (qlLocationsBtn) qlLocationsBtn.addEventListener('click', () => switchView('castles'));
 function xmasSyncLangFromApp() {
   if (typeof xmasLang === 'undefined') return;
-  const next = lang === 'ru' ? 'ru' : 'en';
+  const next = ['de', 'fr', 'nl', 'en', 'ru'].includes(lang) ? lang : 'en';
   if (next === xmasLang) return;
   xmasLang = next;
   try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
@@ -4124,6 +4135,8 @@ if (ruTempDisabled) {
 function setLang(newLang) {
   if (ruTempDisabled && newLang === 'ru') return;
   lang = newLang;
+  // Язык шапки — один и тот же для всех экранов (в том числе для рождественской карты и вкладки Food & Drinks)
+  if (['de', 'fr', 'nl', 'en', 'ru'].includes(newLang)) xmasLang = newLang;
   try { localStorage.setItem('rhineGuideLang', lang); } catch (e) {}
   document.querySelectorAll('.pill-btn[data-lang]').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));
   document.querySelectorAll('.splash-lang-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));

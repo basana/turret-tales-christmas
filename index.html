@@ -153,9 +153,9 @@
   .xmas-hero { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #7A1026; color: #F5ECD6; cursor: pointer; }
   .xmas-hero img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
   .xmas-hero { pointer-events: none; }
-  .buta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; align-items: start; }
-  .buta-hero { grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 100%; object-fit: cover; border-radius: 10px; }
-  .buta-info { padding: 4px 4px 0; }
+  .buta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
+  .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
+  .buta-info { padding: 4px 4px 0; align-self: center; }
   .buta-name { font-size: calc(1em + 2.7px); font-weight: 700; color: #7A1026; margin: 0 0 4px; }
   .buta-sq { aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px; }
   .buta-sq img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -3236,16 +3236,15 @@ function renderFood() {
   const cards = XMAS_FOOD_PLACES.map((p, i) => {
     const kicker = `<div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>`;
     if (p.buta) {
-      // Сетка: вертикальное фото слева; справа сверху название и описание, справа снизу квадрат; остальные фото ниже
+      // Сетка: слева название и описание, справа новое фото в рамке; остальные фото ниже
       const sq = n => `<img src="buta-${n}.webp" alt="Buta Cafe" loading="lazy">`;
       const t = BUTA_CARD.text[xmasLang] || BUTA_CARD.text.en;
       return `<div class="route-card xmas-card">${kicker}<div class="buta-grid">` +
-        `<img class="buta-hero" src="buta-hero.webp" alt="Buta Cafe" loading="lazy">` +
         `<div class="buta-info"><h3 class="buta-name">${BUTA_CARD.title}</h3>` +
         `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${BUTA_CARD.place}</p><p style="margin:0">${t}</p></div>` +
-        `<div class="buta-sq">${sq('01')}</div>` +
+        `<img class="buta-frame" src="buta-frame.webp" alt="Buta Cafe" loading="lazy">` +
         `</div><div class="buta-more">` +
-        ['03','07','08'].map(n => `<div class="buta-sq">${sq(n)}</div>`).join('') +
+        ['01','03','07','08'].map(n => `<div class="buta-sq">${sq(n)}</div>`).join('') +
         `</div></div>`;
     }
     if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;

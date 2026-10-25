@@ -1,4 +1,4 @@
-const CACHE = 'rhine-design-test-v183';
+const CACHE = 'rhine-design-test-v184';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {
@@ -16,17 +16,27 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// HTML (navigations + index.html) — сеть в приоритете, кэш только как запасной
-// вариант офлайн. Остальные файлы — как раньше, кэш в приоритете.
+// HTML (navigations + любой *.html, не только index.html) — сеть в приоритете,
+// кэш только как запасной вариант офлайн. Остальные файлы — как раньше,
+// кэш в приоритете.
+// Раньше тут проверялся только "index.html"/"/", поэтому walks.html,
+// partner-map.html и т.п. уходили в cache-first — если первая загрузка на
+// мобильной сети прервалась и в кэш попал битый/пустой ответ, страница потом
+// висела чёрным экраном даже после "жёсткой" перезагрузки (Service Worker
+// не сбрасывается обычным reload).
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  const isHtml = req.mode === 'navigate' || req.url.endsWith('index.html') || req.url.endsWith('/');
+  let isHtmlPath = false;
+  try { isHtmlPath = new URL(req.url).pathname.endsWith('.html'); } catch (e) {}
+  const isHtml = req.mode === 'navigate' || isHtmlPath || req.url.endsWith('/');
 
   if (isHtml) {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-store' })
         .then((fresh) => {
-          caches.open(CACHE).then((cache) => cache.put(req, fresh.clone()));
+          if (fresh && fresh.ok) {
+            caches.open(CACHE).then((cache) => cache.put(req, fresh.clone()));
+          }
           return fresh;
         })
         .catch(() => caches.match(req))

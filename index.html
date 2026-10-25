@@ -92,9 +92,6 @@
   .food-promo-icon { width: 58px; height: 58px; flex: 0 0 auto; object-fit: contain; border-radius: 50%; background: #fff; border: 1.5px solid #c8a878; padding: 4px; }
   .food-promo-text { flex: 1 1 auto; font-size: 15px; line-height: 1.35; }
   .food-promo-link { display: inline-block; margin-top: 6px; font-weight: 700; color: #7A1026; text-decoration: none; border-bottom: 1px solid #7A1026; cursor: pointer; background: none; border-top: 0; border-left: 0; border-right: 0; padding: 0; font-size: 15px; font-family: inherit; }
-  /* Заставка Food & Drinks: тот же макет и типографика, что у основной заставки навигатора (класс .splash) */
-  .food-splash[hidden] { display: none; }
-  .food-splash .splash-gradient { display: block; background: linear-gradient(45deg, rgba(12,8,4,0.8) 0%, rgba(12,8,4,0.45) 16%, rgba(12,8,4,0) 36%); }
   .food-promo-close { position: absolute; top: 4px; right: 8px; background: none; border: 0; color: #7A1026; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
   .food-promo { position: fixed; }
   .food-mia { display: flex; gap: 12px; align-items: flex-start; }
@@ -1047,28 +1044,6 @@
   </div>
 </div>
 
-<div class="splash food-splash" id="foodSplash" hidden role="dialog" aria-label="Food &amp; Drinks">
-  <img src="splash-food.webp" alt="">
-  <div class="splash-gradient"></div>
-  <div class="splash-watermark-wrap">
-    <div class="splash-rays"></div>
-    <img class="splash-watermark" src="emblem-stamp.png" alt="">
-  </div>
-  <div class="splash-lang">
-    <span class="splash-lang-btn" data-lang="en">EN</span>
-    <span class="splash-lang-btn splash-lang-xmas" data-xh="de">DE</span>
-    <span class="splash-lang-btn splash-lang-xmas" data-xh="fr">FR</span>
-    <span class="splash-lang-btn splash-lang-xmas" data-xh="nl">NL</span>
-    <span class="splash-lang-btn" data-lang="ru">RU</span>
-  </div>
-  <div class="splash-content">
-    <p class="splash-eyebrow">Koblenz · Food &amp; Drinks</p>
-    <h1 class="splash-title">Your Table.<br>Your Taste.<br>Your Rhine.</h1>
-    <p class="splash-tagline">Cafés, restaurants and wine bars<br>in the old town of Koblenz —<br>sweets and drinks at your own pace.</p>
-    <p class="splash-find">Find your table.</p>
-    <button class="splash-enter" type="button"><span>Find your café</span> →</button>
-  </div>
-</div>
 <div class="food-promo" id="foodPromo" hidden role="dialog" aria-label="Food & Drinks">
   <button class="food-promo-close" id="foodPromoClose" aria-label="×">×</button>
   <div id="foodPromoQ" class="food-promo-q"></div>
@@ -2901,6 +2876,7 @@ function showShopPromo() {
   const box = document.getElementById('shopPromo');
   if (!box || !box.hidden) return;
   if (!document.getElementById('foodPromo').hidden) return;
+  if (currentView === 'food' || currentView === 'wine') return; // не показывать поверх собственной страницы Food/Winemakers
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
   renderShopPromoText();
@@ -2908,17 +2884,12 @@ function showShopPromo() {
 }
 function hideShopPromo() { const box = document.getElementById('shopPromo'); if (box) box.hidden = true; }
 document.getElementById('shopPromoClose').addEventListener('click', hideShopPromo);
-document.getElementById('shopPromoLink').addEventListener('click', () => { hideShopPromo(); window.open('partner-map.html', '_blank', 'noopener'); });
+document.getElementById('shopPromoLink').addEventListener('click', () => { hideShopPromo(); window.location.href = 'partner-map.html'; });
 setInterval(showShopPromo, 180000);
 // Смена языка (шапка, заставка, рождественские кнопки) сразу меняет текст окна
 document.addEventListener('click', e => {
   if (e.target.closest && e.target.closest('[data-lang], [data-xl], [data-xh]')) setTimeout(() => { renderFoodPromoText(); renderShopPromoText(); }, 0);
 });
-function showFoodSplash() {
-  const s = document.getElementById('foodSplash');
-  if (s) s.hidden = false;
-}
-document.getElementById('foodSplash').addEventListener('click', () => { document.getElementById('foodSplash').hidden = true; });
 function hideFoodPromo() { const box = document.getElementById('foodPromo'); if (box) box.hidden = true; }
 document.getElementById('foodPromoClose').addEventListener('click', hideFoodPromo);
 document.getElementById('foodPromoLink').addEventListener('click', () => { hideFoodPromo(); switchView('food'); });
@@ -3400,7 +3371,7 @@ function switchView(viewName) {
   if (scrollBox) scrollBox.scrollTop = 0;
   window.scrollTo(0, 0);
   if (viewName === 'christmas') renderChristmas();
-  if (viewName === 'food') { renderFood(); hideFoodPromo(); if (prevView !== 'food') showFoodSplash(); }
+  if (viewName === 'food') { renderFood(); hideFoodPromo(); }
   if (viewName === 'wine') { renderWine(); hideFoodPromo(); }
   renderTabs();
   if (viewName === 'map') {

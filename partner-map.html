@@ -85,9 +85,51 @@
   .gps-depart input { font-size: 14px; padding: 4px 6px; border: 1px solid var(--gold); border-radius: 6px; background: #fff; }
   .gps-user-halo { width: 22px; height: 22px; border-radius: 50%; background: #2a7de1; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(42,125,225,.25), 0 1px 4px rgba(0,0,0,.4); }
   .saved-spot-marker { font-size: 26px; line-height: 30px; text-align: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+  .ptabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 8px 0 14px; }
+  .ptabs button { font-family: Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700; padding: 9px 18px; border-radius: 18px; border: 2px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
+  .ptabs button.active { background: var(--maroon); color: #fff; }
+  .wine-sec { margin: 0 0 10px; }
+  :root { --terracotta:#B5602E; --cream-text:#FCEFDD; --sans: Helvetica, Arial, sans-serif; --pad: clamp(16px, 5vw, 24px); }
+  /* Заставка при открытии (как «Food & Drinks» в приложении) */
+  .splash { position: fixed; inset: 0; z-index: 3000; display: flex; flex-direction: column; justify-content: flex-end; background: #1a100a; }
+  .splash[hidden] { display: none; }
+  .splash > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .splash-gradient { position: absolute; inset: 0; background: linear-gradient(45deg, rgba(12,8,4,0.8) 0%, rgba(12,8,4,0.45) 16%, rgba(12,8,4,0) 36%); }
+  .splash-watermark-wrap { --wm: clamp(96px, 32vw, 150px); position: absolute; z-index: 0; pointer-events: none; top: env(safe-area-inset-top); left: 0; width: calc(var(--wm) * 0.765); height: calc(var(--wm) * 0.765); }
+  .splash img.splash-watermark { position: absolute; z-index: 1; pointer-events: none; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0.9; }
+  .splash-content { position: relative; z-index: 1; padding: 0 var(--pad) calc(64px + env(safe-area-inset-bottom)); color: var(--cream-text); }
+  .splash-eyebrow { font-family: var(--sans); font-size: 12.4px; letter-spacing: 0.19em; text-transform: uppercase; color: var(--cream-text); font-weight: 700; opacity: 0.86; margin: 0 0 6px; text-shadow: 0 2px 10px rgba(0,0,0,0.65), 0 1px 3px rgba(0,0,0,0.8); display: block; transform: translateY(-5%); }
+  .splash-title, .splash-find { font-family: 'EB Garamond', Garamond, serif; font-weight: 600; font-style: normal; font-synthesis: none; font-size: clamp(30px, 8.3vw, 42px); line-height: 1.05; text-shadow: 0 2px 16px rgba(0,0,0,0.45); }
+  .splash-title, .splash-find { color: var(--cream-text); }
+  .splash-title { margin: 0 0 9px; }
+  .splash-find { display: block; text-align: left; margin: 0 0 26px; padding-left: 19%; font-size: calc(clamp(30px, 8.3vw, 42px) * 0.77); }
+  .splash-tagline { font-size: clamp(19px, 5vw, 21px); line-height: 1.42; margin: 0 0 10px; max-width: 34ch; color: rgba(252,239,221,0.92); }
+  .splash-enter { font-family: var(--sans); background: var(--terracotta); color: var(--cream-text); border: none; border-radius: 28px; padding: 14px 30px; font-size: 15px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+  .splash-lang { position: absolute; z-index: 2; top: calc(14px + env(safe-area-inset-top)); right: 14px; display: flex; gap: 6px; }
+  .splash-lang-btn { font-family: var(--sans); font-size: 12px; font-weight: 700; padding: 6px 11px; border-radius: 14px; cursor: pointer; background: #fff; color: #7A1026; border: 1px solid #7A1026; }
+  .splash-lang-btn.active { background: var(--terracotta); color: var(--cream-text); border-color: var(--terracotta); }
 </style>
 </head>
 <body>
+<div class="splash" id="foodSplash" role="dialog" aria-label="Food &amp; Drinks">
+  <img src="splash-food.webp" alt="">
+  <div class="splash-gradient"></div>
+  <div class="splash-watermark-wrap"><img class="splash-watermark" src="emblem-stamp.png" alt=""></div>
+  <div class="splash-lang">
+    <span class="splash-lang-btn" data-lang="en">EN</span>
+    <span class="splash-lang-btn" data-xh="de">DE</span>
+    <span class="splash-lang-btn" data-xh="fr">FR</span>
+    <span class="splash-lang-btn" data-xh="nl">NL</span>
+    <span class="splash-lang-btn" data-lang="ru">RU</span>
+  </div>
+  <div class="splash-content">
+    <p class="splash-eyebrow">Koblenz · Food &amp; Drinks</p>
+    <h1 class="splash-title">Your Table.<br>Your Taste.<br>Your Rhine.</h1>
+    <p class="splash-tagline">Cafés, restaurants and wine bars<br>in the old town of Koblenz —<br>sweets and drinks at your own pace.</p>
+    <p class="splash-find">Find your table.</p>
+    <button class="splash-enter" type="button"><span>Find your café</span> →</button>
+  </div>
+</div>
 <header>
   <div class="brand" id="t-brand">Turret Tales · Tours All Year Round</div>
   <h1 id="t-title">Food, Drinks & More</h1>
@@ -103,6 +145,9 @@
 
 <div class="intro" id="t-intro"></div>
 
+<nav class="ptabs" id="ptabs"></nav>
+
+<div id="view-food">
 <div id="map"></div>
 
 <div class="btns" style="margin:0 0 10px"><button class="btn solid" id="gpsBtn"></button></div>
@@ -111,6 +156,9 @@
 <nav class="secnav" id="secnav"></nav>
 
 <div id="cards"></div>
+</div>
+
+<div id="view-wine" hidden><div id="wine-cards"></div></div>
 
 <div class="contact" id="t-contact"></div>
 
@@ -273,6 +321,79 @@ const PIN_LOGOS = [
   { html: '<img src="reuffel-logo.webp" alt="Reuffel Bazaar">', card: 'card-reuffel' }
 ];
 
+const TABS = {
+  de: { food: 'Essen & Trinken', wine: 'Weingüter', wTitle: 'Weingüter & Weinproben', wIntro: 'Weingüter am Moselufer. Viele Gäste der Flusskreuzfahrt möchten Wein direkt beim Winzer probieren. Hier finden Sie Winzer mit Weinproben.', wPh: 'Weingut – Adresse folgt' },
+  en: { food: 'Food & drinks', wine: 'Winemakers', wTitle: 'Winemakers & wine tastings', wIntro: 'Wineries on the Moselle. Many river cruise guests want to taste wine directly with the winemaker. Here you find winemakers who offer tastings.', wPh: 'Winery – address to follow' },
+  fr: { food: 'Restauration', wine: 'Vignerons', wTitle: 'Domaines et dégustations', wIntro: 'Domaines viticoles sur la Moselle. Beaucoup de croisiéristes veulent goûter le vin directement chez le vigneron. Voici les vignerons qui proposent des dégustations.', wPh: 'Domaine – adresse à venir' },
+  nl: { food: 'Eten & drinken', wine: 'Wijnmakers', wTitle: 'Wijnhuizen & proeverijen', wIntro: 'Wijnhuizen aan de Moezel. Veel riviercruisegasten willen wijn direct bij de wijnmaker proeven. Hier vindt u wijnmakers met proeverijen.', wPh: 'Wijnhuis – adres volgt' },
+  ru: { food: 'Еда и напитки', wine: 'Виноделы', wTitle: 'Виноделы и дегустации', wIntro: 'Винодельни на Мозеле. Многие гости речных круизов хотят попробовать вино прямо у винодела. Здесь вы найдёте виноделов, которые проводят дегустации.', wPh: 'Винодельня – адрес будет добавлен' },
+};
+// Виноделы: слоты в том же формате, что и кафе (partnerCard).
+// Фото: положить в папку сайта и указать в photos (первое — основное, с рамкой).
+// Пока name: null — показывается заглушка «адрес будет добавлен».
+const WINERIES = [
+  {
+    slug: 'weyh',
+    name: 'Weingut Weyh',
+    icon: null,
+    photos: [],
+    // Ожидаемые файлы: weyh-main.webp (с рамкой), weyh-1.webp, weyh-2.webp
+    photoAlt: 'Weingut Weyh, Winningen',
+    cat: { de: 'Weingut · Weinprobe für Gruppen', en: 'Winery · tastings for groups', fr: 'Domaine · dégustations de groupe', nl: 'Wijnhuis · proeverijen voor groepen', ru: 'Винодельня · дегустации для групп' },
+    addr: 'Röttgenweg 4, 56333 Winningen',
+    hours: { de: 'So 13–18 Uhr · klingeln möglich', en: 'Sun 13:00–18:00 · ring the bell', fr: 'dim. 13h–18h · sonnez', nl: 'zo 13–18 uur · aanbellen', ru: 'вс 13:00–18:00 · можно позвонить в дверь' },
+    phone: null,
+    web: null,
+    gmaps: null,
+    desc: {
+      de: 'Weingut in Winningen an der Mosel. Weinproben für kleine und große Gruppen in den Moselle-Style-Räumen. In der Vinothek können Sie Weine aus verschiedenen Lagen Winningens probieren.',
+      en: 'Winery in Winningen on the Moselle. Wine tastings for small and large groups in the Moselle-style rooms. In the wine shop you can taste wines from different Winningen vineyards.',
+      fr: 'Domaine viticole à Winningen, sur la Moselle. Dégustations pour petits et grands groupes dans les salles de style moselan. À la vinothèque, dégustez des vins de différents lieux-dits de Winningen.',
+      nl: 'Wijnhuis in Winningen aan de Moezel. Proeverijen voor kleine en grote groepen in de zalen in Moselle-stijl. In de wijnwinkel proeft u wijnen uit verschillende Winningense wijngaarden.',
+      ru: 'Винодельня в Винингене на Мозеле. Дегустации для небольших и больших групп в залах в мозельском стиле. В винотеке можно попробовать вина из разных участков Винингена.'
+    }
+  },
+  {
+    slug: 'vinothek-winningen',
+    name: 'Vinothek im Winninger Spital',
+    icon: null,
+    photos: [],
+    // Ожидаемые файлы: vinothek-main.webp (с рамкой), vinothek-1.webp, vinothek-2.webp
+    photoAlt: 'Vinothek im Winninger Spital',
+    cat: { de: 'Vinothek · Weinprobe', en: 'Wine tasting room', fr: 'Vinothèque · dégustation', nl: 'Proeflokaal', ru: 'Винотека · дегустация' },
+    addr: 'Weinhof 2, 56333 Winningen',
+    hours: {
+      de: 'Sommer: Mi–Sa 16–20, So 15–19 Uhr · Winter: Fr–So 16–19 Uhr',
+      en: 'Summer: Wed–Sat 16:00–20:00, Sun 15:00–19:00 · Winter: Fri–Sun 16:00–19:00',
+      fr: 'été : mer.–sam. 16h–20h, dim. 15h–19h · hiver : ven.–dim. 16h–19h',
+      nl: 'zomer: wo–za 16–20, zo 15–19 uur · winter: vr–zo 16–19 uur',
+      ru: 'лето: ср–сб 16:00–20:00, вс 15:00–19:00 · зима: пт–вс 16:00–19:00'
+    },
+    phone: '+49 2606 961514',
+    web: 'https://www.vinothek-winningen.de',
+    gmaps: null,
+    desc: {
+      de: 'Vinothek mit rund 40 Weinen und Schaumweinen unabhängiger Winninger Weingüter. Sie zahlen eine Gebühr für die Verkostung und sind danach nicht zum Kauf verpflichtet.',
+      en: 'Wine tasting room with about 40 wines and sparkling wines from independent Winningen estates. You pay a fee for the tasting and are not obliged to buy.',
+      fr: 'Vinothèque avec environ 40 vins et crémants de domaines indépendants de Winningen. Vous payez une participation à la dégustation, sans obligation d’achat.',
+      nl: 'Proeflokaal met ongeveer 40 wijnen en mousserende wijnen van onafhankelijke Winningense wijnhuizen. U betaalt een bijdrage voor de proeverij en bent niet verplicht te kopen.',
+      ru: 'Винотека с примерно 40 винами и игристыми от независимых винодельней Винингена. За дегустацию платится сбор, покупать обязательно не нужно.'
+    }
+  },
+  {
+    slug: 'cochem-folgt',
+    name: null, // Кохем: винодельня пока не определена
+    icon: null,
+    photos: [],
+    addr: null,
+    hours: null,
+    phone: null,
+    web: null,
+    gmaps: null,
+    desc: null
+  }
+];
+let view = 'food';
 let lang = 'de';
 try { const s = localStorage.getItem('partnerLang'); if (s && T[s]) lang = s; } catch (e) {}
 
@@ -546,7 +667,17 @@ function render() {
   document.getElementById('t-brand').textContent = t.brand;
   document.getElementById('t-title').textContent = t.title;
   document.getElementById('t-sub').textContent = t.sub;
-  document.getElementById('t-intro').textContent = t.intro;
+  const tt = TABS[lang] || TABS.en;
+  document.getElementById('t-intro').textContent = view === 'food' ? t.intro : tt.wIntro;
+  document.getElementById('ptabs').innerHTML =
+    `<button data-v="food" class="${view === 'food' ? 'active' : ''}">${tt.food}</button>` +
+    `<button data-v="wine" class="${view === 'wine' ? 'active' : ''}">${tt.wine}</button>`;
+  document.getElementById('view-food').hidden = view !== 'food';
+  document.getElementById('view-wine').hidden = view !== 'wine';
+  document.getElementById('wine-cards').innerHTML =
+    `<h2 class="sec">${tt.wTitle}</h2>` + WINERIES.map((w, i) => w.name
+      ? partnerCard(w, i + 1)
+      : `<div class="card"><div class="num">W${i + 1}</div><div class="ph">${tt.wPh}</div></div>`).join('');
   document.getElementById('t-contact').innerHTML = t.contact;
   document.title = t.title + ' · Turret Tales';
   document.getElementById('secnav').innerHTML =
@@ -567,12 +698,35 @@ function render() {
   renderCoupon();
   updateGpsUi();
 }
+document.getElementById('ptabs').addEventListener('click', e => {
+  const b = e.target.closest('button[data-v]');
+  if (!b) return;
+  view = b.dataset.v;
+  render();
+  window.scrollTo(0, 0);
+});
 document.querySelectorAll('.langs button').forEach(b => b.addEventListener('click', () => {
   lang = b.dataset.l;
   try { localStorage.setItem('partnerLang', lang); } catch (e) {}
   render();
 }));
 render();
+// Заставка при открытии: касание по ней скрывает её; кнопки языков сразу переключают страницу
+const splashEl = document.getElementById('foodSplash');
+function markSplashLang() {
+  splashEl.querySelectorAll('.splash-lang-btn').forEach(b => b.classList.toggle('active', (b.dataset.lang || b.dataset.xh) === lang));
+}
+markSplashLang();
+splashEl.addEventListener('click', e => {
+  const b = e.target.closest('.splash-lang-btn');
+  if (b) {
+    lang = b.dataset.lang || b.dataset.xh;
+    try { localStorage.setItem('partnerLang', lang); } catch (err) {}
+    render();
+    markSplashLang();
+  }
+  splashEl.hidden = true;
+});
 </script>
 </body>
 </html>

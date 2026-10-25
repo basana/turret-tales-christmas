@@ -156,6 +156,8 @@
   .buta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
   .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
   .buta-info { padding: 4px 4px 0; align-self: center; }
+  .buta-pic { margin: 0; position: relative; width: 88%; justify-self: end; }
+  .buta-pic .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
   .buta-name { font-size: calc(1em + 2.7px); font-weight: 700; color: #7A1026; margin: 0 0 4px; }
   .buta-sq { aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px; }
   .buta-sq img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -3240,7 +3242,7 @@ const XMAS_FOOD_PLACES = [
 // Buta Cafe Koblenz: текст по описанию из Instagram-профиля кафе (черновик, уточняется), фото в buta-*.webp
 const BUTA_CARD = {
   title: 'Buta Cafe Koblenz',
-  place: 'Florinsmarkt 12, 56068 Koblenz · 10–20 €',
+  place: 'Florinsmarkt 12, 56068 Koblenz · 10–20&nbsp;€',
   text: {
     de: 'Traditionelle Rezepte, moderne Cafékultur. Frühstück und Brunch aus dem Kaukasus und Osteuropa. Kaffee, Tee und hausgemachte Kuchen.',
     en: 'Traditional recipes, modern café culture. Breakfast and brunch from the Caucasus and Eastern Europe. Coffee, tea and homemade cakes.',
@@ -3259,14 +3261,15 @@ function renderFood() {
   const cards = XMAS_FOOD_PLACES.map((p, i) => {
     const kicker = `<div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>`;
     if (p.buta) {
-      // Сетка: слева название и описание, справа новое фото в рамке; остальные фото ниже
+      // Сетка: слева название и описание, справа фото в рамке с кнопкой купона внизу (как у Mia); остальные фото ниже
       const sq = n => `<img src="buta-${n}.webp" alt="Buta Cafe" loading="lazy">`;
       const t = BUTA_CARD.text[xmasLang] || BUTA_CARD.text.en;
+      const cLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон' }[xmasLang] || 'Get voucher';
       return `<div class="route-card xmas-card">${kicker}<div class="buta-grid">` +
         `<div class="buta-info"><h3 class="buta-name">${BUTA_CARD.title}</h3>` +
-        `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${BUTA_CARD.place}</p><p style="margin:0">${t}</p>` +
-        `<button type="button" class="buta-coupon" data-buta-voucher>${{ de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон' }[xmasLang] || 'Get voucher'}</button></div>` +
-        `<img class="buta-frame" src="buta-frame.webp" alt="Buta Cafe" loading="lazy">` +
+        `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${BUTA_CARD.place}</p><p style="margin:0">${t}</p></div>` +
+        `<figure class="buta-pic"><img class="buta-frame" src="buta-frame.webp" alt="Buta Cafe" loading="lazy">` +
+        `<button type="button" class="food-coupon" data-buta-voucher>${cLbl}</button></figure>` +
         `</div><div class="buta-more">` +
         ['08','03','07'].map(n => `<div class="buta-sq">${sq(n)}</div>`).join('') +
         `</div></div>`;
@@ -3277,7 +3280,7 @@ function renderFood() {
     const couponLink = `<button type="button" class="food-coupon" data-mia-voucher>${couponLbl}</button>`;
     const pic = mainPhoto ? `<figure class="food-mia-pic"><img src="${mainPhoto}" alt="${miaCard.title}" loading="lazy">${couponLink}</figure>` : '';
     return `<div class="route-card xmas-card">${kicker}<div class="food-mia">${pic}` +
-      `<div class="food-mia-text"><h3 class="castle-name" style="margin:0 0 4px">${miaCard.title}</h3>` +
+      `<div class="food-mia-text"><h3 class="buta-name">${miaCard.title}</h3>` +
       `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${miaCard.place}</p>` +
       `<p style="margin:0">${miaCard.text}</p></div></div></div>`;
   }).join('');

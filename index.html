@@ -1132,7 +1132,7 @@
     <!-- ГИД -->
     <div class="view active" id="view-guide">
       <div class="guide-note" id="guideNote">
-        <div class="guide-note-photo" id="guideNotePhoto">Foto folgt</div>
+        <div class="guide-note-photo" id="guideNotePhoto"><img src="guide-photo.webp" alt="Anatoly Basin"></div>
         <p class="guide-note-text" id="guideNoteText"></p>
       </div>
       <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
@@ -3719,11 +3719,8 @@ function renderQuickLinksText() {
     guideNote.style.display = (index === 0) ? 'flex' : 'none';
     const gnText = document.getElementById('guideNoteText');
     if (gnText) gnText.innerHTML = `${t.guideNoteText || ''}<span class="guide-note-sig">${t.guideNoteSig || ''}</span>`;
-    const gnPhoto = document.getElementById('guideNotePhoto');
-    if (gnPhoto) {
-      const phText = { de: 'Foto folgt', fr: 'Photo à venir', nl: 'Foto volgt', en: 'Photo to follow', ru: 'Фото будет добавлено' }[lang] || 'Photo to follow';
-      gnPhoto.textContent = phText;
-    }
+    // guideNotePhoto теперь содержит реальное фото (guide-photo.webp) —
+    // плейсхолдер-текст больше не нужен и не перезаписывается при рендере.
   }
 
   const setLbl = (id, text) => {

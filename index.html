@@ -3239,10 +3239,11 @@ function renderFood() {
       return `<div class="route-card xmas-card">${kicker}<div class="buta-grid">` +
         `<img class="buta-hero" src="buta-hero.webp" alt="Buta Cafe" loading="lazy">` +
         `<div class="buta-sq">${sq('01')}</div><div class="buta-sq">${sq('02')}</div>` +
-        `</div><div class="buta-more">` +
-        [ '03','04','05','06','07','08' ].map(n => `<div class="buta-sq">${sq(n)}</div>`).join('') +
         `</div><div class="food-mia-text" style="margin-top:10px"><h3 class="castle-name" style="margin:0 0 4px">${BUTA_CARD.title}</h3>` +
-        `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${BUTA_CARD.place}</p><p style="margin:0">${t}</p></div></div>`;
+        `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${BUTA_CARD.place}</p><p style="margin:0">${t}</p></div>` +
+        `<div class="buta-more">` +
+        [ '03','04','05','06','07','08' ].map(n => `<div class="buta-sq">${sq(n)}</div>`).join('') +
+        `</div></div>`;
     }
     if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
     const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
@@ -3265,7 +3266,10 @@ function renderFood() {
   const pb = L.latLngBounds(XMAS_FOOD_PLACES.map(p => p.ll));
   xmasFoodMapObj.fitBounds(pb, { padding: [4, 4], maxZoom: 16 });
   XMAS_FOOD_PLACES.forEach(p => {
-    if (p.mia) {
+    if (p.buta) {
+      // Buta Cafe: круглый логотип-огурец, как у Mia и Reuffel
+      L.marker(p.ll, { icon: L.divIcon({ className: '', html: '<div class="food-pin"><img src="buta-icon.webp" alt="Buta Cafe"></div>', iconSize: [56, 56], iconAnchor: [28, 28] }) }).addTo(xmasFoodMapObj);
+    } else if (p.mia) {
       // Mia Gelateria: большой круглый Eis-Logo, как на странице партнёров
       L.marker(p.ll, { icon: L.divIcon({ className: '', html: '<div class="food-pin"><img src="mia-gelateria-icon.webp" alt="Mia Gelateria"></div>', iconSize: [56, 56], iconAnchor: [28, 28] }) }).addTo(xmasFoodMapObj);
     } else {

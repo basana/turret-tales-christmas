@@ -93,13 +93,14 @@
     <tbody>
       <tr id="row-mia"><td>Mia Gelateria</td><td class="n" id="c-mia-map">0</td><td class="n" id="c-mia-maps">0</td><td class="n" id="c-mia-phone">0</td><td class="n" id="c-mia-coupon">0</td><td class="n" id="c-mia-redeem">0</td></tr>
       <tr id="row-reu"><td>Reuffel</td><td class="n" id="c-reu-map">0</td><td class="n" id="c-reu-maps">0</td><td class="n" id="c-reu-phone">0</td><td class="n" id="c-reu-coupon">0</td><td class="n" id="c-reu-redeem">0</td></tr>
+      <tr id="row-buta"><td>Buta Cafe</td><td class="n" id="c-buta-map">0</td><td class="n" id="c-buta-maps">0</td><td class="n">–</td><td class="n">–</td><td class="n">–</td></tr>
     </tbody>
   </table>
   <p class="sum ui">Zählung in dieser Sitzung. Die Zahlen im Auswertungskonto kommen mit kurzer Verzögerung dazu.</p>
 </section>
 
 <div id="map"></div>
-<p class="mapnote ui">Karte: Mia Gelateria und Reuffel Bazaar, Koblenz Altstadt.</p>
+<p class="mapnote ui">Karte: Mia Gelateria, Reuffel Bazaar und Buta Cafe, Koblenz Altstadt.</p>
 
 <article class="partner" id="p-mia">
   <div class="head">
@@ -138,6 +139,22 @@
   </div>
 </article>
 
+<article class="partner" id="p-buta">
+  <div class="head">
+    <img class="av" src="buta-icon.webp" alt="Buta Cafe">
+    <div>
+      <h3 class="name">Buta Cafe Koblenz</h3>
+      <div class="cat ui">Café · Frühstück &amp; Brunch</div>
+    </div>
+  </div>
+  <img class="photo" src="buta-hero.webp" alt="Buta Cafe: Syrniki mit Beeren, Tee und Brunch">
+  <p class="desc">Traditionelle Rezepte, moderne Cafékultur. Frühstück und Brunch aus dem Kaukasus und Osteuropa. Kaffee, Tee und hausgemachte Kuchen.</p>
+  <p class="meta ui"><b>Adresse:</b> Florinsmarkt 12, 56068 Koblenz<br><b>Preis:</b> 10–20 €</p>
+  <div class="btns ui">
+    <button class="btn solid" data-place="buta" data-act="maps">Auf Google Maps öffnen</button>
+  </div>
+</article>
+
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="cp-title">
   <div class="coupon">
     <span class="demo ui">DEMO</span>
@@ -164,20 +181,21 @@
 const firm = new URLSearchParams(location.search).get('firm');
 const PLACES = {
   mia: { name: 'Mia Gelateria', code: 'TT-DEMO-MIA-10', offer: '10 % auf Ihren Eisbecher', ll: [50.36000, 7.60203], card: 'p-mia' },
-  reu: { name: 'Reuffel Bazaar', code: 'TT-DEMO-REU-10', offer: '10 % auf Ihren Einkauf', ll: [50.36098, 7.59604], card: 'p-reu' }
+  reu: { name: 'Reuffel Bazaar', code: 'TT-DEMO-REU-10', offer: '10 % auf Ihren Einkauf', ll: [50.36098, 7.59604], card: 'p-reu' },
+  buta: { name: 'Buta Cafe Koblenz', code: '', offer: '', ll: [50.36177, 7.59643], card: 'p-buta' }
 };
 const counts = {};
 const redeemed = {};
 function key(p, a) { return p + '-' + a; }
 
 function send(p, a) {
-  const path = 'demo-' + (p === 'mia' ? 'mia' : 'reuffel') + '-' + a;
+  const path = 'demo-' + ({ mia: 'mia', reu: 'reuffel', buta: 'buta' }[p]) + '-' + a;
   try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: path, title: 'Demo ' + a, event: true }); } catch (e) {}
 }
 function bump(p, a) {
   const k = key(p, a);
   counts[k] = (counts[k] || 0) + 1;
-  const id = 'c-' + (p === 'mia' ? 'mia' : 'reu') + '-' + a;
+  const id = 'c-' + ({ mia: 'mia', reu: 'reu', buta: 'buta' }[p]) + '-' + a;
   const el = document.getElementById(id);
   if (el) {
     el.textContent = counts[k];
@@ -216,14 +234,16 @@ if (firm === 'mia' || firm === 'reu') {
 // Karte mit Punkten
 const map = L.map('map', { scrollWheelZoom: false });
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
-const bounds = (firm === 'mia' || firm === 'reu') ? [PLACES[firm].ll] : [PLACES.mia.ll, PLACES.reu.ll];
+const bounds = (firm === 'mia' || firm === 'reu') ? [PLACES[firm].ll] : Object.values(PLACES).map(p => p.ll);
 map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
 Object.keys(PLACES).filter(p => !((firm === 'mia' || firm === 'reu') && p !== firm)).forEach(p => {
   const logo = p === 'mia'
     ? '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria" style="width:100%;height:100%;object-fit:cover;display:block">'
+    : p === 'buta'
+    ? '<img src="buta-icon.webp" alt="Buta Cafe" style="width:100%;height:100%;object-fit:cover;display:block">'
     : '<img src="reuffel-logo.webp" alt="Reuffel Bazaar" style="width:100%;height:100%;object-fit:cover;display:block">';
   const icon = L.divIcon({ className: '', html: `<div style="width:56px;height:56px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #7A1026,0 3px 8px rgba(0,0,0,.35);overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer">${logo}</div>`, iconSize: [56, 56], iconAnchor: [28, 28] });
-  L.marker(PLACES[p].ll, { icon: icon }).addTo(map).on('click', () => { if (!firm) { location.href = '?firm=' + p; return; } bump(p, 'map'); highlight(PLACES[p].card); });
+  L.marker(PLACES[p].ll, { icon: icon }).addTo(map).on('click', () => { if (!firm && p !== 'buta') { location.href = '?firm=' + p; return; } bump(p, 'map'); highlight(PLACES[p].card); });
 });
 
 // Buttons

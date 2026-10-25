@@ -153,6 +153,11 @@
   .xmas-hero { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #7A1026; color: #F5ECD6; cursor: pointer; }
   .xmas-hero img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
   .xmas-hero { pointer-events: none; }
+  .buta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .buta-hero { grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 100%; object-fit: cover; border-radius: 10px; }
+  .buta-sq { aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px; }
+  .buta-sq img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .buta-more { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
   .xmas-ph { grid-column: 1 / -1; padding: 28px 12px; text-align: center; border: 1px dashed #7A1026; border-radius: 8px; color: #7A1026; font-size: 13px; }
   .xmas-hero-pic { position: relative; display: block; }
   .xmas-hero-strip { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; pointer-events: auto; cursor: pointer; }
@@ -3201,10 +3206,21 @@ const XMAS_FOOD_INTRO = {
 };
 const XMAS_FOOD_PLACES = [
   { ll: [50.36000, 7.60203], mia: true },
+  { ll: [50.36177, 7.59643], buta: true },
   { ll: [50.36139, 7.59636] }, { ll: [50.36133, 7.59590] }, { ll: [50.36106, 7.59460] },
   { ll: [50.36178, 7.59470] }, { ll: [50.36070, 7.59684] }, { ll: [50.36183, 7.59597] },
   { ll: [50.36144, 7.60450] },
 ];
+// Buta Cafe Koblenz: текст по описанию из Instagram-профиля кафе (черновик, уточняется), фото в buta-*.webp
+const BUTA_CARD = {
+  title: 'Buta Cafe Koblenz',
+  place: 'Florinsmarkt 12, 56068 Koblenz · 10–20 €',
+  text: {
+    de: 'Traditionelle Rezepte, moderne Cafékultur. Frühstück und Brunch aus dem Kaukasus und Osteuropa. Kaffee, Tee und hausgemachte Kuchen.',
+    en: 'Traditional recipes, modern café culture. Breakfast and brunch from the Caucasus and Eastern Europe. Coffee, tea and homemade cakes.',
+    ru: 'Традиционные рецепты и современная кофейная культура. Завтраки и бранч с Кавказа и Восточной Европы. Кофе, чай и домашние торты.',
+  },
+};
 let xmasFoodMapObj = null;
 function renderFood() {
   const el = document.getElementById('view-food');
@@ -3216,6 +3232,18 @@ function renderFood() {
   const miaCard = (() => { const tx = XMAS_CITY.koblenz.text[xmasLang] || XMAS_CITY.koblenz.text.de; return tx.cards[tx.cards.length - 1]; })();
   const cards = XMAS_FOOD_PLACES.map((p, i) => {
     const kicker = `<div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>`;
+    if (p.buta) {
+      // Сетка: горизонталь слева, два квадрата справа, затем остальные квадраты
+      const sq = n => `<img src="buta-${n}.webp" alt="Buta Cafe" loading="lazy">`;
+      const t = BUTA_CARD.text[xmasLang] || BUTA_CARD.text.en;
+      return `<div class="route-card xmas-card">${kicker}<div class="buta-grid">` +
+        `<img class="buta-hero" src="buta-hero.webp" alt="Buta Cafe" loading="lazy">` +
+        `<div class="buta-sq">${sq('01')}</div><div class="buta-sq">${sq('02')}</div>` +
+        `</div><div class="buta-more">` +
+        [ '03','04','05','06','07','08' ].map(n => `<div class="buta-sq">${sq(n)}</div>`).join('') +
+        `</div><div class="food-mia-text" style="margin-top:10px"><h3 class="castle-name" style="margin:0 0 4px">${BUTA_CARD.title}</h3>` +
+        `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${BUTA_CARD.place}</p><p style="margin:0">${t}</p></div></div>`;
+    }
     if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
     const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
     const couponLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон' }[xmasLang] || 'Get voucher';

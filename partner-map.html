@@ -400,6 +400,8 @@ document.getElementById('cards').addEventListener('click', e => {
 {
   const qc = new URLSearchParams(location.search).get('coupon');
   if (qc && COUPON[qc]) openCoupon(qc);
+  // Убираем ?coupon= из адреса, чтобы при перезагрузке ваучер не открывался снова
+  if (qc) { try { history.replaceState(history.state, '', location.pathname + location.hash); } catch (e) {} }
 }
 
 // GPS navigation: same logic as the main app (straight line x 1.3 detour, 75 m/min walking)

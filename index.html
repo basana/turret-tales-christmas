@@ -365,6 +365,31 @@
     font-style: italic; color: var(--ink-soft);
   }
 
+  /* Слово от гида — короткая редакционная заметка на первом экране (index 0),
+     с портретом (слот под фото) и подписью, как вступление в журнале/буклете. */
+  .guide-note {
+    display: flex; gap: 12px; align-items: flex-start;
+    margin: 4px 6px 16px; padding: 12px 14px;
+    border: 1px solid var(--gold); border-left: 3px solid var(--terracotta);
+    border-radius: 10px; background: rgba(255,255,255,0.35);
+  }
+  .guide-note-photo {
+    flex: 0 0 auto; width: 56px; height: 56px; border-radius: 50%;
+    border: 1px solid var(--gold); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--parchment-deep); color: var(--ink-soft);
+    font-size: 9px; text-align: center; line-height: 1.2; font-family: var(--sans);
+  }
+  .guide-note-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .guide-note-text {
+    font-size: calc(13.5px * var(--scale)); line-height: 1.5; font-style: italic;
+    color: var(--ink); margin: 0;
+  }
+  .guide-note-sig {
+    display: block; margin-top: 6px; font-style: normal; font-family: var(--sans);
+    font-size: calc(11.5px * var(--scale)); font-weight: 700; color: var(--terracotta);
+  }
+
   /* Указатели к основным разделам — сразу под уменьшенным фото первого экрана */
   .quick-links {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
@@ -1101,6 +1126,10 @@
   <div class="content">
     <!-- ГИД -->
     <div class="view active" id="view-guide">
+      <div class="guide-note" id="guideNote">
+        <div class="guide-note-photo" id="guideNotePhoto">Foto folgt</div>
+        <p class="guide-note-text" id="guideNoteText"></p>
+      </div>
       <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
       <div class="xmas-home-langs" id="xmasHomeLangs"><button data-xh="de">DE</button><button data-xh="fr">FR</button><button data-xh="nl">NL</button><button data-xh="en">EN</button><button data-xh="ru">RU</button></div>
       <div class="xmas-home" id="xmasHome">
@@ -1873,6 +1902,8 @@ const UI = {
     helpBubbleTextGps: 'Live GPS distance to the nearest castle is part of the bonus edition.',
     helpBubbleShowGps: 'Learn more',
     qlTours: 'Tours', qlContact: 'Contact', qlAbout: 'About me',
+    guideNoteText: 'This page isn’t a complete archive or an exhaustive guidebook to the region. I’ve gathered here what cruise guests ask me about most often — what’s where, what’s worth seeing, and what this wonderful region has to offer. I hope it helps you get your bearings and enjoy your trip.',
+    guideNoteSig: 'Anatoly Basin, certified tour guide',
     mapSearchPlaceholder: 'Find a town or castle…',
     mapSearchNotFound: 'Not found. Try another name.'
   },
@@ -1921,6 +1952,8 @@ const UI = {
     helpBubbleTextGps: 'GPS и расстояние до ближайшего замка доступны в бонусной версии.',
     helpBubbleShowGps: 'Узнать больше',
     qlTours: 'Экскурсии', qlContact: 'Контакты', qlAbout: 'Обо мне',
+    guideNoteText: 'Эта страница — не исчерпывающий архив и не полный справочник по региону. Я собрал здесь то, о чём туристы спрашивают меня чаще всего: что где находится, что стоит посмотреть и чем этот удивительный край может порадовать гостей. Надеюсь, это поможет вам сориентироваться и получить удовольствие от поездки.',
+    guideNoteSig: 'Anatoly Basin, сертифицированный гид',
     mapSearchPlaceholder: 'Найти город или замок…',
     mapSearchNotFound: 'Не найдено. Попробуйте другое название.'
   },
@@ -1969,6 +2002,8 @@ const UI = {
     helpBubbleTextGps: 'Die GPS-Entfernung zur nächsten Burg gehört zur Bonus-Version.',
     helpBubbleShowGps: 'Mehr erfahren',
     qlTours: 'Führungen', qlContact: 'Kontakt', qlAbout: 'Über mich',
+    guideNoteText: 'Diese Seite ist kein vollständiges Archiv und kein erschöpfendes Nachschlagewerk zur Region. Ich habe hier zusammengetragen, wonach mich Kreuzfahrtgäste am häufigsten fragen: was wo liegt, was sich zu sehen lohnt und was diese wunderschöne Gegend ihren Gästen bietet. Ich hoffe, das hilft Ihnen bei der Orientierung und macht Ihre Reise noch schöner.',
+    guideNoteSig: 'Anatoly Basin, zertifizierter Gästeführer',
     mapSearchPlaceholder: 'Stadt oder Burg suchen …',
     mapSearchNotFound: 'Nicht gefunden. Versuchen Sie einen anderen Namen.'
   },
@@ -2017,6 +2052,8 @@ const UI = {
     helpBubbleTextGps: 'La distance GPS jusqu’au château le plus proche fait partie de l’édition bonus.',
     helpBubbleShowGps: 'En savoir plus',
     qlTours: 'Visites', qlContact: 'Contact', qlAbout: 'À propos',
+    guideNoteText: 'Cette page n’est ni une archive exhaustive ni un guide complet de la région. J’y ai rassemblé ce que les croisiéristes me demandent le plus souvent : ce qui se trouve où, ce qui vaut la peine d’être vu, et ce que cette magnifique région a à offrir. J’espère que cela vous aidera à vous repérer et à profiter pleinement de votre voyage.',
+    guideNoteSig: 'Anatoly Basin, guide touristique certifié',
     mapSearchPlaceholder: 'Chercher une ville ou un château…',
     mapSearchNotFound: 'Introuvable. Essayez un autre nom.'
   },
@@ -2065,6 +2102,8 @@ const UI = {
     helpBubbleTextGps: 'De GPS-afstand tot het dichtstbijzijnde kasteel hoort bij de bonusversie.',
     helpBubbleShowGps: 'Meer weten',
     qlTours: 'Rondleidingen', qlContact: 'Contact', qlAbout: 'Over mij',
+    guideNoteText: 'Deze pagina is geen volledig archief en geen uitputtend naslagwerk over de regio. Ik heb hier verzameld waar cruisegasten mij het vaakst naar vragen: wat waar te vinden is, wat de moeite waard is om te zien, en wat deze prachtige streek haar gasten te bieden heeft. Ik hoop dat dit u helpt de weg te vinden en van uw reis te genieten.',
+    guideNoteSig: 'Anatoly Basin, gecertificeerd gids',
     mapSearchPlaceholder: 'Zoek een stad of kasteel…',
     mapSearchNotFound: 'Niet gevonden. Probeer een andere naam.'
   }
@@ -3668,6 +3707,19 @@ function renderQuickLinksText() {
   if (statsBox) statsBox.classList.toggle('after-quicklinks', index === 0);
   const photoBox = document.querySelector('.photo');
   if (photoBox) photoBox.classList.toggle('photo-entry', index === 0);
+
+  // «Слово от гида» — тоже только на первом экране (index 0)
+  const guideNote = document.getElementById('guideNote');
+  if (guideNote) {
+    guideNote.style.display = (index === 0) ? 'flex' : 'none';
+    const gnText = document.getElementById('guideNoteText');
+    if (gnText) gnText.innerHTML = `${t.guideNoteText || ''}<span class="guide-note-sig">${t.guideNoteSig || ''}</span>`;
+    const gnPhoto = document.getElementById('guideNotePhoto');
+    if (gnPhoto) {
+      const phText = { de: 'Foto folgt', fr: 'Photo à venir', nl: 'Foto volgt', en: 'Photo to follow', ru: 'Фото будет добавлено' }[lang] || 'Photo to follow';
+      gnPhoto.textContent = phText;
+    }
+  }
 
   const setLbl = (id, text) => {
     const el = document.getElementById(id);

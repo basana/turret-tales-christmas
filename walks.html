@@ -6,56 +6,77 @@
 <title>Winningen · Turret Tales</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
-  :root { --cream:#F5ECD6; --paper:#FBF6EA; --maroon:#7A1026; --ink:#3a2a1a; --soft:#6b5a4a; --gold:#c9a05c; --ok:#2f6b3a; }
+  :root {
+    --cream:#F5ECD6; --paper:#FBF6EA; --maroon:#7A1026; --ink:#3a2a1a; --soft:#6b5a4a; --gold:#c9a05c; --ok:#2f6b3a;
+    --sans: Helvetica, Arial, sans-serif;
+    /* Einheitliche Typo-Skala — jede Größe hat genau eine Rolle */
+    --fs-h1: 28px;     /* Seitentitel */
+    --fs-h2: 22px;     /* Abschnitts-/Kartentitel (Wanderungsname, Weingut, Rubrik) */
+    --fs-h3: 18px;     /* Unterüberschriften */
+    --fs-stat: 18px;   /* Zahl in den Kennzahlen-Kacheln */
+    --fs-lead: 17px;   /* Fließtext-Absätze (Intro, Beschreibung) */
+    --fs-body: 15px;   /* Listen, Standardtext */
+    --fs-small: 13px;  /* Tags, Meta-Zeilen, Buttons */
+    --fs-micro: 12px;  /* Eyebrow, Fußzeile, Bildunterschrift */
+  }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--cream); color: var(--ink); font-family: 'EB Garamond', Georgia, serif; }
   body { padding: 0 16px 40px; max-width: 560px; margin: 0 auto; }
   header { padding: 22px 0 10px; text-align: center; }
-  .brand { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); font-family: Helvetica, Arial, sans-serif; }
-  h1 { font-size: 30px; color: var(--maroon); margin: 6px 0 4px; font-weight: 700; }
-  .sub { font-size: 17px; color: var(--soft); margin: 0; }
+  .brand { font-size: var(--fs-small); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); font-family: var(--sans); }
+  h1 { font-size: var(--fs-h1); color: var(--maroon); margin: 6px 0 4px; font-weight: 700; }
+  .sub { font-size: var(--fs-lead); color: var(--soft); margin: 0; }
   .langs { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 14px 0 6px; }
-  .langs button { font-family: Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 14px; border: 1px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
+  .langs button { font-family: var(--sans); font-size: var(--fs-micro); font-weight: 700; padding: 5px 12px; border-radius: 14px; border: 1px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
   .langs button.active { background: var(--maroon); color: #fff; }
-  .intro { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 14px 0; font-size: 17px; line-height: 1.5; }
+  .intro { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 14px 0; font-size: var(--fs-lead); line-height: 1.5; }
+  .editorial { border-left: 3px solid var(--maroon); padding: 4px 0 4px 16px; margin: 0 0 14px; font-style: italic; font-size: var(--fs-lead); line-height: 1.55; color: var(--ink); }
+  .editorial .sig { display: block; margin-top: 8px; font-style: normal; font-family: var(--sans); font-size: var(--fs-small); color: var(--maroon); font-weight: 600; }
   .pending { color: var(--soft); font-style: italic; }
-  .ptabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 8px 0 14px; }
-  .ptabs button { font-family: Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; padding: 8px 14px; border-radius: 18px; border: 2px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
-  .ptabs button.active { background: var(--maroon); color: #fff; }
+  .ptabs { display: flex; gap: 8px; overflow-x: auto; flex-wrap: nowrap; margin: 8px 0 14px; scrollbar-width: none; scroll-behavior: smooth; }
+  .ptabs::-webkit-scrollbar { display: none; }
+  .ptabs button { flex-shrink: 0; font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; padding: 7px 15px; border-radius: 20px; border: 1.5px solid var(--gold); background: var(--paper); color: var(--soft); white-space: nowrap; cursor: pointer; transition: background .2s ease, color .2s ease; }
+  .ptabs button.active { background: var(--maroon); border-color: var(--maroon); color: #fff; font-weight: 700; }
 
-  .sec { font-size: 22px; color: var(--maroon); margin: 18px 0 10px; font-weight: 700; border-bottom: 1px solid var(--gold); padding-bottom: 4px; }
+  .sec { font-size: var(--fs-h2); color: var(--maroon); margin: 18px 0 10px; font-weight: 700; border-bottom: 1px solid var(--gold); padding-bottom: 4px; }
   .card { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 12px; margin: 0 0 12px; display: flex; gap: 12px; align-items: center; }
-  .card .num { font-family: Helvetica, Arial, sans-serif; font-weight: 700; color: var(--maroon); font-size: 14px; min-width: 26px; }
-  .card .ph { flex: 1; border: 1px dashed var(--maroon); border-radius: 8px; padding: 14px 10px; text-align: center; color: var(--maroon); font-size: 15px; }
+  .card .num { font-family: var(--sans); font-weight: 700; color: var(--maroon); font-size: var(--fs-small); min-width: 26px; }
+  .card .ph { flex: 1; border: 1px dashed var(--maroon); border-radius: 8px; padding: 14px 10px; text-align: center; color: var(--maroon); font-size: var(--fs-body); }
   .partner { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px; margin: 0 0 12px; }
-  .partner-name { font-size: 21px; font-weight: 700; color: var(--maroon); margin: 0; line-height: 1.2; }
-  .partner-cat { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); margin-top: 2px; }
-  .partner-desc { font-size: 17px; line-height: 1.5; margin: 10px 0; }
-  .partner-meta { font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: var(--ink); margin: 0; }
+  .partner-name { font-size: var(--fs-h2); font-weight: 700; color: var(--maroon); margin: 0; line-height: 1.2; }
+  .partner-cat { font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); margin-top: 2px; }
+  .partner-desc { font-size: var(--fs-lead); line-height: 1.5; margin: 10px 0; }
+  .partner-meta { font-family: var(--sans); font-size: var(--fs-small); line-height: 1.6; color: var(--ink); margin: 0; }
   .partner-meta dt { display: inline; font-weight: 700; color: var(--maroon); }
   .partner-meta dd { display: inline; margin: 0; }
   .partner-meta div { margin: 0 0 2px; }
-  .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: 14px; margin: 0 0 14px; }
+  .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: var(--fs-small); margin: 0 0 14px; }
   .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 14px; }
   .gallery img { width: 100%; height: auto; border-radius: 8px; display: block; }
   .gallery img:first-child { grid-column: span 2; }
 
   /* === Карточка маршрута (вкладка «Wanderungen») === */
   .walk { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 16px; margin: 0 0 18px; }
-  .walk-name { font-size: 24px; font-weight: 700; color: var(--maroon); margin: 0 0 4px; }
-  .walk-tag { font-family: Helvetica, Arial, sans-serif; font-size: 13px; color: var(--soft); margin: 0 0 12px; }
+  .walk-name { font-size: var(--fs-h2); font-weight: 700; color: var(--maroon); margin: 0 0 4px; }
+  .walk-tag { font-family: var(--sans); font-size: var(--fs-small); color: var(--soft); margin: 0 0 12px; }
   .walk-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 8px; margin: 0 0 14px; }
   .walk-stat { background: #fff; border: 1px solid var(--gold); border-radius: 10px; padding: 8px 6px; text-align: center; }
-  .walk-stat b { display: block; font-size: 17px; color: var(--maroon); font-family: Helvetica, Arial, sans-serif; }
-  .walk-stat span { font-family: Helvetica, Arial, sans-serif; font-size: 11px; color: var(--soft); text-transform: uppercase; letter-spacing: .04em; }
-  .walk-desc { font-size: 17px; line-height: 1.55; margin: 0 0 14px; }
+  .walk-stat b { display: block; font-size: var(--fs-stat); color: var(--maroon); font-family: var(--sans); line-height: 1.2; }
+  .walk-stat span { font-family: var(--sans); font-size: 10.5px; color: var(--soft); text-transform: uppercase; letter-spacing: .02em; display: block; margin-top: 2px; }
+  .walk-stat.wide { grid-column: 1 / -1; display: flex; flex-direction: row-reverse; align-items: baseline; justify-content: center; gap: 8px; padding: 10px 6px; }
+  .walk-stat.wide b { display: inline; }
+  .walk-stat.wide span { margin-top: 0; }
+  .walk-desc { font-size: var(--fs-lead); line-height: 1.55; margin: 0 0 14px; }
   .walk-desc p { margin: 0 0 10px; }
-  .walk-h3 { font-size: 18px; color: var(--maroon); font-weight: 700; margin: 16px 0 8px; }
-  .walk-poi { list-style: none; margin: 0 0 4px; padding: 0; font-size: 15.5px; line-height: 1.5; }
-  .walk-poi li { padding: 6px 0; border-top: 1px solid rgba(201,160,92,.4); }
-  .walk-poi li:first-child { border-top: 0; }
-  .walk-poi b { color: var(--maroon); font-family: Helvetica, Arial, sans-serif; font-size: 13px; display: inline-block; min-width: 46px; }
-  .walk-wear { margin: 0 0 4px; padding-left: 20px; font-size: 15.5px; line-height: 1.6; }
+  .walk-h3 { font-size: var(--fs-h3); color: var(--maroon); font-weight: 700; margin: 16px 0 8px; }
+  .walk-poi { list-style: none; margin: 0 0 4px; padding: 0; }
+  .poi-card { border: 1px solid rgba(201,160,92,.5); border-radius: 10px; padding: 12px 14px 14px; margin: 0 0 12px; background: var(--paper); }
+  .poi-card .gallery, .poi-card .photo-slot { margin: 0 0 10px; }
+  .poi-card .photo-slot { padding: 16px 10px; font-size: var(--fs-micro); }
+  .poi-card .poi-km { color: var(--maroon); font-family: var(--sans); font-size: var(--fs-micro); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 3px; }
+  .poi-card h4 { margin: 0 0 4px; font-size: var(--fs-h3); color: var(--ink); font-family: var(--sans); }
+  .poi-card p { margin: 0; font-size: var(--fs-body); line-height: 1.5; }
+  .walk-wear { margin: 0 0 4px; padding-left: 20px; font-size: var(--fs-body); line-height: 1.6; }
   .walk-wear li { margin: 0 0 4px; }
   .walk-profile { list-style: none; margin: 0 0 16px; padding: 0; }
   .walk-profile li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid rgba(201,160,92,.4); }
@@ -65,25 +86,26 @@
   .walk-profile .seg-bar.leicht { background: #9ec15b; }
   .walk-profile .seg-bar.mittel { background: #d6a63a; }
   .walk-profile .seg-bar.steil { background: #b5402e; }
-  .walk-profile .seg-body { flex: 1; font-size: 15px; line-height: 1.45; }
-  .walk-profile .seg-head { font-family: Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; color: var(--maroon); text-transform: uppercase; letter-spacing: .02em; }
+  .walk-profile .seg-body { flex: 1; font-size: var(--fs-body); line-height: 1.45; }
+  .walk-profile .seg-head { font-family: var(--sans); font-size: var(--fs-small); font-weight: 700; color: var(--maroon); text-transform: uppercase; letter-spacing: .02em; display: block; margin-bottom: 2px; }
   .walk-profile .seg-change { font-weight: 400; color: var(--soft); text-transform: none; letter-spacing: 0; }
-  .walk-suit { margin: 0 0 4px; padding-left: 20px; font-size: 15.5px; line-height: 1.6; }
+  .walk-suit { margin: 0 0 4px; padding-left: 20px; font-size: var(--fs-body); line-height: 1.6; }
   .walk-suit li { margin: 0 0 6px; }
-  .walk-map-note { font-family: Helvetica, Arial, sans-serif; font-size: 12.5px; color: var(--soft); line-height: 1.4; margin: 0 0 14px; }
+  .walk-map-note { font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); line-height: 1.4; margin: 0 0 14px; }
   .walk-map-note a { color: var(--maroon); }
   .walk-start-marker { background: var(--maroon); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: Helvetica, Arial, sans-serif; font-weight: 700; font-size: 13px; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
-  .walk-pier-marker { background: #2a7de1; color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: Helvetica, Arial, sans-serif; font-weight: 700; font-size: 15px; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+  .walk-pier-badge { display: flex; align-items: center; gap: 6px; background: #fff; color: #222; border: 2px solid #B8860B; border-radius: 999px; padding: 2px 10px 2px 2px; font-family: var(--sans); font-size: var(--fs-micro); font-weight: 700; letter-spacing: .02em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.35); transform: translate(-50%, -50%); }
+  .walk-pier-letter { width: 22px; height: 22px; border-radius: 50%; background: #B8860B; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex: 0 0 auto; }
 
   /* === История и достопримечательности === */
   .hist { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 0 0 12px; }
-  .hist h3 { font-size: 19px; color: var(--maroon); margin: 0 0 6px; }
-  .hist p { font-size: 16px; line-height: 1.5; margin: 0 0 6px; }
-  .hist .meta { font-family: Helvetica, Arial, sans-serif; font-size: 12.5px; color: var(--soft); }
+  .hist h3 { font-size: var(--fs-h3); color: var(--maroon); margin: 0 0 6px; }
+  .hist p { font-size: var(--fs-lead); line-height: 1.5; margin: 0 0 6px; }
+  .hist .meta { font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); }
 
-  .contact { margin-top: 22px; background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: 16px; line-height: 1.5; }
+  .contact { margin-top: 22px; background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: var(--fs-lead); line-height: 1.5; }
   .contact a { color: var(--maroon); }
-  .legal { margin-top: 18px; padding-top: 10px; border-top: 1px solid rgba(122,16,38,.25); font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); text-align: center; }
+  .legal { margin-top: 18px; padding-top: 10px; border-top: 1px solid rgba(122,16,38,.25); font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); text-align: center; }
 </style>
 </head>
 <body>
@@ -97,10 +119,12 @@
     <button data-l="fr">FR</button>
     <button data-l="nl">NL</button>
     <button data-l="ru">RU</button>
+    <button data-l="sv">SV</button>
   </div>
 </header>
 
 <div class="intro" id="t-intro"></div>
+<div class="editorial" id="t-editorial"></div>
 <nav class="ptabs" id="ptabs"></nav>
 
 <div id="view-walks"></div>
@@ -120,13 +144,15 @@ const TABS = {
   en: { walks: 'Walks', wine: 'Wineries & tastings', sights: 'Sights & history', food: 'Restaurants', xmas: 'Christmas market' },
   fr: { walks: 'Randonnées', wine: 'Domaines & dégustations', sights: 'Sites & histoire', food: 'Restaurants', xmas: 'Marché de Noël' },
   nl: { walks: 'Wandelingen', wine: 'Wijnhuizen & proeverijen', sights: 'Bezienswaardigheden & geschiedenis', food: 'Restaurants', xmas: 'Kerstmarkt' },
-  ru: { walks: 'Прогулки', wine: 'Виноделы и дегустации', sights: 'Достопримечательности и история', food: 'Рестораны', xmas: 'Рождественский рынок' }
+  ru: { walks: 'Прогулки', wine: 'Виноделы и дегустации', sights: 'Достопримечательности и история', food: 'Рестораны', xmas: 'Рождественский рынок' },
+  sv: { walks: 'Vandringar', wine: 'Vingårdar & provningar', sights: 'Sevärdheter & historia', food: 'Restauranger', xmas: 'Julmarknad' }
 };
 
 const T = {
   de: {
     brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'An der Mosel — für Gäste der Flusskreuzfahrt',
     intro: 'Winningen, ein Winzerdorf an der Untermosel (erste Erwähnung 865), persönlich vorgestellt von Anatoly Basin / Team TAYR: geführte Wanderungen, Weingüter, Geschichte und Sehenswürdigkeiten für den Landgang.',
+    letter: 'Liebe Gäste, ich begrüße Sie persönlich in Winningen! Als zertifizierter Gästeführer bin ich oft selbst mit Kreuzfahrtgruppen hier unterwegs – und genau aus dieser Erfahrung heraus habe ich diese Seite zusammengestellt: alles, was ich Ihnen sonst unterwegs erzähle, einmal zum Nachlesen, mit Karte und praktischen Hinweisen für Ihren Landgang. Ich wünsche Ihnen einen wunderschönen Spaziergang durch die Weinberge – und vielleicht sehen wir uns ja einmal persönlich.',
     contact: 'Interesse an einer geführten Wanderung oder Weinprobe für Ihre Gruppe? Schreiben Sie an <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> oder rufen Sie an: <a href="tel:+491772850207">+49 177 285 0207</a>.',
     pending: 'folgt', ph: 'Partner folgt · Beschreibung und Fotos folgen', photoSlot: 'Fotos folgen',
     mapNote: 'Start und Anleger sind exakt eingezeichnet. Der Routenverlauf ist eine schematische Skizze (kein exakter GPS-Track) – die genaue Strecke zeigt die <a href="https://www.outdooractive.com/de/route/wanderung/moseltal/wanderung-am-19.-maerz-2023/262543616/" target="_blank" rel="noopener">Original-Tour bei outdooractive</a>.',
@@ -141,6 +167,7 @@ const T = {
   en: {
     brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'On the Moselle — for river cruise guests',
     intro: 'Winningen, a wine village on the lower Moselle (first mentioned in 865), presented personally by Anatoly Basin / Team TAYR: guided walks, wineries, history and sights for your shore excursion.',
+    letter: 'Dear guests, welcome to Winningen! As a certified tour guide, I often lead cruise groups through this village myself – and that experience is exactly why I put this page together: everything I’d normally tell you along the way, now here to read, with a map and practical tips for your shore excursion. I hope you enjoy a beautiful walk through the vineyards – and who knows, maybe we’ll meet in person one day.',
     contact: 'Interested in a guided walk or wine tasting for your group? Write to <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> or call <a href="tel:+491772850207">+49 177 285 0207</a>.',
     pending: 'to follow', ph: 'Partner to follow · description and photos to follow', photoSlot: 'Photos to follow',
     mapNote: 'Start and pier are marked exactly. The route line is a schematic sketch (not an exact GPS track) – see the <a href="https://www.outdooractive.com/de/route/wanderung/moseltal/wanderung-am-19.-maerz-2023/262543616/" target="_blank" rel="noopener">original tour on outdooractive</a> for the precise path.',
@@ -155,6 +182,7 @@ const T = {
   fr: {
     brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'Sur la Moselle — pour les croisiéristes',
     intro: 'Winningen, village viticole de la Basse-Moselle (mentionné pour la première fois en 865), présenté personnellement par Anatoly Basin / Team TAYR : randonnées guidées, domaines viticoles, histoire et sites pour votre escale.',
+    letter: 'Chers visiteurs, bienvenue à Winningen ! En tant que guide touristique certifié, j’accompagne souvent moi-même des groupes de croisiéristes ici – et c’est justement cette expérience qui m’a donné l’idée de cette page : tout ce que je vous raconterais en chemin, désormais à lire, avec une carte et des conseils pratiques pour votre escale. Je vous souhaite une très belle promenade à travers les vignes – et qui sait, peut-être nous croiserons-nous un jour.',
     contact: 'Intéressé par une randonnée guidée ou une dégustation pour votre groupe ? Écrivez à <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> ou appelez : <a href="tel:+491772850207">+49 177 285 0207</a>.',
     pending: 'à venir', ph: 'Partenaire à venir · description et photos à venir', photoSlot: 'Photos à venir',
     mapNote: 'Le départ et l’embarcadère sont indiqués avec précision. Le tracé affiché est un schéma (pas un relevé GPS exact) – voir le <a href="https://www.outdooractive.com/de/route/wanderung/moseltal/wanderung-am-19.-maerz-2023/262543616/" target="_blank" rel="noopener">circuit original sur outdooractive</a> pour le tracé précis.',
@@ -169,6 +197,7 @@ const T = {
   nl: {
     brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'Aan de Moezel — voor riviercruisegasten',
     intro: 'Winningen, een wijndorp aan de Beneden-Moezel (voor het eerst vermeld in 865), persoonlijk gepresenteerd door Anatoly Basin / Team TAYR: begeleide wandelingen, wijnhuizen, geschiedenis en bezienswaardigheden voor uw excursie.',
+    letter: 'Beste gasten, welkom in Winningen! Als gecertificeerd gids begeleid ik hier zelf regelmatig cruisegroepen – en juist die ervaring bracht mij op het idee voor deze pagina: alles wat ik u onderweg normaal zou vertellen, nu om te lezen, met een kaart en praktische tips voor uw excursie aan wal. Ik wens u een heerlijke wandeling door de wijngaarden – en wie weet ontmoeten we elkaar ooit persoonlijk.',
     contact: 'Interesse in een begeleide wandeling of wijnproeverij voor uw groep? Schrijf naar <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> of bel: <a href="tel:+491772850207">+49 177 285 0207</a>.',
     pending: 'volgt', ph: 'Partner volgt · beschrijving en foto’s volgen', photoSlot: 'Foto’s volgen',
     mapNote: 'Start en aanlegsteiger staan exact aangegeven. De getekende route is een schematische schets (geen exacte GPS-track) – de precieze route vindt u op de <a href="https://www.outdooractive.com/de/route/wanderung/moseltal/wanderung-am-19.-maerz-2023/262543616/" target="_blank" rel="noopener">originele tour op outdooractive</a>.',
@@ -183,6 +212,7 @@ const T = {
   ru: {
     brand: 'Turret Tales · Tours All Year Round', title: 'Вининген', sub: 'На Мозеле — для гостей речных круизов',
     intro: 'Вининген, винодельческий посёлок в нижнем течении Мозеля (первое упоминание в 865 году), лично представляет Anatoly Basin / команда TAYR: пешие экскурсии, винодельни, история и достопримечательности для вашей стоянки.',
+    letter: 'Дорогие гости, добро пожаловать в Вининген! Как дипломированный гид, я сам часто вожу здесь круизные группы — и именно этот опыт подсказал мне идею этой страницы: всё, что я обычно рассказываю по дороге, теперь можно прочитать заранее — с картой и практическими советами для вашей стоянки. Желаю вам прекрасной прогулки среди виноградников — а может, однажды мы встретимся лично.',
     contact: 'Интересует пешая экскурсия или дегустация вина для вашей группы? Напишите на <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> или позвоните: <a href="tel:+491772850207">+49 177 285 0207</a>.',
     pending: 'будет добавлено', ph: 'Партнёр будет добавлен · описание и фото будут добавлены', photoSlot: 'Фото будут добавлены',
     mapNote: 'Старт и причал указаны точно. Линия маршрута — схематичный набросок (не точный GPS-трек) — точный маршрут смотрите на <a href="https://www.outdooractive.com/de/route/wanderung/moseltal/wanderung-am-19.-maerz-2023/262543616/" target="_blank" rel="noopener">странице оригинала на outdooractive</a>.',
@@ -193,6 +223,21 @@ const T = {
     legStart: 'Старт/финиш', legPier: 'Причал',
     addr: 'Адрес', hours: 'Часы работы', phone: 'Телефон', gmaps: 'Открыть в Google Maps',
     secWine: 'Винодельни в Винингене', secFood: 'Рестораны и винные погребки', secSights: 'Достопримечательности', secHist: 'История'
+  },
+  sv: {
+    brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'Vid Mosel — för flodkryssningsgäster',
+    intro: 'Winningen, en vinby vid nedre Mosel (först omnämnd 865), presenteras personligen av Anatoly Basin / Team TAYR: guidade vandringar, vingårdar, historia och sevärdheter för ert landstigning.',
+    letter: 'Kära gäster, välkomna till Winningen! Som certifierad guide leder jag ofta själv kryssningsgrupper här – och just den erfarenheten gav mig idén till den här sidan: allt jag annars skulle berätta längs vägen finns nu att läsa, med karta och praktiska tips inför ert landstigning. Jag önskar er en underbar promenad bland vingårdarna – och vem vet, kanske möts vi en dag personligen.',
+    contact: 'Intresserad av en guidad vandring eller vinprovning för er grupp? Skriv till <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> eller ring: <a href="tel:+491772850207">+49 177 285 0207</a>.',
+    pending: 'kommer senare', ph: 'Partner kommer senare · beskrivning och foton kommer senare', photoSlot: 'Foton kommer senare',
+    mapNote: 'Start och brygga är exakt markerade. Ruttlinjen är en schematisk skiss (inget exakt GPS-spår) — den exakta rutten finns på <a href="https://www.outdooractive.com/de/route/wanderung/moseltal/wanderung-am-19.-maerz-2023/262543616/" target="_blank" rel="noopener">originalturen hos outdooractive</a>.',
+    h3poi: 'Höjdpunkter längs vägen', h3wear: 'Vad ni bör ta med',
+    h3profile: 'Ruttprofil efter sträcka', h3suit: 'Lämplighet efter gruppens kondition',
+    gradeFlach: 'flackt', gradeLeicht: 'lätt stigning', gradeMittel: 'medel', gradeSteil: 'brant',
+    from: 'från', km: 'km', length: 'Längd', duration: 'Tid', ascent: 'Stigning', descent: 'Nedfärd', highest: 'Högsta punkt', difficulty: 'Svårighetsgrad', diffVal: 'lätt–medel',
+    legStart: 'Start/mål', legPier: 'Brygga',
+    addr: 'Adress', hours: 'Öppettider', phone: 'Telefon', gmaps: 'Öppna i Google Maps',
+    secWine: 'Vingårdar i Winningen', secFood: 'Restauranger och vinkällare', secSights: 'Sevärdheter', secHist: 'Historia'
   }
 };
 
@@ -203,8 +248,8 @@ const T = {
 const WALKS = [
   {
     slug: 'hexenpfad',
-    name: { de: 'Weinbergrunde am Hexenhügel', en: 'Vineyard loop at the Hexenhügel', fr: 'Boucle viticole du Hexenhügel', nl: 'Wijngaardlus bij de Hexenhügel', ru: 'Виноградная петля у Hexenhügel (Hexenpfad)' },
-    tag: { de: 'Winningen · Rundwanderung', en: 'Winningen · circular walk', fr: 'Winningen · boucle', nl: 'Winningen · rondwandeling', ru: 'Вининген · кольцевой маршрут' },
+    name: { de: 'Weinbergrunde am Hexenhügel', en: 'Vineyard loop at the Hexenhügel', fr: 'Boucle viticole du Hexenhügel', nl: 'Wijngaardlus bij de Hexenhügel', ru: 'Виноградная петля у Hexenhügel (Hexenpfad)', sv: 'Vingårdsslingan vid Hexenhügel' },
+    tag: { de: 'Winningen · Rundwanderung', en: 'Winningen · circular walk', fr: 'Winningen · boucle', nl: 'Winningen · rondwandeling', ru: 'Вининген · кольцевой маршрут', sv: 'Winningen · rundvandring' },
     length: '4,4 km', duration: '1:15 h', ascent: '76 hm', descent: '76 hm', highest: '198 m',
     startName: 'Im Heideberg / Weinhexweg, 56333 Winningen',
     startLL: [50.320209, 7.514432],
@@ -240,19 +285,30 @@ const WALKS = [
         'От причала до начала маршрута — около 1,2 км, 15–20 минут пешком через посёлок, с лёгким подъёмом до опушки леса. Дальше тропа петлёй идёт через лес и виноградники; на высшей точке (198 м) открывается самый широкий вид на посёлок и долину реки, после чего маршрут плавно спускается обратно к старту.',
         'Покрытие в основном плотная грунтовая дорога (около 77 %), плюс короткие участки естественной тропы, узкой тропинки и небольшой отрезок дороги на окраине посёлка.',
         'Hexenhügel («Ведьмин холм») дал название маршруту (см. раздел «История»): здесь когда-то находилось место казней времён охоты на ведьм, с 1925 года стоит памятная стела в честь жертв.'
+      ],
+      sv: [
+        'Slingan går uppför branta vingårdar ovanför Winningen vid Hexenhügel – århundraden gamla terrasser av torrmurar, varvat med skog och öppna vyer över Moselbukten.',
+        'Från bryggan är det cirka 1,2 km / 15–20 minuters promenad genom byn, lätt uppför till startpunkten vid skogsbrynet. Därifrån går leden i en slinga genom skog och vinrankor; vid högsta punkten (198 m) öppnar sig den vidaste utsikten över byn och floddalen, innan en skönsam nedstigning tillbaka till startpunkten.',
+        'Underlaget är mestadels fast grusväg (ca 77 %), med korta sträckor naturstig, smal stig och en kort vägbit i byns utkant.',
+        'Hexenhügel ("häxkullen") ger slingan dess namn (se avsnittet Historia): här låg en avrättningsplats under häxprocesserna, och sedan 1925 hedrar en minnessten offren.'
       ]
     },
     poi: [
-      { km: '0,2', name: { de: 'Aussichtspunkt Domgartenhütte', en: 'Domgartenhütte viewpoint', fr: 'Belvédère Domgartenhütte', nl: 'Uitzichtpunt Domgartenhütte', ru: 'Смотровая площадка Domgartenhütte' },
-        text: { de: 'Hölzerne Schutzhütte mit Rosenbeet, erster freier Blick auf Weinberge und Moseltal.', en: 'Wooden shelter with a rose bed, the first open view over the vineyards and the Moselle valley.', fr: 'Abri en bois entouré de rosiers, première vue dégagée sur les vignobles et la vallée.', nl: 'Houten schuilhut met rozenperk, eerste vrij uitzicht over de wijngaarden en het Moezeldal.', ru: 'Деревянная беседка с клумбой роз, первый открытый вид на виноградники и долину Мозеля.' } },
-      { km: '2,0', name: { de: 'Winninger Weinbergterrassen', en: 'Winningen vineyard terraces', fr: 'Terrasses viticoles de Winningen', nl: 'Wijngaardterrassen van Winningen', ru: 'Террасные виноградники Винингена' },
-        text: { de: 'Historische Trockenmauer-Terrassen, Infotafel zur Artenvielfalt im Weinberg.', en: 'Historic dry-stone terraces, an information panel on the vineyard’s biodiversity.', fr: 'Terrasses historiques en pierre sèche, panneau d’information sur la biodiversité du vignoble.', nl: 'Historische droogstenen terrassen, informatiebord over de biodiversiteit in de wijngaard.', ru: 'Исторические террасы с сухой каменной кладкой, информационный стенд о биоразнообразии виноградника.' } },
-      { km: '3,0', name: { de: 'Aussichtspunkt Winninger Flugplatz', en: 'Winningen airfield viewpoint', fr: 'Belvédère de l’aérodrome de Winningen', nl: 'Uitzichtpunt vliegveld Winningen', ru: 'Смотровая площадка у аэродрома Винингена' },
-        text: { de: 'Hütte oberhalb des Weinhexwegs mit Blick auf den kleinen Flugplatz und die Flussschleife.', en: 'A hut above the Weinhexweg with a view of the small airfield and the river bend.', fr: 'Cabane au-dessus du Weinhexweg, vue sur le petit aérodrome et le méandre de la rivière.', nl: 'Hut boven de Weinhexweg met uitzicht op het kleine vliegveld en de rivierbocht.', ru: 'Хижина над Weinhexweg с видом на небольшой аэродром и изгиб реки.' } },
-      { km: '3,4', name: { de: 'Aussichtspunkt Winningen (höchster Punkt)', en: 'Winningen viewpoint (highest point)', fr: 'Belvédère de Winningen (point culminant)', nl: 'Uitzichtpunt Winningen (hoogste punt)', ru: 'Смотровая площадка Винингена (высшая точка)' },
-        text: { de: 'Ruhebänke am höchsten Punkt der Runde (198 m), weiter Blick über Ort und Flusstal.', en: 'Benches at the route’s highest point (198 m), wide view over the village and the river valley.', fr: 'Bancs au point culminant du parcours (198 m), large vue sur le village et la vallée.', nl: 'Rustbanken op het hoogste punt van de route (198 m), weids uitzicht over dorp en rivierdal.', ru: 'Скамейки на высшей точке маршрута (198 м), широкий вид на посёлок и долину реки.' } },
-      { km: '4,2', name: { de: 'Aussicht Vogelsang', en: 'Vogelsang viewpoint', fr: 'Point de vue Vogelsang', nl: 'Uitzicht Vogelsang', ru: 'Видовая точка Vogelsang' },
-        text: { de: 'Letzter Aussichtspunkt vor dem Abstieg zurück zum Ausgangspunkt.', en: 'The last viewpoint before the descent back to the start.', fr: 'Dernier point de vue avant la descente vers le point de départ.', nl: 'Laatste uitzichtpunt voor de afdaling terug naar het startpunt.', ru: 'Последняя видовая точка перед спуском обратно к старту.' } }
+      { km: '0,2', photos: [], photoAlt: 'Domgartenhütte, Winningen',
+        name: { de: 'Aussichtspunkt Domgartenhütte', en: 'Domgartenhütte viewpoint', fr: 'Belvédère Domgartenhütte', nl: 'Uitzichtpunt Domgartenhütte', ru: 'Смотровая площадка Domgartenhütte', sv: 'Utsiktsplatsen Domgartenhütte' },
+        text: { de: 'Hölzerne Schutzhütte mit Rosenbeet, erster freier Blick auf Weinberge und Moseltal.', en: 'Wooden shelter with a rose bed, the first open view over the vineyards and the Moselle valley.', fr: 'Abri en bois entouré de rosiers, première vue dégagée sur les vignobles et la vallée.', nl: 'Houten schuilhut met rozenperk, eerste vrij uitzicht over de wijngaarden en het Moezeldal.', ru: 'Деревянная беседка с клумбой роз, первый открытый вид на виноградники и долину Мозеля.', sv: 'Träskjul med rosenrabatt, första öppna vyn över vingårdarna och Moseldalen.' } },
+      { km: '2,0', photos: [], photoAlt: 'Winninger Weinbergterrassen',
+        name: { de: 'Winninger Weinbergterrassen', en: 'Winningen vineyard terraces', fr: 'Terrasses viticoles de Winningen', nl: 'Wijngaardterrassen van Winningen', ru: 'Террасные виноградники Винингена', sv: 'Vingårdsterrasserna i Winningen' },
+        text: { de: 'Historische Trockenmauer-Terrassen, Infotafel zur Artenvielfalt im Weinberg.', en: 'Historic dry-stone terraces, an information panel on the vineyard’s biodiversity.', fr: 'Terrasses historiques en pierre sèche, panneau d’information sur la biodiversité du vignoble.', nl: 'Historische droogstenen terrassen, informatiebord over de biodiversiteit in de wijngaard.', ru: 'Исторические террасы с сухой каменной кладкой, информационный стенд о биоразнообразии виноградника.', sv: 'Historiska terrasser med torrmur, informationstavla om den biologiska mångfalden i vingården.' } },
+      { km: '3,0', photos: [], photoAlt: 'Aussichtspunkt Winninger Flugplatz',
+        name: { de: 'Aussichtspunkt Winninger Flugplatz', en: 'Winningen airfield viewpoint', fr: 'Belvédère de l’aérodrome de Winningen', nl: 'Uitzichtpunt vliegveld Winningen', ru: 'Смотровая площадка у аэродрома Винингена', sv: 'Utsiktsplatsen vid Winningens flygfält' },
+        text: { de: 'Hütte oberhalb des Weinhexwegs mit Blick auf den kleinen Flugplatz und die Flussschleife.', en: 'A hut above the Weinhexweg with a view of the small airfield and the river bend.', fr: 'Cabane au-dessus du Weinhexweg, vue sur le petit aérodrome et le méandre de la rivière.', nl: 'Hut boven de Weinhexweg met uitzicht op het kleine vliegveld en de rivierbocht.', ru: 'Хижина над Weinhexweg с видом на небольшой аэродром и изгиб реки.', sv: 'Stuga ovanför Weinhexweg med utsikt över det lilla flygfältet och flodböjen.' } },
+      { km: '3,4', photos: [], photoAlt: 'Aussichtspunkt Winningen, höchster Punkt',
+        name: { de: 'Aussichtspunkt Winningen (höchster Punkt)', en: 'Winningen viewpoint (highest point)', fr: 'Belvédère de Winningen (point culminant)', nl: 'Uitzichtpunt Winningen (hoogste punt)', ru: 'Смотровая площадка Винингена (высшая точка)', sv: 'Utsiktsplatsen Winningen (högsta punkten)' },
+        text: { de: 'Ruhebänke am höchsten Punkt der Runde (198 m), weiter Blick über Ort und Flusstal.', en: 'Benches at the route’s highest point (198 m), wide view over the village and the river valley.', fr: 'Bancs au point culminant du parcours (198 m), large vue sur le village et la vallée.', nl: 'Rustbanken op het hoogste punt van de route (198 m), weids uitzicht over dorp en rivierdal.', ru: 'Скамейки на высшей точке маршрута (198 м), широкий вид на посёлок и долину реки.', sv: 'Bänkar vid ruttens högsta punkt (198 m), vid utsikt över byn och floddalen.' } },
+      { km: '4,2', photos: [], photoAlt: 'Aussicht Vogelsang, Winningen',
+        name: { de: 'Aussicht Vogelsang', en: 'Vogelsang viewpoint', fr: 'Point de vue Vogelsang', nl: 'Uitzicht Vogelsang', ru: 'Видовая точка Vogelsang', sv: 'Utsikten Vogelsang' },
+        text: { de: 'Letzter Aussichtspunkt vor dem Abstieg zurück zum Ausgangspunkt.', en: 'The last viewpoint before the descent back to the start.', fr: 'Dernier point de vue avant la descente vers le point de départ.', nl: 'Laatste uitzichtpunt voor de afdaling terug naar het startpunt.', ru: 'Последняя видовая точка перед спуском обратно к старту.', sv: 'Sista utsiktsplatsen innan nedstigningen tillbaka till startpunkten.' } }
     ],
     wear: {
       de: ['Festes, rutschfestes Schuhwerk (Schotter, nach Regen stellenweise naturbelassen und feucht)', 'Wetterfeste, schichtbare Kleidung – auf den offenen Weinberghängen kaum Schatten', 'Sonnenschutz und Kopfbedeckung im Sommer; leichte Regenjacke, da sich das Moselwetter rasch ändert', 'Ausreichend Wasser – unterwegs keine Einkehrmöglichkeit, die nächsten Cafés und Weinstuben liegen im Ort', 'Wanderstöcke optional, hilfreich an den steileren Kehren nahe des Startpunkts', 'Nicht geeignet für Rollstuhl oder Kinderwagen (schmale Weinbergpfade, teils Stufen)'],
@@ -260,58 +316,66 @@ const WALKS = [
       fr: ['Chaussures solides et antidérapantes (gravier, sentier naturel parfois humide après la pluie)', 'Vêtements adaptés à la météo, en couches – peu d’ombre sur les coteaux viticoles dégagés', 'Protection solaire et chapeau en été ; une veste de pluie légère, car le temps change vite sur la Moselle', 'Assez d’eau – aucun point de restauration sur le parcours, les cafés et bars à vin les plus proches sont dans le village', 'Bâtons de marche en option, utiles dans les lacets plus raides près du départ', 'Non adapté aux fauteuils roulants ou aux poussettes (sentiers étroits, quelques marches)'],
       nl: ['Stevig, antislip schoeisel (grind, natuurlijke ondergrond kan nat zijn na regen)', 'Weerbestendige kleding in laagjes – weinig schaduw op de open wijngaardhellingen', 'Zonbescherming en een hoed in de zomer; een lichte regenjas, want het weer aan de Moezel verandert snel', 'Voldoende water – onderweg geen horeca, de dichtstbijzijnde cafés en wijnlokalen liggen in het dorp', 'Wandelstokken optioneel, handig op de steilere bochten bij het startpunt', 'Niet geschikt voor rolstoel of kinderwagen (smalle paden door de wijngaard, soms trapjes)'],
       ru: ['Прочная нескользящая обувь (грунтовая дорога, естественный участок после дождя может быть влажным)', 'Многослойная одежда по погоде — на открытых склонах виноградников почти нет тени', 'Солнцезащита и головной убор летом; лёгкая непромокаемая куртка — погода на Мозеле меняется быстро', 'Достаточный запас воды — на маршруте нет кафе, ближайшие находятся в посёлке', 'Треккинговые палки по желанию, пригодятся на более крутых поворотах у старта', 'Не подходит для инвалидной коляски или детской коляски (узкие тропы между виноградниками, местами ступени)']
+,
+      sv: ['Stadiga, halkfria skor (grusväg, naturmark kan vara fuktig efter regn)', 'Väderbeständiga kläder i lager – lite skugga på de öppna vingårdssluttningarna', 'Solskydd och huvudbonad på sommaren; en lätt regenjacka, eftersom vädret vid Mosel ändras snabbt', 'Tillräckligt med vatten – ingen rastplats längs rutten, närmaste caféer och vinkällare finns i byn', 'Vandringsstavar valfritt, användbara i de brantare svängarna nära starten', 'Olämplig för rullstol eller barnvagn (smala stigar mellan vingårdarna, delvis trappsteg)']
     },
     // Streckenprofil in Abschnitte (kein Höhenmessgerät — grob aus dem von Anatoly gezeigten
     // Höhenprofil/der Karte von outdooractive abgelesen), gedacht als Einteilung für Gästekategorien,
     // nicht als präzise Wanderdaten für Sportwanderer.
     profile: [
-      { from: '0,0', to: '1,8', grade: 'flach', change: { de: '+10 m', en: '+10 m', fr: '+10 m', nl: '+10 m', ru: '+10 м' },
+      { from: '0,0', to: '1,8', grade: 'flach', change: { de: '+10 m', en: '+10 m', fr: '+10 m', nl: '+10 m', ru: '+10 м', sv: '+10 m' },
         note: {
           de: 'Fester, ebener Weg vom Start weg – auch als kurzer Spaziergang hin und zurück geeignet.',
           en: 'Firm, level path from the start – also works as a short there-and-back walk.',
           fr: 'Chemin plat et ferme depuis le départ – convient aussi pour un aller-retour court.',
           nl: 'Vast, vlak pad vanaf de start – ook geschikt als korte wandeling heen en terug.',
-          ru: 'Плотная ровная дорога от старта — подходит и для короткой прогулки туда-обратно.'
+          ru: 'Плотная ровная дорога от старта — подходит и для короткой прогулки туда-обратно.',
+          sv: 'Fast, plan väg från starten – fungerar även som en kort promenad fram och tillbaka.'
         } },
-      { from: '1,8', to: '2,0', grade: 'steil', change: { de: '+40 m', en: '+40 m', fr: '+40 m', nl: '+40 m', ru: '+40 м' },
+      { from: '1,8', to: '2,0', grade: 'steil', change: { de: '+40 m', en: '+40 m', fr: '+40 m', nl: '+40 m', ru: '+40 м', sv: '+40 m' },
         note: {
           de: 'Kurzer, knackiger Anstieg zum Aussichtspunkt Flugplatz – auf 200 m deutlich spürbar.',
           en: 'A short, sharp climb to the airfield viewpoint – noticeable over 200 m.',
           fr: 'Montée courte mais soutenue vers le belvédère de l’aérodrome – nette sur 200 m.',
           nl: 'Korte, stevige klim naar het uitzichtpunt bij het vliegveld – duidelijk voelbaar over 200 m.',
-          ru: 'Короткий, но ощутимый подъём к смотровой площадке у аэродрома — на отрезке 200 м.'
+          ru: 'Короткий, но ощутимый подъём к смотровой площадке у аэродрома — на отрезке 200 м.',
+          sv: 'Kort men kraftig stigning till utsiktsplatsen vid flygfältet – tydligt märkbar på 200 m.'
         } },
-      { from: '2,0', to: '3,0', grade: 'mittel', change: { de: '±10 m', en: '±10 m', fr: '±10 m', nl: '±10 m', ru: '±10 м' },
+      { from: '2,0', to: '3,0', grade: 'mittel', change: { de: '±10 m', en: '±10 m', fr: '±10 m', nl: '±10 m', ru: '±10 м', sv: '±10 m' },
         note: {
           de: 'Welliger Höhenweg zwischen den Weinbergen, moderate, gleichmäßige Anstrengung.',
           en: 'Rolling ridge path through the vineyards, moderate and steady effort.',
           fr: 'Sentier vallonné entre les vignes, effort modéré et régulier.',
           nl: 'Golvend hoogtepad tussen de wijngaarden, matige en gelijkmatige inspanning.',
-          ru: 'Волнистая тропа среди виноградников, умеренная ровная нагрузка.'
+          ru: 'Волнистая тропа среди виноградников, умеренная ровная нагрузка.',
+          sv: 'Kuperad höjdstig mellan vingårdarna, måttlig och jämn ansträngning.'
         } },
-      { from: '3,0', to: '3,4', grade: 'mittel', change: { de: '+8 m', en: '+8 m', fr: '+8 m', nl: '+8 m', ru: '+8 м' },
+      { from: '3,0', to: '3,4', grade: 'mittel', change: { de: '+8 m', en: '+8 m', fr: '+8 m', nl: '+8 m', ru: '+8 м', sv: '+8 m' },
         note: {
           de: 'Letzter Anstieg zum höchsten Punkt (198 m) – Belohnung: der weiteste Blick der Runde.',
           en: 'The final climb to the highest point (198 m) – rewarded with the widest view of the loop.',
           fr: 'Dernière montée vers le point culminant (198 m) – récompensée par la plus belle vue du parcours.',
           nl: 'Laatste klim naar het hoogste punt (198 m) – beloond met het mooiste uitzicht van de route.',
-          ru: 'Последний подъём к высшей точке (198 м) — награда: самый широкий вид на всём маршруте.'
+          ru: 'Последний подъём к высшей точке (198 м) — награда: самый широкий вид на всём маршруте.',
+          sv: 'Sista stigningen till högsta punkten (198 m) – belönas med den vidaste utsikten på slingan.'
         } },
-      { from: '3,4', to: '3,8', grade: 'steil', change: { de: '−53 m', en: '−53 m', fr: '−53 m', nl: '−53 m', ru: '−53 м' },
+      { from: '3,4', to: '3,8', grade: 'steil', change: { de: '−53 m', en: '−53 m', fr: '−53 m', nl: '−53 m', ru: '−53 м', sv: '−53 m' },
         note: {
           de: 'Steilster Abschnitt der Runde, bergab – festes Schuhwerk wichtig, für unsichere Gäste eine Pause wert.',
           en: 'The loop’s steepest stretch, downhill – sturdy footwear matters, worth a pause for less steady guests.',
           fr: 'Tronçon le plus raide de la boucle, en descente – des chaussures solides sont importantes, une pause est utile pour les personnes moins assurées.',
           nl: 'Steilste stuk van de lus, bergafwaarts – stevig schoeisel is belangrijk, een pauze waard voor minder zekere gasten.',
-          ru: 'Самый крутой участок петли, на спуск — важна хорошая обувь, для неуверенных гостей стоит сделать паузу.'
+          ru: 'Самый крутой участок петли, на спуск — важна хорошая обувь, для неуверенных гостей стоит сделать паузу.',
+          sv: 'Slingans brantaste del, nedför – stadiga skor viktigt, värt en paus för mindre säkra gäster.'
         } },
-      { from: '3,8', to: '4,4', grade: 'flach', change: { de: '−10 m', en: '−10 m', fr: '−10 m', nl: '−10 m', ru: '−10 м' },
+      { from: '3,8', to: '4,4', grade: 'flach', change: { de: '−10 m', en: '−10 m', fr: '−10 m', nl: '−10 m', ru: '−10 м', sv: '−10 m' },
         note: {
           de: 'Sanfter Ausklang zurück zum Ausgangspunkt am Ortsrand.',
           en: 'A gentle final stretch back to the starting point at the edge of the village.',
           fr: 'Fin de parcours en douceur, retour au point de départ en lisière du village.',
           nl: 'Zachte afsluiting terug naar het startpunt aan de dorpsrand.',
-          ru: 'Плавное завершение маршрута — возвращение к старту на окраине посёлка.'
+          ru: 'Плавное завершение маршрута — возвращение к старту на окраине посёлка.',
+          sv: 'Skönsamt avslut tillbaka till startpunkten i utkanten av byn.'
         } }
     ],
     suitability: {
@@ -339,6 +403,11 @@ const WALKS = [
         'Гости с ограниченной подвижностью: только ровный первый отрезок (0–1,8 км) туда-обратно — около 3,6 км почти без подъёма.',
         'Гости со средней физической формой: вся петля (4,4 км) с одной-двумя короткими паузами на крутых участках.',
         'Спортивные, активные гости: вся петля без ограничений, примерно за 1:15 ч.'
+      ],
+      sv: [
+        'Gäster med nedsatt rörlighet: endast den plana första sträckan (0–1,8 km), fram och tillbaka – cirka 3,6 km utan nämnvärd stigning.',
+        'Gäster med genomsnittlig kondition: hela slingan (4,4 km) med en eller två korta pauser på de branta avsnitten.',
+        'Sportiga, aktiva gäster: hela slingan utan begränsning, på cirka 1:15 h.'
       ]
     },
     photos: []
@@ -350,29 +419,31 @@ const WINERIES = [
   {
     slug: 'weyh', name: 'Weingut Weyh', icon: null, photos: [],
     photoAlt: 'Weingut Weyh, Winningen',
-    cat: { de: 'Weingut · Weinprobe für Gruppen', en: 'Winery · tastings for groups', fr: 'Domaine · dégustations de groupe', nl: 'Wijnhuis · proeverijen voor groepen', ru: 'Винодельня · дегустации для групп' },
+    cat: { de: 'Weingut · Weinprobe für Gruppen', en: 'Winery · tastings for groups', fr: 'Domaine · dégustations de groupe', nl: 'Wijnhuis · proeverijen voor groepen', ru: 'Винодельня · дегустации для групп', sv: 'Vingård · provningar för grupper' },
     addr: 'Röttgenweg 4, 56333 Winningen',
-    hours: { de: 'So 13–18 Uhr · klingeln möglich', en: 'Sun 13:00–18:00 · ring the bell', fr: 'dim. 13h–18h · sonnez', nl: 'zo 13–18 uur · aanbellen', ru: 'вс 13:00–18:00 · можно позвонить в дверь' },
+    hours: { de: 'So 13–18 Uhr · klingeln möglich', en: 'Sun 13:00–18:00 · ring the bell', fr: 'dim. 13h–18h · sonnez', nl: 'zo 13–18 uur · aanbellen', ru: 'вс 13:00–18:00 · можно позвонить в дверь', sv: 'sön 13–18 · ring på klockan' },
     phone: null, web: null, gmaps: null,
     desc: {
       de: 'Weingut in Winningen an der Mosel. Weinproben für kleine und große Gruppen in den Moselle-Style-Räumen. In der Vinothek können Sie Weine aus verschiedenen Lagen Winningens probieren.',
       en: 'Winery in Winningen on the Moselle. Wine tastings for small and large groups in the Moselle-style rooms. In the wine shop you can taste wines from different Winningen vineyards.',
       fr: 'Domaine viticole à Winningen, sur la Moselle. Dégustations pour petits et grands groupes dans les salles de style moselan. À la vinothèque, dégustez des vins de différents lieux-dits de Winningen.',
       nl: 'Wijnhuis in Winningen aan de Moezel. Proeverijen voor kleine en grote groepen in de zalen in Moselle-stijl. In de wijnwinkel proeft u wijnen uit verschillende Winningense wijngaarden.',
-      ru: 'Винодельня в Винингене на Мозеле. Дегустации для небольших и больших групп в залах в мозельском стиле. В винотеке можно попробовать вина из разных участков Винингена.'
+      ru: 'Винодельня в Винингене на Мозеле. Дегустации для небольших и больших групп в залах в мозельском стиле. В винотеке можно попробовать вина из разных участков Винингена.',
+      sv: 'Vingård i Winningen vid Mosel. Vinprovningar för små och stora grupper i lokaler i moselstil. I vinbutiken kan du prova viner från olika vingårdslägen i Winningen.'
     }
   },
   {
     slug: 'vinothek-winningen', name: 'Vinothek im Winninger Spital', icon: null, photos: [],
     photoAlt: 'Vinothek im Winninger Spital',
-    cat: { de: 'Vinothek · Weinprobe', en: 'Wine tasting room', fr: 'Vinothèque · dégustation', nl: 'Proeflokaal', ru: 'Винотека · дегустация' },
+    cat: { de: 'Vinothek · Weinprobe', en: 'Wine tasting room', fr: 'Vinothèque · dégustation', nl: 'Proeflokaal', ru: 'Винотека · дегустация', sv: 'Vinprovningsrum' },
     addr: 'Weinhof 2, 56333 Winningen',
     hours: {
       de: 'Sommer: Mi–Sa 16–20, So 15–19 Uhr · Winter: Fr–So 16–19 Uhr',
       en: 'Summer: Wed–Sat 16:00–20:00, Sun 15:00–19:00 · Winter: Fri–Sun 16:00–19:00',
       fr: 'été : mer.–sam. 16h–20h, dim. 15h–19h · hiver : ven.–dim. 16h–19h',
       nl: 'zomer: wo–za 16–20, zo 15–19 uur · winter: vr–zo 16–19 uur',
-      ru: 'лето: ср–сб 16:00–20:00, вс 15:00–19:00 · зима: пт–вс 16:00–19:00'
+      ru: 'лето: ср–сб 16:00–20:00, вс 15:00–19:00 · зима: пт–вс 16:00–19:00',
+      sv: 'sommar: ons–lör 16–20, sön 15–19 · vinter: fre–sön 16–19'
     },
     phone: '+49 2606 961514', web: 'https://www.vinothek-winningen.de', gmaps: null,
     desc: {
@@ -380,7 +451,8 @@ const WINERIES = [
       en: 'Wine tasting room with about 40 wines and sparkling wines from independent Winningen estates. You pay a fee for the tasting and are not obliged to buy.',
       fr: 'Vinothèque avec environ 40 vins et crémants de domaines indépendants de Winningen. Vous payez une participation à la dégustation, sans obligation d’achat.',
       nl: 'Proeflokaal met ongeveer 40 wijnen en mousserende wijnen van onafhankelijke Winningense wijnhuizen. U betaalt een bijdrage voor de proeverij en bent niet verplicht te kopen.',
-      ru: 'Винотека с примерно 40 винами и игристыми от независимых винодельней Винингена. За дегустацию платится сбор, покупать обязательно не нужно.'
+      ru: 'Винотека с примерно 40 винами и игристыми от независимых винодельней Винингена. За дегустацию платится сбор, покупать обязательно не нужно.',
+      sv: 'Vinprovningsrum med cirka 40 viner och mousserande viner från oberoende vingårdar i Winningen. Du betalar en avgift för provningen och är inte skyldig att köpa.'
     }
   },
   { slug: 'winningen-folgt', name: null, icon: null, photos: [], addr: null, hours: null, phone: null, web: null, gmaps: null, desc: null }
@@ -391,46 +463,50 @@ const WINERIES = [
 const SIGHTS = [
   {
     slug: 'altstadt',
-    title: { de: 'Historischer Ortskern', en: 'Historic old town', fr: 'Centre historique', nl: 'Historische dorpskern', ru: 'Исторический центр посёлка' },
+    title: { de: 'Historischer Ortskern', en: 'Historic old town', fr: 'Centre historique', nl: 'Historische dorpskern', ru: 'Исторический центр посёлка', sv: 'Historisk gamla stan' },
     text: {
       de: 'Fachwerkhäuser rund um den Weinhexbrunnen, Winzerhäuser aus dem 19./20. Jh. in der Denkmalzone Friedrichstraße. Die Stadtmauer entstand ab 1398 (Ringmauer fertig bis 1583); vom ursprünglich sechs Stadttoren ist das Horntor gut erhalten.',
       en: 'Half-timbered houses around the Weinhexbrunnen fountain, 19th/20th-century winemaker houses in the protected Friedrichstraße quarter. The town wall was begun in 1398 (completed by 1583); of the original six gates, the Horntor survives well.',
       fr: 'Maisons à colombages autour de la fontaine Weinhexbrunnen, maisons de vignerons des XIXe–XXe siècles dans le quartier protégé de la Friedrichstraße. Les remparts, commencés en 1398, furent achevés en 1583 ; des six portes d’origine, le Horntor subsiste bien conservé.',
       nl: 'Vakwerkhuizen rond de Weinhexbrunnen, wijnmakershuizen uit de 19e/20e eeuw in de beschermde Friedrichstraße. De stadsmuur werd vanaf 1398 gebouwd (voltooid in 1583); van de oorspronkelijk zes stadspoorten is de Horntor goed bewaard gebleven.',
-      ru: 'Фахверковые дома вокруг фонтана Weinhexbrunnen, домá виноделов XIX–XX веков в охраняемом квартале Friedrichstraße. Городская стена строилась с 1398 года (завершена к 1583); из шести первоначальных ворот хорошо сохранились Horntor.'
+      ru: 'Фахверковые дома вокруг фонтана Weinhexbrunnen, домá виноделов XIX–XX веков в охраняемом квартале Friedrichstraße. Городская стена строилась с 1398 года (завершена к 1583); из шести первоначальных ворот хорошо сохранились Horntor.',
+      sv: 'Korsvirkeshus runt Weinhexbrunnen-fontänen, vinodlarhus från 1800-/1900-talet i det skyddade Friedrichstraße-kvarteret. Stadsmuren påbörjades 1398 (färdig 1583); av de ursprungliga sex stadsportarna är Horntor väl bevarad.'
     }
   },
   {
     slug: 'kirche',
-    title: { de: 'Evangelische Kirche', en: 'Protestant church', fr: 'Église protestante', nl: 'Protestantse kerk', ru: 'Евангелическая церковь' },
+    title: { de: 'Evangelische Kirche', en: 'Protestant church', fr: 'Église protestante', nl: 'Protestantse kerk', ru: 'Евангелическая церковь', sv: 'Protestantiska kyrkan' },
     text: {
       de: 'Winningen ist eine protestantische Insel im überwiegend katholischen Mosel-Eifel-Gebiet. Der Vorgängerbau entstand um 1200 als dreischiffige Basilika; erhalten sind der romanische Chorturm, ein Nebenchor, das Fächerfenster und der romanische Taufstein aus Trachyt.',
       en: 'Winningen is a Protestant island in the mostly Catholic Moselle-Eifel area. The original building, a three-aisled basilica, dates to around 1200; the Romanesque chancel tower, a side chancel, the fan window and the Romanesque trachyte font survive.',
       fr: 'Winningen est une île protestante dans la région majoritairement catholique de la Moselle-Eifel. L’édifice d’origine, une basilique à trois nefs, date d’environ 1200 ; subsistent la tour-chœur romane, un chœur latéral, la fenêtre en éventail et les fonts baptismaux romans en trachyte.',
       nl: 'Winningen is een protestants eiland in het overwegend katholieke Moezel-Eifelgebied. Het oorspronkelijke gebouw, een driebeukige basiliek, dateert van rond 1200; bewaard gebleven zijn de romaanse koortoren, een zijkoor, het waaiervenster en het romaanse doopvont van trachiet.',
-      ru: 'Вининген — протестантский остров в преимущественно католическом регионе Мозель-Айфель. Первоначальная постройка — трёхнефная базилика около 1200 года; сохранились романская башня хора, боковой придел, веерное окно и романская купель из трахита.'
+      ru: 'Вининген — протестантский остров в преимущественно католическом регионе Мозель-Айфель. Первоначальная постройка — трёхнефная базилика около 1200 года; сохранились романская башня хора, боковой придел, веерное окно и романская купель из трахита.',
+      sv: 'Winningen är en protestantisk ö i den annars katolska Mosel-Eifel-regionen. Den ursprungliga byggnaden, en treskäppig basilika, är från cirka 1200; det romanska kortårnet, ett sidokor, fönstret i solfäckerform och den romanska döpfunten av trakyt är bevarade.'
     }
   },
   {
     slug: 'museum',
-    title: { de: 'Wein- und Heimatmuseum', en: 'Wine & local history museum', fr: 'Musée du vin et d’histoire locale', nl: 'Wijn- en heemmuseum', ru: 'Музей вина и краеведения' },
+    title: { de: 'Wein- und Heimatmuseum', en: 'Wine & local history museum', fr: 'Musée du vin et d’histoire locale', nl: 'Wijn- en heemmuseum', ru: 'Музей вина и краеведения', sv: 'Vin- och hembygdsmuseum' },
     text: {
       de: 'Untergebracht in einer ehemaligen Schule (erbaut 1833–34 nach Plänen von Johann Claudius Lassaulx) in der Schulstraße. Zeigt zahlreiche historische Geräte des Weinbaus.',
       en: 'Housed in a former school (built 1833–34 to designs by Johann Claudius Lassaulx) on Schulstraße. Displays numerous historic winemaking tools.',
       fr: 'Installé dans une ancienne école (construite en 1833–34 d’après les plans de Johann Claudius Lassaulx), Schulstraße. Présente de nombreux outils historiques de la viticulture.',
       nl: 'Gevestigd in een voormalige school (gebouwd 1833–34 naar ontwerp van Johann Claudius Lassaulx) aan de Schulstraße. Toont talrijke historische wijnbouwwerktuigen.',
-      ru: 'Расположен в здании бывшей школы (построено в 1833–34 годах по проекту Johann Claudius Lassaulx) на Schulstraße. Представлены многочисленные исторические орудия виноделия.'
+      ru: 'Расположен в здании бывшей школы (построено в 1833–34 годах по проекту Johann Claudius Lassaulx) на Schulstraße. Представлены многочисленные исторические орудия виноделия.',
+      sv: 'Inrymt i en fördetta skola (byggd 1833–34 efter ritningar av Johann Claudius Lassaulx) på Schulstraße. Visar många historiska vinodlingsverktyg.'
     }
   },
   {
     slug: 'august-horch',
-    title: { de: 'August Horch', en: 'August Horch', fr: 'August Horch', nl: 'August Horch', ru: 'Август Хорх' },
+    title: { de: 'August Horch', en: 'August Horch', fr: 'August Horch', nl: 'August Horch', ru: 'Август Хорх', sv: 'August Horch' },
     text: {
       de: 'Ehrenbürger August Horch (geboren 1868 in Winningen, in einer Winzer- und Schmiedefamilie) gründete die Automobilfirma Horch, aus der später die Marke Audi hervorging. Eine eigene Ausstellung im Ort erinnert an ihn.',
       en: 'Honorary citizen August Horch (born 1868 in Winningen, into a winemaking and blacksmithing family) founded the Horch car company, which later became the Audi brand. A dedicated exhibition in the village honours him.',
       fr: 'Le citoyen d’honneur August Horch (né en 1868 à Winningen, dans une famille de vignerons et de forgerons) fonda l’entreprise automobile Horch, à l’origine de la marque Audi. Une exposition lui est dédiée dans le village.',
       nl: 'Ereburger August Horch (geboren in 1868 in Winningen, in een wijnbouw- en smidsfamilie) richtte de autofabriek Horch op, waaruit later het merk Audi voortkwam. Een eigen tentoonstelling in het dorp eert hem.',
-      ru: 'Почётный гражданин Август Хорх (родился в 1868 году в Винингене, в семье виноделов и кузнецов) основал автомобильную фирму Horch, из которой позже выросла марка Audi. В посёлке есть отдельная экспозиция, посвящённая ему.'
+      ru: 'Почётный гражданин Август Хорх (родился в 1868 году в Винингене, в семье виноделов и кузнецов) основал автомобильную фирму Horch, из которой позже выросла марка Audi. В посёлке есть отдельная экспозиция, посвящённая ему.',
+      sv: 'Hedersmedborgaren August Horch (född 1868 i Winningen, i en vinodlar- och smedfamilj) grundade bilföretaget Horch, som senare blev märket Audi. En egen utställning i byn hedrar honom.'
     }
   },
   {
@@ -441,29 +517,32 @@ const SIGHTS = [
       en: 'On the Heideberg above the village (on today’s hiking trail) stood a 17th-century place of execution from the witch trials. The Protestant bailiwick of Winningen was an enclave within the Catholic district of Kastellaun; by 1659, 24 accusations and executions are recorded, mostly among the upper class. In 1654 Prince-Elector Karl Kaspar von der Leyen ordered the trials to end. In 1925 Winningen residents erected a stone memorial stele – considered the oldest known monument in Germany to the victims of the early modern witch trials. The inscription names victims and execution dates from 1641 to 1651, including Maria Knebel, Margarethe Schiffer, Margarethe Kröber, Peter Mölich and Dorothea Kröber.',
       fr: 'Sur le Heideberg, au-dessus du village (sur l’actuel sentier de randonnée), se trouvait au XVIIe siècle un lieu d’exécution de la chasse aux sorcières. La baillie protestante de Winningen était une enclave dans le territoire catholique de Kastellaun ; jusqu’en 1659, 24 accusations et exécutions auraient eu lieu, touchant surtout les classes aisées. En 1654, le prince-électeur Karl Kaspar von der Leyen ordonna la fin des procès. En 1925, les habitants de Winningen érigèrent une stèle commémorative en pierre – considérée comme le plus ancien monument connu en Allemagne dédié aux victimes de la chasse aux sorcières. L’inscription cite des noms et des dates d’exécution de 1641 à 1651, dont Maria Knebel, Margarethe Schiffer, Margarethe Kröber, Peter Mölich et Dorothea Kröber.',
       nl: 'Op de Heideberg boven het dorp (op het huidige wandelpad) stond in de 17e eeuw een terechtstellingsplaats uit de heksenvervolging. De protestantse vogdij Winningen was een enclave in het katholieke Amt Kastellaun; tot 1659 zouden er 24 aanklachten en terechtstellingen zijn geweest, vooral onder de hogere klasse. In 1654 beval keurvorst Karl Kaspar von der Leyen een einde aan de processen. In 1925 richtten inwoners van Winningen een stenen gedenksteen op – het geldt als het oudste bekende monument in Duitsland voor de slachtoffers van de vroegmoderne heksenvervolging. Het opschrift noemt namen en terechtstellingsdata van 1641 tot 1651, waaronder Maria Knebel, Margarethe Schiffer, Margarethe Kröber, Peter Mölich en Dorothea Kröber.',
-      ru: 'На Heideberg над посёлком (на сегодняшней туристической тропе) в XVII веке находилось место казней времён охоты на ведьм. Протестантский округ Вининген был анклавом на католической территории Kastellaun; к 1659 году, по данным источников, было 24 обвинения и казни, в основном среди представителей высшего сословия. В 1654 году курфюрст Karl Kaspar von der Leyen распорядился прекратить процессы. В 1925 году жители Винингена установили каменную памятную стелу — считается старейшим известным в Германии памятником жертвам охоты на ведьм раннего Нового времени. На надписи указаны имена и даты казней с 1641 по 1651 год, включая Maria Knebel, Margarethe Schiffer, Margarethe Kröber, Peter Mölich и Dorothea Kröber.'
+      ru: 'На Heideberg над посёлком (на сегодняшней туристической тропе) в XVII веке находилось место казней времён охоты на ведьм. Протестантский округ Вининген был анклавом на католической территории Kastellaun; к 1659 году, по данным источников, было 24 обвинения и казни, в основном среди представителей высшего сословия. В 1654 году курфюрст Karl Kaspar von der Leyen распорядился прекратить процессы. В 1925 году жители Винингена установили каменную памятную стелу — считается старейшим известным в Германии памятником жертвам охоты на ведьм раннего Нового времени. На надписи указаны имена и даты казней с 1641 по 1651 год, включая Maria Knebel, Margarethe Schiffer, Margarethe Kröber, Peter Mölich и Dorothea Kröber.',
+      sv: 'På Heideberg ovanför byn (på dagens vandringsled) låg på 1600-talet en avrättningsplats från häxprocesserna. Det protestantiska fogderiet Winningen var en enklav i det katolska Amt Kastellaun; fram till 1659 ska det ha funnits 24 åtal och avrättningar, framför allt bland överklassen. 1654 beordrade kurfursten Karl Kaspar von der Leyen ett slut på rättegångarna. 1925 reste Winningens invånare en stenstod till minne – den anses vara det äldsta kända monumentet i Tyskland för offren för den tidigmoderna häxjakten. Inskriptionen anger namn och avrättningsdatum från 1641 till 1651, bland dem Maria Knebel, Margarethe Schiffer, Margarethe Kröber, Peter Mölich och Dorothea Kröber.'
     }
   },
   {
     slug: 'weinhexbrunnen',
-    title: { de: 'Weinhexbrunnen', en: 'Weinhexbrunnen fountain', fr: 'Fontaine Weinhexbrunnen', nl: 'Weinhexbrunnen', ru: 'Фонтан Weinhexbrunnen' },
+    title: { de: 'Weinhexbrunnen', en: 'Weinhexbrunnen fountain', fr: 'Fontaine Weinhexbrunnen', nl: 'Weinhexbrunnen', ru: 'Фонтан Weinhexbrunnen', sv: 'Weinhexbrunnen-fontänen' },
     text: {
       de: 'Brunnen im Ortskern (Am Weinhof) mit einer auf einem Besen reitenden Hexe – greift das Thema Hexenverfolgung folkloristisch-touristisch auf, im Unterschied zur ernsten Gedenkstele auf dem Hexenhügel.',
       en: 'A fountain in the old town (Am Weinhof) featuring a witch riding a broom – a folkloric, tourist-friendly take on the witch-trial theme, in contrast to the solemn memorial on the Hexenhügel.',
       fr: 'Fontaine du centre historique (Am Weinhof) représentant une sorcière sur son balai – une interprétation folklorique et touristique du thème de la chasse aux sorcières, à la différence de la stèle commémorative, plus solennelle, du Hexenhügel.',
       nl: 'Fontein in de dorpskern (Am Weinhof) met een op een bezem rijdende heks – een folkloristische, toeristische verwerking van het thema heksenvervolging, in tegenstelling tot de serieuze gedenksteen op de Hexenhügel.',
-      ru: 'Фонтан в центре посёлка (Am Weinhof) с фигурой ведьмы на метле — фольклорно-туристическая трактовка темы охоты на ведьм, в отличие от серьёзной памятной стелы на Hexenhügel.'
+      ru: 'Фонтан в центре посёлка (Am Weinhof) с фигурой ведьмы на метле — фольклорно-туристическая трактовка темы охоты на ведьм, в отличие от серьёзной памятной стелы на Hexenhügel.',
+      sv: 'Fontän i gamla stan (Am Weinhof) med en häxa ridande på en kvast – en folklig, turistvänlig tolkning av häxjaktstemat, till skillnad från den högtidliga minnesstoden på Hexenhügel.'
     }
   },
   {
     slug: 'weinlehrpfad',
-    title: { de: 'Weinlehrpfad', en: 'Wine education trail', fr: 'Sentier pédagogique viticole', nl: 'Wijnleerpad', ru: 'Учебная винная тропа' },
+    title: { de: 'Weinlehrpfad', en: 'Wine education trail', fr: 'Sentier pédagogique viticole', nl: 'Wijnleerpad', ru: 'Учебная винная тропа', sv: 'Vinlärostig' },
     text: {
       de: '1 km langer Lehrpfad (Start Am Rosenberg, Ende Soligweg), ca. 45 Minuten, informiert über Rebsorten und Weinanbau. Die Steillage Winninger Uhlen ist bis zu 200 m hoch, weitere bekannte Lagen sind Hamm, Domgarten, Brückstück und Röttgen.',
       en: 'A 1 km trail (starting at Am Rosenberg, ending at Soligweg), about 45 minutes, explains grape varieties and winegrowing. The steep Winninger Uhlen vineyard rises up to 200 m; other well-known sites are Hamm, Domgarten, Brückstück and Röttgen.',
       fr: 'Sentier pédagogique d’1 km (départ Am Rosenberg, arrivée Soligweg), environ 45 minutes, sur les cépages et la viticulture. Le coteau escarpé du Winninger Uhlen atteint 200 m ; d’autres lieux-dits connus sont Hamm, Domgarten, Brückstück et Röttgen.',
       nl: 'Een leerpad van 1 km (start Am Rosenberg, einde Soligweg), ca. 45 minuten, over druivensoorten en wijnbouw. De steile wijngaard Winninger Uhlen is tot 200 m hoog; andere bekende percelen zijn Hamm, Domgarten, Brückstück en Röttgen.',
-      ru: 'Учебная тропа длиной 1 км (старт Am Rosenberg, финиш Soligweg), около 45 минут, рассказывает о сортах винограда и виноделии. Крутой участок Winninger Uhlen достигает высоты 200 м; другие известные участки — Hamm, Domgarten, Brückstück и Röttgen.'
+      ru: 'Учебная тропа длиной 1 км (старт Am Rosenberg, финиш Soligweg), около 45 минут, рассказывает о сортах винограда и виноделии. Крутой участок Winninger Uhlen достигает высоты 200 м; другие известные участки — Hamm, Domgarten, Brückstück и Röttgen.',
+      sv: 'En 1 km lång lärostig (start Am Rosenberg, slut Soligweg), ca 45 minuter, berättar om druvsorter och vinodling. Den branta vingården Winninger Uhlen når upp till 200 m höjd; andra kända lägen är Hamm, Domgarten, Brückstück och Röttgen.'
     }
   }
 ];
@@ -471,15 +550,16 @@ const SIGHTS = [
 // ===== Рождественский рынок (вкладка «Weihnachtsmarkt») =====
 // Источник: festivalsindeutschland.de, «Winningen im Lichterglanz», подробная программа 2026 выходит осенью.
 const XMAS = {
-  title: { de: 'Winningen im Lichterglanz', en: 'Winningen im Lichterglanz (Christmas lights market)', fr: 'Winningen im Lichterglanz (marché de Noël)', nl: 'Winningen im Lichterglanz (kerstmarkt)', ru: 'Winningen im Lichterglanz (рождественский рынок)' },
-  date: { de: 'Fr 27.–So 29. November 2026 (1. Adventswochenende)', en: 'Fri 27–Sun 29 November 2026 (1st Advent weekend)', fr: 'ven. 27–dim. 29 novembre 2026 (1er week-end de l’Avent)', nl: 'vr 27–zo 29 november 2026 (1e adventsweekend)', ru: 'пт 27 – вс 29 ноября 2026 (1-й адвент-уикенд)' },
-  place: { de: 'Historischer Dorfkern und Marktplatz, 56333 Winningen', en: 'Historic old town and market square, 56333 Winningen', fr: 'Centre historique et place du marché, 56333 Winningen', nl: 'Historische dorpskern en marktplein, 56333 Winningen', ru: 'Исторический центр посёлка и рыночная площадь, 56333 Winningen' },
+  title: { de: 'Winningen im Lichterglanz', en: 'Winningen im Lichterglanz (Christmas lights market)', fr: 'Winningen im Lichterglanz (marché de Noël)', nl: 'Winningen im Lichterglanz (kerstmarkt)', ru: 'Winningen im Lichterglanz (рождественский рынок)', sv: 'Winningen im Lichterglanz (julmarknad)' },
+  date: { de: 'Fr 27.–So 29. November 2026 (1. Adventswochenende)', en: 'Fri 27–Sun 29 November 2026 (1st Advent weekend)', fr: 'ven. 27–dim. 29 novembre 2026 (1er week-end de l’Avent)', nl: 'vr 27–zo 29 november 2026 (1e adventsweekend)', ru: 'пт 27 – вс 29 ноября 2026 (1-й адвент-уикенд)', sv: 'fre 27–sön 29 november 2026 (1:a advent-helgen)' },
+  place: { de: 'Historischer Dorfkern und Marktplatz, 56333 Winningen', en: 'Historic old town and market square, 56333 Winningen', fr: 'Centre historique et place du marché, 56333 Winningen', nl: 'Historische dorpskern en marktplein, 56333 Winningen', ru: 'Исторический центр посёлка и рыночная площадь, 56333 Winningen', sv: 'Historiska gamla stan och torget, 56333 Winningen' },
   text: {
     de: 'Der Dorfkern wird mit Lichterketten und Adventsbeleuchtung geschmückt. Stände bieten Glühwein, Punsch, Kakao, Bratwurst, Reibekuchen, gebrannte Mandeln und Lebkuchen; Kunsthandwerker verkaufen Schmuck, Keramik, Holz- und Textilarbeiten sowie Kerzen. Mosel-Winzer bieten Geschenkboxen an, am Samstagabend Festmusik mit Chor-Auftritten. Eintritt frei. Das detaillierte Programm 2026 erscheint im Herbst auf winningen.de.',
     en: 'The old town is decorated with fairy lights and Advent illumination. Stalls offer mulled wine, punch, cocoa, bratwurst, potato pancakes, roasted almonds and gingerbread; craftspeople sell jewellery, ceramics, wood and textile work and candles. Moselle winemakers offer gift boxes, with choir performances on Saturday evening. Free entry. The detailed 2026 programme appears in autumn on winningen.de.',
     fr: 'Le centre historique est orné de guirlandes lumineuses et de décorations de l’Avent. Les stands proposent vin chaud, punch, cacao, saucisses, galettes de pommes de terre, amandes grillées et pain d’épice ; des artisans vendent bijoux, céramiques, ouvrages en bois et en textile, et bougies. Les vignerons de la Moselle proposent des coffrets cadeaux, avec des chorales le samedi soir. Entrée libre. Le programme détaillé de 2026 paraît à l’automne sur winningen.de.',
     nl: 'De dorpskern wordt versierd met lichtjes en adventsverlichting. Kraampjes bieden glühwein, punch, warme chocolademelk, braadworst, aardappelkoeken, gebrande amandelen en peperkoek; kunstenaars verkopen sieraden, keramiek, hout- en textielwerk en kaarsen. Moezelwijnmakers bieden cadeauboxen aan, zaterdagavond is er koormuziek. Gratis toegang. Het gedetailleerde programma van 2026 verschijnt in het najaar op winningen.de.',
-    ru: 'Исторический центр посёлка украшают гирляндами и рождественской подсветкой. На прилавках — глинтвейн, пунш, какао, колбаски, картофельные оладьи, жареный миндаль и пряники; ремесленники продают украшения, керамику, изделия из дерева и текстиля, свечи. Виноделы Мозеля предлагают подарочные наборы, в субботу вечером выступают хоры. Вход свободный. Подробная программа 2026 года появится осенью на сайте winningen.de.'
+    ru: 'Исторический центр посёлка украшают гирляндами и рождественской подсветкой. На прилавках — глинтвейн, пунш, какао, колбаски, картофельные оладьи, жареный миндаль и пряники; ремесленники продают украшения, керамику, изделия из дерева и текстиля, свечи. Виноделы Мозеля предлагают подарочные наборы, в субботу вечером выступают хоры. Вход свободный. Подробная программа 2026 года появится осенью на сайте winningen.de.',
+    sv: 'Gamla stan smyckas med ljusslingor och adventsbelysning. Stånden erbjuder glögg, punsch, kakao, korv, potatisplättar, rostade mandlar och pepparkakor; hantverkare säljer smycken, keramik, trä- och textilarbeten samt ljus. Moselvinodlare erbjuder presentkartonger, med körframträdanden lördag kväll. Fritt inträde. Det detaljerade programmet för 2026 publiceras i höst på winningen.de.'
   }
 };
 
@@ -493,7 +573,18 @@ function walkCard(w) {
   const name = w.name[lang] || w.name.en;
   const tag = w.tag[lang] || w.tag.en;
   const paras = (w.desc[lang] || w.desc.en).map(p => `<p>${p}</p>`).join('');
-  const poi = w.poi.map(p => `<li><b>${t.from} ${p.km} ${t.km}</b> — <strong>${p.name[lang] || p.name.en}</strong><br>${p.text[lang] || p.text.en}</li>`).join('');
+  const poi = w.poi.map(p => {
+    const pName = p.name[lang] || p.name.en;
+    const pPhotos = p.photos && p.photos.length
+      ? `<div class="gallery">${p.photos.map(src => `<img src="${src}" alt="${p.photoAlt || pName}" loading="lazy">`).join('')}</div>`
+      : `<div class="photo-slot">${t.photoSlot}</div>`;
+    return `<li><div class="poi-card">
+      ${pPhotos}
+      <div class="poi-km">${t.from} ${p.km} ${t.km}</div>
+      <h4>${pName}</h4>
+      <p>${p.text[lang] || p.text.en}</p>
+    </div></li>`;
+  }).join('');
   const wear = (w.wear[lang] || w.wear.en).map(x => `<li>${x}</li>`).join('');
   const gradeLabel = { flach: t.gradeFlach, leicht: t.gradeLeicht, mittel: t.gradeMittel, steil: t.gradeSteil };
   const profile = (w.profile || []).map(seg => `<li>
@@ -507,18 +598,18 @@ function walkCard(w) {
   return `<article class="walk" id="walk-${w.slug}">
     <h2 class="walk-name">${name}</h2>
     <p class="walk-tag">${tag}</p>
+    <div id="map-${w.slug}" style="width:100%;height:360px;border-radius:12px;border:1px solid var(--gold);margin:6px 0 4px;"></div>
+    <p class="walk-map-note">${t.mapNote}</p>
     <div class="walk-stats">
       <div class="walk-stat"><b>${w.length}</b><span>${t.length}</span></div>
       <div class="walk-stat"><b>${w.duration}</b><span>${t.duration}</span></div>
       <div class="walk-stat"><b>▲${w.ascent}</b><span>${t.ascent}</span></div>
       <div class="walk-stat"><b>▼${w.descent}</b><span>${t.descent}</span></div>
       <div class="walk-stat"><b>${w.highest}</b><span>${t.highest}</span></div>
-      <div class="walk-stat"><b>${t.diffVal}</b><span>${t.difficulty}</span></div>
+      <div class="walk-stat wide"><b>${t.diffVal}</b><span>${t.difficulty}</span></div>
     </div>
     <div class="walk-desc">${paras}</div>
     ${photos}
-    <div id="map-${w.slug}" style="width:100%;height:360px;border-radius:12px;border:1px solid var(--gold);margin:6px 0 4px;"></div>
-    <p class="walk-map-note">${t.mapNote}</p>
     <h3 class="walk-h3">${t.h3profile}</h3>
     <ul class="walk-profile">${profile}</ul>
     <h3 class="walk-h3">${t.h3suit}</h3>
@@ -540,8 +631,8 @@ function drawWalkMap(w) {
   const t = T[lang];
   L.marker(w.startLL, { icon: L.divIcon({ className: '', html: `<div class="walk-start-marker">S</div>`, iconSize: [30, 30], iconAnchor: [15, 15] }) })
     .addTo(map).bindTooltip(t.legStart + ' · ' + w.startName, { direction: 'top' });
-  L.marker(w.pierLL, { icon: L.divIcon({ className: '', html: `<div class="walk-pier-marker">⚓</div>`, iconSize: [30, 30], iconAnchor: [15, 15] }) })
-    .addTo(map).bindTooltip(t.legPier + ' · ' + w.pierName, { direction: 'top' });
+  L.marker(w.pierLL, { icon: L.divIcon({ className: '', html: `<div class="walk-pier-badge"><span class="walk-pier-letter">K</span>KD PIER</div>`, iconSize: null, iconAnchor: [0, 0] }) })
+    .addTo(map).bindTooltip('KD · ' + t.legPier + ' · ' + w.pierName, { direction: 'top' });
   L.polyline([w.pierLL, w.startLL], { color: '#2a7de1', weight: 3, dashArray: '2 8', opacity: .8 }).addTo(map);
   const [lat0, lng0] = w.startLL;
   // Schlaufenform grob an den vom Nutzer gezeigten Kartenausschnitt (outdooractive) angelehnt:
@@ -600,6 +691,7 @@ function render() {
   document.getElementById('t-title').textContent = t.title;
   document.getElementById('t-sub').textContent = t.sub;
   document.getElementById('t-intro').textContent = t.intro;
+  document.getElementById('t-editorial').innerHTML = `${t.letter}<span class="sig">— Anatoly Basin, Team TAYR</span>`;
   document.getElementById('t-contact').innerHTML = t.contact;
   document.title = t.title + ' · Turret Tales';
 

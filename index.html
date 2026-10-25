@@ -79,13 +79,14 @@
   .header-controls { flex: 0 0 auto; position: relative; z-index: 1002; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
   /* Всплывающая реклама Food & Drinks (каждые 2 минуты) */
-  .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 400px); min-height: min(92vw, 400px); aspect-ratio: auto; box-sizing: border-box; background: url('frame-vignette.png') center / 100% 100% no-repeat, #F5ECD6; border: 0; border-radius: 0; padding: 36px 36px 40px; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; animation: foodPromoIn .35s ease-out; }
-  .food-promo-q { font-size: clamp(15px, 4.3vw, 18px); line-height: 1.22; margin: 0; padding: 0 9%; align-self: stretch; }
-  .food-promo-badge { position: relative; flex: 0 0 auto; width: clamp(120px, 40vw, 150px); height: clamp(120px, 40vw, 150px); margin: 0; display: flex; align-items: center; justify-content: center; }
+  .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 400px); min-height: min(92vw, 400px); aspect-ratio: auto; box-sizing: border-box; background: url('frame-vignette.png') center / 100% 100% no-repeat, #F5ECD6; border: 0; border-radius: 0; padding: 64px 60px 56px; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; animation: foodPromoIn .35s ease-out; }
+  .food-promo-q { font-size: clamp(18px, 5vw, 22px); line-height: 1.22; margin: 0; padding: 0 9%; align-self: stretch; }
+  .food-promo-badge { position: relative; flex: 0 0 auto; width: clamp(132px, 44vw, 165px); height: clamp(132px, 44vw, 165px); margin: 0; display: flex; align-items: center; justify-content: center; }
   .food-promo-arc { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .food-promo-arc text { font-family: 'EB Garamond', Garamond, serif; font-weight: 700; font-size: 25px; fill: #A33A0E; }
   .food-promo .food-promo-icon { width: 100%; height: 100%; min-width: 0; border-radius: 50%; object-fit: cover; display: block; }
-  .food-promo-link { font-size: clamp(17px, 4.8vw, 20px); font-weight: 700; color: #4a0f1c; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
+  #shopPromoQ { white-space: pre-line; }
+  .food-promo-link { font-size: clamp(19px, 5.4vw, 24px); font-weight: 700; color: #4a0f1c; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
   .food-promo[hidden] { display: none; }
   @keyframes foodPromoIn { from { opacity: 0; transform: translate(-50%, -46%); } to { opacity: 1; transform: translate(-50%, -50%); } }
   .food-promo-icon { width: 58px; height: 58px; flex: 0 0 auto; object-fit: contain; border-radius: 50%; background: #fff; border: 1.5px solid #c8a878; padding: 4px; }
@@ -1284,6 +1285,7 @@
     <!-- РОЖДЕСТВО -->
     <div class="view" id="view-christmas"></div>
     <div class="view" id="view-food"></div>
+    <div class="view" id="view-wine"></div>
   </div>
 
   <div class="footer">
@@ -2159,7 +2161,8 @@ function renderTabs() {
     addTab(UI[lang].tabs[0], 'christmas', 'tab-xmas', currentView === 'guide', () => openXmasHome());
     addTab(xl.list, 'xlist', 'tab-xmas-light', currentView === 'christmas' && xmasListOnly, () => xmasOpenList());
     addTab(xl.map, 'xmap', 'tab-xmas-light', currentView === 'christmas' && !xmasListOnly, () => xmasOpen(null));
-    addTab(XMAS_FOOD_TITLE[xmasLang] || XMAS_FOOD_TITLE.en, 'food', 'tab-xmas', currentView === 'food', () => switchView('food'));
+    addTab(XMAS_FOOD_TAB[xmasLang] || XMAS_FOOD_TAB.en, 'food', 'tab-xmas', currentView === 'food', () => switchView('food'));
+    addTab(XMAS_WINE_TAB[xmasLang] || XMAS_WINE_TAB.en, 'wine', 'tab-xmas', currentView === 'wine', () => switchView('wine'));
     addTab(UI[lang].tabs[6], 'map', '', currentView === 'map', () => switchView('map'));
     addTab(UI[lang].tabs[2], 'castles', '', currentView === 'castles', () => switchView('castles'));
     [3, 4, 5].forEach(i => addTab(UI[lang].tabs[i], tabKeys[i], '', currentView === tabKeys[i], () => switchView(tabKeys[i])));
@@ -2824,7 +2827,7 @@ function renderFoodPromoText() {
 function showFoodPromo() {
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return;
-  if (currentView === 'food') return; // im Bereich Food & Drinks nicht anzeigen
+  if (currentView === 'food' || currentView === 'wine') return; // im Bereich Food & Drinks / Weingüter nicht anzeigen
   if (!document.getElementById('shopPromo').hidden) return; // nicht zwei Fenster übereinander
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
@@ -2881,11 +2884,11 @@ document.addEventListener('click', e => {
 });
 // Zweites Fenster: Souvenirs und Bücher (Reuffel), alle 3 Minuten
 const SHOP_PROMO = {
-  de: { q: 'Souvenirs, Bücher oder Postkarten? Dann hierher!', link: 'Souvenirs & Bücher →' },
-  en: { q: 'Looking for souvenirs, books or postcards? This way!', link: 'Souvenirs & Books →' },
-  fr: { q: 'Souvenirs, livres ou cartes postales ? Par ici !', link: 'Souvenirs et livres →' },
-  nl: { q: 'Op zoek naar souvenirs, boeken of ansichtkaarten? Hier moet u zijn!', link: 'Souvenirs & boeken →' },
-  ru: { q: 'Ищете сувениры, книги или открытки? Вам сюда', link: 'Сувениры и книги →' }
+  de: { q: 'Souvenirs, Bücher oder Postkarten?\nDann hierher!', link: 'Souvenirs & Bücher →' },
+  en: { q: 'Looking for souvenirs, books or postcards?\nThis way!', link: 'Souvenirs & Books →' },
+  fr: { q: 'Souvenirs, livres ou cartes postales ?\nPar ici !', link: 'Souvenirs et livres →' },
+  nl: { q: 'Op zoek naar souvenirs, boeken of ansichtkaarten?\nHier moet u zijn!', link: 'Souvenirs & boeken →' },
+  ru: { q: 'Ищете сувениры, книги или открытки?\nВам сюда', link: 'Сувениры и книги →' }
 };
 function renderShopPromoText() {
   const active = document.querySelector('.header-controls .pill-btn.active');
@@ -3254,7 +3257,22 @@ function renderChristmas(townKey) {
 
 
 /* ===== Essen & Trinken: Karte der Cafés und Restaurants (Platzhalter bis zu den Partnern) ===== */
-const XMAS_FOOD_TITLE = { de: 'Essen & Trinken', fr: 'Restauration', nl: 'Eten & drinken', en: 'Food & drink', ru: 'Еда и напитки' };
+const XMAS_FOOD_TAB = { de: 'Essen & Trinken', fr: 'Restauration', nl: 'Eten & drinken', en: 'Food & drinks', ru: 'Еда и напитки' };
+const XMAS_WINE_TAB = { de: 'Weingüter', fr: 'Vignerons', nl: 'Wijnmakers', en: 'Winemakers', ru: 'Виноделы' };
+const XMAS_FOOD_TITLE = { de: 'Essen, Trinken & mehr', fr: 'Restauration & plus', nl: 'Eten, drinken & meer', en: 'Food, drinks & more', ru: 'Еда, напитки и не только' };
+// Виноделы и винные дегустации на Мозеле. Адреса добавляются по мере получения:
+// name, addr (строка адреса), ll ([широта, долгота] или null), text (описание по языкам).
+// Пока name = null, карточка показывает заглушку «адрес будет добавлен».
+const WINEMAKERS = [
+  { name: null, addr: null, ll: null, text: null },
+  { name: null, addr: null, ll: null, text: null },
+  { name: null, addr: null, ll: null, text: null },
+];
+const WINE_UI = {
+  de: { title: 'Weingüter & Weinproben', intro: 'Weingüter am Moselufer. Viele Gäste der Flusskreuzfahrt möchten Wein direkt beim Winzer probieren. Hier finden Sie Winzer mit Weinproben.', ph: 'Weingut – Adresse folgt' },
+  en: { title: 'Winemakers & wine tastings', intro: 'Wineries on the Moselle. Many river cruise guests want to taste wine directly with the winemaker. Here you find winemakers who offer tastings.', ph: 'Winery – address to follow' },
+  ru: { title: 'Виноделы и дегустации', intro: 'Винодельни на Мозеле. Многие гости речных круизов хотят попробовать вино прямо у винодела. Здесь винодельни, которые проводят дегустации.', ph: 'Винодельня – адрес будет добавлен' },
+};
 const XMAS_FOOD_INTRO = {
   de: 'Cafés, Restaurants und Weinstuben in der Altstadt. Hier stellen sich Partner vor. Die roten Punkte zeigen die Orte auf der Karte.',
   fr: 'Cafés, restaurants et bars à vin dans la vieille ville. Nos partenaires se présentent ici. Les points rouges indiquent les lieux sur la carte.',
@@ -3321,7 +3339,7 @@ function renderFood() {
   if (typeof L === 'undefined') return;
   const mapEl = document.getElementById('xmasFoodMap');
   xmasFoodMapObj = L.map(mapEl, { scrollWheelZoom: false, zoomSnap: 0 });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasFoodMapObj).on('click', () => focusFoodCard(idx));
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasFoodMapObj);
   const pb = L.latLngBounds(XMAS_FOOD_PLACES.map(p => p.ll));
   xmasFoodMapObj.fitBounds(pb, { padding: [4, 4], maxZoom: 16 });
   // Клик по точке: прокрутка к карточке этого места
@@ -3341,6 +3359,37 @@ function renderFood() {
     }
   });
 }
+let xmasWineMapObj = null;
+function renderWine() {
+  const el = document.getElementById('view-wine');
+  if (!el) return;
+  const wui = WINE_UI[xmasLang] || WINE_UI.en;
+  const wineCards = WINEMAKERS.map((w, i) => {
+    const kicker = `<div class="route-kicker">W${i + 1}</div>`;
+    if (!w.name) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${wui.ph}</div></div>`;
+    const t = (w.text && (w.text[xmasLang] || w.text.en)) || '';
+    return `<div class="route-card xmas-card">${kicker}<div class="food-mia-text"><h3 class="buta-name">${w.name}</h3>` +
+      `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${w.addr || ''}</p><p style="margin:0">${t}</p></div></div>`;
+  }).join('');
+  el.innerHTML = `<h2 class="castle-name" style="margin:10px 0">${wui.title}</h2><p class="xmas-intro">${wui.intro}</p>` +
+    `<div id="xmasWineMap" class="xmas-map"></div>` +
+    `<div class="xmas-town-list wine-list">${wineCards}</div>`;
+  if (xmasWineMapObj) { xmasWineMapObj.remove(); xmasWineMapObj = null; }
+  if (typeof L === 'undefined') return;
+  xmasWineMapObj = L.map(document.getElementById('xmasWineMap'), { scrollWheelZoom: false, zoomSnap: 0 });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasWineMapObj);
+  const wpts = WINEMAKERS.filter(w => w.ll).map(w => w.ll);
+  if (wpts.length) xmasWineMapObj.fitBounds(L.latLngBounds(wpts), { padding: [4, 4], maxZoom: 14 });
+  else xmasWineMapObj.setView([50.15, 7.2], 9);
+  // Красные точки: клик прокручивает к карточке винодела
+  WINEMAKERS.forEach((w, i) => {
+    if (!w.ll) return;
+    L.circleMarker(w.ll, { radius: 7, color: '#fff', weight: 2, fillColor: '#C0202A', fillOpacity: 1 }).addTo(xmasWineMapObj).on('click', () => {
+      const card = document.querySelectorAll('#view-wine .wine-list > .route-card')[i];
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+}
 function switchView(viewName) {
   const prevView = currentView;
   currentView = viewName;
@@ -3352,6 +3401,7 @@ function switchView(viewName) {
   window.scrollTo(0, 0);
   if (viewName === 'christmas') renderChristmas();
   if (viewName === 'food') { renderFood(); hideFoodPromo(); if (prevView !== 'food') showFoodSplash(); }
+  if (viewName === 'wine') { renderWine(); hideFoodPromo(); }
   renderTabs();
   if (viewName === 'map') {
     setTimeout(() => {

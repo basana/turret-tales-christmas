@@ -84,7 +84,7 @@
     <thead><tr><th>Ort</th><th>Karte</th><th>Maps</th><th>Anruf</th><th>Gutschein</th><th>Einlös.</th></tr></thead>
     <tbody>
       <tr id="row-mia"><td>Mia Gelateria</td><td class="n" id="c-mia-map">0</td><td class="n" id="c-mia-maps">0</td><td class="n" id="c-mia-phone">0</td><td class="n" id="c-mia-coupon">0</td><td class="n" id="c-mia-redeem">0</td></tr>
-      <tr id="row-buta"><td>Buta Cafe</td><td class="n" id="c-buta-map">0</td><td class="n" id="c-buta-maps">0</td><td class="n">–</td><td class="n">–</td><td class="n">–</td></tr>
+      <tr id="row-buta"><td>Buta Cafe</td><td class="n" id="c-buta-map">0</td><td class="n" id="c-buta-maps">0</td><td class="n">–</td><td class="n" id="c-buta-coupon">0</td><td class="n">–</td></tr>
     </tbody>
   </table>
   <p class="sum ui">Zählung in dieser Sitzung. Die Zahlen im Auswertungskonto kommen mit kurzer Verzögerung dazu.</p>
@@ -124,6 +124,7 @@
   <p class="meta ui"><b>Adresse:</b> Florinsmarkt 12, 56068 Koblenz<br><b>Preis:</b> 10–20 €</p>
   <div class="btns ui">
     <button class="btn solid" data-place="buta" data-act="maps">Auf Google Maps öffnen</button>
+    <button class="btn" data-place="buta" data-act="coupon">Gutschein holen</button>
   </div>
 </article>
 
@@ -153,7 +154,7 @@
 const firm = null;
 const PLACES = {
   mia: { name: 'Mia Gelateria', code: 'TT-DEMO-MIA-10', offer: '10 % auf Ihren Eisbecher', ll: [50.36000, 7.60203], card: 'p-mia' },
-  buta: { name: 'Buta Cafe Koblenz', code: '', offer: '', ll: [50.36177, 7.59643], card: 'p-buta' }
+  buta: { name: 'Buta Cafe Koblenz', code: 'TT-DEMO-BUTA-10', offer: '10 % auf Ihre Bestellung', ll: [50.36177, 7.59643], card: 'p-buta' }
 };
 const counts = {};
 const redeemed = {};
@@ -184,7 +185,7 @@ function highlight(cardId) {
   setTimeout(() => c.classList.remove('hl'), 1200);
 }
 
-document.getElementById('demo-title').textContent = '%s';
+document.getElementById('demo-title').textContent = 'Live-Demo · Food & Drinks';
 
 // Karte mit Punkten
 const map = L.map('map', { scrollWheelZoom: false });

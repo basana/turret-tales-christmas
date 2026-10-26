@@ -733,7 +733,7 @@
   .splash-lang {
     position: absolute; z-index: 2;
     top: calc(14px + env(safe-area-inset-top)); right: 14px;
-    display: flex; gap: 6px;
+    display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; max-width: 70%;
   }
   .splash-lang-btn {
     font-family: var(--sans); font-size: 12px; font-weight: 600;
@@ -1050,6 +1050,7 @@
   [dir="rtl"] .route-hook { border-left: none; border-right: 3px solid var(--terracotta); padding-left: 0; padding-right: 10px; }
   [dir="rtl"] .xmas-list { padding-left: 0; padding-right: 18px; }
   [dir="rtl"] .splash-find { text-align: right; padding-left: 0; padding-right: 19%; }
+  [dir="rtl"] .splash-lang { right: auto; left: 14px; justify-content: flex-start; }
   [dir="rtl"] .stat-table th { text-align: right; }
   [dir="rtl"] .split-text .split-col-left { text-align: right; padding-left: 0; padding-right: 13px; }
   [dir="rtl"] .premium-feature-list li { padding-left: 0; padding-right: 20px; }

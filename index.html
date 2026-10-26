@@ -642,6 +642,25 @@
     object-fit: contain; opacity: 0.6;
     mix-blend-mode: multiply;
   }
+
+  /* Переключатель версии Classic | Christmas: тап по эмблеме в левом верхнем углу
+     (невидимая зона поверх эмблемы) или по ярлыку под ней. */
+  .mode-switch-hit {
+    position: absolute; z-index: 3; cursor: pointer;
+    top: env(safe-area-inset-top); left: 0;
+    width: clamp(96px, 32vw, 150px); height: clamp(96px, 32vw, 150px);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mode-switch {
+    position: absolute; z-index: 3; cursor: pointer; display: flex;
+    top: calc(env(safe-area-inset-top) + clamp(96px, 32vw, 150px) + 4px); left: 10px;
+    padding: 0; border: 1px solid rgba(255,255,255,0.85); border-radius: 999px; overflow: hidden;
+    font: 600 12px/1 system-ui, -apple-system, sans-serif; background: rgba(0,0,0,0.35);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mode-switch-seg { padding: 7px 10px; color: #fff; }
+  body:not(.xmas-on) .mode-switch-seg[data-m="std"] { background: #fff; color: #222; }
+  body.xmas-on .mode-switch-seg[data-m="xmas"] { background: #fff; color: #7A1026; }
   .splash-content { position: relative; z-index: 1; padding: 0 var(--pad) calc(64px + env(safe-area-inset-bottom)); color: var(--cream-text); }
   .splash-eyebrow {
     font-family: var(--sans); font-size: 12.4px; letter-spacing: 0.19em; text-transform: uppercase;
@@ -990,6 +1009,10 @@
     <div class="splash-rays"></div>
     <img class="splash-watermark" src="emblem-stamp.png" alt="">
   </div>
+  <button type="button" class="mode-switch" id="modeSwitch" aria-label="Switch version: Classic or Christmas">
+    <span class="mode-switch-seg" data-m="std">Classic</span><span class="mode-switch-seg" data-m="xmas">Christmas</span>
+  </button>
+  <div class="mode-switch-hit" id="modeSwitchHit" role="button" tabindex="0" aria-label="Switch version: Classic or Christmas"></div>
   <div class="splash-lang">
     <span class="splash-lang-btn" data-lang="en">EN</span>
     <span class="splash-lang-btn splash-lang-xmas" data-xh="de">DE</span>
@@ -1314,9 +1337,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/davidshimjs-qrcodejs/0.0.2/qrcode.min.js"></script>
 <script>
 // Режим: рождественская версия по умолчанию; стандартная — по ссылке ?mode=std
-const XMAS_MODE = new URLSearchParams(location.search).get('mode') !== 'std';
+const XMAS_MODE = (function () {
+  // Приоритет: ссылка (?mode=std или ?mode=xmas) > сохранённый выбор > рождественская по умолчанию
+  const q = new URLSearchParams(location.search).get('mode');
+  if (q === 'std') return false;
+  if (q === 'xmas') return true;
+  try { return localStorage.getItem('ttMode') !== 'std'; } catch (e) { return true; }
+})();
 document.body.classList.toggle('xmas-on', XMAS_MODE);
 if (XMAS_MODE) { const sImg = document.getElementById('splashImg'); if (sImg) sImg.src = 'xmas-splash.webp'; const sWm = document.querySelector('.splash-watermark'); if (sWm) sWm.src = 'emblem-stamp-red.png'; }
+// Переключатель версии: запоминаем выбор и перезагружаем страницу (без ?mode в адресе)
+(function () {
+  function toggleMode() {
+    try { localStorage.setItem('ttMode', XMAS_MODE ? 'std' : 'xmas'); } catch (e) {}
+    location.replace(location.pathname);
+  }
+  ['modeSwitch', 'modeSwitchHit'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', toggleMode);
+    el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMode(); } });
+  });
+})();
 const castles = [
   {
     // Входной экран (сразу после сплэша, с плитками-указателями). У него

@@ -188,7 +188,6 @@
 <nav class="ptabs" id="ptabs"></nav>
 
 <div class="editorial" id="t-editorial"></div>
-<div class="intro" id="t-intro"></div>
 
 <div id="view-walks"></div>
 <div id="view-wine" hidden><div id="wine-cards"></div></div>
@@ -786,7 +785,6 @@ function render() {
   document.getElementById('t-brand').textContent = t.brand;
   document.getElementById('t-title').textContent = t.title;
   document.getElementById('t-sub').textContent = t.sub;
-  document.getElementById('t-intro').textContent = t.intro;
   // «Слово от гида» с фото — только на вкладке Walks (2-й экран после заставки),
   // на остальных вкладках (Wine/Sights/Food/Xmas) не повторяется.
   const editorialEl = document.getElementById('t-editorial');
@@ -804,7 +802,9 @@ function render() {
   });
 
   if (view === 'walks') {
-    const heroHtml = `<div class="walks-hero"><img src="walks-hero-family.webp" alt="" loading="lazy"></div>`;
+    // Фото семьи в рамке, под ним — вступительный текст о Виннингене.
+    const heroHtml = `<div class="walks-hero"><img src="walks-hero-family.webp" alt="" loading="lazy"></div>
+      <div class="intro" id="t-intro">${t.intro}</div>`;
     document.getElementById('view-walks').innerHTML = heroHtml + WALKS.map(walkCard).join('');
     WALKS.forEach(drawWalkMap);
   } else if (view === 'wine') {

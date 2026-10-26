@@ -621,6 +621,9 @@
     position: absolute; z-index: 0; pointer-events: none;
     top: env(safe-area-inset-top); left: 0;
     width: var(--wm); height: var(--wm);
+    /* 22% от СОБСТВЕННОЙ ширины — работает одинаково что в режиме Christmas
+       (где этот блок уменьшен до 0.765*wm выше), что в Classic. */
+    transform: translateX(22%);
   }
   .splash-rays {
     position: absolute; z-index: 0;
@@ -649,6 +652,7 @@
     position: absolute; z-index: 3; cursor: pointer;
     top: env(safe-area-inset-top); left: 0;
     width: clamp(96px, 32vw, 150px); height: clamp(96px, 32vw, 150px);
+    transform: translateX(22%);
     -webkit-tap-highlight-color: transparent;
   }
   .mode-switch {

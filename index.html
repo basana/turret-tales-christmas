@@ -413,10 +413,24 @@
   .guide-note-text {
     font-size: calc(13.5px * var(--scale)); line-height: 1.5; font-style: italic;
     color: var(--ink); margin: 0;
+    /* flex: 1 + min-width: 0 — иначе невидимая фигура ветки (float
+       внутри, см. .note-branch-shape) своим intrinsic-размером раздувает
+       этот flex-элемент вместо того, чтобы просто занять оставшееся
+       место в строке рядом с фото гида. */
+    flex: 1 1 0%; min-width: 0;
   }
   .guide-note-sig {
     display: block; margin-top: 6px; font-style: normal; font-family: var(--sans);
     font-size: calc(11.5px * var(--scale)); font-weight: 700; color: var(--terracotta);
+  }
+  /* Невидимая «тень» декоративной ветки (.header-branch) внутри текста
+     обращения гида: float + shape-outside по альфа-каналу той же картинки,
+     размер/отступы выставляются в JS (updateNoteBranchShape) по реальным
+     координатам .header-branch, поэтому текст физически обтекает ветку,
+     а сама ветка остаётся на прежнем месте и не двигается. */
+  .note-branch-shape {
+    float: right; width: 0; height: 0; pointer-events: none;
+    shape-image-threshold: 0.15; shape-margin: 2px;
   }
 
   /* Указатели к основным разделам — сразу под уменьшенным фото первого экрана */
@@ -4154,6 +4168,64 @@ const INFO_POPUPS = {
   }
 };
 
+// Выставляет размер/отступы невидимой фигуры .note-branch-shape так, чтобы
+// её shape-outside-контур совпал с реальным положением всегда видимой
+// декоративной ветки .header-branch — тогда CSS сам обтекает текстом её
+// силуэт, а сама ветка никуда не перемещается.
+function updateNoteBranchShape() {
+  const shapeEl = document.getElementById('noteBranchShape');
+  const branchEl = document.querySelector('.header-branch');
+  const textEl = document.getElementById('guideNoteText');
+  if (!shapeEl || !branchEl || !textEl) return;
+  if (textEl.offsetParent === null) return; // скрыт (не первый экран) — незачем мерить
+  const resetShape = () => { shapeEl.style.width = '0'; shapeEl.style.height = '0'; shapeEl.style.shapeOutside = 'none'; };
+  if (!branchEl.complete || !branchEl.naturalWidth) {
+    branchEl.addEventListener('load', updateNoteBranchShape, { once: true });
+    return;
+  }
+  const br = branchEl.getBoundingClientRect();
+  const tr = textEl.getBoundingClientRect();
+  if (!br.width || !tr.width) return;
+  // Берём только реально пересекающийся по вертикали кусок ветки (обычно
+  // это небольшая полоса у самого верха текста) и вырезаем именно его из
+  // картинки через canvas — так получается аккуратный shape-outside без
+  // гигантских отрицательных отступов, которые браузер иначе не всегда
+  // корректно учитывает при обтекании.
+  const overlapTop = Math.max(br.top, tr.top);
+  const overlapBottom = Math.min(br.bottom, tr.bottom);
+  if (overlapBottom <= overlapTop) { resetShape(); return; }
+  const boxRight = tr.right;
+  const boxLeft = Math.max(br.left, tr.left);
+  const boxWidth = boxRight - boxLeft;
+  const boxHeight = overlapBottom - overlapTop;
+  if (boxWidth <= 0 || boxHeight <= 0) { resetShape(); return; }
+  const scale = br.width / branchEl.naturalWidth;
+  const nativeLeft = Math.max(0, (boxLeft - br.left) / scale);
+  const nativeTop = Math.max(0, (overlapTop - br.top) / scale);
+  const nativeRight = Math.min(branchEl.naturalWidth, (boxRight - br.left) / scale);
+  const nativeBottom = Math.min(branchEl.naturalHeight, (overlapBottom - br.top) / scale);
+  const sw = nativeRight - nativeLeft, sh = nativeBottom - nativeTop;
+  if (sw <= 0 || sh <= 0) { resetShape(); return; }
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(boxWidth));
+    canvas.height = Math.max(1, Math.round(boxHeight));
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(branchEl, nativeLeft, nativeTop, sw, sh, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/png');
+    shapeEl.style.width = boxWidth + 'px';
+    shapeEl.style.height = boxHeight + 'px';
+    shapeEl.style.marginTop = (overlapTop - tr.top) + 'px';
+    shapeEl.style.marginRight = (tr.right - boxRight) + 'px';
+    shapeEl.style.marginLeft = '0';
+    shapeEl.style.marginBottom = '0';
+    shapeEl.style.shapeOutside = `url(${dataUrl})`;
+  } catch (e) {
+    resetShape(); // canvas недоступен — просто без обтекания, как раньше
+  }
+}
+window.addEventListener('resize', () => { if (typeof updateNoteBranchShape === 'function') updateNoteBranchShape(); });
+
 function renderQuickLinksText() {
   const t = UI[lang];
 
@@ -4171,7 +4243,10 @@ function renderQuickLinksText() {
   if (guideNote) {
     guideNote.style.display = (index === 0) ? 'flex' : 'none';
     const gnText = document.getElementById('guideNoteText');
-    if (gnText) gnText.innerHTML = `${t.guideNoteText || ''}<span class="guide-note-sig">${t.guideNoteSig || ''}</span>`;
+    if (gnText) {
+      gnText.innerHTML = `<span id="noteBranchShape" class="note-branch-shape" aria-hidden="true"></span>${t.guideNoteText || ''}<span class="guide-note-sig">${t.guideNoteSig || ''}</span>`;
+      updateNoteBranchShape();
+    }
     // guideNotePhoto теперь содержит реальное фото (guide-photo.webp) —
     // плейсхолдер-текст больше не нужен и не перезаписывается при рендере.
   }

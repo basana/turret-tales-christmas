@@ -114,6 +114,9 @@
   .header-controls { gap: 4px; }
   .header-controls .pill-btn { padding: 4px 6px; font-size: 11px; letter-spacing: 0; }
   @media (max-width: 420px) { .header-controls .pill-btn { padding: 3px 5px; font-size: 10.5px; } }
+  /* ZH/HE подписи шире двухбуквенных кодов — чуть уже паддинг, чтобы ряд не переполнялся */
+  .header-controls .pill-btn-wide { padding-left: 4px; padding-right: 4px; font-size: 10.5px; }
+  @media (max-width: 420px) { .header-controls .pill-btn-wide { padding-left: 3px; padding-right: 3px; font-size: 9.5px; } }
   /* Узкие экраны: язык и размер шрифта — во второй строке шапки, название приложения читается целиком */
   @media (max-width: 420px) { .header { flex-wrap: wrap; } .header-controls { width: 100%; justify-content: flex-end; margin-top: 8px; } }
 
@@ -574,7 +577,7 @@
   .nav-arrow:disabled { opacity: 0.3; cursor: default; }
   .progress-track { flex: 1; height: 6px; background: var(--parchment-deep); border-radius: 3px; overflow: hidden; border: 1px solid var(--gold); }
   .progress-fill { height: 100%; background: var(--terracotta); width: 0%; }
-  .progress-label { font-size: 11px; color: var(--ink-soft); white-space: nowrap; font-weight: 600; }
+  .progress-label { font-size: 11px; color: var(--ink-soft); white-space: nowrap; font-weight: 600; direction: ltr; unicode-bidi: isolate; }
 
   /* === СПЛЭШ-ЭКРАН === */
   .splash {
@@ -1018,6 +1021,29 @@
     75% { border-color: #3a6ea5; box-shadow: 0 0 0 3px #3a6ea5, 0 0 14px 3px rgba(58,110,165,0.65); }
     100% { border-color: var(--gold); box-shadow: none; }
   }
+
+  /* ============ RTL (иврит) ============
+     Большинство flex-рядов (guide-note, xmas-town-top, actions, quick-links)
+     переворачиваются сами — браузер учитывает dir="rtl" для порядка во
+     flex-строках. Здесь — то, что сам браузер НЕ переворачивает:
+     физические border-left/float left/text-align left/абсолютные left-офсеты
+     у декоративных акцентов и текстовых блоков. */
+  [dir="rtl"] body { direction: rtl; }
+  [dir="rtl"] .guide-note { border-left: 1px solid var(--gold); border-right: 3px solid var(--terracotta); }
+  [dir="rtl"] .xmas-explain { border-left: none; border-right: 4px solid #7A1026; }
+  [dir="rtl"] .route-hook { border-left: none; border-right: 3px solid var(--terracotta); padding-left: 0; padding-right: 10px; }
+  [dir="rtl"] .xmas-list { padding-left: 0; padding-right: 18px; }
+  [dir="rtl"] .splash-find { text-align: right; padding-left: 0; padding-right: 19%; }
+  [dir="rtl"] .stat-table th { text-align: right; }
+  [dir="rtl"] .split-text .split-col-left { text-align: right; padding-left: 0; padding-right: 13px; }
+  [dir="rtl"] .premium-feature-list li { padding-left: 0; padding-right: 20px; }
+  [dir="rtl"] .premium-feature-list li::before { left: auto; right: 2px; }
+  [dir="rtl"] .premium-code-input { text-align: right; }
+  /* Стрелки скролла табов и «Назад» — переворачиваем сам глиф зеркально,
+     текст кнопок не трогаем (там уже выбраны правильные ← / → по языку). */
+  [dir="rtl"] .tab-arrow { transform: scaleX(-1); }
+  [dir="rtl"] .xmas-pin-count { margin-left: 0; margin-right: 5px; }
+  [dir="rtl"] .xmas-gps-row small { margin-left: 0; margin-right: 4px; }
 </style>
 </head>
 <body>
@@ -1039,6 +1065,8 @@
     <span class="splash-lang-btn splash-lang-xmas" data-xh="fr">FR</span>
     <span class="splash-lang-btn splash-lang-xmas" data-xh="nl">NL</span>
     <span class="splash-lang-btn" data-lang="ru">RU</span>
+    <span class="splash-lang-btn" data-lang="zh">中文</span>
+    <span class="splash-lang-btn" data-lang="he">עברית</span>
   </div>
   <div class="splash-content">
     <p class="splash-eyebrow" id="splashEyebrow">Middle Rhine Valley</p>
@@ -1164,6 +1192,8 @@
       <span class="pill-btn" data-lang="nl">NL</span>
       <span class="pill-btn active" data-lang="en">EN</span>
       <span class="pill-btn" data-lang="ru">RU</span>
+      <span class="pill-btn pill-btn-wide" data-lang="zh">中文</span>
+      <span class="pill-btn pill-btn-wide" data-lang="he">עברית</span>
       <span class="pill-btn" id="fontMinus">A-</span>
       <span class="pill-btn" id="fontPlus">A+</span>
     </div>
@@ -1184,7 +1214,7 @@
         <p class="guide-note-text" id="guideNoteText"></p>
       </div>
       <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
-      <div class="xmas-home-langs" id="xmasHomeLangs"><button data-xh="de">DE</button><button data-xh="fr">FR</button><button data-xh="nl">NL</button><button data-xh="en">EN</button><button data-xh="ru">RU</button></div>
+      <div class="xmas-home-langs" id="xmasHomeLangs"><button data-xh="de">DE</button><button data-xh="fr">FR</button><button data-xh="nl">NL</button><button data-xh="en">EN</button><button data-xh="ru">RU</button><button data-xh="zh">中文</button><button data-xh="he">עברית</button></div>
       <div class="xmas-home" id="xmasHome">
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
         <button class="xmas-home-koblenz" id="xmasHomeKoblenz"><span id="xmasHomeKoblenzLabel">Christmas market Koblenz →</span></button>
@@ -3485,7 +3515,7 @@ function xmasExplainHtml() {
 }
 function xmasTownListHtml() {
   const T = (o) => o[xmasLang] || o.de;
-  const go = { de: 'Zum Markt →', fr: 'Voir le marché →', nl: 'Naar de markt →', en: 'Open market →', ru: 'К рынку →' }[xmasLang] || 'Open market →';
+  const go = { de: 'Zum Markt →', fr: 'Voir le marché →', nl: 'Naar de markt →', en: 'Open market →', ru: 'К рынку →', zh: '前往市集 →', he: '← לשוק' }[xmasLang] || 'Open market →';
   return '<div class="xmas-town-list">' + XMAS_ORDER.map((k, i) =>
     `<div class="route-card xmas-card"><div class="xmas-town-top"><img class="xmas-town-thumb" src="${k}-thumb.jpg" alt="" loading="lazy" onerror="this.remove()"><div class="xmas-town-text"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div></div></div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`).join('') + '</div>';
 }
@@ -3610,7 +3640,7 @@ function renderChristmas(townKey) {
   xmasHeroCaption();
   const langBtns = Object.keys(XMAS_LANG_LABELS).map(k =>
     `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
-  const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта' }[xmasLang] || 'Map';
+  const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
   const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
@@ -3689,9 +3719,9 @@ function renderChristmas(townKey) {
 
 
 /* ===== Essen & Trinken: Karte der Cafés und Restaurants (Platzhalter bis zu den Partnern) ===== */
-const XMAS_FOOD_TAB = { de: 'Essen & Trinken', fr: 'Restauration', nl: 'Eten & drinken', en: 'Food & drinks', ru: 'Еда и напитки' };
-const XMAS_WINE_TAB = { de: 'Weingüter', fr: 'Vignerons', nl: 'Wijnmakers', en: 'Winemakers', ru: 'Виноделы' };
-const XMAS_FOOD_TITLE = { de: 'Essen, Trinken & mehr', fr: 'Restauration & plus', nl: 'Eten, drinken & meer', en: 'Food, drinks & more', ru: 'Еда, напитки и не только' };
+const XMAS_FOOD_TAB = { de: 'Essen & Trinken', fr: 'Restauration', nl: 'Eten & drinken', en: 'Food & drinks', ru: 'Еда и напитки', zh: '美食与饮品', he: 'אוכל ושתייה' };
+const XMAS_WINE_TAB = { de: 'Weingüter', fr: 'Vignerons', nl: 'Wijnmakers', en: 'Winemakers', ru: 'Виноделы', zh: '酒庄', he: 'יקבים' };
+const XMAS_FOOD_TITLE = { de: 'Essen, Trinken & mehr', fr: 'Restauration & plus', nl: 'Eten, drinken & meer', en: 'Food, drinks & more', ru: 'Еда, напитки и не только', zh: '美食、饮品及更多', he: 'אוכל, שתייה ועוד' };
 // Виноделы и винные дегустации на Мозеле. Адреса добавляются по мере получения:
 // name, addr (строка адреса), ll ([широта, долгота] или null), text (описание по языкам).
 // Пока name = null, карточка показывает заглушку «адрес будет добавлен».
@@ -3704,6 +3734,8 @@ const WINE_UI = {
   de: { title: 'Weingüter & Weinproben', intro: 'Weingüter am Moselufer. Viele Gäste der Flusskreuzfahrt möchten Wein direkt beim Winzer probieren. Hier finden Sie Winzer mit Weinproben.', ph: 'Weingut – Adresse folgt' },
   en: { title: 'Winemakers & wine tastings', intro: 'Wineries on the Moselle. Many river cruise guests want to taste wine directly with the winemaker. Here you find winemakers who offer tastings.', ph: 'Winery – address to follow' },
   ru: { title: 'Виноделы и дегустации', intro: 'Винодельни на Мозеле. Многие гости речных круизов хотят попробовать вино прямо у винодела. Здесь винодельни, которые проводят дегустации.', ph: 'Винодельня – адрес будет добавлен' },
+  zh: { title: '酒庄与品酒', intro: '摩泽尔河畔的酒庄。许多河轮游客希望直接向酿酒师品尝葡萄酒。这里是提供品酒活动的酒庄。', ph: '酒庄 – 地址稍后提供' },
+  he: { title: 'יקבים וטעימות יין', intro: 'יקבים על גדות המוזל. אורחים רבים משייט נהרות מעוניינים לטעום יין ישירות אצל היקב. כאן תמצאו יקבים המציעים טעימות יין.', ph: 'יקב – כתובת תתעדכן בהמשך' },
 };
 const XMAS_FOOD_INTRO = {
   de: 'Cafés, Restaurants und Weinstuben in der Altstadt. Hier stellen sich Partner vor. Die roten Punkte zeigen die Orte auf der Karte.',
@@ -3711,6 +3743,8 @@ const XMAS_FOOD_INTRO = {
   nl: 'Cafés, restaurants en wijnbars in de oude stad. Hier stellen partners zich voor. De rode stippen tonen de plekken op de kaart.',
   en: 'Cafés, restaurants and wine bars in the old town. Partners are presented here. The red dots show the places on the map.',
   ru: 'Кафе, рестораны и винные бары в старом городе. Здесь будут представлены партнёры. Красные точки показывают места на карте.',
+  zh: '老城区的咖啡馆、餐厅和酒吧。合作伙伴将在这里展示。地图上的红点标出了这些地点。',
+  he: 'בתי קפה, מסעדות וברי יין בעיר העתיקה. כאן יוצגו השותפים. הנקודות האדומות מראות את המיקומים על המפה.',
 };
 const XMAS_FOOD_PLACES = [
   { ll: [50.36000, 7.60203], mia: true },
@@ -3727,6 +3761,8 @@ const BUTA_CARD = {
     de: 'Traditionelle Rezepte, moderne Cafékultur. Frühstück und Brunch aus dem Kaukasus und Osteuropa. Kaffee, Tee und hausgemachte Kuchen.',
     en: 'Traditional recipes, modern café culture. Breakfast and brunch from the Caucasus and Eastern Europe. Coffee, tea and homemade cakes.',
     ru: 'Традиционные рецепты и современная кофейная культура. Завтраки и бранч с Кавказа и Восточной Европы. Кофе, чай и домашние торты.',
+    zh: '传统配方，现代咖啡馆文化。供应来自高加索和东欧的早餐与brunch。咖啡、茶与自制蛋糕。',
+    he: 'מתכונים מסורתיים, תרבות בתי קפה מודרנית. ארוחות בוקר וברנץ׳ מהקווקז וממזרח אירופה. קפה, תה ועוגות ביתיות.',
   },
 };
 let xmasFoodMapObj = null;
@@ -3735,7 +3771,7 @@ function renderFood() {
   if (!el) return;
   const intro = XMAS_FOOD_INTRO[xmasLang] || XMAS_FOOD_INTRO.en;
   const title = XMAS_FOOD_TITLE[xmasLang] || XMAS_FOOD_TITLE.en;
-  const ph = { de: 'Beschreibung und Fotos folgen', fr: 'Description et photos à venir', nl: 'Beschrijving en foto\'s volgen', en: 'Description and photos to follow', ru: 'Описание и фото будут добавлены' }[xmasLang] || 'Description and photos to follow';
+  const ph = { de: 'Beschreibung und Fotos folgen', fr: 'Description et photos à venir', nl: 'Beschrijving en foto\'s volgen', en: 'Description and photos to follow', ru: 'Описание и фото будут добавлены', zh: '描述和照片稍后提供', he: 'תיאור ותמונות יתעדכנו בהמשך' }[xmasLang] || 'Description and photos to follow';
   // Mia Gelateria: полная карточка из данных рождественской карты Кобленца (та же информация на всех языках)
   const miaCard = (() => { const tx = XMAS_CITY.koblenz.text[xmasLang] || XMAS_CITY.koblenz.text.de; return tx.cards[tx.cards.length - 1]; })();
   const cards = XMAS_FOOD_PLACES.map((p, i) => {
@@ -3744,7 +3780,7 @@ function renderFood() {
       // Сетка: слева название и описание, справа фото в рамке с кнопкой купона внизу (как у Mia); остальные фото ниже
       const sq = n => `<img src="buta-${n}.webp" alt="Buta Cafe" loading="lazy">`;
       const t = BUTA_CARD.text[xmasLang] || BUTA_CARD.text.en;
-      const cLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон' }[xmasLang] || 'Get voucher';
+      const cLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон', zh: '领取优惠券', he: 'קבלת קופון' }[xmasLang] || 'Get voucher';
       return `<div class="route-card xmas-card">${kicker}<div class="buta-grid">` +
         `<div class="buta-info"><h3 class="buta-name">${BUTA_CARD.title}</h3>` +
         `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${BUTA_CARD.place}</p><p style="margin:0">${t}</p></div>` +
@@ -3756,7 +3792,7 @@ function renderFood() {
     }
     if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
     const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
-    const couponLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон' }[xmasLang] || 'Get voucher';
+    const couponLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон', zh: '领取优惠券', he: 'קבלת קופון' }[xmasLang] || 'Get voucher';
     const couponLink = `<button type="button" class="food-coupon" data-mia-voucher>${couponLbl}</button>`;
     const pic = mainPhoto ? `<figure class="food-mia-pic"><img src="${mainPhoto}" alt="${miaCard.title}" loading="lazy">${couponLink}</figure>` : '';
     return `<div class="route-card xmas-card">${kicker}<div class="food-mia">${pic}` +
@@ -4886,6 +4922,7 @@ function setLang(newLang) {
   renderLegendsList();
   renderRouteList();
   renderInfo();
+  if (typeof applyXmasHome === 'function') applyXmasHome();
   if (document.getElementById('helpBubble').classList.contains('show')) renderHelpBubbleText(document.getElementById('helpBubble').dataset.mode);
 }
 

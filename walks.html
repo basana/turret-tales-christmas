@@ -40,6 +40,9 @@
     transform: scaleX(-1); /* зеркально — гид смотрит вправо, на текст, а не в пустое поле слева */
     shape-outside: circle(50%); shape-margin: 6px;
   }
+  /* Семейное фото-хедер над картами маршрутов (вкладка Walks) */
+  .walks-hero { width: 100%; aspect-ratio: 1 / 1; border-radius: 14px; overflow: hidden; border: 1px solid var(--gold); margin: 0 0 16px; }
+  .walks-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .pending { color: var(--soft); font-style: italic; }
   .ptabs { display: flex; gap: 8px; overflow-x: auto; flex-wrap: nowrap; margin: 8px 0 14px; scrollbar-width: none; scroll-behavior: smooth; }
   .ptabs::-webkit-scrollbar { display: none; }
@@ -784,7 +787,13 @@ function render() {
   document.getElementById('t-title').textContent = t.title;
   document.getElementById('t-sub').textContent = t.sub;
   document.getElementById('t-intro').textContent = t.intro;
-  document.getElementById('t-editorial').innerHTML = `<img class="editorial-photo" src="guide-photo.webp" alt="Anatoly Basin">${t.letter}<span class="sig">— Anatoly Basin, Team TAYR</span>`;
+  // «Слово от гида» с фото — только на вкладке Walks (2-й экран после заставки),
+  // на остальных вкладках (Wine/Sights/Food/Xmas) не повторяется.
+  const editorialEl = document.getElementById('t-editorial');
+  editorialEl.hidden = view !== 'walks';
+  if (view === 'walks') {
+    editorialEl.innerHTML = `<img class="editorial-photo" src="guide-photo.webp" alt="Anatoly Basin">${t.letter}<span class="sig">— Anatoly Basin, Team TAYR</span>`;
+  }
   document.getElementById('t-contact').innerHTML = t.contact;
   document.title = t.title + ' · Turret Tales';
 
@@ -795,7 +804,8 @@ function render() {
   });
 
   if (view === 'walks') {
-    document.getElementById('view-walks').innerHTML = WALKS.map(walkCard).join('');
+    const heroHtml = `<div class="walks-hero"><img src="walks-hero-family.webp" alt="" loading="lazy"></div>`;
+    document.getElementById('view-walks').innerHTML = heroHtml + WALKS.map(walkCard).join('');
     WALKS.forEach(drawWalkMap);
   } else if (view === 'wine') {
     const cards = WINERIES.map(w => w.name ? wineryCard(w) : `<div class="card"><div class="num">W</div><div class="ph">${t.ph}</div></div>`).join('');

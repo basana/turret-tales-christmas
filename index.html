@@ -409,7 +409,7 @@
     background: var(--parchment-deep); color: var(--ink-soft);
     font-size: 9px; text-align: center; line-height: 1.2; font-family: var(--sans);
   }
-  .guide-note-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .guide-note-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scaleX(-1); /* зеркально — гид смотрит вправо, на текст, как в walks.html */ }
   .guide-note-text {
     font-size: calc(13.5px * var(--scale)); line-height: 1.5; font-style: italic;
     color: var(--ink); margin: 0;
@@ -1045,6 +1045,7 @@
      у декоративных акцентов и текстовых блоков. */
   [dir="rtl"] body { direction: rtl; }
   [dir="rtl"] .guide-note { border-left: 1px solid var(--gold); border-right: 3px solid var(--terracotta); }
+  [dir="rtl"] .guide-note-photo img { transform: none; } /* в RTL фото справа от текста — смотрит влево, без зеркала */
   [dir="rtl"] .xmas-explain { border-left: none; border-right: 4px solid #7A1026; }
   [dir="rtl"] .route-hook { border-left: none; border-right: 3px solid var(--terracotta); padding-left: 0; padding-right: 10px; }
   [dir="rtl"] .xmas-list { padding-left: 0; padding-right: 18px; }
@@ -4113,7 +4114,7 @@ const INFO_POPUPS = {
   contact: {
     en: {
       title: 'Contact & booking',
-      body: `<p>Phone / WhatsApp / Telegram: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="color:#6b5a4a;font-size:13px;">(same number for calls, WhatsApp and Telegram)</span></p>
+      body: `<p>Phone / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(same number for calls, WhatsApp and Telegram)</span></p>
         <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Get in touch to check availability and book a tour.</p>
         <p>Digital business card: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Open card →</a></p>
@@ -4121,7 +4122,7 @@ const INFO_POPUPS = {
     },
     ru: {
       title: 'Контакты и бронирование',
-      body: `<p>Телефон / WhatsApp / Telegram: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="color:#6b5a4a;font-size:13px;">(один и тот же номер для звонков, WhatsApp и Telegram)</span></p>
+      body: `<p>Телефон / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(один и тот же номер для звонков, WhatsApp и Telegram)</span></p>
         <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Напишите или позвоните, чтобы узнать о свободных датах и забронировать экскурсию.</p>
         <p>Цифровая визитка: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Открыть визитку →</a></p>
@@ -4149,7 +4150,7 @@ const INFO_POPUPS = {
     en: {
       title: 'Guide & contact',
       body: `<p style="margin:0 0 4px; font-weight:700; color:var(--terracotta);">Contact & booking</p>
-        <p>Phone / WhatsApp / Telegram: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="color:#6b5a4a;font-size:13px;">(same number for calls, WhatsApp and Telegram)</span></p>
+        <p>Phone / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(same number for calls, WhatsApp and Telegram)</span></p>
         <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Get in touch to check availability and book a tour.</p>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Guided tours</p>
@@ -4161,7 +4162,7 @@ const INFO_POPUPS = {
     ru: {
       title: 'Гид и контакты',
       body: `<p style="margin:0 0 4px; font-weight:700; color:var(--terracotta);">Контакты и бронирование</p>
-        <p>Телефон / WhatsApp / Telegram: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="color:#6b5a4a;font-size:13px;">(один и тот же номер для звонков, WhatsApp и Telegram)</span></p>
+        <p>Телефон / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(один и тот же номер для звонков, WhatsApp и Telegram)</span></p>
         <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Напишите или позвоните, чтобы узнать о свободных датах и забронировать экскурсию.</p>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Экскурсии</p>

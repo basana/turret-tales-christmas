@@ -4113,14 +4113,16 @@ const INFO_POPUPS = {
   contact: {
     en: {
       title: 'Contact & booking',
-      body: `<p>Phone / WhatsApp: <a href="tel:+491772850207">+49 177 285 0207</a></p>
+      body: `<p>Phone / WhatsApp / Telegram: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="color:#6b5a4a;font-size:13px;">(same number for calls, WhatsApp and Telegram)</span></p>
+        <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Get in touch to check availability and book a tour.</p>
         <p>Digital business card: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Open card →</a></p>
         <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Team TAYR &amp; Anatoly Basin</p></div>`
     },
     ru: {
       title: 'Контакты и бронирование',
-      body: `<p>Телефон / WhatsApp: <a href="tel:+491772850207">+49 177 285 0207</a></p>
+      body: `<p>Телефон / WhatsApp / Telegram: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="color:#6b5a4a;font-size:13px;">(один и тот же номер для звонков, WhatsApp и Telegram)</span></p>
+        <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Напишите или позвоните, чтобы узнать о свободных датах и забронировать экскурсию.</p>
         <p>Цифровая визитка: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Открыть визитку →</a></p>
         <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Team TAYR &amp; Anatoly Basin</p></div>`
@@ -4147,7 +4149,8 @@ const INFO_POPUPS = {
     en: {
       title: 'Guide & contact',
       body: `<p style="margin:0 0 4px; font-weight:700; color:var(--terracotta);">Contact & booking</p>
-        <p>Phone / WhatsApp: <a href="tel:+491772850207">+49 177 285 0207</a></p>
+        <p>Phone / WhatsApp / Telegram: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="color:#6b5a4a;font-size:13px;">(same number for calls, WhatsApp and Telegram)</span></p>
+        <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Get in touch to check availability and book a tour.</p>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Guided tours</p>
         <p>As a certified guide (BVGD) I offer city walking tours, hikes in the vineyards and along the Rhine, themed excursions and travel companion services for groups — year-round around Koblenz and the Rhine Gorge.</p>
@@ -4158,7 +4161,8 @@ const INFO_POPUPS = {
     ru: {
       title: 'Гид и контакты',
       body: `<p style="margin:0 0 4px; font-weight:700; color:var(--terracotta);">Контакты и бронирование</p>
-        <p>Телефон / WhatsApp: <a href="tel:+491772850207">+49 177 285 0207</a></p>
+        <p>Телефон / WhatsApp / Telegram: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="color:#6b5a4a;font-size:13px;">(один и тот же номер для звонков, WhatsApp и Telegram)</span></p>
+        <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Напишите или позвоните, чтобы узнать о свободных датах и забронировать экскурсию.</p>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Экскурсии</p>
         <p>Как сертифицированный гид (BVGD) провожу пешеходные экскурсии по городу, походы по виноградникам и вдоль Рейна, тематические экскурсии и сопровождение групп в поездках — круглый год, в Кобленце и Рейнском ущелье.</p>
@@ -4972,8 +4976,8 @@ if (mapSearchClearBtn) {
 }
 renderMapSearchOptions();
 
-document.getElementById('prevBtn').addEventListener('click', () => { if (index > 0) { index--; renderGuide(); } });
-document.getElementById('nextBtn').addEventListener('click', () => { if (index < castles.length - 1) { index++; renderGuide(); } });
+document.getElementById('prevBtn').addEventListener('click', () => { if (index > 0) { index--; document.body.classList.toggle('station-open', index > 0); renderGuide(); } });
+document.getElementById('nextBtn').addEventListener('click', () => { if (index < castles.length - 1) { index++; document.body.classList.toggle('station-open', index > 0); renderGuide(); } });
 document.getElementById('checkBtn').addEventListener('click', () => {
   const id = castles[index].id;
   if (visited.has(id)) visited.delete(id); else visited.add(id);
@@ -5374,6 +5378,7 @@ function startGps() {
       const nearest = findNearestCastleIndex(latitude, longitude);
       if (nearest >= 0 && nearest !== index) {
         index = nearest;
+        document.body.classList.toggle('station-open', index > 0);
         renderGuide();
       }
     },

@@ -30,8 +30,14 @@
   .langs button { font-family: var(--sans); font-size: var(--fs-micro); font-weight: 700; padding: 5px 12px; border-radius: 14px; border: 1px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
   .langs button.active { background: var(--maroon); color: #fff; }
   .intro { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 14px 0; font-size: var(--fs-lead); line-height: 1.5; }
-  .editorial { border-left: 3px solid var(--maroon); padding: 4px 0 4px 16px; margin: 0 0 14px; font-style: italic; font-size: var(--fs-lead); line-height: 1.55; color: var(--ink); }
-  .editorial .sig { display: block; margin-top: 8px; font-style: normal; font-family: var(--sans); font-size: var(--fs-small); color: var(--maroon); font-weight: 600; }
+  .editorial { border-left: 3px solid var(--maroon); padding: 4px 0 4px 16px; margin: 0 0 14px; font-style: italic; font-size: var(--fs-lead); line-height: 1.55; color: var(--ink); overflow: hidden; }
+  .editorial .sig { display: block; margin-top: 8px; font-style: normal; font-family: var(--sans); font-size: var(--fs-small); color: var(--maroon); font-weight: 600; clear: left; }
+  /* Портрет гида — обтекание текстом по кругу, как в журнальной вёрстке */
+  .editorial-photo {
+    float: left; width: 72px; height: 72px; margin: 2px 12px 6px 0;
+    border-radius: 50%; object-fit: cover; border: 1px solid var(--gold);
+    shape-outside: circle(50%); shape-margin: 6px;
+  }
   .pending { color: var(--soft); font-style: italic; }
   .ptabs { display: flex; gap: 8px; overflow-x: auto; flex-wrap: nowrap; margin: 8px 0 14px; scrollbar-width: none; scroll-behavior: smooth; }
   .ptabs::-webkit-scrollbar { display: none; }
@@ -692,7 +698,7 @@ function render() {
   document.getElementById('t-title').textContent = t.title;
   document.getElementById('t-sub').textContent = t.sub;
   document.getElementById('t-intro').textContent = t.intro;
-  document.getElementById('t-editorial').innerHTML = `${t.letter}<span class="sig">— Anatoly Basin, Team TAYR</span>`;
+  document.getElementById('t-editorial').innerHTML = `<img class="editorial-photo" src="guide-photo.webp" alt="Anatoly Basin">${t.letter}<span class="sig">— Anatoly Basin, Team TAYR</span>`;
   document.getElementById('t-contact').innerHTML = t.contact;
   document.title = t.title + ' · Turret Tales';
 

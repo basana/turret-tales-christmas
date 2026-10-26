@@ -213,6 +213,22 @@
   body.station-open #view-guide .stats { display: flex !important; }
   body.station-open #view-guide .story-block { display: block !important; }
   body.station-open #view-guide .xmas-hero, body.station-open #view-guide .xmas-home { display: none !important; }
+  /* Карта замков на главном экране вместо скрытого фото станции-заглушки —
+     даёт визуал и ведёт на полноценную вкладку «Карта». Видна только на
+     главном экране (не на открытой станции и не в режиме Christmas). */
+  .home-map-teaser {
+    position: relative; width: 100%; aspect-ratio: 4 / 3;
+    margin: 4px 0 18px; border-radius: 14px; overflow: hidden;
+    background: #E8D9B5; border: 1px solid var(--gold); cursor: pointer;
+  }
+  .home-map-teaser-map { width: 100%; height: 100%; }
+  .home-map-teaser-label {
+    position: absolute; right: 10px; bottom: 10px; z-index: 500;
+    background: #7A1026; color: #fff; font-family: var(--sans); font-weight: 700;
+    font-size: 13px; padding: 7px 13px; border-radius: 20px; pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  body.station-open #view-guide .home-map-teaser, body.xmas-on #view-guide .home-map-teaser { display: none !important; }
   a.castle-card { display: block; color: inherit; text-decoration: none; cursor: pointer; }
   a.station-link { display: inline-block; margin-top: 8px; color: var(--terracotta); font-weight: 700; font-family: var(--sans); text-decoration: none; }
   /* Рождественские вкладки — всегда сплошной бордовый фон с белым текстом,
@@ -1172,6 +1188,10 @@
       <div class="xmas-home" id="xmasHome">
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
         <button class="xmas-home-koblenz" id="xmasHomeKoblenz"><span id="xmasHomeKoblenzLabel">Christmas market Koblenz →</span></button>
+      </div>
+      <div class="home-map-teaser" id="homeMapTeaser">
+        <div class="home-map-teaser-map" id="homeMapTeaserMap"></div>
+        <span class="home-map-teaser-label" id="homeMapTeaserLabel">Castles map →</span>
       </div>
       <div class="photo">
         <img id="mainPhoto" src="" alt="Location photo">
@@ -2162,6 +2182,106 @@ const UI = {
     guideNoteSig: 'Anatoly Basin, gecertificeerd gids',
     mapSearchPlaceholder: 'Zoek een stad of kasteel…',
     mapSearchNotFound: 'Niet gevonden. Probeer een andere naam.'
+  },
+  zh: {
+    tabs: ['圣诞', '向导', '城堡', '传说', '信息', '路线', '地图', '联系方式'],
+    stationLabel: (n, t) => `第 ${n} 站，共 ${t} 站`,
+    built: '建造年代', town: '城镇', play: '收听', check: '已参观',
+    story: '历史事实', legend: '传说与民间故事',
+    splashEyebrow: '莱茵河中游谷',
+    splashTitle: '您的节奏。<br>您的故事。<br>您的莱茵河。',
+    splashTagline: '科布伦茨与宾根之间的城堡、传说与葡萄酒小镇——<br>按您自己的节奏游览。',
+    splashEnter: '开始旅程',
+    legendCastle: '城堡游览', legendTown: '城镇漫步',
+    premiumBadge: '另一种视角',
+    premiumTitle: '另一种视角',
+    premiumFeatures: [
+      '手绘的主要景点画作——不仅仅是照片',
+      'GPS 自动定位并打开正确的站点——无需滚动或搜索',
+      '完整的故事，从头到尾——每一站、每一个传说、每一个故事'
+    ],
+    premiumLocked: '已锁定',
+    premiumCodePlaceholder: '访问码',
+    premiumUnlockBtn: '解锁',
+    premiumAskHint: '没有访问码？请询问您的导游 →',
+    premiumCodeWrong: '访问码错误，请重试。',
+    premiumUnlockedIntro: '访问已开启——这是您的画作。',
+    premiumOpenLink: '打开画作 →',
+    premiumUnlockedFallback: '此地点的画作即将推出——请稍后查看。',
+    premiumTitleGps: 'GPS 自动定位',
+    premiumTitleRoute: '继续阅读',
+    routeReadMore: '继续阅读 →',
+    gpsToggle: 'GPS', gpsOn: 'GPS 已开启',
+    gpsLocating: '正在定位…',
+    gpsError: '无法获取您的位置，请检查位置权限设置。',
+    gpsDistanceTo: (name) => `距 ${name}`,
+    gpsArrived: '您已到达',
+    gpsSaveSpot: '保存我的位置',
+    gpsSaveSpotPrompt: '为此位置命名（例如“船”“巴士”）：',
+    gpsSaveSpotDefault: '我的位置',
+    gpsSpotTo: (name) => `${name} —`,
+    gpsSpotArrived: '您已返回',
+    legendCafe: '咖啡馆', legendSouvenir: '纪念品',
+    gpsRouteNear: (name, dist) => `距最近站点 ${dist} —— ${name}`,
+    helpBubbleText: '找不到您要的内容？我来为您显示菜单。',
+    helpBubbleShow: '显示菜单', helpBubbleDismiss: '不用了，谢谢',
+    helpBubbleTextGps: '实时 GPS 到最近城堡的距离属于附加版本内容。',
+    helpBubbleShowGps: '了解更多',
+    qlTours: '游览', qlContact: '联系方式', qlAbout: '关于我',
+    guideNoteText: '本页面并非该地区的完整档案或详尽指南。我在此收集了游轮游客最常问我的内容——哪里有什么、什么值得一看，以及这片美丽地区能为客人提供什么。希望它能帮助您理清方向，享受旅程。',
+    guideNoteSig: 'Anatoly Basin，持证导游',
+    mapSearchPlaceholder: '搜索城镇或城堡…',
+    mapSearchNotFound: '未找到，请尝试其他名称。'
+  },
+  he: {
+    tabs: ['חג המולד', 'מדריך', 'טירות', 'אגדות', 'מידע', 'מסלול', 'מפה', 'צור קשר'],
+    stationLabel: (n, t) => `תחנה ${n} מתוך ${t}`,
+    built: 'נבנה', town: 'עיר', play: 'האזנה', check: 'ביקרתם',
+    story: 'עובדות היסטוריות', legend: 'אגדה ומסורת',
+    splashEyebrow: 'עמק הריין התיכון',
+    splashTitle: 'הקצב שלכם.<br>הסיפור שלכם.<br>הריין שלכם.',
+    splashTagline: 'טירות, אגדות וכפרי יין<br>בין קובלנץ לבינגן —<br>בקצב שלכם.',
+    splashEnter: 'התחילו את המסע',
+    legendCastle: 'סיור בטירה', legendTown: 'סיור רגלי בעיר',
+    premiumBadge: 'מבט אחר',
+    premiumTitle: 'מבט אחר',
+    premiumFeatures: [
+      'ציור ייחודי של האתרים המרכזיים — לא רק תמונה',
+      'ה-GPS מאתר אתכם ופותח את התחנה הנכונה לבד — בלי גלילה ובלי חיפוש',
+      'הסיפור המלא, מההתחלה ועד הסוף — כל תחנה, כל אגדה, כל סיפור'
+    ],
+    premiumLocked: 'נעול',
+    premiumCodePlaceholder: 'קוד גישה',
+    premiumUnlockBtn: 'פתיחה',
+    premiumAskHint: 'אין קוד? שאלו את המדריך שלכם ←',
+    premiumCodeWrong: 'קוד שגוי. נסו שוב.',
+    premiumUnlockedIntro: 'הגישה אושרה — הנה היצירה שלכם.',
+    premiumOpenLink: 'פתיחת היצירה ←',
+    premiumUnlockedFallback: 'היצירה למקום זה בדרך — בקרו שוב בקרוב.',
+    premiumTitleGps: 'איתור אוטומטי ב-GPS',
+    premiumTitleRoute: 'להמשיך לקרוא',
+    routeReadMore: 'להמשיך לקרוא ←',
+    gpsToggle: 'GPS', gpsOn: 'GPS פעיל',
+    gpsLocating: 'מאתר מיקום…',
+    gpsError: 'לא ניתן לאתר את מיקומכם. בדקו את הרשאות המיקום.',
+    gpsDistanceTo: (name) => `עד ${name}`,
+    gpsArrived: 'הגעתם',
+    gpsSaveSpot: 'שמירת המיקום שלי',
+    gpsSaveSpotPrompt: 'תנו שם למיקום זה (למשל "אונייה", "אוטובוס"):',
+    gpsSaveSpotDefault: 'המיקום שלי',
+    gpsSpotTo: (name) => `${name} —`,
+    gpsSpotArrived: 'חזרתם',
+    legendCafe: 'בית קפה', legendSouvenir: 'מזכרות',
+    gpsRouteNear: (name, dist) => `${dist} עד התחנה הקרובה ביותר — ${name}`,
+    helpBubbleText: 'לא מוצאים את מה שאתם מחפשים? אראה לכם את התפריט.',
+    helpBubbleShow: 'הצגת התפריט', helpBubbleDismiss: 'לא, תודה',
+    helpBubbleTextGps: 'מרחק GPS חי לטירה הקרובה ביותר הוא חלק מהמהדורה הנוספת.',
+    helpBubbleShowGps: 'למידע נוסף',
+    qlTours: 'סיורים', qlContact: 'צור קשר', qlAbout: 'עליי',
+    guideNoteText: 'עמוד זה אינו ארכיון מלא או מדריך מקיף לאזור. אספתי כאן את מה שאורחי שייט שואלים אותי הכי הרבה — מה נמצא איפה, מה שווה לראות, ומה האזור היפהפה הזה יכול להציע לאורחים. אני מקווה שזה יעזור לכם להתמצא וליהנות מהטיול.',
+    guideNoteSig: 'אנטולי באסין, מדריך טיולים מוסמך',
+    mapSearchPlaceholder: 'חיפוש עיר או טירה…',
+    mapSearchNotFound: 'לא נמצא. נסו שם אחר.'
   }
 };
 
@@ -2586,6 +2706,128 @@ const XMAS_CITY = {
      }
     ],
     "practical": "Даты: с 22 ноября 2026 по 5 января 2027. Часы: пн–ср 10–20, чт–сб 10–21, вс 11–20. Еда и напитки работают на час дольше. Закрыто 24–26 декабря и 1 января. Залог за кружку 5 €."
+   },
+   "zh": {
+    "title": "科布伦茨圣诞市集",
+    "intro": "待降节中的科布伦茨。七个广场上搭起小木屋，市政厅上挂着最大的降临日历。老城灯火辉煌。广场上立着木屋，空气中弥漫着热红酒的香气。各个市集彼此相邻，步行即可逐一游览。",
+    "cards": [
+     {
+      "title": "天使酒吧（Willi-Hörter-Platz 5）",
+      "place": "天使凉亭与酿酒师的热红酒",
+      "text": "天使酒吧是科布伦茨独一无二的地方。当地酿酒师在这里用自家葡萄酒调制热红酒。凉亭饰有巴洛克风格的天使雕塑。市政厅庭院里还有一处圣诞马槽场景。",
+      "photo": "koblenz-hoerter"
+     },
+     {
+      "title": "耶稣会广场",
+      "place": "老城起点，漫游从这里开始",
+      "text": "老城从这里开始。市政厅上挂着降临日历：每晚都会打开一扇小门。",
+      "photo": "koblenz-jesuitenplatz"
+     },
+     {
+      "title": "普兰广场",
+      "place": "最初的市集所在地",
+      "text": "市集最初就在这里开始。如今这里矗立着巨大的圣诞金字塔，是拍照的好地方。",
+      "photo": "koblenz-am-plan"
+     },
+     {
+      "title": "格雷斯广场",
+      "place": "家庭广场",
+      "text": "一列供儿童乘坐的小火车。孩子们累了时在这里休息再好不过。",
+      "photo": "koblenz-goerresplatz"
+     },
+     {
+      "title": "铸币广场",
+      "place": "最大、最热闹的广场",
+      "text": "这里的摊位和美食最多，傍晚时分最为热闹。",
+      "photo": "koblenz-muenzplatz"
+     },
+     {
+      "title": "中央广场",
+      "place": "靠近火车站",
+      "text": "靠近火车站，有一座巨大的木制摩天轮，是开始或结束游览的好地方。",
+      "photo": "koblenz-zentralplatz"
+     },
+     {
+      "title": "圣母教堂广场",
+      "place": "最小的广场",
+      "text": "周末会有科布伦茨方言讲述的故事和歌曲，是耳朵与心灵的双重享受。",
+      "photo": "koblenz-liebfrauen"
+     },
+     {
+      "title": "圣诞花园——埃伦布莱特施泰因要塞",
+      "place": "要塞内的灯光公园",
+      "text": "要塞化身为一座露天灯光公园：灯光装置、音乐、圣诞摊位和观景点，需购票入场。从高处可俯瞰莱茵河与摩泽尔河。",
+      "photo": "koblenz-festung"
+     },
+     {
+      "title": "Mia 意式冰淇淋店",
+      "place": "Rheinstr. 17, 56068 科布伦茨（老城）",
+      "text": "自助冰淇淋：您自己将软冰淇淋装入杯中，最多可混合八种口味，最后按重量付款。配料也可自选。营业时间：每日 12:00–21:00。电话：+49 261 97381344。",
+      "photo": "mia-gelateria"
+     }
+    ],
+    "practical": "日期：2026年11月22日至2027年1月5日。营业时间：周一至周三 10:00–20:00，周四至周六 10:00–21:00，周日 11:00–20:00。餐饮摊位延长一小时营业。12月24日至26日及1月1日休市。押金杯：5欧元。"
+   },
+   "he": {
+    "title": "שוק חג המולד בקובלנץ",
+    "intro": "קובלנץ בעונת האדוונט. ביתנים בשבעה כיכרות ולוח הספירה לאחור הגדול ביותר על בניין העירייה. העיר העתיקה זוהרת. בכיכרות עומדים ביתני עץ, וריח של יין חם נישא באוויר. השווקים קרובים זה לזה, וניתן לבקר בכולם ברגל.",
+    "cards": [
+     {
+      "title": "שנגלבר (Willi-Hörter-Platz 5)",
+      "place": "ביתני מלאכים ויין חם מהיקב",
+      "text": "שנגלבר הוא מקום מיוחד בקובלנץ. יקבנים מקומיים מגישים כאן יין חם מהיין שלהם. הביתנים מעוטרים במלאכים בסגנון בארוק. בחצר העירייה יש גם תצוגת פעטם מולד.",
+      "photo": "koblenz-hoerter"
+     },
+     {
+      "title": "כיכר הישועים (Jesuitenplatz)",
+      "place": "תחילת הטיול בעיר העתיקה",
+      "text": "כאן מתחילה העיר העתיקה. על בניין העירייה תלוי לוח ספירה לאחור: בכל ערב נפתחת דלת קטנה נוספת.",
+      "photo": "koblenz-jesuitenplatz"
+     },
+     {
+      "title": "כיכר אם-פלאן (Am Plan)",
+      "place": "מיקום השוק המקורי",
+      "text": "כאן החל השוק. כיום עומדת כאן פירמידת חג המולד הגדולה — מקום נחמד לתמונה.",
+      "photo": "koblenz-am-plan"
+     },
+     {
+      "title": "כיכר גרס (Görresplatz)",
+      "place": "כיכר משפחתית",
+      "text": "רכבת קטנה לילדים. מקום טוב להפסקה כשהקטנים מתעייפים.",
+      "photo": "koblenz-goerresplatz"
+     },
+     {
+      "title": "כיכר המטבעות (Münzplatz)",
+      "place": "הכיכר הגדולה והתוססת ביותר",
+      "text": "כאן נמצאים רוב הדוכנים והאוכל. בערב זה המקום העמוס ביותר.",
+      "photo": "koblenz-muenzplatz"
+     },
+     {
+      "title": "הכיכר המרכזית (Zentralplatz)",
+      "place": "ליד תחנת הרכבת",
+      "text": "קרוב לתחנת הרכבת, עם גלגל ענק עץ גדול. התחלה או סיום נעימים לביקור.",
+      "photo": "koblenz-zentralplatz"
+     },
+     {
+      "title": "כנסיית נוסטרה דאם (Liebfrauenkirche)",
+      "place": "הכיכר הקטנה ביותר",
+      "text": "בסופי שבוע: סיפורים ושירים בניב הקובלנצי המקומי. חוויה ללב ולאוזן.",
+      "photo": "koblenz-liebfrauen"
+     },
+     {
+      "title": "גן חג המולד — מצודת ארנברייטשטיין",
+      "place": "פארק אורות במצודה",
+      "text": "המצודה הופכת לפארק אורות ענק תחת כיפת השמיים: מיצגי אור, מוזיקה, דוכני חג המולד ונקודות תצפית. יש צורך בכרטיס כניסה. מלמעלה נשקפים הריין והמוזל.",
+      "photo": "koblenz-festung"
+     },
+     {
+      "title": "Mia Gelateria",
+      "place": "Rheinstr. 17, 56068 קובלנץ (עיר עתיקה)",
+      "text": "גלידה בשירות עצמי: אתם ממלאים בעצמכם את הגביע בגלידה רכה ומערבבים עד שמונה טעמים. התשלום בסוף לפי משקל. גם את התוספות בוחרים בעצמכם. שעות פתיחה: יומי 12:00–21:00. טלפון: +49 261 97381344.",
+      "photo": "mia-gelateria"
+     }
+    ],
+    "practical": "תאריכים: 22 בנובמבר 2026 עד 5 בינואר 2027. שעות פתיחה: שני–רביעי 10:00–20:00, חמישי–שבת 10:00–21:00, ראשון 11:00–20:00. דוכני המזון פתוחים שעה נוספת. סגור בין 24–26 בדצמבר וב-1 בינואר. דמי פיקדון לכוס: 5 יורו."
    }
   }
  },
@@ -2634,6 +2876,32 @@ const XMAS_CITY = {
      }
     ],
     "practical": "Даты: сб 28.11. и вс 29.11.2026 (1-е воскресенье Адвента). Часы работы будут позже."
+   },
+   "zh": {
+    "title": "奥伯维瑟尔历史圣诞市集",
+    "intro": "中世纪城墙前的小型市集。",
+    "cards": [
+     {
+      "title": "城墙边市集",
+      "place": "Marktplatz 与 Rathausstraße, 55430",
+      "text": "中世纪城墙，21座塔楼中保留了16座。沿城墙有马车巡游，小型手工艺市集。周日圣尼古拉斯会前来。",
+      "photo": "oberwesel-markt"
+     }
+    ],
+    "practical": "日期：2026年11月28日（周六）至29日（周日，降临节第一主日）。具体时间待公布。"
+   },
+   "he": {
+    "title": "שוק חג המולד ההיסטורי באוברוזל",
+    "intro": "שוק קטן לפני חומת העיר מימי הביניים.",
+    "cards": [
+     {
+      "title": "שוק ליד חומת העיר",
+      "place": "Marktplatz ו-Rathausstraße, 55430",
+      "text": "חומת עיר מימי הביניים עם 16 מתוך 21 המגדלים המקוריים. נסיעות בכרכרות רתומות לסוסים לאורך החומה, שוק קטן עם מלאכת יד. סנט ניקולאס מגיע ביום ראשון.",
+      "photo": "oberwesel-markt"
+     }
+    ],
+    "practical": "תאריכים: שבת 28.11 וראשון 29.11.2026 (אדוונט ראשון). שעות יפורסמו בהמשך."
    }
   }
  },
@@ -2682,6 +2950,32 @@ const XMAS_CITY = {
      }
     ],
     "practical": "Даты: 27.11.–06.12.2026. Часы: вс–чт 12–20, пт/сб 12–22. Дату начала лучше уточнить."
+   },
+   "zh": {
+    "title": "博帕德圣诞市集",
+    "intro": "莱茵河畔为期十天的市集。",
+    "cards": [
+     {
+      "title": "塞维鲁教堂脚下的市集",
+      "place": "历史市集广场, 56154",
+      "text": "超过50个小木屋，热雷司令葡萄酒，马车巡游，圣尼古拉斯与圣婴降临，舞台表演。",
+      "photo": "boppard-markt"
+     }
+    ],
+    "practical": "日期：2026年11月27日至12月6日。营业时间：周日至周四 12:00–20:00，周五/周六 12:00–22:00。开幕日期请再次确认。"
+   },
+   "he": {
+    "title": "שוק חג המולד בבופארד",
+    "intro": "עשרה ימי שוק על גדות הריין.",
+    "cards": [
+     {
+      "title": "שוק למרגלות כנסיית זוורוס",
+      "place": "כיכר השוק ההיסטורית, 56154",
+      "text": "יותר מ-50 ביתנים, ריזלינג חם, נסיעות בכרכרות, סנט ניקולאס וילד ישו, תוכנית בידור על הבמה.",
+      "photo": "boppard-markt"
+     }
+    ],
+    "practical": "תאריכים: 27.11–06.12.2026. שעות פתיחה: ראשון–חמישי 12:00–20:00, שישי/שבת 12:00–22:00. יש לוודא את תאריך הפתיחה."
    }
   }
  },
@@ -2733,6 +3027,34 @@ const XMAS_CITY = {
      }
     ],
     "practical": "Даты: сб 05.12. и вс 06.12.2026 (2-е воскресенье Адвента). Часы работы будут позже."
+   },
+   "zh": {
+    "title": "巴哈拉赫降临节市集",
+    "intro": "在降临节漫步，远眺城堡美景。",
+    "cards": [
+     {
+      "title": "老城降临节漫步",
+      "place": "Marktplatz 与老城, 55422",
+      "text": "约30个装饰精美的摊位，施塔莱克城堡，老城灯饰，合唱团与铜管乐队表演，还有巴哈拉赫雷司令葡萄酒。",
+      "photo": "bacharach-markt",
+      "image": "xmas-bacharach.jpg"
+     }
+    ],
+    "practical": "日期：2026年12月5日（周六）至6日（周日，降临节第二主日）。营业时间待公布。"
+   },
+   "he": {
+    "title": "שוק האדוונט בבכרך",
+    "intro": "טיול רגלי בעונת האדוונט, עם נוף לטירה.",
+    "cards": [
+     {
+      "title": "טיול אדוונט בעיר העתיקה",
+      "place": "Marktplatz והעיר העתיקה, 55422",
+      "text": "כ-30 דוכנים מעוטרים, טירת שטאלק, תאורת העיר העתיקה, מקהלות ותזמורות נשיפה. וגם ריזלינג מבכרך.",
+      "photo": "bacharach-markt",
+      "image": "xmas-bacharach.jpg"
+     }
+    ],
+    "practical": "תאריכים: שבת 05.12 וראשון 06.12.2026 (אדוונט שני). שעות יפורסמו בהמשך."
    }
   }
  },
@@ -2781,11 +3103,37 @@ const XMAS_CITY = {
      }
     ],
     "practical": "Даты предварительные: 28.11.–20.12.2026. Проверьте перед визитом."
+   },
+   "zh": {
+    "title": "拉恩施泰因冬日魔法",
+    "intro": "上拉恩施泰因与下拉恩施泰因共六个小型市集。",
+    "cards": [
+     {
+      "title": "六个市集",
+      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "text": "免费入场。降临节第一个周末，每天 11:00–20:00。",
+      "photo": "lahnstein-markt"
+     }
+    ],
+    "practical": "日期暂定：2026年11月28日至12月20日。请在到访前再次确认。"
+   },
+   "he": {
+    "title": "קסם החורף בלנשטיין",
+    "intro": "שישה שווקים קטנים באובר-לנשטיין ונידר-לנשטיין.",
+    "cards": [
+     {
+      "title": "שישה שווקים",
+      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "text": "כניסה חופשית. בסוף השבוע הראשון של האדוונט, מדי יום 11:00–20:00.",
+      "photo": "lahnstein-markt"
+     }
+    ],
+    "practical": "תאריכים ראשוניים: 28.11–20.12.2026. יש לוודא לפני הביקור."
    }
   }
  }
 };
-XMAS_CITY.ruedesheim = {"name": {"de": "Rüdesheim", "en": "Rüdesheim", "fr": "Rüdesheim", "nl": "Rüdesheim", "ru": "Рюдесхайм"}, "text": {"de": {"title": "Weihnachtsmarkt Rüdesheim", "intro": "Der Markt der Nationen mit internationalen Traditionen.", "cards": [{"title": "Markt der Nationen", "place": "Rüdesheim am Rhein", "text": "Internationale Traditionen und Stände aus vielen Ländern.", "photo": "ruedesheim-markt"}], "practical": "Termin: 19.11.–23.12.2026. Öffnung täglich 11–20 Uhr, am Wochenende bis 21 Uhr. Keine Schließtage."}, "en": {"title": "Rüdesheim Christmas market", "intro": "The Market of Nations with international traditions.", "cards": [{"title": "Market of Nations", "place": "Rüdesheim am Rhein", "text": "International traditions and stalls from many countries.", "photo": "ruedesheim-markt"}], "practical": "Dates: 19 Nov – 23 Dec 2026. Open daily 11:00–20:00, weekends until 21:00. No closing days."}, "fr": {"title": "Marché de Noël de Rüdesheim", "intro": "Le marché des nations, avec des traditions internationales.", "cards": [{"title": "Marché des nations", "place": "Rüdesheim am Rhein", "text": "Traditions internationales et stands venus de nombreux pays.", "photo": "ruedesheim-markt"}], "practical": "Dates : du 19 novembre au 23 décembre 2026. Ouvert tous les jours de 11h à 20h, jusqu’à 21h le week-end. Pas de jours de fermeture."}, "nl": {"title": "Kerstmarkt Rüdesheim", "intro": "De markt der naties met internationale tradities.", "cards": [{"title": "Markt der naties", "place": "Rüdesheim am Rhein", "text": "Internationale tradities en kraampjes uit veel landen.", "photo": "ruedesheim-markt"}], "practical": "Data: 19 november t/m 23 december 2026. Dagelijks open 11–20 uur, in het weekend tot 21 uur. Geen sluitingsdagen."}, "ru": {"title": "Рождественский рынок в Рюдесхайме", "intro": "Рынок Наций с международными традициями.", "cards": [{"title": "Рынок Наций", "place": "Рюдесхайм-на-Рейне", "text": "Международные традиции и ларьки из многих стран.", "photo": "ruedesheim-markt"}], "practical": "Даты: 19 ноября – 23 декабря 2026. Ежедневно 11–20, по выходным до 21. Без перерывов."}}};
+XMAS_CITY.ruedesheim = {"name": {"de": "Rüdesheim", "en": "Rüdesheim", "fr": "Rüdesheim", "nl": "Rüdesheim", "ru": "Рюдесхайм"}, "text": {"de": {"title": "Weihnachtsmarkt Rüdesheim", "intro": "Der Markt der Nationen mit internationalen Traditionen.", "cards": [{"title": "Markt der Nationen", "place": "Rüdesheim am Rhein", "text": "Internationale Traditionen und Stände aus vielen Ländern.", "photo": "ruedesheim-markt"}], "practical": "Termin: 19.11.–23.12.2026. Öffnung täglich 11–20 Uhr, am Wochenende bis 21 Uhr. Keine Schließtage."}, "en": {"title": "Rüdesheim Christmas market", "intro": "The Market of Nations with international traditions.", "cards": [{"title": "Market of Nations", "place": "Rüdesheim am Rhein", "text": "International traditions and stalls from many countries.", "photo": "ruedesheim-markt"}], "practical": "Dates: 19 Nov – 23 Dec 2026. Open daily 11:00–20:00, weekends until 21:00. No closing days."}, "fr": {"title": "Marché de Noël de Rüdesheim", "intro": "Le marché des nations, avec des traditions internationales.", "cards": [{"title": "Marché des nations", "place": "Rüdesheim am Rhein", "text": "Traditions internationales et stands venus de nombreux pays.", "photo": "ruedesheim-markt"}], "practical": "Dates : du 19 novembre au 23 décembre 2026. Ouvert tous les jours de 11h à 20h, jusqu’à 21h le week-end. Pas de jours de fermeture."}, "nl": {"title": "Kerstmarkt Rüdesheim", "intro": "De markt der naties met internationale tradities.", "cards": [{"title": "Markt der naties", "place": "Rüdesheim am Rhein", "text": "Internationale tradities en kraampjes uit veel landen.", "photo": "ruedesheim-markt"}], "practical": "Data: 19 november t/m 23 december 2026. Dagelijks open 11–20 uur, in het weekend tot 21 uur. Geen sluitingsdagen."}, "ru": {"title": "Рождественский рынок в Рюдесхайме", "intro": "Рынок Наций с международными традициями.", "cards": [{"title": "Рынок Наций", "place": "Рюдесхайм-на-Рейне", "text": "Международные традиции и ларьки из многих стран.", "photo": "ruedesheim-markt"}], "practical": "Даты: 19 ноября – 23 декабря 2026. Ежедневно 11–20, по выходным до 21. Без перерывов."}, "zh": {"title": "吕德斯海姆圣诞市集", "intro": "汇聚多国传统的“万国市集”。", "cards": [{"title": "万国市集", "place": "Rüdesheim am Rhein", "text": "来自许多国家的国际传统与摊位。", "photo": "ruedesheim-markt"}], "practical": "日期：2026年11月19日至12月23日。每日营业 11:00–20:00，周末延长至21:00。无休市日。"}, "he": {"title": "שוק חג המולד ברידסהיים", "intro": "שוק האומות עם מסורות בינלאומיות.", "cards": [{"title": "שוק האומות", "place": "רידסהיים על הריין", "text": "מסורות בינלאומיות ודוכנים מארצות רבות.", "photo": "ruedesheim-markt"}], "practical": "תאריכים: 19 בנובמבר – 23 בדצמבר 2026. פתוח יומית 11:00–20:00, בסופי שבוע עד 21:00. ללא ימי סגירה."}}};
 const XMAS_TOWN = {"Koblenz": "koblenz", "Oberwesel": "oberwesel", "Boppard": "boppard", "Bacharach": "bacharach", "Lahnstein": "lahnstein", "Rüdesheim": "ruedesheim"};
 
 const XMAS_HOME = {
@@ -2794,6 +3142,8 @@ const XMAS_HOME = {
   nl: ['Kerstmarkten Middenrijn', 'Kaart van alle markten →', 'Kerstmarkt Koblenz →'],
   en: ['Christmas markets Middle Rhine', 'Map of all markets →', 'Christmas market Koblenz →'],
   ru: ['Рождественские рынки Среднего Рейна', 'Общая карта →', 'Рождественский рынок Кобленц →'],
+  zh: ['中莱茵河圣诞市集', '所有市集总览 →', '科布伦茨圣诞市集 →'],
+  he: ['שוקי חג המולד בריין התיכון', 'מפת כל השווקים ←', 'שוק חג המולד בקובלנץ ←'],
 };
 const XMAS_SPLASH = {
   de: ['Weihnachtsmärkte · Mittelrhein', 'Ihr Tempo.<br>Ihre Geschichte.<br>Ihr Rhein.', 'Burgen, Sagen und Weinorte zwischen Koblenz und Bingen —<br>in Ihrem eigenen Rhythmus.', 'Reise beginnen'],
@@ -2801,6 +3151,8 @@ const XMAS_SPLASH = {
   nl: ['Kerstmarkten · Middenrijn', 'Uw tempo.<br>Uw verhaal.<br>Uw Rijn.', 'Kastelen, legenden en wijndorpen tussen Koblenz en Bingen —<br>in uw eigen tempo.', 'Begin de reis'],
   en: ['Christmas markets · Middle Rhine', 'Your Pace.<br>Your Story.<br>Your Rhine.', 'Castles, legends and vineyard towns<br>between Koblenz and Bingen —<br>guided at your own rhythm.', 'Begin the Journey'],
   ru: ['Рождественские рынки · Средний Рейн', 'Твой темп.<br>Твоя история.<br>Твой Рейн.', 'Замки, легенды и винодельческие городки<br>между Кобленцем и Бингеном — в твоём ритме.', 'Начать путешествие'],
+  zh: ['圣诞市集 · 中莱茵河', '您的节奏。<br>您的故事。<br>您的莱茵河。', '科布伦茨与宾根之间的城堡、传说与葡萄酒小镇 —<br>以您自己的节奏游览。', '开始旅程'],
+  he: ['שוקי חג המולד · הריין התיכון', 'הקצב שלכם.<br>הסיפור שלכם.<br>הריין שלכם.', 'טירות, אגדות וכפרי יין בין קובלנץ לבינגן —<br>בקצב שלכם.', 'התחילו את המסע'],
 };
 function applyXmasSplash() {
   if (!document.body.classList.contains('xmas-on')) return;
@@ -2825,7 +3177,7 @@ document.querySelectorAll('[data-xh]').forEach(b => b.addEventListener('click', 
   try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
   applyXmasHome();
 }));
-const XMAS_OVERVIEW = {de:'Wählen Sie einen Markt.', fr:'Choisissez un marché.', nl:'Kies een markt.', en:'Choose a market.', ru:'Выберите рынок.'};
+const XMAS_OVERVIEW = {de:'Wählen Sie einen Markt.', fr:'Choisissez un marché.', nl:'Kies een markt.', en:'Choose a market.', ru:'Выберите рынок.', zh:'请选择一个市集。', he:'בחרו שוק.'};
 const XMAS_PHOTOS = {
   'koblenz-hoerter': ['koblenz-hoerter-1.webp','koblenz-hoerter-2.webp','koblenz-hoerter-3.webp'],
   'mia-gelateria': ['mia-gelateria-main.webp','mia-gelateria-1.webp'],
@@ -2839,18 +3191,20 @@ const XMAS_PHOTOS = {
   'lahnstein-markt': ['lahnstein-markt-1.webp','lahnstein-markt-2.webp'],
 };
 let xmasLang = (function() {
-  try { const s = localStorage.getItem('xmasLang'); if (s && ['de','fr','nl','en','ru'].includes(s)) return s; } catch (e) {}
+  try { const s = localStorage.getItem('xmasLang'); if (s && ['de','fr','nl','en','ru','zh','he'].includes(s)) return s; } catch (e) {}
   return (typeof lang !== 'undefined' && lang === 'ru') ? 'ru' : 'en';
 })();
 let xmasTown = 'koblenz'; // null = Übersicht
-const XMAS_LANG_LABELS = {de:'DE', fr:'FR', nl:'NL', en:'EN', ru:'RU'};
+const XMAS_LANG_LABELS = {de:'DE', fr:'FR', nl:'NL', en:'EN', ru:'RU', zh:'中文', he:'עברית'};
 // Подпись на красной плашке главного рождественского фото — на языке раздела
 const XMAS_HERO_CAPTION = {
   de: 'Weihnachtsmarkt Koblenz, Zentralplatz',
   fr: 'Marché de Noël Coblence, Zentralplatz',
   nl: 'Kerstmarkt Koblenz, Zentralplatz',
   en: 'Christmas Market Koblenz, Zentralplatz',
-  ru: 'Рождественский рынок Кобленц, Zentralplatz'
+  ru: 'Рождественский рынок Кобленц, Zentralplatz',
+  zh: '科布伦茨圣诞市集，中央广场',
+  he: 'שוק חג המולד בקובלנץ, הכיכר המרכזית'
 };
 function xmasHeroCaption() {
   const el = document.querySelector('.xmas-hero-caption');
@@ -2877,7 +3231,9 @@ const FOOD_PROMO = {
   en: { q: 'Fancy something hot to drink? Or a bite to eat?', tail: 'This way!', link: 'Food & Drinks →' },
   fr: { q: "Envie d'une boisson chaude ou d'un petit en-cas ?", tail: 'Par ici !', link: 'Food & Drinks →' },
   nl: { q: 'Zin in iets warms te drinken? Of een hapje?', tail: 'Hier moet u zijn!', link: 'Food & Drinks →' },
-  ru: { q: 'Выпить что-нибудь горячего? Закусить?', tail: 'Вам сюда', link: 'Food & Drinks →' }
+  ru: { q: 'Выпить что-нибудь горячего? Закусить?', tail: 'Вам сюда', link: 'Food & Drinks →' },
+  zh: { q: '想喝点热饮吗？或者吃点东西？', tail: '这边请！', link: '美食与饮品 →' },
+  he: { q: 'מתחשק לשתות משהו חם? או לנשנש משהו?', tail: 'לכאן!', link: 'אוכל ושתייה ←' }
 };
 // Язык всплывающего текста = язык, который сейчас выбран в шапке (как видит посетитель)
 function foodPromoLang() {
@@ -2911,7 +3267,9 @@ const MIA_VOUCHER = {
   en: { brand: 'Turret Tales · Voucher', offer: '10% off your ice cream', valid: 'Valid until 31 Dec 2026 · Example', close: 'Close' },
   fr: { brand: 'Turret Tales · Bon', offer: '10 % sur votre glace', valid: 'Valable jusqu’au 31.12.2026 · Exemple', close: 'Fermer' },
   nl: { brand: 'Turret Tales · Kortingsbon', offer: '10% korting op uw ijs', valid: 'Geldig tot 31.12.2026 · Voorbeeld', close: 'Sluiten' },
-  ru: { brand: 'Turret Tales · Купон', offer: '10 % на ваш стаканчик мороженого', valid: 'Действителен до 31.12.2026 · Пример', close: 'Закрыть' }
+  ru: { brand: 'Turret Tales · Купон', offer: '10 % на ваш стаканчик мороженого', valid: 'Действителен до 31.12.2026 · Пример', close: 'Закрыть' },
+  zh: { brand: 'Turret Tales · 优惠券', offer: '冰淇淋享9折优惠', valid: '有效期至2026年12月31日 · 示例', close: '关闭' },
+  he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על הגלידה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' }
 };
 function openMiaVoucher() {
   const l = MIA_VOUCHER[xmasLang] ? xmasLang : 'en';
@@ -2933,6 +3291,8 @@ const BUTA_VOUCHER = {
   fr: { brand: 'Turret Tales · Bon', offer: '10 % sur votre commande', valid: 'Valable jusqu’au 31.12.2026 · Exemple', close: 'Fermer' },
   nl: { brand: 'Turret Tales · Tegoedbon', offer: '10 % op uw bestelling', valid: 'Geldig tot 31.12.2026 · Voorbeeld', close: 'Sluiten' },
   ru: { brand: 'Turret Tales · Купон', offer: '10 % на ваш заказ', valid: 'Действителен до 31.12.2026 · Пример', close: 'Закрыть' },
+  zh: { brand: 'Turret Tales · 优惠券', offer: '订单享9折优惠', valid: '有效期至2026年12月31日 · 示例', close: '关闭' },
+  he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על ההזמנה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' },
 };
 function openButaVoucher() {
   const l = BUTA_VOUCHER[xmasLang] ? xmasLang : 'en';
@@ -2958,7 +3318,9 @@ const SHOP_PROMO = {
   en: { q: 'Looking for souvenirs, books or postcards?\nThis way!', link: 'Souvenirs & Books →' },
   fr: { q: 'Souvenirs, livres ou cartes postales ?\nPar ici !', link: 'Souvenirs et livres →' },
   nl: { q: 'Op zoek naar souvenirs, boeken of ansichtkaarten?\nHier moet u zijn!', link: 'Souvenirs & boeken →' },
-  ru: { q: 'Ищете сувениры, книги или открытки?\nВам сюда', link: 'Сувениры и книги →' }
+  ru: { q: 'Ищете сувениры, книги или открытки?\nВам сюда', link: 'Сувениры и книги →' },
+  zh: { q: '想找纪念品、书籍或明信片吗？\n这边请！', link: '纪念品与书籍 →' },
+  he: { q: 'מחפשים מזכרות, ספרים או גלויות?\nלכאן!', link: 'מזכרות וספרים ←' }
 };
 function renderShopPromoText() {
   const active = document.querySelector('.header-controls .pill-btn.active');
@@ -3005,7 +3367,7 @@ document.querySelectorAll('.app-emblem, .app-name').forEach(el => {
   el.addEventListener('click', goStart);
   el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goStart(); } });
 });
-const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’accueil', nl: '← Terug naar start', en: '← Back to start', ru: '← На главный экран' };
+const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’accueil', nl: '← Terug naar start', en: '← Back to start', ru: '← На главный экран', zh: '← 返回主页', he: '→ חזרה למסך הפתיחה' };
 // Koordinaten: Stadtmitte und Marktplätze. ANNÄHERUNG, vor Veröffentlichung auf der Karte prüfen.
 const XMAS_ORDER = ['koblenz', 'lahnstein', 'boppard', 'oberwesel', 'bacharach', 'ruedesheim'];
 const XMAS_GEO = {
@@ -3096,7 +3458,9 @@ const XG = {
   fr: {btn:'GPS · Distances', locating:'Localisation…', err:'GPS indisponible', ship:'Votre bateau / point de rendez-vous', saveShip:'📌 Mon bateau est ici', clearShip:'Supprimer le bateau', min:'min à pied', departLabel:'Heure de départ', enough:'Le temps suffit, environ {n} min de marge', notEnough:'Attention : environ {n} min de retard', popupTitle:'GPS : distances jusqu’aux marchés', popupItems:['Distance entre votre position et chaque marché','Distance jusqu’à votre bateau ou au point de rendez-vous','Si le temps suffit avant le départ'], shipPrompt:'Nom de ce point', shipDefault:'Bateau', berth:'Accostage Viking'},
   nl: {btn:'GPS · Afstanden', locating:'Locatie wordt bepaald…', err:'GPS niet beschikbaar', ship:'Uw schip / ontmoetingspunt', saveShip:'📌 Mijn schip ligt hier', clearShip:'Schip verwijderen', min:'min lopen', departLabel:'Vertrektijd', enough:'Tijd genoeg, ca. {n} min. marge', notEnough:'Let op: ca. {n} min. te laat', popupTitle:'GPS: afstanden tot de markten', popupItems:['Afstand van uw locatie tot elke markt','Afstand tot uw schip of ontmoetingspunt','Of de tijd tot vertrek genoeg is'], shipPrompt:'Naam van dit punt', shipDefault:'Schip', berth:'Viking-aanlegplaats'},
   en: {btn:'GPS · Distances', locating:'Locating…', err:'GPS not available', ship:'Your ship / meeting point', saveShip:'📌 My ship is here', clearShip:'Remove ship', min:'min walk', departLabel:'Departure time', enough:'Enough time, about {n} min to spare', notEnough:'Warning: about {n} min too late', popupTitle:'GPS: distances to the markets', popupItems:['Distance from your position to each market','Distance to your ship or meeting point','Whether there is enough time before departure'], shipPrompt:'Name for this point', shipDefault:'Ship', berth:'Viking berth'},
-  ru: {btn:'GPS · Расстояния', locating:'Определяем местоположение…', err:'GPS недоступен', ship:'Ваш корабль / место встречи', saveShip:'📌 Мой корабль здесь', clearShip:'Убрать корабль', min:'мин пешком', departLabel:'Время отхода', enough:'Времени хватает, запас около {n} мин', notEnough:'Не успеваете примерно на {n} мин', popupTitle:'GPS: расстояния до рынков', popupItems:['Расстояние от вашего места до каждого рынка','Расстояние до вашего корабля или места встречи','Хватит ли времени до отхода'], shipPrompt:'Название этой точки', shipDefault:'Корабль', berth:'Причал Viking'}
+  ru: {btn:'GPS · Расстояния', locating:'Определяем местоположение…', err:'GPS недоступен', ship:'Ваш корабль / место встречи', saveShip:'📌 Мой корабль здесь', clearShip:'Убрать корабль', min:'мин пешком', departLabel:'Время отхода', enough:'Времени хватает, запас около {n} мин', notEnough:'Не успеваете примерно на {n} мин', popupTitle:'GPS: расстояния до рынков', popupItems:['Расстояние от вашего места до каждого рынка','Расстояние до вашего корабля или места встречи','Хватит ли времени до отхода'], shipPrompt:'Название этой точки', shipDefault:'Корабль', berth:'Причал Viking'},
+  zh: {btn:'GPS · 距离', locating:'正在定位…', err:'GPS 不可用', ship:'您的船 / 集合地点', saveShip:'📌 我的船在这里', clearShip:'移除船只', min:'分钟步行', departLabel:'出发时间', enough:'时间充裕，还有约 {n} 分钟余量', notEnough:'注意：大约会迟到 {n} 分钟', popupTitle:'GPS：到各市集的距离', popupItems:['您所在位置到每个市集的距离','到您船只或集合地点的距离','出发前时间是否充足'], shipPrompt:'为该地点命名', shipDefault:'船', berth:'Viking 码头'},
+  he: {btn:'GPS · מרחקים', locating:'מאתר מיקום…', err:'GPS לא זמין', ship:'הספינה שלכם / נקודת המפגש', saveShip:'📌 הספינה שלי כאן', clearShip:'הסרת הספינה', min:'דק׳ הליכה', departLabel:'שעת יציאה', enough:'יש זמן, כ-{n} דק׳ רווח', notEnough:'שימו לב: איחור של כ-{n} דק׳', popupTitle:'GPS: מרחקים לשווקים', popupItems:['המרחק ממיקומכם לכל שוק','המרחק לספינה שלכם או לנקודת המפגש','האם יש מספיק זמן לפני היציאה'], shipPrompt:'שם לנקודה זו', shipDefault:'ספינה', berth:'רציף Viking'}
 };
 const XMAS_DEPART_KEY = 'xmasDepart';
 const XMAS_EXPLAIN = {
@@ -3104,7 +3468,9 @@ const XMAS_EXPLAIN = {
   fr: '<b><u>Touchez</u></b> les numéros sur la carte, puis <b><u>allez</u></b> au marché. Avec « GPS », vous voyez la distance jusqu’à chaque marché et jusqu’à l’accostage Viking. Avec « Mon bateau est ici », vous mémorisez votre bateau et vous voyez si le temps suffit avant le départ.',
   nl: '<b><u>Tik</u></b> op de cijfers op de kaart, dan <b><u>spring</u></b> je naar de markt. Met „GPS“ ziet u hoe ver het is naar elke markt en naar de Viking-aanlegplaats. Met „Mijn schip ligt hier“ onthoudt u uw schip, dan ziet u ook of de tijd tot vertrek genoeg is.',
   en: '<b><u>Tap</u></b> the numbers on the map, then <b><u>jump</u></b> to a market. With “GPS” you see the distance to every market and to the Viking pier. With “My ship is here” you save your ship, then you also see whether there is enough time before departure.',
-  ru: '<b><u>Нажмите</u></b> на номер на карте, и страница <b><u>прокрутится</u></b> к нужному рынку. Кнопка «GPS» покажет расстояние до каждого рынка и до причала Viking. Кнопка «Мой корабль здесь» запомнит ваш корабль, и тогда видно, хватит ли времени до отхода.'
+  ru: '<b><u>Нажмите</u></b> на номер на карте, и страница <b><u>прокрутится</u></b> к нужному рынку. Кнопка «GPS» покажет расстояние до каждого рынка и до причала Viking. Кнопка «Мой корабль здесь» запомнит ваш корабль, и тогда видно, хватит ли времени до отхода.',
+  zh: '<b><u>点击</u></b>地图上的数字，页面会<b><u>跳转</u></b>到相应的市集。点击「GPS」可查看到每个市集及 Viking 码头的距离。点击「我的船在这里」可记住您的船只位置，并显示出发前时间是否充足。',
+  he: '<b><u>הקישו</u></b> על המספרים במפה, והעמוד <b><u>יעבור</u></b> לשוק המתאים. כפתור "GPS" מציג את המרחק לכל שוק ולרציף Viking. כפתור "הספינה שלי כאן" זוכר את מיקום הספינה שלכם, ואז מוצג גם אם יש מספיק זמן לפני היציאה.'
 };
 const XMAS_EXPLAIN_OVERVIEW = {
   de: '<b><u>Tippen Sie</u></b> auf einen Ortsnamen auf der Karte oder in der Liste darunter, dann <b><u>springen</u></b> Sie zur Marktseite des Ortes. Mit „GPS“ sehen Sie, wie weit jeder Ort entfernt ist. Mit „Mein Schiff ist hier“ merken Sie sich Ihr Schiff.',
@@ -3903,6 +4269,8 @@ function renderGuide() {
   document.getElementById('stationTitle').textContent = s.name;
   document.getElementById('stationDesc').textContent = lang === 'ru' ? (s.sayRu || s.factsRu) : (s.say || s.facts);
   renderQuickLinksText();
+  updateHomeMapTeaserLabel();
+  initHomeMapTeaser();
 
 
   document.getElementById('statTownLabel').textContent = t.town;
@@ -4251,6 +4619,42 @@ function renderInfo() {
 
 const TOWN_IDS = new Set(['koblenz_city', 'braubach', 'boppard', 'bacharach', 'ruedesheim']);
 
+// Мини-карта замков на главном экране (вместо скрытого фото станции-заглушки).
+// Некликабельна сама по себе (зум/драг выключены), весь блок — одна большая
+// кнопка, открывающая полноценную вкладку «Карта».
+let homeMapTeaserMap = null;
+function initHomeMapTeaser() {
+  if (homeMapTeaserMap || typeof L === 'undefined') return;
+  const div = document.getElementById('homeMapTeaserMap');
+  if (!div) return;
+  try {
+    homeMapTeaserMap = L.map('homeMapTeaserMap', {
+      zoomControl: false, attributionControl: false, dragging: false,
+      scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false,
+      keyboard: false, touchZoom: false, tap: false
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(homeMapTeaserMap);
+    const points = [];
+    castles.forEach(c => { if (typeof c.lat === 'number') points.push([c.lat, c.lng]); });
+    points.forEach(p => L.circleMarker(p, { radius: 5, color: '#fff', weight: 1.5, fillColor: '#7A1026', fillOpacity: 1 }).addTo(homeMapTeaserMap));
+    if (points.length) {
+      L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(homeMapTeaserMap);
+      homeMapTeaserMap.fitBounds(points, { padding: [14, 14] });
+    } else {
+      homeMapTeaserMap.setView([50.18, 7.75], 9);
+    }
+    setTimeout(() => { if (homeMapTeaserMap) homeMapTeaserMap.invalidateSize(); }, 120);
+  } catch (e) { homeMapTeaserMap = null; }
+}
+function updateHomeMapTeaserLabel() {
+  const el = document.getElementById('homeMapTeaserLabel');
+  if (!el || typeof UI === 'undefined' || !UI[lang]) return;
+  const word = UI[lang].tabs[6];
+  el.textContent = (lang === 'he') ? ('← ' + word) : (word + ' →');
+}
+const homeMapTeaserEl = document.getElementById('homeMapTeaser');
+if (homeMapTeaserEl) homeMapTeaserEl.addEventListener('click', () => switchView('map'));
+
 function initMap() {
   if (leafletMap) {
     setTimeout(() => leafletMap.invalidateSize(), 50);
@@ -4472,7 +4876,8 @@ function setLang(newLang) {
   if (ruTempDisabled && newLang === 'ru') return;
   lang = newLang;
   // Язык шапки — один и тот же для всех экранов (в том числе для рождественской карты и вкладки Food & Drinks)
-  if (['de', 'fr', 'nl', 'en', 'ru'].includes(newLang)) xmasLang = newLang;
+  if (['de', 'fr', 'nl', 'en', 'ru', 'zh', 'he'].includes(newLang)) xmasLang = newLang;
+  document.documentElement.dir = (newLang === 'he') ? 'rtl' : 'ltr';
   try { localStorage.setItem('rhineGuideLang', lang); } catch (e) {}
   document.querySelectorAll('.pill-btn[data-lang]').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));
   document.querySelectorAll('.splash-lang-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));

@@ -538,6 +538,8 @@
   }
 
   .castle-name { font-size: 1.1rem; font-weight: 600; color: var(--terracotta); margin-bottom: 2px; }
+  /* Заголовок «Еда, напитки и не только» — крупнее и жирнее обычного .castle-name, в начале раздела, над описанием */
+  .xmas-food-title { font-size: 1.6rem; font-weight: 800; color: var(--terracotta); text-align: center; margin: 4px 0 10px; }
   .castle-town { font-size: 0.85rem; color: var(--ink-soft); font-family: var(--sans); margin-bottom: 6px; }
   
   .route-kicker { font-size: 0.75rem; color: var(--terracotta); font-weight: 700; font-family: var(--sans); margin-bottom: 2px; }
@@ -3818,8 +3820,8 @@ function renderFood() {
       `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${miaCard.place}</p>` +
       `<p style="margin:0">${miaCard.text}</p></div></div></div>`;
   }).join('');
-  el.innerHTML = `<p class="xmas-intro">${intro}</p>` +
-    `<h2 class="castle-name" style="margin:10px 0">${title}</h2>` +
+  el.innerHTML = `<h2 class="xmas-food-title">${title}</h2>` +
+    `<p class="xmas-intro">${intro}</p>` +
     `<div id="xmasFoodMap" class="xmas-map"></div>` + `<div class="xmas-town-list">${cards}</div>`;
   if (xmasFoodMapObj) { xmasFoodMapObj.remove(); xmasFoodMapObj = null; }
   if (typeof L === 'undefined') return;

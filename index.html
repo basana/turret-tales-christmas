@@ -111,12 +111,12 @@
   .food-mia-text { flex: 1 1 auto; min-width: 0; }
   .food-pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #7A1026, 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; }
   .food-pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .header-controls { gap: 4px; }
-  .header-controls .pill-btn { padding: 4px 6px; font-size: 11px; letter-spacing: 0; }
-  @media (max-width: 420px) { .header-controls .pill-btn { padding: 3px 5px; font-size: 10.5px; } }
+  .header-controls { gap: 3px; }
+  .header-controls .pill-btn { padding: 3px 5px; font-size: 9.5px; letter-spacing: 0; }
+  @media (max-width: 420px) { .header-controls .pill-btn { padding: 2px 4px; font-size: 9px; } }
   /* ZH/HE подписи шире двухбуквенных кодов — чуть уже паддинг, чтобы ряд не переполнялся */
-  .header-controls .pill-btn-wide { padding-left: 4px; padding-right: 4px; font-size: 10.5px; }
-  @media (max-width: 420px) { .header-controls .pill-btn-wide { padding-left: 3px; padding-right: 3px; font-size: 9.5px; } }
+  .header-controls .pill-btn-wide { padding-left: 3px; padding-right: 3px; font-size: 9px; }
+  @media (max-width: 420px) { .header-controls .pill-btn-wide { padding-left: 2px; padding-right: 2px; font-size: 8.5px; } }
   /* Узкие экраны: язык и размер шрифта — во второй строке шапки, название приложения читается целиком */
   @media (max-width: 420px) { .header { flex-wrap: wrap; } .header-controls { width: 100%; justify-content: flex-end; margin-top: 8px; } }
 
@@ -203,8 +203,8 @@
   body:not(.xmas-on) .xmas-hero, body:not(.xmas-on) .xmas-home, body:not(.xmas-on) .xmas-where { display: none !important; }
   body.xmas-on .xmas-where, body.xmas-on .xmas-hero-label { display: none !important; }
   .xmas-home { display: flex; flex-direction: column; gap: 10px; margin: 0 0 16px; }
-  .xmas-home-langs { display: flex; justify-content: center; gap: 6px; margin-bottom: 14px; }
-  .xmas-home-langs button { padding: 4px 11px; border-radius: 14px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-size: 12px; font-weight: 700; cursor: pointer; }
+  .xmas-home-langs { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+  .xmas-home-langs button { padding: 3px 9px; border-radius: 14px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-size: 10.5px; font-weight: 700; cursor: pointer; }
   .xmas-home-langs button.active { background: #7A1026; color: #fff; }
   body:not(.xmas-on) .splash-lang-xmas { display: none !important; }
   .xmas-home-title, .xmas-home-koblenz { width: 100%; border-radius: 12px; cursor: pointer; font-family: var(--sans); font-weight: 700; text-align: center; padding: 14px 12px; }

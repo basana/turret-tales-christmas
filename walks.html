@@ -113,6 +113,12 @@
   .contact { margin-top: 22px; background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: var(--fs-lead); line-height: 1.5; }
   .contact a { color: var(--maroon); }
   .legal { margin-top: 18px; padding-top: 10px; border-top: 1px solid rgba(122,16,38,.25); font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); text-align: center; }
+
+  /* ============ RTL (иврит) ============ */
+  [dir="rtl"] .editorial { border-left: none; border-right: 3px solid var(--maroon); padding: 4px 16px 4px 0; }
+  [dir="rtl"] .editorial .sig { clear: right; }
+  [dir="rtl"] .editorial-photo { float: right; margin: 2px 0 6px 12px; transform: none; }
+  [dir="rtl"] .walk-wear, [dir="rtl"] .walk-suit { padding-left: 0; padding-right: 20px; }
 </style>
 </head>
 <body>
@@ -127,6 +133,8 @@
     <button data-l="nl">NL</button>
     <button data-l="ru">RU</button>
     <button data-l="sv">SV</button>
+    <button data-l="zh">中文</button>
+    <button data-l="he">עברית</button>
   </div>
 </header>
 
@@ -153,7 +161,9 @@ const TABS = {
   fr: { walks: 'Randonnées', wine: 'Domaines & dégustations', sights: 'Sites & histoire', food: 'Restaurants', xmas: 'Marché de Noël' },
   nl: { walks: 'Wandelingen', wine: 'Wijnhuizen & proeverijen', sights: 'Bezienswaardigheden & geschiedenis', food: 'Restaurants', xmas: 'Kerstmarkt' },
   ru: { walks: 'Прогулки', wine: 'Виноделы и дегустации', sights: 'Достопримечательности и история', food: 'Рестораны', xmas: 'Рождественский рынок' },
-  sv: { walks: 'Vandringar', wine: 'Vingårdar & provningar', sights: 'Sevärdheter & historia', food: 'Restauranger', xmas: 'Julmarknad' }
+  sv: { walks: 'Vandringar', wine: 'Vingårdar & provningar', sights: 'Sevärdheter & historia', food: 'Restauranger', xmas: 'Julmarknad' },
+  zh: { walks: '徒步路线', wine: '酒庄与品酒', sights: '景点与历史', food: '餐厅', xmas: '圣诞市集' },
+  he: { walks: 'טיולים רגליים', wine: 'יקבים וטעימות יין', sights: 'אתרים והיסטוריה', food: 'מסעדות', xmas: 'שוק חג המולד' }
 };
 
 const T = {
@@ -246,6 +256,36 @@ const T = {
     legStart: 'Start/mål', legPier: 'Brygga',
     addr: 'Adress', hours: 'Öppettider', phone: 'Telefon', gmaps: 'Öppna i Google Maps',
     secWine: 'Vingårdar i Winningen', secFood: 'Restauranger och vinkällare', secSights: 'Sevärdheter', secHist: 'Historia'
+  },
+  zh: {
+    brand: 'Turret Tales · Tours All Year Round', title: '维宁根', sub: '摩泽尔河畔 — 为河轮游客呈现',
+    intro: '维宁根，摩泽尔河下游的一座酒乡小镇（首次文献记载于公元865年），由 Anatoly Basin / TAYR 团队亲自为您呈现：向导式徒步、酒庄、历史与景点，助您规划岸上观光。',
+    letter: '亲爱的客人们，欢迎来到维宁根！作为一名持证导游，我经常亲自带团队游览这个小镇——正是这段经历让我整理了这个页面：把我平时沿途讲述的一切都写下来，供您阅读，并附上地图和岸上观光的实用建议。祝您在葡萄园间漫步愉快——说不定哪天我们会亲自相遇。',
+    contact: '有兴趣为您的团队安排向导式徒步或品酒活动吗？请发邮件至 <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> 或致电：<a href="tel:+491772850207">+49 177 285 0207</a>。',
+    pending: '稍后提供', ph: '合作伙伴待定 · 描述与照片稍后提供', photoSlot: '照片稍后提供',
+    mapNote: '起点和码头位置已精确标出。路线轨迹为示意图（非精确GPS轨迹）——精确路线请见 <a href="https://www.outdooractive.com/de/route/wanderung/moseltal/wanderung-am-19.-maerz-2023/262543616/" target="_blank" rel="noopener">outdooractive 上的原始路线</a>。',
+    h3poi: '沿途亮点', h3wear: '需要准备什么',
+    h3profile: '分段路线剖面', h3suit: '按团队体能适配建议',
+    gradeFlach: '平坦', gradeLeicht: '缓坡上升', gradeMittel: '中等', gradeSteil: '陡峭',
+    from: '于', km: '公里', length: '长度', duration: '时长', ascent: '爬升', descent: '下降', highest: '最高点', difficulty: '难度', diffVal: '简单–中等',
+    legStart: '起点/终点', legPier: '码头',
+    addr: '地址', hours: '营业时间', phone: '电话', gmaps: '在谷歌地图中打开',
+    secWine: '维宁根的酒庄', secFood: '餐厅与酒馆', secSights: '景点', secHist: '历史'
+  },
+  he: {
+    brand: 'Turret Tales · Tours All Year Round', title: 'וינינגן', sub: 'על נהר המוזל — לאורחי שייט הנהר',
+    intro: 'וינינגן, כפר יין על גדות המוזל התחתון (אוזכר לראשונה בשנת 865), מוצג באופן אישי על ידי אנטולי באסין / צוות TAYR: טיולים רגליים מודרכים, יקבים, היסטוריה ואתרים לטיול החוף שלכם.',
+    letter: 'אורחים יקרים, ברוכים הבאים לוינינגן! כמדריך טיולים מוסמך, אני מוביל כאן בעצמי לעיתים קרובות קבוצות משייט — ומתוך הניסיון הזה בדיוק נולד העמוד הזה: כל מה שאני בדרך כלל מספר לכם תוך כדי הדרך, עכשיו כאן לקריאה, עם מפה וטיפים מעשיים לטיול החוף שלכם. אני מאחל לכם טיול יפהפה בין הכרמים — ומי יודע, אולי ניפגש יום אחד באופן אישי.',
+    contact: 'מעוניינים בטיול רגלי מודרך או בטעימת יין לקבוצה שלכם? כתבו אל <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> או התקשרו: <a href="tel:+491772850207">+49 177 285 0207</a>.',
+    pending: 'יתעדכן בהמשך', ph: 'שותף יתעדכן בהמשך · תיאור ותמונות יתעדכנו בהמשך', photoSlot: 'תמונות יתעדכנו בהמשך',
+    mapNote: 'נקודת ההתחלה והרציף מסומנים במדויק. קו המסלול הוא סקיצה סכמטית (לא מסלול GPS מדויק) — למסלול המדויק ראו את <a href="https://www.outdooractive.com/de/route/wanderung/moseltal/wanderung-am-19.-maerz-2023/262543616/" target="_blank" rel="noopener">הטיול המקורי באתר outdooractive</a>.',
+    h3poi: 'נקודות עניין בדרך', h3wear: 'מה כדאי להביא',
+    h3profile: 'פרופיל המסלול לפי קטעים', h3suit: 'התאמה לפי כושר הקבוצה',
+    gradeFlach: 'שטוח', gradeLeicht: 'עלייה מתונה', gradeMittel: 'בינוני', gradeSteil: 'תלול',
+    from: 'ב-', km: 'ק"מ', length: 'אורך', duration: 'משך זמן', ascent: 'עלייה', descent: 'ירידה', highest: 'הנקודה הגבוהה ביותר', difficulty: 'רמת קושי', diffVal: 'קל–בינוני',
+    legStart: 'התחלה/סיום', legPier: 'רציף',
+    addr: 'כתובת', hours: 'שעות פתיחה', phone: 'טלפון', gmaps: 'פתיחה ב-Google Maps',
+    secWine: 'יקבים בוינינגן', secFood: 'מסעדות ומזנוני יין', secSights: 'אתרים', secHist: 'היסטוריה'
   }
 };
 
@@ -695,6 +735,7 @@ function render() {
   const t = T[lang];
   const tt = TABS[lang] || TABS.en;
   document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'he') ? 'rtl' : 'ltr';
   document.getElementById('t-brand').textContent = t.brand;
   document.getElementById('t-title').textContent = t.title;
   document.getElementById('t-sub').textContent = t.sub;

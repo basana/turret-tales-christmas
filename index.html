@@ -4232,6 +4232,17 @@ function updateNoteBranchShape() {
   }
 }
 window.addEventListener('resize', () => { if (typeof updateNoteBranchShape === 'function') updateNoteBranchShape(); });
+// Шрифт EB Garamond грузится асинхронно — если текст уже отрисован до его
+// подгрузки, высота/перенос строк меняются после замены шрифта, а фигура
+// обтекания (посчитана заранее, в пикселях) остаётся старой и расходится
+// с реальным положением текста. Пересчитываем, когда шрифты точно готовы.
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => { if (typeof updateNoteBranchShape === 'function') updateNoteBranchShape(); });
+}
+// Подстраховка: даже без document.fonts (старые браузеры) или если
+// перерасчёт после шрифтов почему-то не сработал — пересчитываем ещё раз
+// после полной загрузки страницы (картинки, шрифты, всё готово).
+window.addEventListener('load', () => { if (typeof updateNoteBranchShape === 'function') updateNoteBranchShape(); });
 
 function renderQuickLinksText() {
   const t = UI[lang];

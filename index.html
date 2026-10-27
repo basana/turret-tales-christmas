@@ -3704,11 +3704,16 @@ function xmasExplainHtml() {
   const dict = xmasTown ? XMAS_EXPLAIN : XMAS_EXPLAIN_OVERVIEW;
   return `<div class="xmas-explain">${dict[xmasLang] || dict.en}</div>`;
 }
+const XMAS_TOWN_THUMB_KEY = { koblenz: 'koblenz-hoerter', lahnstein: 'lahnstein-markt', boppard: 'boppard-markt', oberwesel: 'oberwesel-markt', bacharach: 'bacharach-markt', ruedesheim: 'ruedesheim-markt' };
 function xmasTownListHtml() {
   const T = (o) => o[xmasLang] || o.de;
   const go = { de: 'Zum Markt →', fr: 'Voir le marché →', nl: 'Naar de markt →', en: 'Open market →', ru: 'К рынку →', zh: '前往市集 →', he: '← לשוק' }[xmasLang] || 'Open market →';
-  return '<div class="xmas-town-list">' + XMAS_ORDER.map((k, i) =>
-    `<div class="route-card xmas-card"><div class="xmas-town-top"><img class="xmas-town-thumb" src="${k}-thumb.jpg" alt="" loading="lazy" onerror="this.remove()"><div class="xmas-town-text"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div></div></div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`).join('') + '</div>';
+  return '<div class="xmas-town-list">' + XMAS_ORDER.map((k, i) => {
+    const photoKey = XMAS_TOWN_THUMB_KEY[k];
+    const thumbSrc = (XMAS_PHOTOS[photoKey] && XMAS_PHOTOS[photoKey][0]) || '';
+    const thumbHtml = thumbSrc ? `<img class="xmas-town-thumb" src="${thumbSrc}" alt="" loading="lazy" onerror="this.remove()">` : '';
+    return `<div class="route-card xmas-card"><div class="xmas-town-top">${thumbHtml}<div class="xmas-town-text"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div></div></div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`;
+  }).join('') + '</div>';
 }
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
 

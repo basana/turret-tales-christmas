@@ -253,6 +253,9 @@
   .xmas-dot-angel, .xmas-pin-angel { display: block; width: 36px; height: 36px; transform: translate(-50%, -50%); filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5)); }
   .xmas-dot { width: 28px; height: 28px; border-radius: 50%; background: #7A1026; border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; transform: translate(-50%, -50%); }
   .xmas-pin { background: #7A1026; color: #fff; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
+  /* Haupt-Standort eines Mehrpunkt-Marktes (z.B. Lahnstein #1): größer, goldener Rand, Sternchen-Badge */
+  .xmas-pin-main { width: 38px; height: 38px; line-height: 38px; font-size: 16px; border: 2px solid #ffd45a; box-shadow: 0 2px 6px rgba(0,0,0,0.55); position: relative; }
+  .xmas-pin-main-star { position: absolute; top: -9px; right: -9px; font-size: 13px; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6)); }
   .xmas-pin-town { width: auto; height: auto; border-radius: 999px; padding: 4px 10px; line-height: 1.3; white-space: nowrap; font-size: 13px; transform: translate(-50%, -50%); }
 
   .pill-btn {
@@ -3285,65 +3288,125 @@ const XMAS_CITY = {
   "text": {
    "de": {
     "title": "Lahnsteiner Winterzauber",
-    "intro": "Sechs kleine Märkte in Ober- und Niederlahnstein.",
+    "intro": "Sechs kleine Märkte in Ober- und Niederlahnstein, verteilt auf drei Standorte.",
     "cards": [
      {
-      "title": "Sechs Märkte",
-      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "title": "Altstadt Oberlahnstein",
+      "place": "Hintermauergasse, Oberlahnstein",
       "text": "Kostenlos. Am 1. Advent-Wochenende jeweils 11–20 Uhr.",
       "photo": "lahnstein-markt"
+     },
+     {
+      "title": "Rosengarten",
+      "place": "Rosengarten, Niederlahnstein",
+      "text": "Kostenlos. Am 1. Advent-Wochenende jeweils 11–20 Uhr.",
+      "photo": "lahnstein-rosengarten"
+     },
+     {
+      "title": "Friedrichssegen / Allerheiligenberg",
+      "place": "Friedrichssegen, Allerheiligenberg",
+      "text": "Kostenlos. Am 1. Advent-Wochenende jeweils 11–20 Uhr.",
+      "photo": "lahnstein-friedrichssegen"
      }
     ],
     "practical": "Termin vorläufig: 28.11.–20.12.2026. Bitte vor dem Besuch prüfen."
    },
    "en": {
     "title": "Lahnstein Winter Magic",
-    "intro": "Six small markets in Ober- and Niederlahnstein.",
+    "intro": "Six small markets in Ober- and Niederlahnstein, spread across three locations.",
     "cards": [
      {
-      "title": "Six markets",
-      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "title": "Old town Oberlahnstein",
+      "place": "Hintermauergasse, Oberlahnstein",
       "text": "Free entry. On the 1st Advent weekend, 11:00–20:00 each day.",
       "photo": "lahnstein-markt"
+     },
+     {
+      "title": "Rosengarten",
+      "place": "Rosengarten, Niederlahnstein",
+      "text": "Free entry. On the 1st Advent weekend, 11:00–20:00 each day.",
+      "photo": "lahnstein-rosengarten"
+     },
+     {
+      "title": "Friedrichssegen / Allerheiligenberg",
+      "place": "Friedrichssegen, Allerheiligenberg",
+      "text": "Free entry. On the 1st Advent weekend, 11:00–20:00 each day.",
+      "photo": "lahnstein-friedrichssegen"
      }
     ],
     "practical": "Dates provisional: 28.11.–20.12.2026. Please check before your visit."
    },
    "ru": {
     "title": "Зимняя магия Ланштайна",
-    "intro": "Шесть небольших рынков в Оберлаонштайне и Нидерлаонштайне.",
+    "intro": "Шесть небольших рынков в Оберланштайне и Нидерланштайне, в трёх точках.",
     "cards": [
      {
-      "title": "Шесть рынков",
-      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "title": "Старый город Оберланштайн",
+      "place": "Hintermauergasse, Оберланштайн",
       "text": "Бесплатно. В выходные первого Адвента с 11 до 20 часов.",
       "photo": "lahnstein-markt"
+     },
+     {
+      "title": "Rosengarten",
+      "place": "Rosengarten, Нидерланштайн",
+      "text": "Бесплатно. В выходные первого Адвента с 11 до 20 часов.",
+      "photo": "lahnstein-rosengarten"
+     },
+     {
+      "title": "Friedrichssegen / Allerheiligenberg",
+      "place": "Friedrichssegen, Allerheiligenberg",
+      "text": "Бесплатно. В выходные первого Адвента с 11 до 20 часов.",
+      "photo": "lahnstein-friedrichssegen"
      }
     ],
     "practical": "Даты предварительные: 28.11.–20.12.2026. Проверьте перед визитом."
    },
    "zh": {
     "title": "拉恩施泰因冬日魔法",
-    "intro": "上拉恩施泰因与下拉恩施泰因共六个小型市集。",
+    "intro": "上拉恩施泰因与下拉恩施泰因共六个小型市集，分布在三个地点。",
     "cards": [
      {
-      "title": "六个市集",
-      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "title": "上拉恩施泰因老城",
+      "place": "Hintermauergasse, Oberlahnstein",
       "text": "免费入场。降临节第一个周末，每天 11:00–20:00。",
       "photo": "lahnstein-markt"
+     },
+     {
+      "title": "Rosengarten",
+      "place": "Rosengarten, Niederlahnstein",
+      "text": "免费入场。降临节第一个周末，每天 11:00–20:00。",
+      "photo": "lahnstein-rosengarten"
+     },
+     {
+      "title": "Friedrichssegen / Allerheiligenberg",
+      "place": "Friedrichssegen, Allerheiligenberg",
+      "text": "免费入场。降临节第一个周末，每天 11:00–20:00。",
+      "photo": "lahnstein-friedrichssegen"
      }
     ],
     "practical": "日期暂定：2026年11月28日至12月20日。请在到访前再次确认。"
    },
    "he": {
     "title": "קסם החורף בלנשטיין",
-    "intro": "שישה שווקים קטנים באובר-לנשטיין ונידר-לנשטיין.",
+    "intro": "שישה שווקים קטנים באובר-לנשטיין ונידר-לנשטיין, בשלושה מיקומים.",
     "cards": [
      {
-      "title": "שישה שווקים",
-      "place": "Hintermauergasse, Friedrichssegen, Rosengarten",
+      "title": "העיר העתיקה אובר-לנשטיין",
+      "place": "Hintermauergasse, Oberlahnstein",
       "text": "כניסה חופשית. בסוף השבוע הראשון של האדוונט, מדי יום 11:00–20:00.",
       "photo": "lahnstein-markt"
+     },
+     {
+      "title": "Rosengarten",
+      "place": "Rosengarten, Niederlahnstein",
+      "text": "כניסה חופשית. בסוף השבוע הראשון של האדוונט, מדי יום 11:00–20:00.",
+      "photo": "lahnstein-rosengarten"
+     },
+     {
+      "title": "Friedrichssegen / Allerheiligenberg",
+      "place": "Friedrichssegen, Allerheiligenberg",
+      "text": "כניסה חופשית. בסוף השבוע הראשון של האדוונט, מדי יום 11:00–20:00.",
+      "photo": "lahnstein-friedrichssegen"
      }
     ],
     "practical": "תאריכים ראשוניים: 28.11–20.12.2026. יש לוודא לפני הביקור."
@@ -3407,6 +3470,8 @@ const XMAS_PHOTOS = {
   'koblenz-liebfrauen': ['koblenz-liebfrauen-1.webp'],
   'koblenz-festung': ['ehrenbreitstein-xmas-1.webp','ehrenbreitstein-xmas-2.webp','ehrenbreitstein-xmas-3.webp','ehrenbreitstein-xmas-4.webp','ehrenbreitstein-xmas-5.webp','ehrenbreitstein-xmas-6.webp'],
   'lahnstein-markt': ['lahnstein-markt-1.webp','lahnstein-markt-3.webp'],
+  'lahnstein-rosengarten': [],
+  'lahnstein-friedrichssegen': [],
   'ruedesheim-markt': ['ruedesheim-markt-1.webp','ruedesheim-markt-4.webp'],
   'boppard-markt': ['boppard-markt-1.webp'],
   'bacharach-markt': ['bacharach-markt-1.webp','bacharach-markt-2.webp'],
@@ -3602,6 +3667,8 @@ const XMAS_GEO = {
 };
 // Рынок с особым значком (ангел): город → индекс точки в XMAS_GEO и карточке в XMAS_CITY (Schängelbar — первый)
 const XMAS_ANGEL_PIN = { koblenz: 0 };
+// Hauptstandort eines Mehrpunkt-Marktes: größere Markierung mit Sternchen statt einfacher Nummer
+const XMAS_MAIN_PIN = { lahnstein: 0 };
 let xmasMapObj = null;
 let xmasPendingFocus = null;
 const XMAS_SEARCH_PH = { de: 'Markt oder Stadt suchen …', en: 'Search a market or town …', fr: 'Chercher un marché ou une ville …', nl: 'Zoek een markt of stad …', ru: 'Поиск рынка или города …' };
@@ -3909,7 +3976,7 @@ function renderChristmas(townKey) {
     const g = XMAS_GEO[xmasTown];
     xmasDrawMap({
       center: g.center, zoom: g.zoom,
-      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.en || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' :`<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
+      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.en || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' : XMAS_MAIN_PIN[xmasTown] === i ? `<div class="xmas-pin xmas-pin-main">${i + 1}<span class="xmas-pin-main-star">⭐</span></div>` : `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
     });
   }
 }

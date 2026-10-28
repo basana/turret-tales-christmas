@@ -2579,9 +2579,10 @@ function renderTabs() {
     [3, 4, 5].forEach(i => addTab(UI[lang].tabs[i], tabKeys[i], '', currentView === tabKeys[i], () => switchView(tabKeys[i])));
     addTab(UI[lang].tabs[7], 'about', '', false, () => openInfoPopup('guideInfo'));
   } else {
-    UI[lang].tabs.forEach((label, i) => {
-      const key = tabKeys[i];
-      if (key === 'christmas') return;
+    // Klassische Navigation: Map direkt nach Castles (statt ganz am Ende vor Contact)
+    const classicOrder = ['guide', 'castles', 'map', 'legends', 'info', 'route', 'about'];
+    classicOrder.forEach((key) => {
+      const label = UI[lang].tabs[tabKeys.indexOf(key)];
       addTab(label, key, '', key === currentView,
         key === 'about' ? () => openInfoPopup('guideInfo')
         : key === 'guide' ? () => openStation(index)

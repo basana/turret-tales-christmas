@@ -2583,9 +2583,16 @@ function renderTabs() {
   const tabsEl = document.getElementById('tabs');
   tabsEl.innerHTML = '';
   const tabKeys = ['christmas', 'guide', 'castles', 'legends', 'info', 'route', 'map', 'about'];
-  const xl = lang === 'ru'
-    ? { list: 'Рождественские локации', map: 'Карта рынков' }
-    : { list: 'Christmas locations', map: 'Christmas market map' };
+  const XL_TABS = {
+    de: { list: 'Weihnachtsorte', map: 'Marktkarte' },
+    fr: { list: 'Lieux de Noël', map: 'Carte des marchés' },
+    nl: { list: 'Kerstlocaties', map: 'Marktkaart' },
+    en: { list: 'Xmas locations', map: 'Xmas market map' },
+    ru: { list: 'Рождественские локации', map: 'Карта рынков' },
+    zh: { list: '圣诞地点', map: '市集地图' },
+    he: { list: 'אתרי חג המולד', map: 'מפת השווקים' },
+  };
+  const xl = XL_TABS[lang] || XL_TABS.en;
   const addTab = (label, key, cls, active, onclick) => {
     const s = document.createElement('span');
     s.className = 'tab' + (cls ? ' ' + cls : '') + (active ? ' active' : '');

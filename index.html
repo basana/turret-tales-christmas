@@ -162,6 +162,16 @@
   .buta-info { padding: 4px 4px 0; align-self: center; }
   .buta-pic { margin: 0; position: relative; width: 88%; justify-self: end; }
   .buta-pic .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
+  /* "Hausgemacht"-Siegel wie ein Gütesiegel/Stern auf dem Hauptfoto (Buta Cafe: Familienküche, alles handgemacht) */
+  .buta-badge {
+    position: absolute; top: -10px; left: -10px; width: 58px; height: 58px; border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #e8b33a, #a9781f 70%, #8a5f14);
+    border: 2px solid #fff6dc; box-shadow: 0 3px 8px rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center; transform: rotate(-11deg); z-index: 2;
+  }
+  .buta-badge::before { content: '★'; position: absolute; top: 4px; font-size: 9px; color: #fff6dc; }
+  .buta-badge span { display: flex; flex-direction: column; align-items: center; line-height: 1.05; margin-top: 7px; }
+  .buta-badge em { font-style: normal; font-size: 8.5px; font-weight: 800; color: #3a2408; text-transform: uppercase; letter-spacing: 0.2px; }
   .buta-name { font-size: calc(1em + 2.7px); font-weight: 700; color: #7A1026; margin: 0 0 4px; }
   .buta-sq { aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px; }
   .buta-sq img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -4027,13 +4037,14 @@ const BUTA_CARD = {
   title: 'Buta Cafe Koblenz',
   place: 'Florinsmarkt 12, 56068 Koblenz · 10–20&nbsp;€',
   text: {
-    de: 'Traditionelle Rezepte, moderne Cafékultur. Frühstück und Brunch aus dem Kaukasus und Osteuropa. Kaffee, Tee und hausgemachte Kuchen.',
-    en: 'Traditional recipes, modern café culture. Breakfast and brunch from the Caucasus and Eastern Europe. Coffee, tea and homemade cakes.',
-    ru: 'Традиционные рецепты и современная кофейная культура. Завтраки и бранч с Кавказа и Восточной Европы. Кофе, чай и домашние торты.',
-    zh: '传统配方，现代咖啡馆文化。供应来自高加索和东欧的早餐与brunch。咖啡、茶与自制蛋糕。',
-    he: 'מתכונים מסורתיים, תרבות בתי קפה מודרנית. ארוחות בוקר וברנץ׳ מהקווקז וממזרח אירופה. קפה, תה ועוגות ביתיות.',
+    de: 'Echte Familienküche: alles wird von Hand zubereitet, die Kuchen ganz besonders. Traditionelle Rezepte aus dem Kaukasus und Osteuropa — Frühstück, Brunch, Kaffee und Tee.',
+    en: 'Real family-kitchen cooking: everything is made by hand, the cakes especially. Traditional recipes from the Caucasus and Eastern Europe — breakfast, brunch, coffee and tea.',
+    ru: 'Настоящая семейная, домашняя кухня: всё готовится вручную, а торты — особенно. Традиционные рецепты Кавказа и Восточной Европы — завтраки, бранч, кофе и чай.',
+    zh: '真正的家庭厨房：一切都是手工制作，蛋糕尤其如此。来自高加索和东欧的传统配方——早餐、brunch、咖啡与茶。',
+    he: 'מטבח משפחתי אמיתי: הכול מוכן ביד, והעוגות בייחוד. מתכונים מסורתיים מהקווקז וממזרח אירופה — ארוחות בוקר, ברנץ׳, קפה ותה.',
   },
 };
+const BUTA_BADGE = { de: 'Hand-\ngemacht', en: 'Hand-\nmade', ru: 'Ручная\nработа', zh: '手工\n制作', he: 'עבודת\nיד' };
 let xmasFoodMapObj = null;
 function renderFood() {
   const el = document.getElementById('view-food');
@@ -4054,6 +4065,7 @@ function renderFood() {
         `<div class="buta-info"><h3 class="buta-name">${BUTA_CARD.title}</h3>` +
         `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${BUTA_CARD.place}</p><p style="margin:0">${t}</p></div>` +
         `<figure class="buta-pic"><img class="buta-frame" src="buta-frame.webp" alt="Buta Cafe" loading="lazy">` +
+        `<div class="buta-badge"><span>${(BUTA_BADGE[xmasLang] || BUTA_BADGE.en).split('\n').map(w => `<em>${w}</em>`).join('')}</span></div>` +
         `<button type="button" class="food-coupon" data-buta-voucher>${cLbl}</button></figure>` +
         `</div><div class="buta-more">` +
         ['08','03','07','09','10','11'].map(n => `<div class="buta-sq">${sq(n)}</div>`).join('') +

@@ -859,18 +859,19 @@
   /* === ЛЕГЕНДА КАРТЫ (справа сверху, не перекрывает маркеры) === */
   .map-legend {
     position: absolute; z-index: 900; top: 60px; right: 12px;
-    background: rgba(246, 238, 221, 0.95); border: 1px solid var(--gold); border-radius: 10px;
-    padding: 8px 10px; font-family: var(--sans); font-size: 11px; color: var(--ink);
-    box-shadow: 0 4px 14px rgba(90,67,39,0.25); max-width: 152px;
+    background: rgba(246, 238, 221, 0.95); border: 1px solid var(--gold); border-radius: 12px;
+    padding: 10px 14px; font-family: var(--sans); font-size: 14px; color: var(--ink);
+    box-shadow: 0 4px 14px rgba(90,67,39,0.25); max-width: 200px;
   }
-  .map-legend-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .map-legend-row { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
   .map-legend-row:last-child { margin-bottom: 0; }
-  .map-legend-dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 12px; background: #8A6A34; border: 1.5px solid #fff; }
+  .map-legend-dot { width: 22px; height: 22px; border-radius: 50%; flex: 0 0 22px; background: #8A6A34; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
   .map-legend-icon {
-    width: 14px; height: 14px; border-radius: 50%; flex: 0 0 14px; background: var(--terracotta);
-    border: 1.5px solid #fff; display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%; flex: 0 0 24px; background: var(--terracotta);
+    border: 2px solid #fff; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
-  .map-legend-icon img { width: 8px; height: 8px; filter: invert(1) brightness(2); }
+  .map-legend-icon img { width: 14px; height: 14px; filter: invert(1) brightness(2); }
 
   /* === ПОИСК ГОРОДА/ЗАМКА НА КАРТЕ === */
   .map-search-wrap {
@@ -935,7 +936,7 @@
   }
   .gps-save-spot-btn.show { display: flex; }
   .map-legend-icon-cafe, .map-legend-icon-souvenir {
-    background: transparent; border: none; font-size: 13px; width: 14px; height: 14px;
+    background: transparent; border: none; font-size: 20px; width: 24px; height: 24px;
   }
   .saved-spot-marker { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.45)); line-height: 1; }
   .poi-marker {

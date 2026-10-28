@@ -2580,10 +2580,13 @@ function renderTabs() {
     [3, 4, 5].forEach(i => addTab(UI[lang].tabs[i], tabKeys[i], '', currentView === tabKeys[i], () => switchView(tabKeys[i])));
     addTab(UI[lang].tabs[7], 'about', '', false, () => openInfoPopup('guideInfo'));
   } else {
-    // Klassische Navigation: Map direkt nach Castles (statt ganz am Ende vor Contact)
-    const classicOrder = ['guide', 'castles', 'map', 'legends', 'info', 'route', 'about'];
+    // Klassische Navigation: Map direkt nach Castles; Food & Drinks / Winemakers waren
+    // bisher nur im Christmas-Modus erreichbar (Buta Cafe etc. unsichtbar in Classic!)
+    const classicOrder = ['guide', 'castles', 'map', 'food', 'wine', 'legends', 'info', 'route', 'about'];
     classicOrder.forEach((key) => {
-      const label = UI[lang].tabs[tabKeys.indexOf(key)];
+      const label = key === 'food' ? (XMAS_FOOD_TAB[lang] || XMAS_FOOD_TAB.en)
+        : key === 'wine' ? (XMAS_WINE_TAB[lang] || XMAS_WINE_TAB.en)
+        : UI[lang].tabs[tabKeys.indexOf(key)];
       addTab(label, key, '', key === currentView,
         key === 'about' ? () => openInfoPopup('guideInfo')
         : key === 'guide' ? () => openStation(index)

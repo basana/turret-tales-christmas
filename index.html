@@ -2523,14 +2523,30 @@ const UI = {
 const RU_TEMP_DISABLED_UNTIL = new Date('2026-10-11T00:00:00');
 const ruTempDisabled = new Date() < RU_TEMP_DISABLED_UNTIL;
 
+// Spracherkennung anhand der Gerätesprache (navigator.language/.languages):
+// Besucher sehen die Seite automatisch in ihrer eigenen Sprache (Deutscher -> DE,
+// Chinese -> ZH usw.), sofern sie eine der unterstützten Sprachen unten ist.
+const SUPPORTED_LANGS = ['de', 'fr', 'nl', 'en', 'ru', 'zh', 'he'];
+function detectBrowserLang(supported, fallback) {
+  try {
+    const cands = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || navigator.userLanguage || ''];
+    for (const c of cands) {
+      let code = ((c || '') + '').toLowerCase().split('-')[0];
+      if (code === 'iw') code = 'he'; // alter Sprachcode für Hebräisch
+      if (code === 'zh') return 'zh'; // zh-CN, zh-TW, zh-HK etc. alle auf 'zh'
+      if (supported.includes(code)) return code;
+    }
+  } catch (e) {}
+  return fallback;
+}
+
 let lang = (function() {
-  if (ruTempDisabled) return 'en';
   try {
     const saved = localStorage.getItem('rhineGuideLang');
-    if (saved === 'en' || saved === 'ru') return saved;
+    if (saved && SUPPORTED_LANGS.includes(saved) && !(ruTempDisabled && saved === 'ru')) return saved;
   } catch (e) {}
-  const nav = ((navigator.language || navigator.userLanguage || '') + '').toLowerCase();
-  return nav.indexOf('ru') === 0 ? 'ru' : 'en';
+  const detected = detectBrowserLang(SUPPORTED_LANGS, 'en');
+  return (ruTempDisabled && detected === 'ru') ? 'en' : detected;
 })();
 let index = 0;
 let scale = 1.0;
@@ -3492,8 +3508,10 @@ const XMAS_PHOTOS = {
   'bacharach-markt': ['bacharach-markt-1.webp','bacharach-markt-2.webp'],
 };
 let xmasLang = (function() {
-  try { const s = localStorage.getItem('xmasLang'); if (s && ['de','fr','nl','en','ru','zh','he'].includes(s)) return s; } catch (e) {}
-  return (typeof lang !== 'undefined' && lang === 'ru') ? 'ru' : 'en';
+  try { const s = localStorage.getItem('xmasLang'); if (s && SUPPORTED_LANGS.includes(s)) return s; } catch (e) {}
+  // Erst die bereits erkannte Sprache des Hauptbereichs übernehmen (konsistent),
+  // sonst direkt per Gerätesprache erkennen.
+  return (typeof lang !== 'undefined' && SUPPORTED_LANGS.includes(lang)) ? lang : detectBrowserLang(SUPPORTED_LANGS, 'en');
 })();
 let xmasTown = 'koblenz'; // null = Übersicht
 const XMAS_LANG_LABELS = {de:'DE', fr:'FR', nl:'NL', en:'EN', ru:'RU', zh:'中文', he:'עברית'};

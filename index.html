@@ -8,7 +8,8 @@
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icon-marksburg-192.png">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="icon-touch.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,600&display=swap" rel="stylesheet">
 <!-- Приватная статистика посещений (GoatCounter) — без cookie, без сбора
@@ -5788,6 +5789,19 @@ function applySpotFromUrl() {
   } catch (e) {}
 }
 applySpotFromUrl();
+
+// Deep-Link auf einen bestimmten Bereich, z. B. turrettales.de/?view=food
+// (Splash wird übersprungen, Bereich öffnet sich sofort).
+function applyViewFromUrl() {
+  try {
+    const v = new URLSearchParams(window.location.search).get('view');
+    const ALLOWED_DEEPLINK_VIEWS = ['food', 'wine', 'map', 'castles', 'christmas'];
+    if (!v || !ALLOWED_DEEPLINK_VIEWS.includes(v)) return;
+    dismissSplash();
+    switchView(v);
+  } catch (e) {}
+}
+applyViewFromUrl();
 
 if (premiumCodeInput) {
   premiumCodeInput.addEventListener('keydown', (e) => {

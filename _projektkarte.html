@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>tuProjectcard</title>
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="icon-touch.png">
+<style>
+/* Структура: продукт слева, гости и маркетинг, затем разработка, сервисы, печать и право. Линии показывают связи. */
+:root {
+  --bg:#f5f4ef; --fg:#1c2127; --muted:#5b6470; --line:#c4c9cf; --card:#ffffff; --accent:#1f6f6b; --warn:#a4452c;
+  --g-product:#1f6f6b; --g-audience:#a9731a; --g-marketing:#7a3f8c; --g-dev:#3d5a9a;
+  --g-services:#4f7a52; --g-print:#a4452c; --g-legal:#4a4f57;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#14171b; --fg:#e6e8eb; --muted:#9aa3ad; --line:#3a424b; --card:#1c2126; --accent:#5fc1b9; --warn:#e08a6d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#14171b; --fg:#e6e8eb; --muted:#9aa3ad; --line:#3a424b; --card:#1c2126; --accent:#5fc1b9; --warn:#e08a6d;
+  color-scheme: dark;
+}
+body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+.wrap { padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); padding-block:20px 40px; max-width:1100px; margin:0 auto; }
+h1 { font-size:22px; margin:0 0 6px; line-height:1.2; }
+.lead { color:var(--muted); margin:0 0 14px; max-width:70ch; }
+.meta { color:var(--muted); font-size:12.5px; margin-bottom:16px; }
+.tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.tabs button { font:inherit; padding:7px 14px; border-radius:999px; border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer; }
+.tabs button[aria-selected="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
+.legend { display:flex; gap:12px; flex-wrap:wrap; margin:0 0 12px; font-size:12.5px; color:var(--muted); }
+.legend i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+.scroll { overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--card); -webkit-overflow-scrolling:touch; }
+.map { position:relative; width:1100px; height:800px; }
+.map svg { position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+.zoombar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+.zoombar button { font:inherit; font-size:15px; min-width:44px; padding:6px 10px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer; }
+.zoombar span { color:var(--muted); font-size:13px; }
+.map line { stroke:var(--line); stroke-width:1.2; }
+.map line.hl { stroke:var(--accent); stroke-width:2.2; }
+.node { position:absolute; box-sizing:border-box; padding:8px 12px; border-radius:10px; border-style:solid; border-color:var(--c); background:var(--card); color:var(--fg); text-align:left; cursor:pointer; font:inherit; }
+.node.p1 { width:200px; border-width:1px; }
+.node.p2 { width:228px; border-width:2.5px; }
+.node.p3 { width:260px; border-width:4px; }
+.node b { display:block; font-size:13px; line-height:1.25; }
+.node.p2 b { font-size:14.5px; }
+.node.p3 b { font-size:16px; }
+.node span { display:block; color:var(--muted); font-size:12.5px; line-height:1.3; margin-top:3px; }
+.node:hover, .node:focus-visible, .node.sel { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent) inset; outline:none; }
+.detail { margin-top:16px; border:1px solid var(--line); border-radius:12px; background:var(--card); padding:16px 18px; }
+.detail h2 { font-size:17px; margin:0 0 4px; }
+.detail .chip { display:inline-block; font-size:11.5px; color:var(--muted); margin-bottom:8px; }
+.detail dt { font-weight:600; margin-top:10px; font-size:12.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+.detail dd { margin:3px 0 0; }
+.detail .rel { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+.detail .rel button { font:inherit; font-size:12.5px; padding:4px 10px; border-radius:999px; border:1px solid var(--line); background:var(--bg); color:var(--fg); cursor:pointer; }
+.check { color:var(--warn); }
+.group { margin:22px 0 8px; font-size:15px; display:flex; align-items:center; gap:8px; }
+.group i { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:10px; }
+.card { border:1px solid var(--line); border-radius:10px; background:var(--card); padding:12px 14px; min-width:0; }
+.card h3 { margin:0; font-size:14px; }
+.card .sub { color:var(--muted); font-size:12px; margin-bottom:6px; }
+.card p { margin:4px 0; font-size:13px; overflow-wrap:anywhere; }
+.card .k { color:var(--muted); font-size:12px; }
+ol.open { padding-left:20px; margin:0; }
+ol.open li { margin:0 0 10px; }
+ol.open button.item { font:inherit; color:var(--accent); background:none; border:0; padding:0; text-decoration:underline; cursor:pointer; text-align:left; }
+.urg { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); margin-right:8px; white-space:nowrap; }
+.urg i { width:9px; height:9px; border-radius:50%; background:var(--u); display:inline-block; }
+.opensort { font:inherit; font-size:14px; font-weight:600; padding:7px 14px; border-radius:999px; border:1px solid var(--accent); background:var(--card); color:var(--accent); cursor:pointer; margin-bottom:12px; }
+.opensort[aria-pressed="true"] { background:var(--accent); color:#fff; }
+.hide { display:none; }
+.node.sel { box-shadow:0 0 0 3px var(--accent); }
+.linkcard a { color:var(--accent); word-break:break-all; }
+.linkcard .status { display:inline-block; font-size:11px; padding:2px 8px; border-radius:999px; margin-left:0; margin-top:4px; }
+.linkcard .status.live { background:#1f6f6b22; color:var(--accent); }
+.linkcard .status.old { background:#a4452c22; color:var(--warn); }
+.linkcard .status.todo { background:#9aa3ad22; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>tuProjectcard</h1>
+  <p class="lead"><a href="https://claude.ai/artifact/SgZbc6MnhQLXKVhgbKoq6C" target="_blank" rel="noopener">→ Projectcard: Hauptrichtungen (Übersicht)</a></p>
+  <p class="lead">Übergabe-Karte: was das Projekt ist, für wen, über welche Kanäle, mit welchen Diensten und was noch offen ist. Auf eine Box tippen, dann erscheinen Details und Verbindungen. Stand: 25.10.2026.</p>
+  <div class="meta">Quellen: Projektdokumente im Projekt MAP (karte-der-systeme, karte-der-links, aktuelle-schritte, netlify-deploy-anleitung) und Notizen. Was nicht bestätigt ist, steht als «unklar».</div>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="map">Karte</button>
+    <button role="tab" aria-selected="false" data-tab="list">Liste nach Bereichen</button>
+    <button role="tab" aria-selected="false" data-tab="links">Links</button>
+    <button role="tab" aria-selected="false" data-tab="open">Offen</button>
+  </div>
+
+  <div id="tab-map">
+    <div class="legend" id="legend"></div>
+    <div class="zoombar">
+      <button type="button" id="zm" aria-label="Kleiner">A−</button>
+      <span id="zv">100 %</span>
+      <button type="button" id="zp" aria-label="Größer">A+</button>
+      <span>Dicke Linie = wichtiger Punkt · Farbe = Bereich</span>
+    </div>
+    <div class="scroll"><div class="map" id="map"><svg id="lines" aria-hidden="true"></svg></div></div>
+    <div class="detail" id="detail" aria-live="polite">
+      <h2>Wähle eine Box</h2>
+      <p class="lead">Zum Beispiel «Turret Tales (Rhine Guide)» oben links. Die Linien zeigen, was davon abhängt.</p>
+    </div>
+  </div>
+
+  <div id="tab-list" class="hide"></div>
+
+  <div id="tab-links" class="hide"></div>
+
+  <div id="tab-open" class="hide">
+    <div class="card" style="max-width:820px">
+      <p class="lead" style="margin:0 0 10px">Diese Punkte sind laut Projektdokumenten nicht erledigt oder nicht bestätigt. Standard: nach Wichtigkeit.</p>
+      <button type="button" class="opensort" id="opensort" aria-pressed="false">Nach Dringlichkeit sortieren</button>
+      <div class="legend">
+        <span><i style="background:#B3261E"></i>Diese Woche</span>
+        <span><i style="background:#B7791F"></i>Bis Monatsende</span>
+        <span><i style="background:#6b7280"></i>Später</span>
+      </div>
+      <ol class="open" id="openlist"></ol>
+    </div>
+  </div>
+</div>
+
+<script>
+const GROUPS = {
+  product:{t:"Produkt", c:"var(--g-product)"},
+  audience:{t:"Gäste und Partner", c:"var(--g-audience)"},
+  marketing:{t:"Marketing", c:"var(--g-marketing)"},
+  dev:{t:"Entwicklung und Betrieb", c:"var(--g-dev)"},
+  services:{t:"Dienste und Konten", c:"var(--g-services)"},
+  print:{t:"Druck", c:"var(--g-print)"},
+  legal:{t:"Marke und Recht", c:"var(--g-legal)"}
+};
+
+// x, y: Position auf der Karte (Spalten A–D)
+const NODES = [
+  {id:"app", g:"product", x:20, y:40, t:"Turret Tales (Rhine Guide)", sub:"Web-App · 23 Stationen",
+   s:"Interaktive Web-App zu den Burgen zwischen Koblenz und Bingen.",
+   d:"Karte mit Stationen, Legenden und Fakten zu jeder Burg, Sprachen EN und RU. Der Gast führt sich selbst, der Guide ergänzt live. Versionen Basic, Lite, Premium und eine Partnerversion für Cafés sind geplant. Offline funktioniert heute nur teilweise: Karte und Schrift laden noch aus dem Netz.",
+   where:"Dateien: index.html, sw.js, manifest.json, Bilder. Quelle: GitHub. Live: Netlify.",
+   check:"Version und Zahl der Stationen auf der Live-Adresse prüfen (Stand: 23)."},
+  {id:"stations", g:"product", x:20, y:104, t:"23 Stationen", sub:"Liste castles in index.html",
+   s:"Jede Station hat Name, Koordinaten, Texte in EN und RU und fünf Bildplätze.",
+   d:"Station hinzufügen oder entfernen: Eintrag im Array castles, Bilder als name.jpg bis name_5.jpg, Einwohnerzahl in Info und Route, Versionsnummer in sw.js erhöhen, Zahl in den Dokumenten ändern. Hildegard ist entfernt. Stahleck: 4 Bilder (5. aus der Liste gestrichen). Schönburg: 3 Bilder, es fehlen 4 und 5.",
+   where:"index.html (Array castles)", check:"Jede Station braucht mindestens ein Bild; Dateinamen klein, ohne Leerzeichen."},
+  {id:"features", g:"product", x:20, y:168, t:"Funktionen und Versionen", sub:"Basic · Lite · Premium · Partner",
+   s:"Was die App kann und für wen.",
+   d:"Basic: Karte und Stationen. Lite: GPS-Begleitung. Premium: Zusatzfunktionen (noch nicht festgelegt). Partnerversion: Kategorien Café, Restaurant und Souvenirs, Demo «Рядом» ist geplant, noch nicht gebaut. Navigator in Stufen: 1) Pfeil und Entfernung, 2) Straßenrouten, 3) optional Abbiegehinweise, 4) KI-Helfer später. Lebende Führungen als eigenes Paket. Wer die App bezahlt, ist offen (Vorschlag: der Partner).",
+   where:"Notizen: aktuelle-schritte, Abschnitt «Решения по продукту»", check:"Festlegen, welche Version zuerst kommt."},
+  {id:"brand", g:"product", x:20, y:232, t:"Name und Marke", sub:"Tours All Year Round · Turret Tales",
+   s:"Firmenname und Name der App.",
+   d:"Tours All Year Round ist der Firmenname (Facebook, Emblem, Postkarten, Visitenkarte). Turret Tales ist der Arbeitsname der App (Entscheidung 14.10.2026). Im Code und im Brief an Madlen steht noch Rhine Guide. Impressum und Fußzeile: «by Tours All Year Round». Markenschutz: Anwalt verschoben, Selbstprüfung gemacht, Antrag später selbst.",
+   where:"Notizen: name-pruefung-turret-tales, marke-und-foerderung (Obsidian)", check:"Bedingungen des EUIPO-Fonds auf der offiziellen Seite lesen."},
+  {id:"funnel", g:"product", x:20, y:296, t:"Marketing-Trichter", sub:"Karte → App → Führung",
+   s:"Wie aus Besuchern Gäste werden.",
+   d:"Postkarte oder Visitenkarte mit QR → Kartenseite → App (mit ?src=mailchimp, damit die Quelle in der Statistik steht) → Kontakt über WhatsApp → Führung. Zielgruppen: Kreuzfahrtgäste, Individualgäste, Partner (Cafés, Kioske). Verteilung am Stolzenfels: etwa 200 Besucher am Tag, letzte Führung in der Burg am 31.10.",
+   where:"Notizen: tour-marketing-funnel (Obsidian)", check:"Kommt die Quelle mailchimp in GoatCounter an?"},
+
+  {id:"cruise", g:"audience", x:280, y:40, t:"Kreuzfahrtgäste", sub:"Viking · Saga · Travmondo",
+   s:"Gruppen, die Koblenz und Cochem an einem Tag besuchen.",
+   d:"Wenig Zeit in der Stadt, oft kein Datenroaming. Deshalb ist Offline wichtig. Führungen laufen über Reiseveranstalter, Anfragen über Travmondo.",
+   where:"Notizen: travmondo-requests, profile", check:"Offline-Funktion vor dem Einsatz mit dem Handy testen."},
+  {id:"independent", g:"audience", x:280, y:104, t:"Individualgäste", sub:"Stadt, Wanderer, Wiederkehrer",
+   s:"Gäste, die selbst unterwegs sind.",
+   d:"Finden die App über Postkarte, Café, QR oder Suche. Interesse an Legenden und Geschichte. Wichtig: schnelle Karte und klare Stationen.",
+   where:"—", check:"Besuche in GoatCounter ansehen, um Quellen zu vergleichen."},
+  {id:"partners", g:"audience", x:280, y:168, t:"Partner: Cafés, Restaurants, Kioske", sub:"Demo «Рядом» (geplant)",
+   s:"Gastgeber, die Gäste an die App weiterleiten.",
+   d:"Idee: Der Partner zeigt QR oder Karte, der Gast sieht Stationen in der Nähe. Kategorien Café, Restaurant, Souvenirs. Kein Vertrag bisher. Für die Demo braucht es 2–3 Namen und Fotos, nur mit Zustimmung der Inhaber.",
+   where:"Notizen: tour-marketing-funnel (Café-Partnerschaft)", check:"Erste Gespräche führen, Demo bauen."},
+  {id:"touroperators", g:"audience", x:280, y:232, t:"Reiseveranstalter", sub:"Travmondo · Saga · Viking",
+   s:"Kanal für Gruppen und Führungen.",
+   d:"Aufträge kommen über Plattformen. Die Koordination läuft über Madlen Donath. Für sie ist der Brief über die App gedacht, ohne NDA und ohne Preise.",
+   where:"Notizen: madlen-donath, travmondo-requests", check:"Brief an Madlen: versendet oder nicht?"},
+  {id:"xmas", g:"product", x:20, y:360, t:"Turret Tales Weihnachts-Navigator", sub:"Rhein · Startbildschirm (geplant)",
+   s:"Gleiche App mit weihnachtlichem Start und Weihnachtsbild für Koblenz.",
+   d:"Startbildschirm mit Weihnachtsmotiv, große Kacheln, Schalter «Classic | Christmas». Demo nur auf Englisch. Märkte: Oberwesel, Boppard, Bacharach, Lahnstein bestätigt bzw. vorläufig; Koblenz und Braubach offen.",
+   where:"Projekt MAP: claude/weihnachts-navigator.md, aktuelle-schritte Punkte 19–20",
+   check:"Weihnachtsbild für Koblenz vom Kunden; Termine bestätigen."},
+  {id:"mosel", g:"product", x:20, y:424, t:"Mosel-Version", sub:"zum Verkauf an Touristen (geplant)",
+   s:"Eigene Ausgabe des Navigators für die Mosel, getrennt verkauft.",
+   d:"Vorschlag: Cochem, Zell, Traben-Trarbach, Bernkastel-Kues. Termine: Cochem 21.11.–21.12.2026, Burgweihnacht 12./13.12., Zell 28.11., Traben-Trarbach 20.11.–02.01. Kommt nach dem Rhein-Teil. Neu: eigene Seite walks.html für Winningen (Wanderungen, Weingüter, Geschichte, Sehenswürdigkeiten, Weihnachtsmarkt) ist live.",
+   where:"Projekt MAP: aktuelle-schritte Punkt 22, weihnachts-navigator (Mosel)",
+   check:"Preis und Verkaufsweg festlegen."},
+  {id:"meetings", g:"product", x:20, y:488, t:"Встречи · Meetings", sub:"Abschnitt im MAP-Plan",
+   s:"Treffen und Gespräche mit Partnern und Interessenten.",
+   d:"Hier stehen Termine, Gesprächsnotizen und Ergebnisse, zum Beispiel Madlen Donath und Frau Woyda (GDKE / Festungsshop).",
+   where:"Projekt MAP: aktuelle-schritte, Abschnitt «Встречи»",
+   check:"Ersten Termin eintragen."},
+  {id:"touristinfo", g:"audience", x:280, y:616, t:"Touristinformationen", sub:"Rhein und Mosel · Idee",
+   s:"Den Navigator als Angebot für ihre Gäste vorschlagen.",
+   d:"Touristinformationen zeigen die App ihren Gästen, die Gäste laden sie herunter. Noch niemand angesprochen.",
+   where:"Projekt MAP: aktuelle-schritte Punkt 21", check:"Liste der Ansprechpartner erstellen."},
+  {id:"friends", g:"audience", x:280, y:680, t:"Hotels und Cafés an der Mosel", sub:"Kontakte von Bekannten (zu sammeln)",
+   s:"Mögliche Partner für Auslage und Empfehlung.",
+   d:"Bekannte Hotels und Cafés an der Mosel. Namen und Kontakte fehlen noch. Nur mit Zustimmung der Inhaber als Beispiele zeigen.",
+   where:"Projekt MAP: aktuelle-schritte Punkt 23", check:"Liste mit Namen und Kontakten schicken."},
+  {id:"koblenztouristik", g:"audience", x:280, y:744, t:"Koblenz-Touristik", sub:"Erste Firma für den Navigator · Demo zuerst",
+   s:"Lokale Tourismusfirma in Koblenz, bei der Anatoly zertifiziert ist.",
+   d:"Zuerst die Demo für Koblenz zeigen (Standard- und Weihnachtsversion), dann das Angebot. Wer zahlt, ist offen.",
+   where:"Projekt MAP: aktuelle-schritte, Punkt 21", check:"Termin für die Vorführung vereinbaren; was brauchen sie?"},
+  {id:"demo", g:"product", x:20, y:552, t:"Demo Koblenz (Englisch)", sub:"Priorität 1 · große Kacheln",
+   s:"Erste Vorführung nur für Koblenz, nur auf Englisch.",
+   d:"Große Kacheln mit Bildern, Weihnachtsmotiv zentral, Schalter Classic | Christmas. Station Koblenz mit eigenem Weihnachtsbild (Bild liefert Anatoly). Erst Demo fertig, dann vorführen.",
+   where:"Kopie von index.html, Projekt MAP: aktuelle-schritte, Punkt 19", check:"Weihnachtsbild für Koblenz geliefert?"},
+  {id:"xmasdata", g:"product", x:20, y:616, t:"Weihnachtsmärkte: Daten", sub:"Rhein: Oberwesel, Boppard, Bacharach, Lahnstein",
+   s:"Termine und Orte für die Weihnachtsversion.",
+   d:"Bestätigt: Oberwesel 28.–29.11., Boppard 27.11.–06.12., Bacharach 05.–06.12. Vorläufig: Lahnstein 28.11.–20.12. Offen: Koblenz 2026, Braubach, St. Goar, Kaub, Bingen. Mosel als Option: Cochem, Zell, Traben-Trarbach. Winningen: «Winningen im Lichterglanz», 27.–29.11.2026.",
+   where:"Projekt MAP: claude/weihnachts-navigator.md", check:"Koblenz-Termine 2026 bei der Tourist-Info erfragen."},
+  {id:"madlen", g:"audience", x:280, y:296, t:"Madlen Donath", sub:"Koordinatorin · Brief (Entwurf)",
+   s:"Erste Partnerin für die Präsentation der App.",
+   d:"Der Brief wartet auf die fertigen Hauptfotos. Er enthält einen Link: bisher rhine-guide-lite.netlify.app, nach der Entscheidung ändern auf turret-tales.netlify.app. Ohne NDA und ohne Preise.",
+   where:"Entwurf in Gmail (Stand unklar, ob versendet)", check:"Welcher Link steht im Brief? Ist er schon raus?"},
+  {id:"card", g:"marketing", x:280, y:380, t:"Digitale Visitenkarte", sub:"QRCodeChimp · toursallyearround",
+   s:"Visitenkarte mit Links, WhatsApp und Button zur App.",
+   d:"Profilseite mit Telefon, WhatsApp, Website und Button zur App. Der Button «View Rhine Guide» zeigt noch auf die alte GitHub-Seite. Das Profil heißt toursallyearround. Auf gedruckten Postkarten steht laut älteren Notizen eine andere Seite (rlugsqdxl7q8): das ist zu prüfen. NFC-Karten sollen auf dieselbe Visitenkarte zeigen.",
+   where:"QRCodeChimp-Konto", check:"QR auf einer Postkarte scannen: welche Seite öffnet sich? Button auf die Netlify-Adresse umstellen."},
+  {id:"postcards", g:"marketing", x:280, y:444, t:"Postkarten", sub:"Polaroid · Koblenz A6 · Mittelrhein",
+   s:"Gedruckte Karten mit QR-Code.",
+   d:"Polaroid: 1000 Stück, Druckstatus unklar (zuerst als Druck, später als Idee für Cafés). Koblenz A6: 500 Stück früher bestellt, 280 g, 30 €. Zweite Serie «Замки и города Среднего Рейна» in Arbeit, Farbverläufe nach dem Vorbild englischer Banknoten. Mosel und Sagenstraße für Frühjahr 2027 geplant. Vorschlag für die nächste Bestellung: etwa 1500 Stück, verteilt auf die Motive. Postkarten können auch auf der Marksburg angeboten werden; dort Führungen immer als private Führungen bewerben. Navigator-Karte zum Mitnehmen (A6, Vorder- und Rückseite): erste Probeauflage 200 Stück, erster Standort Gasthaus Müller Alken. Wenn sie sich gut verkauft, wird weiter überlegt.",
+   where:"Obsidian: koblenz-postcards, rhine-castle-postcards · Druckerei: Saxoprint", check:"Papier 200 g oder 150 g wählen; für den Druck Profil PSO Coated v3 verwenden."},
+  {id:"social", g:"marketing", x:280, y:508, t:"Instagram und Facebook", sub:"Turret Tales · zweites Profil geplant",
+   s:"Kanäle für Sichtbarkeit.",
+   d:"Zweites Instagram-Profil für Turret Tales ist geplant, z. B. @turrettales.rhine. Dafür braucht es eine neue E-Mail oder Telefonnummer. Facebook: bestehende Gästeführer-Seite. Name Turret Tales auf Facebook noch nicht geprüft.",
+   where:"Konten: Instagram, Facebook", check:"Ist der Handle frei? Welches E-Mail-Konto nutzt das neue Profil?"},
+
+  {id:"github", g:"dev", x:540, y:40, t:"GitHub", sub:"basana/rhein-guide-publicd_a",
+   s:"Quellcode und Bilder der App.",
+   d:"Öffentliches Repository mit index.html, sw.js, manifest.json, Bildern und CHANGELOG. Claude hat Zugriff über die GitHub-App der Organisation basana. Die alte GitHub-Pages-Seite basana.github.io/rhein-guide-publicD_A ist noch aktiv: abschalten, sobald die Visitenkarte umgestellt ist. Die Repositories sind noch öffentlich; privat erst nach dem Test. Für die Weihnachtsversion ist ein neues Repository basana/turret-tales-christmas angelegt und aktiv in Benutzung (GitHub Pages live).",
+   where:"github.com/basana", check:"Alte Seite (Pages) abschalten, nachdem der Button umgestellt ist."},
+  {id:"netlify", g:"dev", x:540, y:104, t:"Netlify", sub:"Hosting · zwei Seiten",
+   s:"Hier läuft die App live.",
+   d:"Zwei Seiten: rhine-guide-lite.netlify.app (alt, Stand v6b, 23 Stationen) und turret-tales.netlify.app (neu seit 18.10, Entwurf getestet). Kostenloser Plan mit Kreditlimit. Laut Notizen blieben 178 Kredite, Verbrauch unklar. Produktionsdeploy kostet etwa 15 Kredite, Entwurf nichts. Eine falsch angelegte Seite (meek-banoffee-643a5a) soll gelöscht werden.",
+   where:"app.netlify.com", check:"Welche Adresse bleibt? Im Billing-Bereich Kredite prüfen."},
+  {id:"netlifycli", g:"dev", x:540, y:168, t:"Netlify CLI (Terminal)", sub:"Mac · Node 24",
+   s:"Befehle für das Veröffentlichen vom Computer.",
+   d:"Installiert über npm (mit sudo). Anmeldung erledigt. Der Ordner ~/Desktop/site-deploy ist mit turret-tales verbunden. Befehle: netlify deploy --dir=. (Entwurf), netlify deploy --prod --dir=. (live).",
+   where:"Terminal, Ordner ~/Desktop/site-deploy", check:"Vor jedem Deploy die Version in sw.js erhöhen."},
+  {id:"deploy", g:"dev", x:540, y:232, t:"Ablauf: Veröffentlichung", sub:"von der Änderung bis live",
+   s:"Die Reihenfolge, die immer gilt.",
+   d:"1) Dateien ändern (index.html, sw.js, Bilder). 2) Auf GitHub hochladen. 3) Ordner site-deploy mit nur den Arbeitsdateien füllen. 4) Version in sw.js erhöhen. 5) Entwurf deployen und im Chrome prüfen. 6) Produktion deployen. 7) Live-Adresse im privaten Fenster öffnen und Version notieren. Netlify und GitHub sind nicht verbunden: beides muss passieren.",
+   where:"Dokument: netlify-deploy-anleitung (Projekt MAP)", check:"Nach jedem Deploy: Zahl der Stationen (23) und Version prüfen."},
+  {id:"goatcounter", g:"dev", x:540, y:296, t:"GoatCounter", sub:"rhine-guide.goatcounter.com",
+   s:"Besucherstatistik ohne Cookies.",
+   d:"Zählt die Aufrufe der App. Quellen erkennt sie über ?src=mailchimp aus der Visitenkarte. Die Datenschutzerklärung in der App nennt den Dienst. Wichtig für die Entscheidung, woher die Gäste kommen.",
+   where:"goatcounter.com (Anmeldung)", check:"Erscheint die Quelle mailchimp nach der Umstellung?"},
+  {id:"obsidian", g:"dev", x:540, y:380, t:"Obsidian (iCloud)", sub:"Ordner RheinApp/MAP",
+   s:"Notizen zu Systemen, Links, Marke und Postkarten.",
+   d:"Archive der Updates: update8 vorbereitet (Stand 15.10), ob eingelegt, unklar. Wichtige Notizen: name-der-app, rhine-guide-app, qr-seiten, todo, marke-und-foerderung, tour-marketing-funnel.",
+   where:"iCloud Drive/Obsidian/RheinApp/MAP/", check:"update8 einlegen, alte Versionen löschen."},
+  {id:"topaz", g:"print", x:540, y:444, t:"Bildbearbeitung", sub:"Topaz AI · Affinity Photo",
+   s:"Vorbereitung der Bilder für Druck und Web.",
+   d:"Topaz AI wird einmal zur Druckgröße hochskaliert, danach keine KI mehr. Affinity Photo: Verlaufsumsetzung, Ebenen, Masken. Für den Druck: CMYK mit Profil PSO Coated v3, 3 mm Beschnitt. Bei flachen PDFs ist die Farbumwandlung in Acrobat sicherer.",
+   where:"Affinity-Dateien (lokal)", check:"Originale mit Ebenen sichern, bevor etwas überschrieben wird."},
+  {id:"icloud", g:"services", x:540, y:508, t:"iCloud MAP", sub:"Fotos, Emblem, Material",
+   s:"Ablage für Originalfotos.",
+   d:"Originalfotos, Emblem, Materialien. Claude kann iCloud-Freigaben nicht lesen; Bilder deshalb über GitHub oder Google Drive hochladen.",
+   where:"iCloud Drive", check:"Originale nicht löschen."},
+
+  {id:"qrcode", g:"services", x:800, y:40, t:"QRCodeChimp", sub:"Visitenkarte und Ziel der QR-Codes",
+   s:"Dienst für Profile und QR-Codes.",
+   d:"Laut Notizen Limit von 1000 Scans im Monat. Die Weiterleitung eines bereits gedruckten QR ändern kostet laut Support 200 USD, deshalb nicht. Stattdessen den Inhalt der Zielseite ändern. Zwei Seiten: toursallyearround und rlugsqdxl7q8.",
+   where:"QRCodeChimp-Konto", check:"Limit und Kosten prüfen, bevor die Auflage steigt."},
+  {id:"nfc", g:"services", x:800, y:104, t:"NFC-Karten und Aufkleber", sub:"noch nicht bestellt",
+   s:"Berühren statt scannen.",
+   d:"Kreditkartenformat, 200–400 Stück, Budget bis 200 €, Chip NTAG216. Mögliche Anbieter: NFC21, NatureCard, NFCW.de, Wazzl.de. Aufkleber: 100 Stück (4,69 €) vielleicht bestellt, unklar. Die Adresse im Chip erst nach Entscheidung über Namen und Domain festlegen.",
+   where:"Notizen: NFC-Karten und Schlüsselanhänger", check:"Nicht drucken, bevor Name und Adresse feststehen."},
+  {id:"saxoprint", g:"print", x:800, y:168, t:"Saxoprint", sub:"Kundennummer 101581753",
+   s:"Druckerei für Postkarten.",
+   d:"Letzte Bestellung: 500 A6, 4/4 beidseitig, 280 g, 30 €. Angebot für 500 Stück (Papier nicht bekannt): 20,48 €. Für 1000: 23,60 €. Anfrage nach 150 g und 200 g mit Musterkarten als Entwurf in Gmail (an service@saxoprint.de). Im Entwurf fehlen noch Telefon oder E-Mail. FSC-Logo-Aufdruck nicht nötig.",
+   where:"Gmail basinprivat (Entwurf) · Saxoprint-Konto", check:"Entwurf ergänzen und senden; Preise und Muster vergleichen."},
+  {id:"ionos", g:"services", x:800, y:232, t:"Domain turrettales.de", sub:"IONOS · 12 Monate, 1 € im ersten Jahr",
+   s:"Eigene Adresse für QR-Codes und NFC.",
+   d:"Gekauft 14.10.2026, automatische Verlängerung ist an (danach etwa 1,30 € im Monat). Plan: turrettales.de/go als dauerhafte Adresse, die immer auf die aktuelle App zeigt. Die Rechnung als PDF im Ordner «Belege 2026» ablegen.",
+   where:"IONOS-Konto", check:"Rechnung abgelegt? Verlängerungsdatum notieren."},
+  {id:"gmail", g:"services", x:800, y:296, t:"Gmail", sub:"basinprivat@gmail.com",
+   s:"Post und Entwürfe.",
+   d:"Entwürfe: Anfrage an Saxoprint, Brief an Madlen (unklar, ob versendet). Dieses Konto ist mit Claude verbunden.",
+   where:"basinprivat@gmail.com", check:"Entwurf Saxoprint: Kontakt eintragen, senden."},
+  {id:"gdrive", g:"services", x:800, y:360, t:"Google Drive", sub:"Konto basinprivat (privat)",
+   s:"Dateiablage. Derzeit ist nur das private Konto mit Claude verbunden.",
+   d:"Für Bilder aus anderen Konten: Ordner mit basinprivat@gmail.com teilen (Test noch offen). Das private Konto nicht aufräumen. Touristische Konten gibt es mehrere, ihre Zuordnung ist offen.",
+   where:"Konten: Notizen accounts (Projekt MAP)", check:"Ordner teilen und Zugriff testen."},
+  {id:"leaflet", g:"dev", x:800, y:424, t:"Karte: Leaflet und OpenStreetMap", sub:"Kacheln von externem Server",
+   s:"Darstellung der Karte in der App.",
+   d:"Leaflet-Code kommt von cdnjs, die Kacheln von tile.openstreetmap.org. Ohne Internet keine Karte. Geplant: lokal ablegen, damit Offline funktioniert.",
+   where:"index.html", check:"Offline-Test nach dem Umbau."},
+  {id:"gfonts", g:"dev", x:800, y:488, t:"Schrift: Google Fonts", sub:"EB Garamond",
+   s:"Schrift der App.",
+   d:"Wird von fonts.googleapis.com geladen. Geplant: lokal ablegen, zusammen mit dem Offline-Umbau.",
+   where:"index.html", check:"Mit dem Offline-Umbau erledigen."},
+  {id:"whatsapp", g:"services", x:800, y:552, t:"WhatsApp (Kontakt)", sub:"Nummer in App und Visitenkarte",
+   s:"Hauptkontakt für Buchungen.",
+   d:"Link wa.me/… steht in der App und auf der Visitenkarte. Bei einer neuen Nummer beide Stellen ändern.",
+   where:"index.html, QRCodeChimp", check:"Ist die Nummer aktuell?"},
+  {id:"euipo", g:"legal", x:800, y:616, t:"Markenschutz (EUIPO)", sub:"SME Fund 2026 · Frist 04.12.2026",
+   s:"Förderung für die Marke.",
+   d:"Laut Artikeln erstattet der Fonds bis zu 75 % der Amtsgebühren, die genauen Bedingungen sind nicht bestätigt. Offen: Ist vorher ein Gutschein nötig? Passt der Status Kleinunternehmer? Anwalt verschoben (kein Budget). Den Namen Turret Tales vorher prüfen.",
+   where:"euipo.europa.eu", check:"Auf der offiziellen Seite die Bedingungen lesen."}
+];
+
+const EDGES = [
+  ["app","stations"],["app","features"],["app","brand"],["app","funnel"],["app","github"],["app","netlify"],["app","goatcounter"],["app","leaflet"],["app","gfonts"],["app","whatsapp"],
+  ["funnel","card"],["funnel","postcards"],["funnel","social"],["funnel","cruise"],["funnel","independent"],["funnel","partners"],
+  ["cruise","touroperators"],
+  ["koblenztouristik","demo"],["demo","xmasdata"],["xmasdata","xmas"],["koblenztouristik","app"],["koblenztouristik","touristinfo"],
+  ["app","xmas"],["app","mosel"],["mosel","touristinfo"],["mosel","friends"],["xmas","postcards"],["touristinfo","app"],["friends","partners"],["touroperators","madlen"],["madlen","app"],
+  ["card","qrcode"],["card","nfc"],["card","whatsapp"],["card","netlify"],
+  ["postcards","saxoprint"],["postcards","topaz"],["postcards","qrcode"],["saxoprint","gmail"],["gmail","madlen"],
+  ["nfc","ionos"],["ionos","netlify"],["brand","ionos"],["brand","euipo"],["obsidian","funnel"],["icloud","topaz"],["gdrive","icloud"],
+  ["github","deploy"],["netlify","netlifycli"],["netlifycli","deploy"],["deploy","netlify"],["deploy","goatcounter"]
+];
+
+const SX = 1.12, SY = 1.12;
+// Wichtigkeit: 3 = groß und dicke Linie, 2 = mittel, 1 = klein
+const PRIO = {app:3, funnel:3, card:3, postcards:3, deploy:3,
+  netlify:2, github:2, madlen:2, saxoprint:2, euipo:2, brand:2, qrcode:2, ionos:2, nfc:2, touroperators:2, social:2};
+const byId = Object.fromEntries(NODES.map(n => [n.id, n]));
+const map = document.getElementById("map");
+const svg = document.getElementById("lines");
+const NS = "http://www.w3.org/2000/svg";
+const lines = [];
+
+// Legende
+const legend = document.getElementById("legend");
+Object.values(GROUPS).forEach(g => {
+  const s = document.createElement("span");
+  const i = document.createElement("i"); i.style.background = g.c;
+  s.appendChild(i); s.appendChild(document.createTextNode(g.t));
+  legend.appendChild(s);
+});
+
+// Linien (Mittelpunkte der Boxen)
+EDGES.forEach(([a,b]) => {
+  const l = document.createElementNS(NS, "line");
+  l.dataset.a = a; l.dataset.b = b;
+  svg.appendChild(l); lines.push(l);
+});
+
+// Boxen
+const buttons = {};
+NODES.forEach(n => {
+  const b = document.createElement("button");
+  const p = PRIO[n.id] || 1;
+  b.className = "node p" + p; b.type = "button";
+  b.style.left = (n.x * SX) + "px"; b.style.top = (n.y * SY) + "px";
+  b.style.setProperty("--c", GROUPS[n.g].c);
+  const strong = document.createElement("b"); strong.textContent = n.t;
+  const sm = document.createElement("span"); sm.textContent = n.sub;
+  b.appendChild(strong); b.appendChild(sm);
+  b.addEventListener("click", () => show(n.id));
+  map.appendChild(b); buttons[n.id] = b;
+});
+
+function drawLines() {
+  lines.forEach(l => {
+    const A = buttons[l.dataset.a], B = buttons[l.dataset.b];
+    l.setAttribute("x1", A.offsetLeft + A.offsetWidth / 2);
+    l.setAttribute("y1", A.offsetTop + A.offsetHeight / 2);
+    l.setAttribute("x2", B.offsetLeft + B.offsetWidth / 2);
+    l.setAttribute("y2", B.offsetTop + B.offsetHeight / 2);
+  });
+  let right = 0, bottom = 0;
+  Object.values(buttons).forEach(b => {
+    right = Math.max(right, b.offsetLeft + b.offsetWidth);
+    bottom = Math.max(bottom, b.offsetTop + b.offsetHeight);
+  });
+  map.style.width = (right + 30) + "px";
+  map.style.height = (bottom + 30) + "px";
+}
+let zoom = 1;
+function setZoom(z) {
+  zoom = Math.min(1.6, Math.max(0.8, Math.round(z * 10) / 10));
+  map.style.zoom = zoom;
+  document.getElementById("zv").textContent = Math.round(zoom * 100) + " %";
+  drawLines();
+}
+document.getElementById("zm").addEventListener("click", () => setZoom(zoom - 0.1));
+document.getElementById("zp").addEventListener("click", () => setZoom(zoom + 0.1));
+window.addEventListener("resize", drawLines);
+
+function related(id) {
+  const out = [];
+  EDGES.forEach(([a,b]) => {
+    if (a === id) out.push(b);
+    if (b === id) out.push(a);
+  });
+  return [...new Set(out)];
+}
+
+function show(id) {
+  const n = byId[id];
+  Object.values(buttons).forEach(b => b.classList.remove("sel"));
+  buttons[id].classList.add("sel");
+  lines.forEach(l => l.classList.toggle("hl", l.dataset.a === id || l.dataset.b === id));
+  const d = document.getElementById("detail");
+  d.replaceChildren();
+  const h = document.createElement("h2"); h.textContent = n.t;
+  const chip = document.createElement("div"); chip.className = "chip";
+  chip.textContent = GROUPS[n.g].t + " · " + n.sub;
+  const lead = document.createElement("p"); lead.className = "lead"; lead.textContent = n.s;
+  const dl = document.createElement("dl"); dl.style.margin = "0";
+  [["Was es ist", n.d], ["Wo es liegt und wie man hinkommt", n.where], ["Prüfen oder offen", n.check, true]].forEach(([k, v, warn]) => {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    if (warn) dd.className = "check";
+    dl.appendChild(dt); dl.appendChild(dd);
+  });
+  const relTitle = document.createElement("dt"); relTitle.textContent = "Verbunden mit";
+  const rel = document.createElement("div"); rel.className = "rel";
+  related(id).forEach(r => {
+    const rb = document.createElement("button"); rb.type = "button"; rb.textContent = byId[r].t;
+    rb.addEventListener("click", () => show(r));
+    rel.appendChild(rb);
+  });
+  d.append(h, chip, lead, dl, relTitle, rel);
+  d.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+// Liste nach Bereichen
+const listEl = document.getElementById("tab-list");
+Object.entries(GROUPS).forEach(([gid, g]) => {
+  const items = NODES.filter(n => n.g === gid);
+  if (!items.length) return;
+  const head = document.createElement("div"); head.className = "group";
+  const dot = document.createElement("i"); dot.style.background = g.c;
+  head.appendChild(dot); head.appendChild(document.createTextNode(g.t));
+  const grid = document.createElement("div"); grid.className = "cards";
+  items.forEach(n => {
+    const c = document.createElement("div"); c.className = "card";
+    const h = document.createElement("h3"); h.textContent = n.t;
+    const sub = document.createElement("div"); sub.className = "sub"; sub.textContent = n.sub;
+    const s = document.createElement("p"); s.textContent = n.s;
+    const dd = document.createElement("p"); dd.textContent = n.d;
+    const w = document.createElement("p"); w.className = "k"; w.textContent = "Wo: " + n.where;
+    const ck = document.createElement("p"); ck.className = "check"; ck.textContent = "Prüfen: " + n.check;
+    c.append(h, sub, s, dd, w, ck);
+    grid.appendChild(c);
+  });
+  listEl.append(head, grid);
+});
+
+// Links: alle Adressen an einem Ort, nach Bereich — damit nichts mehr verloren geht
+const LINK_GROUPS = [
+  { t: "Turret Tales — Weihnachts-/Mosel-Version (GitHub Pages, live)", items: [
+    { t: "Hauptseite (Rhein, Weihnachten)", u: "https://basana.github.io/turret-tales-christmas/", status: "live" },
+    { t: "Essen & Trinken / Weingüter (eigene Seite)", u: "https://basana.github.io/turret-tales-christmas/partner-map.html", status: "live" },
+    { t: "Winningen: Wanderungen, Weingüter, Geschichte, Sehenswürdigkeiten, Weihnachtsmarkt", u: "https://basana.github.io/turret-tales-christmas/walks.html", status: "live" },
+    { t: "Demo: Essen (Entwurf)", u: "https://basana.github.io/turret-tales-christmas/demo-food.html", status: "todo" },
+    { t: "Demo: Souvenirs (Entwurf)", u: "https://basana.github.io/turret-tales-christmas/demo-souvenirs.html", status: "todo" },
+    { t: "GitHub-Repository (Quellcode)", u: "https://github.com/basana/turret-tales-christmas", status: "live" }
+  ]},
+  { t: "Rhine Guide — Hauptversion (älter)", items: [
+    { t: "Netlify (alt, v6b, 23 Stationen)", u: "https://rhine-guide-lite.netlify.app", status: "old" },
+    { t: "Netlify (neu, seit 18.10., Entwurf getestet)", u: "https://turret-tales.netlify.app", status: "todo" },
+    { t: "Alte GitHub-Pages-Seite (abschalten, sobald Button umgestellt ist)", u: "https://basana.github.io/rhein-guide-publicD_A", status: "old" },
+    { t: "GitHub-Repository (öffentlich)", u: "https://github.com/basana/rhein-guide-publicd_a", status: "live" },
+    { t: "Eigene Domain (gekauft, noch nicht verbunden)", u: "https://turrettales.de", status: "todo" }
+  ]},
+  { t: "Visitenkarte, QR und Statistik", items: [
+    { t: "Digitale Visitenkarte (toursallyearround)", u: "https://qrcodechimp.page/page/toursallyearround", status: "live" },
+    { t: "Zweite QRCodeChimp-Seite (auf gedruckten Karten? — prüfen)", u: "https://qrcodechimp.page/page/rlugsqdxl7q8", status: "todo" },
+    { t: "GoatCounter (Besucherstatistik)", u: "https://rhine-guide.goatcounter.com", status: "live" },
+    { t: "WhatsApp-Kontakt", u: "https://wa.me/491772850207", status: "live" }
+  ]},
+  { t: "Projekt-Dokumente und Karten (Claude-Artefakte)", items: [
+    { t: "Diese Karte — tuProjectcard", u: "https://claude.ai/artifact/R9QdSbt6qQvj27sZ7jJs8t", status: "live" },
+    { t: "Projectcard: Hauptrichtungen (Übersicht)", u: "https://claude.ai/artifact/SgZbc6MnhQLXKVhgbKoq6C", status: "live" },
+    { t: "NFC-Karten Entscheidungsbaum", u: "https://claude.ai/artifact/DH4C48og5LsWRtCbNs9vGP", status: "live" },
+    { t: "ttTodo — Aufgabenliste", u: "https://claude.ai/artifact/2pxic6VApsJPyhcFFswKUz", status: "live" }
+  ]}
+];
+const STATUS_LABEL = { live: "aktuell/live", old: "alt — ablösen", todo: "zu prüfen/offen" };
+const linksEl = document.getElementById("tab-links");
+{
+  const intro = document.createElement("p");
+  intro.className = "lead";
+  intro.style.marginBottom = "14px";
+  intro.textContent = "Alle Adressen an einem Ort. Grün = aktuell/live, Orange = alt/ablösen, Grau = noch zu prüfen oder offen. Quelle: karte-der-links.md im Projekt MAP wird zuerst gepflegt — diese Liste folgt.";
+  linksEl.appendChild(intro);
+  LINK_GROUPS.forEach(group => {
+    const head = document.createElement("div"); head.className = "group";
+    head.textContent = group.t;
+    const grid = document.createElement("div"); grid.className = "cards";
+    group.items.forEach(it => {
+      const c = document.createElement("div"); c.className = "card linkcard";
+      const h = document.createElement("h3"); h.textContent = it.t;
+      const p = document.createElement("p");
+      const a = document.createElement("a"); a.href = it.u; a.target = "_blank"; a.rel = "noopener"; a.textContent = it.u;
+      p.appendChild(a);
+      const st = document.createElement("span"); st.className = "status " + it.status; st.textContent = STATUS_LABEL[it.status];
+      c.append(h, p, st);
+      grid.appendChild(c);
+    });
+    linksEl.append(head, grid);
+  });
+}
+
+// Offen: [Text, Ziel-Box, Dringlichkeit r = diese Woche, y = bis Monatsende, g = später]
+const URG = {
+  r:{t:"Diese Woche", c:"#B3261E"},
+  y:{t:"Bis Monatsende", c:"#B7791F"},
+  g:{t:"Später", c:"#6b7280"}
+};
+const UORDER = {r:0, y:1, g:2};
+const OPEN = [
+  ["Adresse der Hauptseite: turret-tales oder rhine-guide-lite festlegen", "netlify", "y"],
+  ["QR auf der gedruckten Postkarte: rlugsqdxl7q8 oder toursallyearround?", "card", "y"],
+  ["Button in der Visitenkarte auf die Netlify-Adresse umstellen, danach alte GitHub-Seite abschalten", "card", "y"],
+  ["Domain turrettales.de mit Netlify verbinden: Domain in Netlify hinzufügen, DNS-Einträge bei IONOS setzen, alte Parkingeinträge löschen, HTTPS prüfen", "netlify", "r"],
+  ["Brief an Madlen: versendet? Welcher Link steht drin?", "madlen", "r"],
+  ["Kontakte für Thurgau Travel, SijFa Cruises und ANWB suchen und Anfragen senden (Entwürfe liegen bereit, Adressen fehlen noch)", "partners", "y"],
+  ["Fotos: Schönburg 4 und 5 fehlen; Stahleck 5 ist aus der Liste gestrichen", "stations", "y"],
+  ["Netlify: falsche Seite meek-banoffee-643a5a löschen; Kreditverbrauch prüfen", "netlify", "y"],
+  ["Saxoprint: Kontakt im Entwurf eintragen, Preise für 150 g und 200 g vergleichen", "saxoprint", "r"],
+  ["Navigator-Karte: Probeauflage 200 Stück, Papier wählen (300 g matt), QR-Adresse festlegen, Druck bei Saxoprint", "postcards", "y"],
+  ["Postkarten: Menge festlegen (Vorschlag etwa 1500); Polaroid gedruckt oder nur Idee?", "postcards", "g"],
+  ["Instagram: Handle und E-Mail für das zweite Profil; Facebook-Name prüfen", "social", "g"],
+  ["EUIPO SME Fund: Bedingungen auf der offiziellen Seite, Frist 04.12.2026", "euipo", "y"],
+  ["NFC: nicht drucken, bevor Name und Adresse feststehen", "nfc", "g"],
+  ["Obsidian: update8 einlegen, alte Updates löschen", "obsidian", "g"],
+  ["Druck: Farbprofil PSO Coated v3 für den Druckereiauftrag verwenden", "topaz", "g"],
+  ["Nach jeder Änderung: sw.js-Version erhöhen, Entwurf prüfen, dann Produktion", "deploy", "g"],
+  ["Winningen-Seite walks.html: Fotos (Wanderung, Weingüter), Restaurants, genauer GPX-Track falls verfügbar", "mosel", "y"],
+  ["Turret Tales Weihnachts-Navigator: Startbildschirm, Bilder, Schalter Classic | Christmas", "xmas", "y"],
+  ["Mosel-Version: Preis und Verkauf festlegen", "mosel", "g"],
+  ["Touristinformationen: Ansprechpartner sammeln", "touristinfo", "g"],
+  ["Hotels und Cafés an der Mosel: Namen und Kontakte", "friends", "g"],
+  ["Demo Koblenz: Startbildschirm, Weihnachtsbild, Schalter Classic | Christmas (Priorität 1)", "demo", "y"],
+  ["Koblenz-Touristik: Termin für die Vorführung", "koblenztouristik", "y"],
+  ["Weihnachtsmärkte: Koblenz-Termine 2026 erfragen", "xmasdata", "y"],
+  ["Google Drive: Testordner mit basinprivat@gmail.com teilen", "gdrive", "g"]
+];
+const ol = document.getElementById("openlist");
+const openBtn = document.getElementById("opensort");
+let openSorted = false;
+
+function renderOpen() {
+  ol.replaceChildren();
+  const list = openSorted ? [...OPEN].sort((a, b) => UORDER[a[2]] - UORDER[b[2]]) : OPEN;
+  list.forEach(([text, id, u]) => {
+    const li = document.createElement("li");
+    if (openSorted) {
+      const tag = document.createElement("span"); tag.className = "urg";
+      tag.style.setProperty("--u", URG[u].c);
+      const dot = document.createElement("i");
+      tag.append(dot, document.createTextNode(URG[u].t));
+      li.appendChild(tag);
+    }
+    const b = document.createElement("button"); b.type = "button"; b.className = "item"; b.textContent = text;
+    b.addEventListener("click", () => {
+      document.querySelector('[data-tab="map"]').click();
+      show(id);
+    });
+    li.appendChild(b); ol.appendChild(li);
+  });
+}
+openBtn.addEventListener("click", () => {
+  openSorted = !openSorted;
+  openBtn.setAttribute("aria-pressed", String(openSorted));
+  openBtn.textContent = openSorted ? "Ursprüngliche Reihenfolge" : "Nach Dringlichkeit sortieren";
+  renderOpen();
+});
+renderOpen();
+
+setZoom(window.innerWidth < 600 ? 1.2 : 1);
+
+// Reiter
+document.querySelectorAll('[role="tab"]').forEach(t => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll('[role="tab"]').forEach(x => x.setAttribute("aria-selected", x === t ? "true" : "false"));
+    const key = t.dataset.tab;
+    document.getElementById("tab-map").classList.toggle("hide", key !== "map");
+    document.getElementById("tab-list").classList.toggle("hide", key !== "list");
+    document.getElementById("tab-links").classList.toggle("hide", key !== "links");
+    document.getElementById("tab-open").classList.toggle("hide", key !== "open");
+  });
+});
+</script>
+</body>
+</html>

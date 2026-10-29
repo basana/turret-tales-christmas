@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Food, Drinks & More · Turret Tales</title>
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="icon-touch.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
   :root { --cream:#F5ECD6; --paper:#FBF6EA; --maroon:#7A1026; --ink:#3a2a1a; --soft:#6b5a4a; --gold:#c9a05c; --ok:#2f6b3a; }
@@ -165,10 +167,10 @@
 <div class="btns" style="margin:0 0 10px"><button class="btn solid" id="gpsBtn"></button></div>
 <div class="gps-box" id="gpsBox" hidden><div id="gpsPanel"></div></div>
 
-<nav class="secnav" id="secnav"></nav>
-
 <div id="cards"></div>
 </div>
+
+<div id="view-shop" hidden><div id="shop-cards"></div></div>
 
 <div id="view-wine" hidden><div id="wine-cards"></div></div>
 
@@ -366,13 +368,13 @@ const PIN_LOGOS = [
 ];
 
 const TABS = {
-  de: { food: 'Essen & Trinken', wine: 'Weingüter', wTitle: 'Weingüter & Weinproben', wIntro: 'Weingüter am Moselufer. Viele Gäste der Flusskreuzfahrt möchten Wein direkt beim Winzer probieren. Hier finden Sie Winzer, die Weinproben anbieten.', wPh: 'Weingut – Adresse folgt' },
-  en: { food: 'Food & drinks', wine: 'Winemakers', wTitle: 'Winemakers & wine tastings', wIntro: 'Wineries on the Moselle. Many river cruise guests want to taste wine directly from the winemaker. Here you find winemakers who offer tastings.', wPh: 'Winery – address to follow' },
-  fr: { food: 'Restauration', wine: 'Vignerons', wTitle: 'Domaines et dégustations', wIntro: 'Domaines viticoles sur la Moselle. Beaucoup de croisiéristes veulent goûter le vin directement chez le vigneron. Voici les vignerons qui proposent des dégustations.', wPh: 'Domaine – adresse à venir' },
-  nl: { food: 'Eten & drinken', wine: 'Wijnmakers', wTitle: 'Wijnhuizen & proeverijen', wIntro: 'Wijnhuizen aan de Moezel. Veel riviercruisegasten willen wijn direct bij de wijnmaker proeven. Hier vindt u wijnmakers met proeverijen.', wPh: 'Wijnhuis – adres volgt' },
-  ru: { food: 'Еда и напитки', wine: 'Виноделы', wTitle: 'Виноделы и дегустации', wIntro: 'Винодельни на Мозеле. Многие гости речных круизов хотят попробовать вино прямо у винодела. Здесь вы найдёте виноделов, которые проводят дегустации.', wPh: 'Винодельня – адрес будет добавлен' },
-  zh: { food: '美食与饮品', wine: '酒庄', wTitle: '酒庄与品酒', wIntro: '摩泽尔河畔的酒庄。许多河轮游客希望直接在酒庄品尝葡萄酒。这里为您介绍提供品酒的酒庄。', wPh: '酒庄 – 地址稍后提供' },
-  he: { food: 'אוכל ושתייה', wine: 'יקבים', wTitle: 'יקבים וטעימות יין', wIntro: 'יקבים לאורך נהר המוזל. אורחי שייט רבים רוצים לטעום יין ישירות אצל היצרן. כאן תמצאו יקבים המציעים טעימות יין.', wPh: 'יקב – הכתובת תתעדכן בהמשך' },
+  de: { food: 'Essen & Trinken', shop: 'Souvenirs & Bücher', shopIntro: 'Buchhandlungen und Souvenirläden in der Altstadt. Hier finden Sie Postkarten, Bücher und Mitbringsel — auch die Postkarten von Turret Tales.', wine: 'Weingüter', wTitle: 'Weingüter & Weinproben', wIntro: 'Weingüter am Moselufer. Viele Gäste der Flusskreuzfahrt möchten Wein direkt beim Winzer probieren. Hier finden Sie Winzer, die Weinproben anbieten.', wPh: 'Weingut – Adresse folgt' },
+  en: { food: 'Food & drinks', shop: 'Souvenirs & books', shopIntro: 'Bookshops and souvenir shops in the old town. Find postcards, books and gifts here — including the Turret Tales postcards.', wine: 'Winemakers', wTitle: 'Winemakers & wine tastings', wIntro: 'Wineries on the Moselle. Many river cruise guests want to taste wine directly from the winemaker. Here you find winemakers who offer tastings.', wPh: 'Winery – address to follow' },
+  fr: { food: 'Restauration', shop: 'Souvenirs & livres', shopIntro: 'Librairies et boutiques de souvenirs dans la vieille ville. Vous y trouverez cartes postales, livres et cadeaux — y compris les cartes postales de Turret Tales.', wine: 'Vignerons', wTitle: 'Domaines et dégustations', wIntro: 'Domaines viticoles sur la Moselle. Beaucoup de croisiéristes veulent goûter le vin directement chez le vigneron. Voici les vignerons qui proposent des dégustations.', wPh: 'Domaine – adresse à venir' },
+  nl: { food: 'Eten & drinken', shop: 'Souvenirs & boeken', shopIntro: 'Boekwinkels en souvenirwinkels in de oude stad. Hier vindt u ansichtkaarten, boeken en cadeaus — ook de ansichtkaarten van Turret Tales.', wine: 'Wijnmakers', wTitle: 'Wijnhuizen & proeverijen', wIntro: 'Wijnhuizen aan de Moezel. Veel riviercruisegasten willen wijn direct bij de wijnmaker proeven. Hier vindt u wijnmakers met proeverijen.', wPh: 'Wijnhuis – adres volgt' },
+  ru: { food: 'Еда и напитки', shop: 'Сувениры и книги', shopIntro: 'Книжные и сувенирные магазины старого города. Здесь вы найдёте открытки, книги и подарки — в том числе открытки Turret Tales.', wine: 'Виноделы', wTitle: 'Виноделы и дегустации', wIntro: 'Винодельни на Мозеле. Многие гости речных круизов хотят попробовать вино прямо у винодела. Здесь вы найдёте виноделов, которые проводят дегустации.', wPh: 'Винодельня – адрес будет добавлен' },
+  zh: { food: '美食与饮品', shop: '纪念品与书籍', shopIntro: '老城区的书店和纪念品商店。这里有明信片、书籍和礼品——包括 Turret Tales 的明信片。', wine: '酒庄', wTitle: '酒庄与品酒', wIntro: '摩泽尔河畔的酒庄。许多河轮游客希望直接在酒庄品尝葡萄酒。这里为您介绍提供品酒的酒庄。', wPh: '酒庄 – 地址稍后提供' },
+  he: { food: 'אוכל ושתייה', shop: 'מזכרות וספרים', shopIntro: 'חנויות ספרים ומזכרות בעיר העתיקה. כאן תמצאו גלויות, ספרים ומתנות — כולל גלויות Turret Tales.', wine: 'יקבים', wTitle: 'יקבים וטעימות יין', wIntro: 'יקבים לאורך נהר המוזל. אורחי שייט רבים רוצים לטעום יין ישירות אצל היצרן. כאן תמצאו יקבים המציעים טעימות יין.', wPh: 'יקב – הכתובת תתעדכן בהמשך' },
 };
 // Виноделы: слоты в том же формате, что и кафе (partnerCard).
 // Фото: положить в папку сайта и указать в photos (первое — основное, с рамкой).
@@ -445,9 +447,36 @@ const WINERIES = [
     desc: null
   }
 ];
-let view = 'food';
-let lang = 'de';
-try { const s = localStorage.getItem('partnerLang'); if (s && T[s]) lang = s; } catch (e) {}
+// Deep-Link auf eine bestimmte Registerkarte, z. B. partner-map.html?view=shop
+let view = (function() {
+  try {
+    const v = new URLSearchParams(location.search).get('view');
+    if (['food', 'shop', 'wine'].includes(v)) return v;
+  } catch (e) {}
+  return 'food';
+})();
+// Spracherkennung anhand der Gerätesprache (navigator.language/.languages),
+// wie im Hauptnavigator (index.html) — konsistenter Schlüssel 'partnerLang'.
+const SUPPORTED_LANGS = ['de', 'fr', 'nl', 'en', 'ru', 'zh', 'he'];
+function detectBrowserLang(supported, fallback) {
+  try {
+    const cands = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || navigator.userLanguage || ''];
+    for (const c of cands) {
+      let code = ((c || '') + '').toLowerCase().split('-')[0];
+      if (code === 'iw') code = 'he'; // alter Sprachcode für Hebräisch
+      if (code === 'zh') return 'zh'; // zh-CN, zh-TW, zh-HK etc. alle auf 'zh'
+      if (supported.includes(code)) return code;
+    }
+  } catch (e) {}
+  return fallback;
+}
+let lang = (function() {
+  try {
+    const saved = localStorage.getItem('partnerLang');
+    if (saved && SUPPORTED_LANGS.includes(saved) && T[saved]) return saved;
+  } catch (e) {}
+  return detectBrowserLang(SUPPORTED_LANGS, 'de');
+})();
 
 const map = L.map('map', { scrollWheelZoom: false, zoomSnap: 0 });
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
@@ -566,6 +595,10 @@ document.getElementById('cp-reset').addEventListener('click', () => {
 document.getElementById('cp-close').addEventListener('click', () => document.getElementById('cp-modal').classList.remove('open'));
 document.getElementById('cp-modal').addEventListener('click', e => { if (e.target.id === 'cp-modal') e.target.classList.remove('open'); });
 document.getElementById('cards').addEventListener('click', e => {
+  const b = e.target.closest('[data-coupon]');
+  if (b) openCoupon(b.dataset.coupon);
+});
+document.getElementById('shop-cards').addEventListener('click', e => {
   const b = e.target.closest('[data-coupon]');
   if (b) openCoupon(b.dataset.coupon);
 });
@@ -723,11 +756,14 @@ function render() {
   document.getElementById('t-title').textContent = t.title;
   document.getElementById('t-sub').textContent = t.sub;
   const tt = TABS[lang] || TABS.en;
-  document.getElementById('t-intro').textContent = view === 'food' ? t.intro : tt.wIntro;
+  document.getElementById('t-intro').textContent =
+    view === 'food' ? t.intro : (view === 'shop' ? tt.shopIntro : tt.wIntro);
   document.getElementById('ptabs').innerHTML =
     `<button data-v="food" class="${view === 'food' ? 'active' : ''}">${tt.food}</button>` +
+    `<button data-v="shop" class="${view === 'shop' ? 'active' : ''}">${tt.shop}</button>` +
     `<button data-v="wine" class="${view === 'wine' ? 'active' : ''}">${tt.wine}</button>`;
   document.getElementById('view-food').hidden = view !== 'food';
+  document.getElementById('view-shop').hidden = view !== 'shop';
   document.getElementById('view-wine').hidden = view !== 'wine';
   document.getElementById('wine-cards').innerHTML =
     `<h2 class="sec">${tt.wTitle}</h2>` + WINERIES.map((w, i) => w.name
@@ -735,8 +771,6 @@ function render() {
       : `<div class="card"><div class="num">W${i + 1}</div><div class="ph">${tt.wPh}</div></div>`).join('');
   document.getElementById('t-contact').innerHTML = t.contact;
   document.title = t.title + ' · Turret Tales';
-  document.getElementById('secnav').innerHTML =
-    `<a href="#sec-cafe">${t.navCafe}</a><a href="#sec-shop">${t.navShop}</a>`;
 
   const cafes = PARTNERS.map((p, i) => partnerCard(p, i + 1)).join('');
   const placeholders = PLACES.slice(PARTNERS.length + SHOPS.length).map((_, i) =>
@@ -745,8 +779,9 @@ function render() {
 
   document.getElementById('cards').innerHTML =
     `<h2 class="sec" id="sec-cafe">${t.secCafe}</h2>${cafes}` +
-    `<h2 class="sec" id="sec-shop">${t.secShop}</h2>${shops}` +
     `<h2 class="sec" id="sec-more">${t.secMore}</h2>${placeholders}`;
+  document.getElementById('shop-cards').innerHTML =
+    `<h2 class="sec" id="sec-shop">${tt.shop}</h2>${shops}`;
 
   document.getElementById('cp-brand').textContent = t.cpBrand;
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('active', b.dataset.l === lang));

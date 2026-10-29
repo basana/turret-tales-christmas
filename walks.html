@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Winningen · Turret Tales</title>
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="icon-touch.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
   :root {
@@ -696,8 +698,28 @@ const XMAS = {
   }
 };
 
-let lang = 'de';
-try { const s = localStorage.getItem('partnerLang'); if (s && T[s]) lang = s; } catch (e) {}
+// Spracherkennung anhand der Gerätesprache (navigator.language/.languages),
+// wie im Hauptnavigator (index.html) — konsistenter Schlüssel 'partnerLang'.
+const SUPPORTED_LANGS = ['de', 'fr', 'nl', 'en', 'ru', 'zh', 'he'];
+function detectBrowserLang(supported, fallback) {
+  try {
+    const cands = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || navigator.userLanguage || ''];
+    for (const c of cands) {
+      let code = ((c || '') + '').toLowerCase().split('-')[0];
+      if (code === 'iw') code = 'he'; // alter Sprachcode für Hebräisch
+      if (code === 'zh') return 'zh'; // zh-CN, zh-TW, zh-HK etc. alle auf 'zh'
+      if (supported.includes(code)) return code;
+    }
+  } catch (e) {}
+  return fallback;
+}
+let lang = (function() {
+  try {
+    const saved = localStorage.getItem('partnerLang');
+    if (saved && SUPPORTED_LANGS.includes(saved) && T[saved]) return saved;
+  } catch (e) {}
+  return detectBrowserLang(SUPPORTED_LANGS, 'de');
+})();
 let view = 'walks';
 
 // ---- Wanderungen ----

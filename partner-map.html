@@ -300,6 +300,7 @@ const T = {
 // Coupons (demo): same code and wording in every language.
 const COUPON = {
   mia: { code: 'TT-DEMO-MIA-10', name: 'Mia Gelateria', offer: { de: '10 % auf Ihren Eisbecher', en: '10% off your ice cream', fr: '10 % sur votre glace', nl: '10% korting op uw ijs', ru: '10 % на ваш стаканчик мороженого', zh: '您的冰淇淋享10%优惠', he: '10% הנחה על הגביע שלכם' } },
+  buta: { code: 'TT-DEMO-BUTA-10', name: 'Buta Cafe Koblenz', offer: { de: '10 % auf Ihre Bestellung', en: '10% off your order', fr: '10 % sur votre commande', nl: '10 % op uw bestelling', ru: '10 % на ваш заказ', zh: '订单享9折优惠', he: '10% הנחה על ההזמנה שלכם' } },
   reuffel: { code: 'TT-DEMO-REU-10', name: 'Reuffel Bazaar', offer: { de: '10 % auf Ihren Einkauf', en: '10% off your purchase', fr: '10 % sur vos achats', nl: '10% korting op uw aankoop', ru: '10 % на вашу покупку', zh: '您的购物享10%优惠', he: '10% הנחה על הקנייה שלכם' } }
 };
 
@@ -325,6 +326,27 @@ const PARTNERS = [
       nl: 'Zelfbediening-ijs: vul uw softijs zelf in het bakje en meng tot acht smaken. U betaalt aan het eind op gewicht. Ook de toppings kiest u zelf.',
       zh: '自助冰淇淋：您自己将软冰淇淋盛入杯中，最多可混合八种口味。最后按重量付款。配料也由您自己挑选。',
       he: 'גלידה בשירות עצמי: אתם ממלאים בעצמכם את הגביע בגלידה רכה ומערבבים עד שמונה טעמים. התשלום בסוף לפי משקל. גם את התוספות בוחרים בעצמכם.'
+    }
+  },
+  {
+    slug: 'buta',
+    name: 'Buta Cafe Koblenz',
+    icon: 'buta-icon.webp',
+    photos: ['buta-09.webp', 'buta-10.webp', 'buta-11.webp'],
+    textSlot: 3, // Beschreibung rückt auf den frei gewordenen Platz in der Bildergalerie (wie bei Reuffel)
+    photoAlt: 'Buta Cafe: hausgemachte gefüllte Pfannkuchen mit Karamell und Nüssen',
+    cat: { de: 'Café · Familienküche', en: 'Café · home cooking', ru: 'Кафе · домашняя кухня', fr: 'Café · cuisine familiale', nl: 'Café · huisgemaakte keuken', zh: '咖啡馆 · 家庭料理', he: 'בית קפה · בישול ביתי' },
+    addr: 'Florinsmarkt 12, 56068 Koblenz (Altstadt)',
+    hours: null,
+    gmaps: 'https://www.google.com/maps/search/?api=1&query=Buta+Cafe+Koblenz+Florinsmarkt+12',
+    desc: {
+      de: 'Echte Familienküche: alles wird von Hand zubereitet, die Kuchen ganz besonders. Traditionelle Rezepte aus dem Kaukasus und Osteuropa — Frühstück, Brunch, Kaffee und Tee.',
+      en: 'Real family-kitchen cooking: everything is made by hand, the cakes especially. Traditional recipes from the Caucasus and Eastern Europe — breakfast, brunch, coffee and tea.',
+      fr: "Une vraie cuisine familiale : tout est préparé à la main, les gâteaux tout particulièrement. Recettes traditionnelles du Caucase et d'Europe de l'Est — petit-déjeuner, brunch, café et thé.",
+      nl: 'Echte familiekeuken: alles wordt met de hand bereid, de taarten in het bijzonder. Traditionele recepten uit de Kaukasus en Oost-Europa — ontbijt, brunch, koffie en thee.',
+      ru: 'Настоящая семейная, домашняя кухня: всё готовится вручную, а торты — особенно. Традиционные рецепты Кавказа и Восточной Европы — завтраки, бранч, кофе и чай.',
+      zh: '真正的家庭厨房：一切都是手工制作，蛋糕尤其如此。来自高加索和东欧的传统配方——早餐、brunch、咖啡与茶。',
+      he: 'מטבח משפחתי אמיתי: הכול מוכן ביד, והעוגות בייחוד. מתכונים מסורתיים מהקווקז וממזרח אירופה — ארוחות בוקר, ברנץ׳, קפה ותה.'
     }
   }
 ];
@@ -355,15 +377,17 @@ const SHOPS = [
   }
 ];
 
-// Map points: Mia Gelateria and Reuffel Bazaar, then placeholders.
+// Map points: Mia Gelateria, Buta Cafe und Reuffel Bazaar (Reihenfolge = PARTNERS.concat(SHOPS)), dann Platzhalter.
 const PLACES = [
   [50.36000, 7.60203],  // Mia Gelateria
+  [50.36177, 7.59643],  // Buta Cafe Koblenz
   [50.36098, 7.59604],  // Reuffel Bazaar
   [50.36133, 7.59590], [50.36106, 7.59460], [50.36178, 7.59470],
-  [50.36070, 7.59684], [50.36183, 7.59597]
+  [50.36070, 7.59684]
 ];
 const PIN_LOGOS = [
   { html: '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria">', card: 'card-mia' },
+  { html: '<img src="buta-icon.webp" alt="Buta Cafe Koblenz">', card: 'card-buta' },
   { html: '<img src="reuffel-logo.webp" alt="Reuffel Bazaar">', card: 'card-reuffel' }
 ];
 

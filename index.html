@@ -209,7 +209,7 @@
   .xmas-town-top { display: flex; align-items: center; gap: 10px; }
   .xmas-town-thumb { width: 84px; height: 84px; min-width: 84px; object-fit: cover; border-radius: 8px; border: 1px solid #7A1026; flex-shrink: 0; }
   .xmas-thumb-btn { background: none; border: 0; padding: 0; cursor: pointer; flex-shrink: 0; line-height: 0; }
-  .station-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; margin-bottom: 8px; }
+  .station-thumb { display: block; width: 70%; max-width: 70%; margin: 0 auto 8px; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; }
   .img-zoom { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; padding: 12px; cursor: zoom-out; }
   .img-zoom[hidden] { display: none; }
   .img-zoom img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
@@ -1258,7 +1258,6 @@
         <p class="guide-note-text" id="guideNoteText"></p>
       </div>
       <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
-      <div class="xmas-home-langs" id="xmasHomeLangs"><button data-xh="de">DE</button><button data-xh="fr">FR</button><button data-xh="nl">NL</button><button data-xh="en">EN</button><button data-xh="ru">RU</button><button data-xh="zh">中文</button><button data-xh="he">עברית</button></div>
       <div class="xmas-home" id="xmasHome">
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
         <button class="xmas-home-koblenz" id="xmasHomeKoblenz"><span id="xmasHomeKoblenzLabel">Christmas market Koblenz →</span></button>

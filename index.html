@@ -1144,6 +1144,7 @@
         <p class="premium-code-error" id="premiumCodeError"></p>
         <button class="premium-unlock-btn" id="premiumUnlockBtn">Unlock</button>
         <a class="premium-ask-hint" id="premiumAskHint" href="https://wa.me/491772850207" target="_blank" rel="noopener">No code? Ask your guide.</a>
+        <a class="premium-ask-hint" id="premiumBuyHint" href="premium.html">Premium: buy access →</a>
       </div>
 
       <div id="premiumUnlockedBlock" style="display:none;">
@@ -3589,15 +3590,29 @@ function renderFoodPromoText() {
   const link = document.getElementById('foodPromoLink');
   if (link) link.textContent = t.link;
 }
+// Единый график окон Food & Drinks / Souvenirs (чередуются).
+// Первое окно через 2,5 минуты, дальше не чаще раза в 12 минут, не больше 4 за сессию.
+// Крестик прячет окна на 30 минут. Окно само закрывается через 20 секунд.
+const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 20000 };
+let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
+function promoTick() {
+  if (Date.now() < promoNextAt || promoShown >= PROMO.maxPerSession) return;
+  const order = promoShown % 2 === 0 ? [showFoodPromo, showShopPromo] : [showShopPromo, showFoodPromo];
+  if (!order[0]() && !order[1]()) return; // сейчас нельзя показать — попробуем на следующем тике
+  promoShown++;
+  promoNextAt = Date.now() + PROMO.cooldownMs;
+  setTimeout(() => { hideFoodPromo(); hideShopPromo(); }, PROMO.autoCloseMs);
+}
 function showFoodPromo() {
   const box = document.getElementById('foodPromo');
-  if (!box || !box.hidden) return;
-  if (currentView === 'food' || currentView === 'wine') return; // im Bereich Food & Drinks / Weingüter nicht anzeigen
-  if (!document.getElementById('shopPromo').hidden) return; // nicht zwei Fenster übereinander
-  if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
-  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
+  if (!box || !box.hidden) return false;
+  if (currentView === 'food' || currentView === 'wine') return false; // im Bereich Food & Drinks / Weingüter nicht anzeigen
+  if (!document.getElementById('shopPromo').hidden) return false; // nicht zwei Fenster übereinander
+  if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
+  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return false;
   renderFoodPromoText();
   box.hidden = false;
+  return true;
 }
 
 // Gutschein Mia (Food & Drinks): eigenes Fenster, ohne Karte
@@ -3670,26 +3685,26 @@ function renderShopPromoText() {
 }
 function showShopPromo() {
   const box = document.getElementById('shopPromo');
-  if (!box || !box.hidden) return;
-  if (!document.getElementById('foodPromo').hidden) return;
-  if (currentView === 'food' || currentView === 'wine') return; // не показывать поверх собственной страницы Food/Winemakers
-  if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return;
-  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return;
+  if (!box || !box.hidden) return false;
+  if (!document.getElementById('foodPromo').hidden) return false;
+  if (currentView === 'food' || currentView === 'wine') return false; // не показывать поверх собственной страницы Food/Winemakers
+  if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
+  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return false;
   renderShopPromoText();
   box.hidden = false;
+  return true;
 }
 function hideShopPromo() { const box = document.getElementById('shopPromo'); if (box) box.hidden = true; }
-document.getElementById('shopPromoClose').addEventListener('click', hideShopPromo);
+document.getElementById('shopPromoClose').addEventListener('click', () => { hideShopPromo(); promoNextAt = Date.now() + PROMO.dismissMs; });
 document.getElementById('shopPromoLink').addEventListener('click', () => { hideShopPromo(); window.location.href = 'partner-map.html'; });
-setInterval(showShopPromo, 180000);
 // Смена языка (шапка, заставка, рождественские кнопки) сразу меняет текст окна
 document.addEventListener('click', e => {
   if (e.target.closest && e.target.closest('[data-lang], [data-xl], [data-xh]')) setTimeout(() => { renderFoodPromoText(); renderShopPromoText(); }, 0);
 });
 function hideFoodPromo() { const box = document.getElementById('foodPromo'); if (box) box.hidden = true; }
-document.getElementById('foodPromoClose').addEventListener('click', hideFoodPromo);
+document.getElementById('foodPromoClose').addEventListener('click', () => { hideFoodPromo(); promoNextAt = Date.now() + PROMO.dismissMs; });
 document.getElementById('foodPromoLink').addEventListener('click', () => { hideFoodPromo(); switchView('food'); });
-setInterval(showFoodPromo, 120000);
+setInterval(promoTick, 15000);
 
 // Логотип и название «Rhine Guide» в шапке возвращают на начальный экран приложения
 function goStart() {
@@ -5014,7 +5029,7 @@ document.addEventListener('click', (e) => {
 // Фото станции в карточке списка: тап по фото открывает саму станцию (карточка — ссылка)
 function stationThumbHtml(c, i) {
   const src = (c.images && c.images[0]) || (c.id + '.jpg');
-  return `<img class="station-thumb" src="${src}" alt="" loading="lazy" onerror="this.remove()">`;
+  return `<img class="station-thumb" src="${src}" alt="${c.name}" loading="lazy" onerror="this.remove()">`;
 }
 
 function renderCastlesList() {

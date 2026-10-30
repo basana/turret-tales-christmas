@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Rhine Guide · Premium</title>
+<style>
+  :root { --parchment: #F6EEDD; --ink: #5A4327; --ink-soft: #7A5A2A; --rust: #7A1026; --terracotta: #94481F; --gold: #C9A05C; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--parchment); color: var(--ink); font-family: system-ui, -apple-system, sans-serif; }
+  body { padding: calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 28px); max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 26px; margin: 8px 0 6px; color: var(--terracotta); font-weight: 600; }
+  .lead { font-size: 17px; line-height: 1.5; margin: 0 0 22px; color: var(--ink-soft); }
+  .plan {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    min-height: 72px; padding: 14px 18px; margin: 0 0 12px;
+    background: #fff; border: 2px solid var(--rust); border-radius: 14px;
+    color: var(--rust); text-decoration: none; font-weight: 700;
+  }
+  .plan:active { background: var(--rust); color: #fff; }
+  .plan-name { font-size: 19px; }
+  .plan-sub { display: block; font-size: 14px; font-weight: 500; color: var(--ink-soft); }
+  .plan-price { font-size: 24px; white-space: nowrap; }
+  .plan.best { background: var(--rust); color: #fff; }
+  .plan.best .plan-sub { color: #FCEFDD; }
+  .missing { display: none; margin-top: 14px; padding: 12px; border: 1px dashed var(--terracotta); border-radius: 10px; font-size: 14px; }
+  .missing.show { display: block; }
+  .note { font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin-top: 22px; }
+  .back { display: inline-block; margin-top: 26px; font-size: 16px; color: var(--terracotta); font-weight: 700; }
+  .trial-tag { display: inline-block; font-size: 12px; background: var(--gold); color: #fff; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<h1>Rhine Guide Premium <span class="trial-tag">TEST</span></h1>
+<p class="lead">Access to the full guide, offline, for the time you choose. Pay once. No subscription.</p>
+
+<!-- Stripe Payment Links: eine pro Paket. Eintragen, sobald in Stripe erstellt. -->
+<script>
+const PAYMENT_LINKS = {
+  d7:  'PASTE_STRIPE_LINK_7_DAYS',
+  d14: 'PASTE_STRIPE_LINK_14_DAYS',
+  d30: 'PASTE_STRIPE_LINK_30_DAYS',
+  d90: 'PASTE_STRIPE_LINK_90_DAYS'
+};
+</script>
+
+<a class="plan" data-plan="d7" href="#">
+  <span class="plan-name">7 days<span class="plan-sub">Short visit</span></span>
+  <span class="plan-price">4.90 €</span>
+</a>
+<a class="plan" data-plan="d14" href="#">
+  <span class="plan-name">14 days<span class="plan-sub">Two weeks on the Rhine</span></span>
+  <span class="plan-price">7.90 €</span>
+</a>
+<a class="plan best" data-plan="d30" href="#">
+  <span class="plan-name">30 days<span class="plan-sub">Best value for most guests</span></span>
+  <span class="plan-price">9.90 €</span>
+</a>
+<a class="plan" data-plan="d90" href="#">
+  <span class="plan-name">90 days<span class="plan-sub">Whole season</span></span>
+  <span class="plan-price">19.90 €</span>
+</a>
+
+<p class="missing" id="missing">Test mode: payment links are not set yet.</p>
+
+<p class="note">After payment you get a code with its end date. Enter it in the guide under “Premium”. Card, Apple Pay, Google Pay and PayPal are offered on the payment page.</p>
+
+<a class="back" href="index.html">← Back to the guide</a>
+
+<script>
+(function () {
+  let missing = false;
+  document.querySelectorAll('a.plan').forEach(a => {
+    const link = PAYMENT_LINKS[a.dataset.plan] || '';
+    if (!link || link.startsWith('PASTE_')) { missing = true; a.setAttribute('aria-disabled', 'true'); a.style.opacity = '0.55'; a.addEventListener('click', e => e.preventDefault()); return; }
+    a.href = link;
+    a.target = '_self';
+    a.rel = 'noopener';
+  });
+  if (missing) document.getElementById('missing').classList.add('show');
+})();
+</script>
+</body>
+</html>

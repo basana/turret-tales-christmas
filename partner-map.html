@@ -348,6 +348,28 @@ const PARTNERS = [
       zh: '真正的家庭厨房：一切都是手工制作，蛋糕尤其如此。来自高加索和东欧的传统配方——早餐、brunch、咖啡与茶。',
       he: 'מטבח משפחתי אמיתי: הכול מוכן ביד, והעוגות בייחוד. מתכונים מסורתיים מהקווקז וממזרח אירופה — ארוחות בוקר, ברנץ׳, קפה ותה.'
     }
+  },
+  {
+    slug: 'stoa',
+    name: 'STOA Café',
+    icon: 'stoa-icon.webp',
+    photos: ['stoa-main.webp', 'stoa-1.webp'],
+    textSlot: 2,
+    photoAlt: 'STOA Café Koblenz: griechische Feinkost, Kaffee und Kuchen',
+    cat: { de: 'Griechische Feinkost · Café · Kuchen', en: 'Greek delicatessen · café · cakes', ru: 'Греческие деликатесы · кафе · выпечка', fr: 'Épicerie grecque · café · gâteaux', nl: 'Grieks delicatessen · café · taart', zh: '希腊熟食 · 咖啡馆 · 蛋糕', he: 'מעדנייה יוונית · בית קפה · עוגות' },
+    addr: 'Koblenz (Adresse folgt)',
+    hours: null,
+    phone: null,
+    gmaps: 'https://www.google.com/maps/search/?api=1&query=50.359953,7.595844',
+    desc: {
+      de: 'Griechische Feinkost, Kaffee und Kuchen. Die Kuchen werden im Haus gebacken, alles ist handgemacht.',
+      en: 'Greek delicatessen, coffee and cake. The cakes are baked in-house, everything is handmade.',
+      ru: 'Греческие деликатесы, кофе и выпечка. Торты и пироги печём дома, всё сделано вручную.',
+      fr: "Épicerie grecque, café et gâteaux. Les gâteaux sont faits maison, tout est fait main.",
+      nl: 'Grieks delicatessen, koffie en taart. De taarten worden in het huis gebakken, alles is handgemaakt.',
+      zh: '希腊熟食、咖啡与蛋糕。蛋糕在店内烘焙，全部手工制作。',
+      he: 'מעדנייה יוונית, קפה ועוגות. העוגות נאפות במקום, הכול בעבודת יד.'
+    }
   }
 ];
 
@@ -377,10 +399,11 @@ const SHOPS = [
   }
 ];
 
-// Map points: Mia Gelateria, Buta Cafe und Reuffel Bazaar (Reihenfolge = PARTNERS.concat(SHOPS)), dann Platzhalter.
+// Map points: Mia Gelateria, Buta Cafe, STOA Café und Reuffel Bazaar (Reihenfolge = PARTNERS.concat(SHOPS)), dann Platzhalter.
 const PLACES = [
   [50.36000, 7.60203],  // Mia Gelateria
   [50.36177, 7.59643],  // Buta Cafe Koblenz
+  [50.359953, 7.595844], // STOA Café
   [50.36098, 7.59604],  // Reuffel Bazaar
   [50.36133, 7.59590], [50.36106, 7.59460], [50.36178, 7.59470],
   [50.36070, 7.59684]
@@ -388,6 +411,7 @@ const PLACES = [
 const PIN_LOGOS = [
   { html: '<img src="mia-gelateria-icon.webp" alt="Mia Gelateria">', card: 'card-mia' },
   { html: '<img src="buta-icon.webp" alt="Buta Cafe Koblenz">', card: 'card-buta' },
+  { html: '<img src="stoa-icon.webp" alt="STOA Café">', card: 'card-stoa' },
   { html: '<img src="reuffel-logo.webp" alt="Reuffel Bazaar">', card: 'card-reuffel' }
 ];
 

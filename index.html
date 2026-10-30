@@ -209,6 +209,11 @@
   .xmas-town-top { display: flex; align-items: center; gap: 10px; }
   .xmas-town-thumb { width: 84px; height: 84px; min-width: 84px; object-fit: cover; border-radius: 8px; border: 1px solid #7A1026; flex-shrink: 0; }
   .xmas-thumb-btn { background: none; border: 0; padding: 0; cursor: pointer; flex-shrink: 0; line-height: 0; }
+  .links-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .link-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--gold); border-radius: 12px; overflow: hidden; color: inherit; text-decoration: none; }
+  .link-card img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+  .link-title { font-weight: 700; font-size: 18px; padding: 10px 12px 0; color: var(--rust, #7A1026); }
+  .link-desc { font-size: 15px; line-height: 1.45; padding: 4px 12px 12px; color: var(--ink); }
   .station-thumb { display: block; width: 70%; max-width: 70%; margin: 0 auto 8px; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; }
   .img-zoom { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; padding: 12px; cursor: zoom-out; }
   .img-zoom[hidden] { display: none; }
@@ -1420,6 +1425,7 @@
     <div class="view" id="view-christmas"></div>
     <div class="view" id="view-food"></div>
     <div class="view" id="view-wine"></div>
+    <div class="view" id="view-links"></div>
   </div>
 
   <div class="footer">
@@ -2625,13 +2631,15 @@ function renderTabs() {
     addTab(UI[lang].tabs[2], 'castles', '', currentView === 'castles', () => switchView('castles'));
     [3, 4, 5].forEach(i => addTab(UI[lang].tabs[i], tabKeys[i], '', currentView === tabKeys[i], () => switchView(tabKeys[i])));
     addTab(UI[lang].tabs[7], 'about', '', false, () => openInfoPopup('guideInfo'));
+    addTab(LINKS_TAB[lang] || LINKS_TAB.en, 'links', '', currentView === 'links', () => switchView('links'));
   } else {
     // Klassische Navigation: Map direkt nach Castles; Food & Drinks / Winemakers waren
     // bisher nur im Christmas-Modus erreichbar (Buta Cafe etc. unsichtbar in Classic!)
-    const classicOrder = ['guide', 'castles', 'map', 'food', 'wine', 'legends', 'info', 'route', 'about'];
+    const classicOrder = ['guide', 'castles', 'map', 'food', 'wine', 'legends', 'info', 'route', 'about', 'links'];
     classicOrder.forEach((key) => {
       const label = key === 'food' ? (XMAS_FOOD_TAB[lang] || XMAS_FOOD_TAB.en)
         : key === 'wine' ? (XMAS_WINE_TAB[lang] || XMAS_WINE_TAB.en)
+        : key === 'links' ? (LINKS_TAB[lang] || LINKS_TAB.en)
         : UI[lang].tabs[tabKeys.indexOf(key)];
       addTab(label, key, '', key === currentView,
         key === 'about' ? () => openInfoPopup('guideInfo')
@@ -4112,10 +4120,24 @@ const XMAS_FOOD_INTRO = {
 const XMAS_FOOD_PLACES = [
   { ll: [50.36000, 7.60203], mia: true },
   { ll: [50.36177, 7.59643], buta: true },
-  { ll: [50.36139, 7.59636] }, { ll: [50.36133, 7.59590] }, { ll: [50.36106, 7.59460] },
+  { ll: [50.359953, 7.595844], stoa: true }, { ll: [50.36133, 7.59590] }, { ll: [50.36106, 7.59460] },
   { ll: [50.36178, 7.59470] }, { ll: [50.36070, 7.59684] }, { ll: [50.36183, 7.59597] },
   { ll: [50.36144, 7.60450] },
 ];
+// STOA Café: griechische Feinkost, Kaffee, Kuchen. Adresse folgt, Fotos: stoa-main.webp / stoa-1.webp (Platzhalter, werden ersetzt)
+const STOA_CARD = {
+  title: 'STOA Café',
+  place: 'Koblenz · Adresse folgt',
+  text: {
+    de: 'Griechische Feinkost, Kaffee und Kuchen. Die Kuchen werden im Haus gebacken, alles ist handgemacht.',
+    en: 'Greek delicatessen, coffee and cake. The cakes are baked in-house, everything is handmade.',
+    ru: 'Греческие деликатесы, кофе и выпечка. Торты и пироги печём дома, всё сделано вручную.',
+    fr: 'Épicerie grecque, café et gâteaux. Les gâteaux sont faits maison, tout est fait main.',
+    nl: 'Grieks delicatessen, koffie en taart. De taarten worden in het huis gebakken, alles is handgemaakt.',
+    zh: '希腊熟食、咖啡与蛋糕。蛋糕在店内烘焙，全部手工制作。',
+    he: 'מעדנייה יוונית, קפה ועוגות. העוגות נאפות במקום, הכול בעבודת יד.'
+  }
+};
 // Buta Cafe Koblenz: текст по описанию из Instagram-профиля кафе (черновик, уточняется), фото в buta-*.webp
 const BUTA_CARD = {
   title: 'Buta Cafe Koblenz',
@@ -4155,6 +4177,13 @@ function renderFood() {
         ['08','03','07','09','10','11'].map(n => `<div class="buta-sq">${sq(n)}</div>`).join('') +
         `</div></div>`;
     }
+    if (p.stoa) {
+      const st = STOA_CARD.text[xmasLang] || STOA_CARD.text.en;
+      return `<div class="route-card xmas-card">${kicker}<div class="food-mia">` +
+        `<figure class="food-mia-pic"><img src="stoa-main.webp" alt="STOA Café" loading="lazy"></figure>` +
+        `<div class="food-mia-text"><h3 class="buta-name">${STOA_CARD.title}</h3>` +
+        `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${STOA_CARD.place}</p><p style="margin:0">${st}</p></div></div></div>`;
+    }
     if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
     const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
     const couponLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон', zh: '领取优惠券', he: 'קבלת קופון' }[xmasLang] || 'Get voucher';
@@ -4184,6 +4213,8 @@ function renderFood() {
     if (p.buta) {
       // Buta Cafe: круглый логотип-огурец, как у Mia и Reuffel
       L.marker(p.ll, { icon: L.divIcon({ className: '', html: '<div class="food-pin"><img src="buta-icon.webp" alt="Buta Cafe"></div>', iconSize: [56, 56], iconAnchor: [28, 28] }) }).addTo(xmasFoodMapObj).on('click', () => focusFoodCard(idx));
+    } else if (p.stoa) {
+      L.marker(p.ll, { icon: L.divIcon({ className: '', html: '<div class="food-pin"><img src="stoa-icon.webp" alt="STOA Café"></div>', iconSize: [56, 56], iconAnchor: [28, 28] }) }).addTo(xmasFoodMapObj).on('click', () => focusFoodCard(idx));
     } else if (p.mia) {
       // Mia Gelateria: большой круглый Eis-Logo, как на странице партнёров
       L.marker(p.ll, { icon: L.divIcon({ className: '', html: '<div class="food-pin"><img src="mia-gelateria-icon.webp" alt="Mia Gelateria"></div>', iconSize: [56, 56], iconAnchor: [28, 28] }) }).addTo(xmasFoodMapObj).on('click', () => focusFoodCard(idx));
@@ -4192,6 +4223,40 @@ function renderFood() {
     }
   });
 }
+// Abschnitt «Links» am Ende des Navigators: Projekt und Partner-Seiten auf einen Blick.
+// Titel und Texte sind Vorschläge, Bilder sind 1:1-Ausschnitte aus vorhandenen Fotos (Ordner links/).
+const LINKS_TAB = { de: 'Links', en: 'Links', ru: 'Ссылки', fr: 'Liens', nl: 'Links', zh: '链接', he: 'קישורים' };
+const LINKS_UI = {
+  title: { de: 'Turret Tales: Projekte & Links', en: 'Turret Tales: projects & links', ru: 'Turret Tales: проекты и ссылки' },
+  intro: { de: 'Alle Seiten des Projekts an einem Ort. Ein Tipp öffnet die Seite.', en: 'All pages of the project in one place. One tap opens the page.', ru: 'Все страницы проекта в одном месте. Одно касание открывает страницу.' }
+};
+const LINK_ITEMS = [
+  { href: 'partner-map.html', img: 'links/link-essen.webp',
+    title: { de: 'Essen, Trinken & Souvenirs', en: 'Food, drinks & souvenirs', ru: 'Еда, напитки и сувениры' },
+    desc: { de: 'Cafés, Eis, Bücher und Souvenirs unserer Partner, mit Gutschein-Aktionen.', en: 'Cafés, ice cream, books and souvenirs from our partners, with voucher offers.', ru: 'Кафе, мороженое, книги и сувениры партнёров, с купонами.' } },
+  { href: 'walks.html', img: 'links/link-walks.webp',
+    title: { de: 'Winningen: Wanderungen & Weingüter', en: 'Winningen: walks & wineries', ru: 'Винген: прогулки и винодельни' },
+    desc: { de: 'Hexenpfad-Wanderung, Weingüter und der Weihnachtsmarkt in Winningen.', en: 'Hexenpfad walk, wineries and the Christmas market in Winningen.', ru: 'Прогулка по Хексенпфад, винодельни и рождественский рынок в Винингене.' } },
+  { href: 'premium.html', img: 'links/link-premium.webp',
+    title: { de: 'Premium', en: 'Premium', ru: 'Премиум' },
+    desc: { de: 'Voller Zugang für 7, 14, 30 oder 90 Tage. Bezahlung über Stripe.', en: 'Full access for 7, 14, 30 or 90 days. Paid through Stripe.', ru: 'Полный доступ на 7, 14, 30 или 90 дней. Оплата через Stripe.' } },
+  { href: 'demo-food.html', img: 'links/link-demo-food.webp',
+    title: { de: 'Demo: Café-Karte', en: 'Demo: café map', ru: 'Демо: карта кафе' },
+    desc: { de: 'Demo für Partner: so sieht die Karte der Cafés aus.', en: 'Demo for partners: how the café map looks.', ru: 'Демо для партнёров: так выглядит карта кафе.' } },
+  { href: 'demo-souvenirs.html', img: 'links/link-demo-souvenirs.webp',
+    title: { de: 'Demo: Souvenirs', en: 'Demo: souvenirs', ru: 'Демо: сувениры' },
+    desc: { de: 'Demo für Partner: Läden und Buchhandlungen.', en: 'Demo for partners: shops and bookshops.', ru: 'Демо для партнёров: магазины и книжные.' } }
+];
+function renderLinks() {
+  const el = document.getElementById('view-links');
+  if (!el) return;
+  const T = o => o[lang] || o.en;
+  el.innerHTML = `<h2 class="xmas-food-title">${T(LINKS_UI.title)}</h2><p class="xmas-intro">${T(LINKS_UI.intro)}</p>` +
+    `<div class="links-grid">` + LINK_ITEMS.map(it =>
+      `<a class="link-card" href="${it.href}"><img src="${it.img}" alt="" loading="lazy">` +
+      `<span class="link-title">${T(it.title)}</span><span class="link-desc">${T(it.desc)}</span></a>`).join('') + `</div>`;
+}
+
 let xmasWineMapObj = null;
 function renderWine() {
   const el = document.getElementById('view-wine');
@@ -4235,6 +4300,7 @@ function switchView(viewName) {
   if (viewName === 'christmas') renderChristmas();
   if (viewName === 'food') { renderFood(); hideFoodPromo(); }
   if (viewName === 'wine') { renderWine(); hideFoodPromo(); }
+  if (viewName === 'links') { renderLinks(); hideFoodPromo(); }
   renderTabs();
   if (viewName === 'map') {
     setTimeout(() => {

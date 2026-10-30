@@ -25,8 +25,11 @@
   .plan.best .plan-sub { color: #FCEFDD; }
   .missing { display: none; margin-top: 14px; padding: 12px; border: 1px dashed var(--terracotta); border-radius: 10px; font-size: 14px; }
   .missing.show { display: block; }
-  .wysiwyp { font-size: 15px; line-height: 1.5; margin: 18px 0 0; padding: 12px 14px; background: #fff; border-left: 4px solid var(--gold); border-radius: 8px; }
-  .note { font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin-top: 22px; }
+  .wysiwyp { margin: 18px 0 0; padding: 14px 16px; background: #fff; border-radius: 10px; text-align: center; }
+  .wysiwyp-head { margin: 0; font-size: 18px; font-weight: 700; color: var(--rust); }
+  .wysiwyp-rule { width: 60%; margin: 10px auto; border: 0; border-top: 2px solid var(--gold); }
+  .wysiwyp-text { margin: 0; font-size: 15px; line-height: 1.5; }
+  .note { font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin-top: 22px; text-align: center; }
   .back { display: inline-block; margin-top: 26px; font-size: 16px; color: var(--terracotta); font-weight: 700; }
   .trial-tag { display: inline-block; font-size: 12px; background: var(--gold); color: #fff; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
 </style>
@@ -65,7 +68,7 @@ const PAYMENT_LINKS = {
 
 <p class="missing" id="missing">Test mode: payment links are not set yet.</p>
 
-<p class="wysiwyp"><strong>What you see is what you pay.</strong> Prices are in euros. Guests from the USA, Canada and Australia see the exact price in their own currency on the payment page before they pay. No sales tax, VAT or service fee is added. Your own bank may charge its own currency conversion fee.</p>
+<div class="wysiwyp"><p class="wysiwyp-head">What you see is what you pay.</p><hr class="wysiwyp-rule"><p class="wysiwyp-text">Prices are in euros. Guests from the USA, Canada and Australia see the exact price in their own currency on the payment page before they pay. No sales tax, VAT or service fee is added. Your own bank may charge its own currency conversion fee.</p></div>
 
 <p class="note">After payment you get a code with its end date. Enter it in the guide under “Premium”. Card, Apple Pay, Google Pay and PayPal are offered on the payment page.</p>
 

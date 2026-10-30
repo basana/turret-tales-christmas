@@ -157,7 +157,7 @@
   .xmas-cell-img figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 10px; background: #7A1026; color: #fff; font-family: 'EB Garamond', serif; font-size: 16px; font-weight: 700; text-align: center; }
   .xmas-hero { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #7A1026; color: #F5ECD6; cursor: pointer; }
   .xmas-hero img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
-  .xmas-hero { pointer-events: none; }
+  .xmas-hero { pointer-events: auto; }
   .buta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
   .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
   .buta-info { padding: 4px 4px 0; align-self: center; }
@@ -207,7 +207,13 @@
      слота не меняется, т.к. фото вписано в высоту текстового блока (киккер + название).
      Пока файл фото отсутствует (их добавят позже) — картинка просто скрывается через onerror. */
   .xmas-town-top { display: flex; align-items: center; gap: 10px; }
-  .xmas-town-thumb { width: 42px; height: 42px; min-width: 42px; object-fit: cover; border-radius: 8px; border: 1px solid #7A1026; flex-shrink: 0; }
+  .xmas-town-thumb { width: 84px; height: 84px; min-width: 84px; object-fit: cover; border-radius: 8px; border: 1px solid #7A1026; flex-shrink: 0; }
+  .xmas-thumb-btn { background: none; border: 0; padding: 0; cursor: pointer; flex-shrink: 0; line-height: 0; }
+  .station-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; margin-bottom: 8px; }
+  .img-zoom { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; padding: 12px; cursor: zoom-out; }
+  .img-zoom[hidden] { display: none; }
+  .img-zoom img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
+  .img-zoom-close { position: absolute; top: calc(env(safe-area-inset-top) + 10px); right: 12px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #fff; color: #222; font-size: 30px; line-height: 1; cursor: pointer; }
   .xmas-town-text { min-width: 0; flex: 1 1 auto; }
   .xmas-town-text .route-kicker, .xmas-town-text .castle-name { margin-bottom: 0; }
   .xmas-town-text .castle-name { margin-top: 1px; }
@@ -3687,6 +3693,37 @@ function goStart() {
   switchView('guide');
   renderGuide();
 }
+// Фото Анатолия на главном экране — открывает раздел «О гиде»
+const guideNotePhotoEl = document.getElementById('guideNotePhoto');
+if (guideNotePhotoEl) {
+  guideNotePhotoEl.style.cursor = 'pointer';
+  guideNotePhotoEl.setAttribute('role', 'button');
+  guideNotePhotoEl.setAttribute('tabindex', '0');
+  guideNotePhotoEl.addEventListener('click', () => openInfoPopup('about'));
+}
+
+// Любое другое фото в содержании, которое не ведёт в раздел, открывается на весь экран.
+// Тап или Esc — закрыть. Нужно людям с плохим зрением.
+(function () {
+  const box = document.createElement('div');
+  box.id = 'imgZoom';
+  box.className = 'img-zoom';
+  box.hidden = true;
+  box.innerHTML = '<img alt=""><button type="button" class="img-zoom-close" aria-label="Close">×</button>';
+  document.body.appendChild(box);
+  const big = box.querySelector('img');
+  const close = () => { box.hidden = true; big.removeAttribute('src'); };
+  box.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  document.addEventListener('click', (e) => {
+    const img = e.target && e.target.closest ? e.target.closest('.content img') : null;
+    if (!img || !img.getAttribute('src')) return;
+    if (img.closest('a, button, .leaflet-container, .quick-link, .xmas-hero, #guideNotePhoto, #mainPhoto, .map-legend-icon, .vignette-corner')) return;
+    big.src = img.currentSrc || img.src;
+    box.hidden = false;
+  });
+})();
+
 document.querySelectorAll('.app-emblem, .app-name').forEach(el => {
   el.style.cursor = 'pointer';
   el.setAttribute('role', 'button');
@@ -3821,7 +3858,8 @@ function xmasTownListHtml() {
     const photoKey = XMAS_TOWN_THUMB_KEY[k];
     const thumbSrc = (XMAS_PHOTOS[photoKey] && XMAS_PHOTOS[photoKey][0]) || '';
     const thumbHtml = thumbSrc ? `<img class="xmas-town-thumb" src="${thumbSrc}" alt="" loading="lazy" onerror="this.remove()">` : '';
-    return `<div class="route-card xmas-card"><div class="xmas-town-top">${thumbHtml}<div class="xmas-town-text"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div></div></div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`;
+    const thumbBtn = thumbHtml ? `<button class="xmas-thumb-btn" data-xc="${k}" aria-label="${T(XMAS_CITY[k].name)}">${thumbHtml}</button>` : '';
+    return `<div class="route-card xmas-card"><div class="xmas-town-top">${thumbBtn}<div class="xmas-town-text"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div></div></div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`;
   }).join('') + '</div>';
 }
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
@@ -3981,7 +4019,7 @@ function renderChristmas(townKey) {
     renderChristmas();
   }));
   el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc || null)));
-  el.querySelectorAll('.xmas-town-btn').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
+  el.querySelectorAll('.xmas-town-btn, .xmas-thumb-btn').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
   const bk = document.getElementById('xmasBack');
   if (bk) bk.addEventListener('click', () => openXmasHome());
 
@@ -4967,6 +5005,12 @@ document.addEventListener('click', (e) => {
   openStation(Number(a.dataset.station));
 });
 
+// Фото станции в карточке списка: тап по фото открывает саму станцию (карточка — ссылка)
+function stationThumbHtml(c, i) {
+  const src = (c.images && c.images[0]) || (c.id + '.jpg');
+  return `<img class="station-thumb" src="${src}" alt="" loading="lazy" onerror="this.remove()">`;
+}
+
 function renderCastlesList() {
   const el = document.getElementById('view-castles');
   // Входной экран (koblenz_altstadt) не показываем отдельной карточкой —
@@ -4974,6 +5018,7 @@ function renderCastlesList() {
   // koblenz_city.
   el.innerHTML = castles.map((c, i) => ({ c, i })).filter(({ c }) => c.id !== 'koblenz_altstadt').map(({ c, i }) => `
     <a class="castle-card" href="#${c.id}" data-station="${i}">
+      ${stationThumbHtml(c, i)}
       <div class="castle-name">${c.name}</div>
       <div class="castle-town">${c.town} • ${lang === 'ru' ? c.builtRu : (lang === 'de' ? (c.builtDe || c.built) : c.built)}</div>
     </a>
@@ -4986,6 +5031,7 @@ function renderLegendsList() {
   const withLegends = castles.map((c, i) => ({ c, i })).filter(({ c }) => c.legend && c.id !== 'koblenz_altstadt');
   el.innerHTML = withLegends.map(({ c, i }) => `
     <a class="castle-card" href="#${c.id}" data-station="${i}">
+      ${stationThumbHtml(c, i)}
       <div class="castle-name">${c.name}</div>
       <p style="margin:6px 0 0; line-height:1.5;">${lang === 'ru' ? c.legendRu : (lang === 'de' ? (c.legendDe || c.legend) : c.legend)}</p>
     </a>
@@ -4994,11 +5040,20 @@ function renderLegendsList() {
 
 const ROUTE_STATION_IDS = ["koblenz_city", "koblenz_city", "lahneck", null, "braubach", "boppard", "rheinfels", "katz", "loreley", "schoenburg", "bacharach", "pfalzgrafenstein", "pfalzgrafenstein", "reichenstein", null, "maeuseturm", "ruedesheim", null, null];
 
+// Фото точки маршрута ведёт на станцию, если у точки есть своя страница
+function routeThumbHtml(i) {
+  const id = ROUTE_STATION_IDS[i];
+  const si = id ? stationIndexById(id) : -1;
+  if (si < 0) return '';
+  return `<a href="#${id}" data-station="${si}">${stationThumbHtml(castles[si], si)}</a>`;
+}
+
 function renderRouteList() {
   const el = document.getElementById('view-route');
   const t = UI[lang];
   el.innerHTML = routePlaces.map((r, i) => `
     <div class="route-card">
+      ${routeThumbHtml(i)}
       <div class="route-kicker">${String(i+1).padStart(2,'0')}</div>
       <div class="castle-name">${lang === 'ru' ? r.titleRu : (lang === 'de' ? (r.titleDe || r.title) : r.title)}</div>
       <div class="route-place">${r.place}</div>

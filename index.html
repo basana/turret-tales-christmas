@@ -3810,9 +3810,9 @@ function xmasDrawMap(opts) {
   // Übersicht: genug Rand, damit Koblenz (oben) und Rüdesheim (rechts) mit ihren Beschriftungen ganz sichtbar bleiben
   if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
   else if (opts.pins && opts.pins.length > 1) {
+    // Все точки города сразу видны, с запасом по краям (подписи и маркеры не обрезаются)
     const pb = L.latLngBounds(opts.pins.map(p => p.ll));
-    const z = Math.min(xmasMapObj.getBoundsZoom(pb, false, L.point(4, 4)), opts.zoom);
-    xmasMapObj.setView(pb.getCenter(), z + 0.14, { animate: false });
+    xmasMapObj.fitBounds(pb, { padding: [56, 56], maxZoom: opts.zoom, animate: false });
   }
   else xmasMapObj.setView(opts.center, opts.zoom);
   if (xmasPendingFocus) { xmasMapObj.setView(xmasPendingFocus, 17, { animate: false }); xmasPendingFocus = null; }

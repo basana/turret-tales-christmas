@@ -9,8 +9,8 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--parchment); color: var(--ink); font-family: system-ui, -apple-system, sans-serif; }
   body { padding: calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 28px); max-width: 520px; margin: 0 auto; }
-  h1 { font-size: 26px; margin: 8px 0 6px; color: var(--terracotta); font-weight: 600; }
-  .lead { font-size: 17px; line-height: 1.5; margin: 0 0 22px; color: var(--ink-soft); }
+  h1 { font-size: 26px; margin: 8px 0 6px; color: var(--terracotta); font-weight: 600; text-align: center; }
+  .lead { font-size: 17px; line-height: 1.5; margin: 0 0 22px; color: var(--ink-soft); text-align: center; }
   .plan {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     min-height: 72px; padding: 14px 18px; margin: 0 0 12px;
@@ -30,11 +30,12 @@
   .wysiwyp-rule { width: 60%; margin: 10px auto; border: 0; border-top: 2px solid var(--gold); }
   .wysiwyp-text { margin: 0; font-size: 15px; line-height: 1.5; }
   .note { font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin-top: 22px; text-align: center; }
-  .back { display: inline-block; margin-top: 26px; font-size: 16px; color: var(--terracotta); font-weight: 700; }
+  .back { display: block; margin-top: 26px; font-size: 16px; color: var(--terracotta); font-weight: 700; text-align: center; }
   .trial-tag { display: inline-block; font-size: 12px; background: var(--gold); color: #fff; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
 </style>
 </head>
 <body>
+<!-- TODO (боевая версия): автоматически определять язык устройства, как в index.html (7 языков). Сейчас только английский. -->
 
 <h1>Rhine Guide Premium <span class="trial-tag">TEST</span></h1>
 <p class="lead">Access to the full guide, offline, for the time you choose. Pay once. No subscription.</p>

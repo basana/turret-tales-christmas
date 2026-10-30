@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Turret Tales emblem">
+  <title>Turret Tales emblem</title>
+  <defs>
+    <clipPath id="disc"><circle cx="100" cy="100" r="86"/></clipPath>
+  </defs>
+  <!-- Scheibe und Rand -->
+  <circle cx="100" cy="100" r="92" fill="#FFFFFF" stroke="#000000" stroke-width="6"/>
+  <g clip-path="url(#disc)" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round">
+    <!-- Hügel links: geschwungene Linien -->
+    <path d="M14 96 C40 84 58 92 74 110 C88 126 84 150 70 170"/>
+    <path d="M14 116 C36 106 56 114 70 130 C82 144 78 164 66 180"/>
+    <path d="M18 136 C38 128 54 136 64 148 C72 158 70 172 62 186"/>
+    <path d="M26 156 C40 150 50 158 56 168"/>
+    <!-- Fluss rechts unten -->
+    <path d="M118 186 C112 168 128 156 124 140 C120 126 136 118 150 104"/>
+    <path d="M140 186 C138 172 150 166 152 152 C154 140 166 134 186 128"/>
+  </g>
+  <!-- Turm -->
+  <g fill="#000000">
+    <rect x="88" y="62" width="40" height="92"/>
+    <rect x="88" y="54" width="8" height="10"/>
+    <rect x="100" y="54" width="8" height="10"/>
+    <rect x="116" y="54" width="8" height="10"/>
+    <!-- Fahnenstange und Fahne -->
+    <rect x="106" y="26" width="2.5" height="30"/>
+    <path d="M108.5 26 L126 32 L108.5 39 Z"/>
+  </g>
+  <!-- Fenster und Tor in Papierfarbe -->
+  <g fill="#FFFFFF">
+    <rect x="103" y="82" width="8" height="12" rx="4"/>
+    <path d="M97 150 L97 136 Q97 128 105 128 Q113 128 113 136 L113 150 Z"/>
+  </g>
+</svg>

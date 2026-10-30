@@ -3757,7 +3757,7 @@ const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’acc
 // Koordinaten: Stadtmitte und Marktplätze. ANNÄHERUNG, vor Veröffentlichung auf der Karte prüfen.
 const XMAS_ORDER = ['koblenz', 'lahnstein', 'boppard', 'oberwesel', 'bacharach', 'ruedesheim'];
 const XMAS_GEO = {
-  koblenz:   {center:[50.36020,7.59850], zoom:16, pins:[[50.36011,7.59836],[50.360611,7.598306],[50.36041,7.59506],[50.35988,7.60123],[50.35991,7.59612],[50.35879,7.59651],[50.36111,7.59537],[50.3653,7.6156],[50.36000,7.60203]]},
+  koblenz:   {center:[50.36020,7.59850], zoom:16, pins:[[50.36011,7.59836],[50.360611,7.598306],[50.36041,7.59506],[50.35988,7.60123],[50.35991,7.59612],[50.35879,7.59651],[50.36111,7.59537],[50.3653,7.6156]]},
   oberwesel: {center:[50.1065,7.7273], zoom:16, pins:[[50.1065,7.7273]]},
   boppard:   {center:[50.23232,7.59165], zoom:16, pins:[[50.23232,7.59165]]},
   bacharach: {center:[50.0583,7.7686], zoom:16, pins:[[50.0583,7.7686]]},
@@ -4017,7 +4017,7 @@ function renderChristmas(townKey) {
     const c = XMAS_CITY[xmasTown];
     const TX = T_(c.text);
     body = `<h2 class="xmas-title">${TX.title}</h2>` + mapHtml + `<p class="xmas-intro">${TX.intro}</p>` +
-      TX.cards.map((k, i) => `
+      TX.cards.filter(k => k.title !== 'Mia Gelateria').map((k, i) => `
         <div class="route-card xmas-card" id="xmasCard${i}">
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
           <div class="castle-name">${k.title}</div>

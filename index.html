@@ -3540,6 +3540,7 @@ const XMAS_PHOTOS = {
   'ruedesheim-markt': ['ruedesheim-markt-1.webp','ruedesheim-markt-4.webp'],
   'boppard-markt': ['boppard-markt-1.webp'],
   'bacharach-markt': ['bacharach-markt-1.webp','bacharach-markt-2.webp'],
+  'oberwesel-markt': ['oberwesel.jpg'],
 };
 let xmasLang = (function() {
   try { const s = localStorage.getItem('xmasLang'); if (s && SUPPORTED_LANGS.includes(s)) return s; } catch (e) {}
@@ -5765,6 +5766,11 @@ function bearingCompass(lat1, lng1, lat2, lng2) {
 }
 
 function formatDistance(d) {
+  // Englisch (USA, Kanada, Großbritannien): Fuß und Meilen. Sonst Meter und Kilometer.
+  if (typeof lang !== 'undefined' && lang === 'en') {
+    const ft = d * 3.28084;
+    return ft < 1000 ? `≈ ${Math.round(ft / 10) * 10} ft` : `≈ ${(d / 1609.34).toFixed(1)} mi`;
+  }
   return d < 1000 ? `≈ ${Math.round(d / 10) * 10} m` : `≈ ${(d / 1000).toFixed(1)} km`;
 }
 

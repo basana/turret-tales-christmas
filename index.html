@@ -212,6 +212,7 @@
   .xmas-thumb-btn { background: none; border: 0; padding: 0; cursor: pointer; flex-shrink: 0; line-height: 0; }
   .links-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
   .link-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--gold); border-radius: 12px; overflow: hidden; color: inherit; text-decoration: none; }
+  .tour-place { font-size: 13px; color: var(--ink-soft); padding: 0 12px; }
   .link-card img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
   .link-title { font-weight: 700; font-size: 18px; padding: 10px 12px 0; color: var(--rust, #7A1026); }
   .link-desc { font-size: 15px; line-height: 1.45; padding: 4px 12px 12px; color: var(--ink); }
@@ -1427,6 +1428,7 @@
     <div class="view" id="view-food"></div>
     <div class="view" id="view-wine"></div>
     <div class="view" id="view-links"></div>
+    <div class="view" id="view-tours"></div>
   </div>
 
   <div class="footer">
@@ -2636,11 +2638,12 @@ function renderTabs() {
   } else {
     // Klassische Navigation: Map direkt nach Castles; Food & Drinks / Winemakers waren
     // bisher nur im Christmas-Modus erreichbar (Buta Cafe etc. unsichtbar in Classic!)
-    const classicOrder = ['guide', 'castles', 'map', 'food', 'wine', 'legends', 'info', 'route', 'about', 'links'];
+    const classicOrder = ['guide', 'castles', 'map', 'food', 'wine', 'legends', 'info', 'route', 'about', 'tours', 'links'];
     classicOrder.forEach((key) => {
       const label = key === 'food' ? (XMAS_FOOD_TAB[lang] || XMAS_FOOD_TAB.en)
         : key === 'wine' ? (XMAS_WINE_TAB[lang] || XMAS_WINE_TAB.en)
         : key === 'links' ? (LINKS_TAB[lang] || LINKS_TAB.en)
+        : key === 'tours' ? (TOURS_TAB[lang] || TOURS_TAB.en)
         : UI[lang].tabs[tabKeys.indexOf(key)];
       addTab(label, key, '', key === currentView,
         key === 'about' ? () => openInfoPopup('guideInfo')
@@ -4259,6 +4262,45 @@ function renderLinks() {
       `<span class="link-title">${T(it.title)}</span><span class="link-desc">${T(it.desc)}</span></a>`).join('') + `</div>`;
 }
 
+// «Führungen»: Liste der Touren von Anatoly (klassischer Navigator). Texte in Arbeit, Platzhalter bis zur Freigabe.
+const TOURS_TAB = { de: 'Führungen', en: 'Tours', ru: 'Экскурсии', fr: 'Visites', nl: 'Rondleidingen', zh: '导览', he: 'סיורים' };
+const TOURS_UI = {
+  title: { de: 'Meine Führungen', en: 'My tours', ru: 'Мои экскурсии' },
+  intro: { de: 'Führungen am Mittelrhein und an der Mosel. Anfragen über den Kontakt.', en: 'Guided tours on the Middle Rhine and the Moselle. Enquiries via the contact page.', ru: 'Экскурсии по Среднему Рейну и Мозелю. Вопросы — через контакты.' },
+  soon: { de: 'Text folgt', en: 'Text to follow', ru: 'Текст будет добавлен' }
+};
+const TOUR_ITEMS = [
+  { title: 'Koblenz, Altstadt', place: 'Koblenz',
+    text: { de: null, en: null, ru: null } },
+  { title: 'Festung Ehrenbreitstein', place: 'Koblenz',
+    text: { de: null, en: null, ru: null } },
+  { title: 'Braubach', place: 'Braubach',
+    text: { de: null, en: null, ru: null } },
+  { title: 'Marksburg', place: 'Braubach · private Führung',
+    // Pflichtformulierung: private Führung (Einzeltermin, Teilnehmer bleiben so lange, wie sie möchten)
+    text: { de: 'Private Führung: Sie sind allein oder mit Ihrer Gruppe unterwegs und bestimmen das Tempo. Die Teilnehmer können so lange bleiben, wie sie möchten, und sich jederzeit von der großen Besuchergruppe lösen. Termin nach Absprache.',
+            en: 'Private tour: you go alone or with your own group and set the pace. Participants can stay as long as they like and leave the regular visitor group at any time. By appointment.',
+            ru: 'Частная экскурсия: вы идёте одни или с вашей группой и сами задаёте темп. Участники могут оставаться столько, сколько захотят, и в любой момент отделиться от общей группы. По договорённости.' } },
+  { title: 'Boppard', place: 'Boppard',
+    // Entwurf von Anatoly, Fakten vor Veröffentlichung prüfen
+    text: { de: 'Die am besten erhaltenen römischen Befestigungen am Rhein. Die Basilika St. Severus. Hier wurde Michael Thonet geboren, der Erfinder des Wiener Stuhls.',
+            en: 'The best-preserved Roman fortifications on the Rhine. The Basilica of St. Severus. Michael Thonet, inventor of the Vienna chair, was born here.',
+            ru: 'Самые хорошо сохранившиеся римские укрепления на Рейне. Базилика святого Северуса. Здесь родился Михаэль Тонет, изобретатель венского стула.' } },
+  { title: 'Rüdesheim', place: 'Rüdesheim',
+    text: { de: null, en: null, ru: null } }
+];
+function renderTours() {
+  const el = document.getElementById('view-tours');
+  if (!el) return;
+  const T = o => (o && (o[lang] || o.en)) || null;
+  el.innerHTML = `<h2 class="xmas-food-title">${T(TOURS_UI.title)}</h2><p class="xmas-intro">${T(TOURS_UI.intro)}</p>` +
+    `<div class="links-grid">` + TOUR_ITEMS.map(it => {
+      const txt = T(it.text) || T(TOURS_UI.soon);
+      return `<div class="link-card tour-card"><span class="link-title">${it.title}</span>` +
+        `<span class="tour-place">${it.place}</span><span class="link-desc">${txt}</span></div>`;
+    }).join('') + `</div>`;
+}
+
 let xmasWineMapObj = null;
 function renderWine() {
   const el = document.getElementById('view-wine');
@@ -4303,6 +4345,7 @@ function switchView(viewName) {
   if (viewName === 'food') { renderFood(); hideFoodPromo(); }
   if (viewName === 'wine') { renderWine(); hideFoodPromo(); }
   if (viewName === 'links') { renderLinks(); hideFoodPromo(); }
+  if (viewName === 'tours') { renderTours(); hideFoodPromo(); }
   renderTabs();
   if (viewName === 'map') {
     setTimeout(() => {

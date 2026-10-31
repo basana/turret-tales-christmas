@@ -6061,11 +6061,11 @@ if ('serviceWorker' in navigator) {
 </style>
 <div id="fbCard" role="dialog" aria-label="Rückmeldung" hidden style="position:fixed">
   <button class="fb-close" id="fbClose" aria-label="Schließen">×</button>
-  <h4>Was denken Sie über den Navigator?</h4>
-  <p>Schreiben Sie uns kurz, was gefällt und was fehlt. Wir antworten persönlich.</p>
+  <h4 id="fbTitle">Was denken Sie über den Navigator?</h4>
+  <p id="fbText">Schreiben Sie uns kurz, was gefällt und was fehlt. Wir antworten persönlich.</p>
   <div class="fb-row">
-    <a class="fb-btn" href="mailto:allyearoundtour@gmail.com?subject=Turret%20Tales%20Feedback">E-Mail</a>
-    <a class="fb-btn wa" href="https://wa.me/491772850207?text=Hallo%20Anatoly%2C%20Feedback%20zum%20Turret%20Tales%20Navigator" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="fb-btn" id="fbMail" href="mailto:allyearoundtour@gmail.com?subject=Turret%20Tales%20Feedback">E-Mail</a>
+    <a class="fb-btn wa" id="fbWa" href="https://wa.me/491772850207?text=Hallo%20Anatoly%2C%20Feedback%20zum%20Turret%20Tales%20Navigator" target="_blank" rel="noopener">WhatsApp</a>
   </div>
 </div>
 <script>
@@ -6077,6 +6077,14 @@ if ('serviceWorker' in navigator) {
   let shown = false;
   try { shown = sessionStorage.getItem('ttFeedbackShown') === '1'; } catch (e) {}
   if (shown) return;
+  // Sprache: Englisch für englischsprachige Geräte, sonst Deutsch
+  const en = (navigator.language || 'de').toLowerCase().startsWith('en');
+  if (en) {
+    document.getElementById('fbTitle').textContent = 'What do you think of the navigator?';
+    document.getElementById('fbText').textContent = 'Tell us briefly what you like and what is missing. We reply personally.';
+    document.getElementById('fbMail').href = 'mailto:allyearoundtour@gmail.com?subject=Turret%20Tales%20Feedback';
+    document.getElementById('fbWa').href = 'https://wa.me/491772850207?text=Hello%20Anatoly%2C%20feedback%20on%20the%20Turret%20Tales%20navigator';
+  }
   setTimeout(() => {
     card.hidden = false;
     try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}

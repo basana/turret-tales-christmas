@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="icon-touch.png">
+<meta name="apple-mobile-web-app-title" content="Turret Tales">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,600&display=swap" rel="stylesheet">
 <!-- Приватная статистика посещений (GoatCounter) — без cookie, без сбора
@@ -120,6 +121,8 @@
   @media (max-width: 420px) { .header-controls .pill-btn-wide { padding-left: 2px; padding-right: 2px; font-size: 8.5px; } }
   /* Узкие экраны: язык и размер шрифта — во второй строке шапки, название приложения читается целиком */
   @media (max-width: 420px) { .header { flex-wrap: wrap; } .header-controls { width: 100%; justify-content: flex-end; margin-top: 8px; } }
+  /* Telefon: Sprachknöpfe unter dem Titel, nie über der Emblem-Zeile */
+  @media (max-width: 480px) { .header { flex-wrap: wrap; } .app-name-row { flex: 0 0 100%; } .header-controls { width: 100%; justify-content: center; flex-wrap: wrap; margin-top: 8px; position: relative; z-index: 1; } }
 
   .xmas-wrap { padding: 16px; line-height: 1.5; }
   .xmas-langs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }

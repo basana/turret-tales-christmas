@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Mosel Guide · Turret Tales (Entwurf)</title>
 <style>
@@ -19,6 +20,7 @@
   .todo { color: var(--ink-soft); font-style: italic; }
   .photo-slot { border: 1px dashed var(--terracotta); border-radius: 8px; padding: 16px 10px; text-align: center; color: var(--terracotta); font-size: 14px; margin: 10px 0 0; }
   .note { font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin: 22px 0 0; padding: 12px; border-left: 4px solid var(--gold); background: #fff; border-radius: 8px; }
+  .owner { font-size: 12px; text-align: center; color: var(--ink-soft); margin: 20px 0 0; }
   .back { display: block; text-align: center; margin-top: 24px; color: var(--terracotta); font-weight: 700; }
 </style>
 </head>
@@ -27,7 +29,7 @@
 <!-- ENTWURF. Nicht im Navigator verlinkt. Stationsliste, Texte, Fotos und Koordinaten von Anatoly bestätigen. -->
 <h1>Mosel Guide</h1>
 <span class="draft">ENTWURF · nicht veröffentlicht</span>
-<p class="lead">Von Koblenz bis Cochem: die Mosel Schritt für Schritt. Karte und Stationen auch ohne Internet.</p>
+<p class="lead">Von Koblenz bis Cochem: Weingüter, Weinproben und Führungen durch die Steillagen von Winningen. Karte und Stationen auch ohne Internet.</p>
 
 <article class="station">
   <div class="station-num">01</div>
@@ -118,7 +120,17 @@
 
 <p class="note">Stationsliste ist eine Vorlage aus den Notizen. Beilstein und Calmont sind neu dazugekommen. Bernkastel-Kues, Zell und Traben-Trarbach gehören zur Zweitagestour. Die Reihenfolge bestimmt Anatoly. Anatoly bestätigt sie und schickt die Objekte. Danach werden Texte nach dem Muster des Rhein-Navigators geschrieben und in fünf Sprachen geprüft.</p>
 
+<p class="owner" id="owner"></p>
 <a class="back" href="index.html">← Zurück zum Navigator</a>
 
+<script>
+  // Persönlicher Vermerk: ?for=Name zeigt, für wen die Vorschau ist (gegen Weitergabe)
+  (function () {
+    const who = new URLSearchParams(location.search).get('for');
+    const el = document.getElementById('owner');
+    if (el && who) el.textContent = 'Vorschau für: ' + who.slice(0, 60) + ' · Nicht weitergeben · © Anatoly Basin, Turret Tales';
+    else if (el) el.textContent = '© Anatoly Basin, Turret Tales · Entwurf';
+  })();
+</script>
 </body>
 </html>

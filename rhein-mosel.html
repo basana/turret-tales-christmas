@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Turret Tales · Rhein | Mosel</title>
+<style>
+  :root { --parchment: #F6EEDD; --ink: #5A4327; --rust: #7A1026; --terracotta: #94481F; --gold: #C9A05C; --cream: #FCEFDD; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #2a1d10; font-family: system-ui, -apple-system, sans-serif; }
+  .splash { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; color: var(--cream); overflow: hidden; }
+  .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.6s ease; }
+  .bg.active { opacity: 1; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,12,4,0.15) 0%, rgba(20,12,4,0.35) 45%, rgba(20,12,4,0.85) 100%); }
+  .content { position: relative; z-index: 1; padding: 0 22px calc(env(safe-area-inset-bottom) + 36px); max-width: 560px; margin: 0 auto; width: 100%; }
+  .eyebrow { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.9; margin: 0 0 8px; }
+  h1 { font-family: Georgia, 'EB Garamond', serif; font-size: 40px; line-height: 1.05; margin: 0 0 10px; font-weight: 600; text-shadow: 0 2px 14px rgba(0,0,0,0.5); }
+  .lead { font-size: 17px; line-height: 1.45; margin: 0 0 22px; opacity: 0.95; }
+  .choice { display: block; text-decoration: none; color: var(--ink); background: var(--parchment); border-radius: 16px; padding: 16px 18px; margin: 0 0 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.35); }
+  .choice-name { display: block; font-size: 22px; font-weight: 700; color: var(--rust); }
+  .choice-sub { display: block; font-size: 15px; margin-top: 2px; color: var(--ink); }
+  .mode { display: flex; gap: 8px; margin: 6px 0 14px; }
+  .mode a { flex: 1; text-align: center; padding: 10px 8px; border-radius: 22px; border: 1px solid var(--cream); color: var(--cream); text-decoration: none; font-weight: 700; font-size: 15px; background: rgba(20,12,4,0.35); }
+  .mode a.xmas { border-color: #fff; }
+  .foot { font-size: 13px; opacity: 0.8; margin: 14px 0 0; }
+</style>
+</head>
+<body>
+
+<!-- Übersicht für Partner: zwei Gebiete, zwei Navigatoren. Entwurf, nicht im Navigator verlinkt. -->
+<section class="splash" aria-label="Rhein oder Mosel">
+  <img class="bg active" src="xmas-splash.webp" alt="">
+  <img class="bg" src="winningen-papercut.webp" alt="">
+  <div class="shade"></div>
+  <div class="content">
+    <p class="eyebrow">Turret Tales</p>
+    <h1>Rhein oder Mosel?</h1>
+    <p class="lead">Burgen, Städte und Weinberge zwischen Koblenz und Bingen, und entlang der Mosel bis Cochem.</p>
+
+    <a class="choice" href="index.html?mode=std">
+      <span class="choice-name">Mittelrhein</span>
+      <span class="choice-sub">Koblenz – Bingen · Burgen, Märkte, Karte</span>
+    </a>
+    <div class="mode">
+      <a href="index.html?mode=std">Classic</a>
+      <a class="xmas" href="index.html?mode=xmas">Christmas</a>
+    </div>
+
+    <a class="choice" href="mosel.html">
+      <span class="choice-name">Mosel</span>
+      <span class="choice-sub">Koblenz – Cochem · Weingüter, Weinproben, Winningen, Beilstein, Calmont</span>
+    </a>
+
+    <p class="foot" id="owner">© Anatoly Basin, Turret Tales · Entwurf</p>
+  </div>
+</section>
+
+<script>
+  // Zwei Hintergründe abwechselnd, wie in der Zauberzeile der Navigatoren
+  (function () {
+    const imgs = document.querySelectorAll('.splash .bg');
+    let i = 0;
+    setInterval(() => {
+      imgs[i].classList.remove('active');
+      i = (i + 1) % imgs.length;
+      imgs[i].classList.add('active');
+    }, 5000);
+  })();
+</script>
+<script>
+  (function () {
+    const who = new URLSearchParams(location.search).get('for');
+    const el = document.getElementById('owner');
+    if (el && who) el.textContent = 'Vorschau für: ' + who.slice(0, 60) + ' · Nicht weitergeben · © Anatoly Basin, Turret Tales';
+  })();
+</script>
+</body>
+</html>

@@ -1149,9 +1149,8 @@
           <input type="text" class="premium-code-input" id="premiumCodeInput" autocomplete="off" autocapitalize="off">
         </div>
         <p class="premium-code-error" id="premiumCodeError"></p>
-        <button class="premium-unlock-btn" id="premiumUnlockBtn">Unlock</button>
+        <button class="premium-unlock-btn" id="premiumUnlockBtn" style="display:none">Unlock</button>
         <a class="premium-ask-hint" id="premiumAskHint" href="https://wa.me/491772850207" target="_blank" rel="noopener">No code? Ask your guide.</a>
-        <a class="premium-ask-hint" id="premiumBuyHint" href="premium.html">Premium: buy access →</a>
       </div>
 
       <div id="premiumUnlockedBlock" style="display:none;">
@@ -4242,9 +4241,6 @@ const LINK_ITEMS = [
   { href: 'walks.html', img: 'links/link-walks.webp',
     title: { de: 'Winningen: Wanderungen & Weingüter', en: 'Winningen: walks & wineries', ru: 'Винген: прогулки и винодельни' },
     desc: { de: 'Hexenpfad-Wanderung, Weingüter und der Weihnachtsmarkt in Winningen.', en: 'Hexenpfad walk, wineries and the Christmas market in Winningen.', ru: 'Прогулка по Хексенпфад, винодельни и рождественский рынок в Винингене.' } },
-  { href: 'premium.html', img: 'links/link-premium.webp',
-    title: { de: 'Premium', en: 'Premium', ru: 'Премиум' },
-    desc: { de: 'Voller Zugang für 7, 14, 30 oder 90 Tage. Bezahlung über Stripe.', en: 'Full access for 7, 14, 30 or 90 days. Paid through Stripe.', ru: 'Полный доступ на 7, 14, 30 или 90 дней. Оплата через Stripe.' } },
   { href: 'demo-food.html', img: 'links/link-demo-food.webp',
     title: { de: 'Demo: Café-Karte', en: 'Demo: café map', ru: 'Демо: карта кафе' },
     desc: { de: 'Demo für Partner: so sieht die Karte der Cafés aus.', en: 'Demo for partners: how the café map looks.', ru: 'Демо для партнёров: так выглядит карта кафе.' } },
@@ -6051,6 +6047,41 @@ if ('serviceWorker' in navigator) {
   // Смена экрана или выход из заставки происходит кликом — проверяем после перерисовки
   document.addEventListener('click', function () { setTimeout(update, 700); }, true);
   update();
+})();
+</script>
+<style>
+  #fbCard { position: fixed; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom) + 12px); z-index: 4000; background: #F6EEDD; color: #5A4327; border: 1px solid #C9A05C; border-radius: 14px; padding: 14px 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); font-family: system-ui, sans-serif; max-width: 520px; margin: 0 auto; }
+  #fbCard[hidden] { display: none; }
+  #fbCard h4 { margin: 0 24px 6px 0; font-size: 16px; color: #7A1026; }
+  #fbCard p { margin: 0 0 10px 0; font-size: 14px; line-height: 1.4; }
+  #fbCard .fb-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  #fbCard a.fb-btn { flex: 1 1 auto; text-align: center; padding: 10px 12px; border-radius: 22px; border: 1px solid #7A1026; color: #7A1026; background: #fff; text-decoration: none; font-weight: 700; font-size: 14px; }
+  #fbCard a.fb-btn.wa { background: #7A1026; color: #fff; }
+  #fbCard .fb-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; font-size: 22px; color: #7A5A2A; cursor: pointer; }
+</style>
+<div id="fbCard" role="dialog" aria-label="Rückmeldung" hidden style="position:fixed">
+  <button class="fb-close" id="fbClose" aria-label="Schließen">×</button>
+  <h4>Was denken Sie über den Navigator?</h4>
+  <p>Schreiben Sie uns kurz, was gefällt und was fehlt. Wir antworten persönlich.</p>
+  <div class="fb-row">
+    <a class="fb-btn" href="mailto:allyearoundtour@gmail.com?subject=Turret%20Tales%20Feedback">E-Mail</a>
+    <a class="fb-btn wa" href="https://wa.me/491772850207?text=Hallo%20Anatoly%2C%20Feedback%20zum%20Turret%20Tales%20Navigator" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</div>
+<script>
+(function () {
+  // Einmal pro Sitzung nach ca. 90 Sekunden. Schließt sich mit ×, keine Datenerfassung.
+  const card = document.getElementById('fbCard');
+  const close = document.getElementById('fbClose');
+  if (!card || !close) return;
+  let shown = false;
+  try { shown = sessionStorage.getItem('ttFeedbackShown') === '1'; } catch (e) {}
+  if (shown) return;
+  setTimeout(() => {
+    card.hidden = false;
+    try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
+  }, 90000);
+  close.addEventListener('click', () => { card.hidden = true; });
 })();
 </script>
 </body>

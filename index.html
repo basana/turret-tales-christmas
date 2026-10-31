@@ -164,6 +164,7 @@
   .buta-pic { margin: 0; position: relative; width: 88%; justify-self: end; }
   .buta-pic .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
   /* "Hausgemacht"-Siegel wie ein Gütesiegel/Stern auf dem Hauptfoto (Buta Cafe: Familienküche, alles handgemacht) */
+  .stoa-pic { position: relative; }
   .buta-badge {
     position: absolute; top: -10px; left: -10px; width: 58px; height: 58px; border-radius: 50%;
     background: radial-gradient(circle at 32% 28%, #e8b33a, #a9781f 70%, #8a5f14);
@@ -4180,7 +4181,8 @@ function renderFood() {
     if (p.stoa) {
       const st = STOA_CARD.text[xmasLang] || STOA_CARD.text.en;
       return `<div class="route-card xmas-card">${kicker}<div class="food-mia">` +
-        `<figure class="food-mia-pic"><img src="stoa-main.webp" alt="STOA Café" loading="lazy"></figure>` +
+        `<figure class="food-mia-pic stoa-pic"><img src="stoa-main.webp" alt="STOA Café" loading="lazy">` +
+        `<div class="buta-badge"><span>${(BUTA_BADGE[xmasLang] || BUTA_BADGE.en).split('\n').map(w => `<em>${w}</em>`).join('')}</span></div></figure>` +
         `<div class="food-mia-text"><h3 class="buta-name">${STOA_CARD.title}</h3>` +
         `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${STOA_CARD.place}</p><p style="margin:0">${st}</p></div></div></div>`;
     }

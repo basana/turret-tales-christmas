@@ -4241,9 +4241,7 @@ const LINK_ITEMS = [
   { href: 'partner-map.html', img: 'links/link-essen.webp',
     title: { de: 'Essen, Trinken & Souvenirs', en: 'Food, drinks & souvenirs', ru: 'Еда, напитки и сувениры' },
     desc: { de: 'Cafés, Eis, Bücher und Souvenirs unserer Partner, mit Gutschein-Aktionen.', en: 'Cafés, ice cream, books and souvenirs from our partners, with voucher offers.', ru: 'Кафе, мороженое, книги и сувениры партнёров, с купонами.' } },
-  { href: 'walks.html', img: 'links/link-walks.webp',
-    title: { de: 'Winningen: Wanderungen & Weingüter', en: 'Winningen: walks & wineries', ru: 'Винген: прогулки и винодельни' },
-    desc: { de: 'Hexenpfad-Wanderung, Weingüter und der Weihnachtsmarkt in Winningen.', en: 'Hexenpfad walk, wineries and the Christmas market in Winningen.', ru: 'Прогулка по Хексенпфад, винодельни и рождественский рынок в Винингене.' } },
+  // Winningen (Mosel) bis zur Mosel-Version ausgeblendet: heute nur Mittelrhein
   { href: 'demo-food.html', img: 'links/link-demo-food.webp',
     title: { de: 'Demo: Café-Karte', en: 'Demo: café map', ru: 'Демо: карта кафе' },
     desc: { de: 'Demo für Partner: so sieht die Karte der Cafés aus.', en: 'Demo for partners: how the café map looks.', ru: 'Демо для партнёров: так выглядит карта кафе.' } },
@@ -4293,7 +4291,7 @@ function renderTours() {
   if (!el) return;
   const T = o => (o && (o[lang] || o.en)) || null;
   el.innerHTML = `<h2 class="xmas-food-title">${T(TOURS_UI.title)}</h2><p class="xmas-intro">${T(TOURS_UI.intro)}</p>` +
-    `<div class="links-grid">` + TOUR_ITEMS.map(it => {
+    `<div class="links-grid">` + TOUR_ITEMS.filter(it => T(it.text)).map(it => {
       const txt = T(it.text) || T(TOURS_UI.soon);
       return `<div class="link-card tour-card"><span class="link-title">${it.title}</span>` +
         `<span class="tour-place">${it.place}</span><span class="link-desc">${txt}</span></div>`;

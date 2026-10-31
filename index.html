@@ -219,7 +219,7 @@
   .link-card img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
   .link-title { font-weight: 700; font-size: 18px; padding: 10px 12px 0; color: var(--rust, #7A1026); }
   .link-desc { font-size: 15px; line-height: 1.45; padding: 4px 12px 12px; color: var(--ink); }
-  .station-thumb { display: block; width: 70%; max-width: 70%; margin: 0 auto 8px; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; }
+  .station-thumb { display: block; width: 70%; max-width: 70%; margin: 0 auto 8px; height: auto; object-fit: contain; border-radius: 10px; }
   .img-zoom { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; padding: 12px; cursor: zoom-out; }
   .img-zoom[hidden] { display: none; }
   .img-zoom img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
@@ -5144,7 +5144,8 @@ function renderCastlesList() {
   // Входной экран (koblenz_altstadt) не показываем отдельной карточкой —
   // чтобы Кобленц не дублировался, в списке только "настоящая" станция
   // koblenz_city.
-  el.innerHTML = castles.map((c, i) => ({ c, i })).filter(({ c }) => c.id !== 'koblenz_altstadt').map(({ c, i }) => `
+  // Gutenfels und Hildegard aus der Burgenliste entfernt (Entscheidung 31.10)
+  el.innerHTML = castles.map((c, i) => ({ c, i })).filter(({ c }) => c.id !== 'koblenz_altstadt' && c.id !== 'gutenfels' && c.id !== 'hildegard').map(({ c, i }) => `
     <a class="castle-card" href="#${c.id}" data-station="${i}">
       ${stationThumbHtml(c, i)}
       <div class="castle-name">${c.name}</div>

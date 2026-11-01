@@ -9,25 +9,25 @@
 <style>
   :root { --parchment:#F6EEDD; --ink:#5A4327; --rust:#7A1026; --terracotta:#94481F; --gold:#C9A05C; }
   * { box-sizing: border-box; }
-  body { margin:0; background:var(--parchment); color:var(--ink); font-family: system-ui, -apple-system, sans-serif; font-size:20px; line-height:1.5; }
-  main { max-width: 520px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 32px) 22px calc(env(safe-area-inset-bottom) + 32px); text-align: center; }
-  h1 { font-family: Georgia, 'EB Garamond', serif; color: var(--terracotta); font-size: 34px; line-height: 1.1; margin: 0 0 2px; font-weight: 600; }
-  .sub { color: var(--rust); font-weight: 700; line-height: 1.2; margin: 0 0 18px; }
-  .step { background:#fff; border:1px solid var(--gold); border-radius: 16px; padding: 14px 18px; margin: 0 0 12px; text-align: left; }
+  body { margin:0; background:var(--parchment); color:var(--ink); font-family: system-ui, -apple-system, sans-serif; font-size:clamp(16px, 4.9vw, 20px); line-height:1.5; }
+  main { max-width: 520px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 24px); text-align: center; }
+  h1 { font-family: Georgia, 'EB Garamond', serif; color: var(--terracotta); font-size: clamp(26px, 8vw, 34px); line-height: 1.1; margin: 0 0 2px; font-weight: 600; }
+  .sub { color: var(--rust); font-weight: 700; line-height: 1.2; margin: 0 0 16px; font-size: clamp(15px, 4.4vw, 19px); }
+  .step { background:#fff; border:1px solid var(--gold); border-radius: 16px; padding: clamp(10px, 3vw, 14px) clamp(12px, 4vw, 18px); margin: 0 0 10px; text-align: left; }
   .step p { margin: 0 0 6px; }
   .step p:last-child { margin-bottom: 0; }
   .step b { color: var(--rust); }
-  .wifi { font-size: 20px; font-weight: 700; color: var(--rust); margin: 8px 0 18px; }
-  .go { display:block; width:100%; padding: 18px; border-radius: 16px; background: var(--rust); color:#fff; font-size: 20px; font-weight: 700; text-decoration:none; margin-top: 18px; }
+  .wifi { font-size: clamp(16px, 4.8vw, 20px); font-weight: 700; color: var(--rust); margin: 8px 0 18px; }
+  .go { display:block; width:100%; padding: clamp(12px, 3.5vw, 18px); border-radius: 16px; background: var(--rust); color:#fff; font-size: clamp(16px, 4.8vw, 20px); font-weight: 700; text-decoration:none; margin-top: 18px; }
   .note { font-size: 15px; color: var(--ink); margin-top: 18px; }
   .contact { text-align:center; }
-  .contact .wa { display:block; padding:16px; border-radius:16px; background:#25D366; color:#fff; font-weight:700; font-size:20px; text-decoration:none; margin:10px 0 14px; }
-  .contact .mail { font-size:19px; margin:0; } .contact .mail a { color: var(--rust); font-weight:700; word-break: break-all; }
+  .contact .wa { display:block; padding:16px; border-radius:16px; background:#25D366; color:#fff; font-weight:700; font-size:clamp(16px, 4.8vw, 20px); text-decoration:none; margin:10px 0 12px; }
+  .contact .mail { font-size:clamp(15px, 4.5vw, 19px); margin:0; } .contact .mail a { color: var(--rust); font-weight:700; word-break: break-all; }
 </style>
 </head>
 <body>
 <main>
-  <img src="emblem.png" alt="Turret Tales" style="display:block;width:120px;max-width:40%;height:auto;margin:0 auto -6px;">
+  <img src="emblem.png" alt="Turret Tales" style="display:block;width:clamp(80px, 30vw, 120px);max-width:40%;height:auto;margin:0 auto -6px;">
   <h1>Turret Tales</h1>
   <p class="sub">Rhine &amp; Mosel guide</p>
 

@@ -214,6 +214,8 @@
   .xmas-town-top { display: flex; align-items: center; gap: 10px; }
   .xmas-town-thumb { width: 84px; height: 84px; min-width: 84px; object-fit: cover; border-radius: 8px; border: 1px solid #7A1026; flex-shrink: 0; }
   .xmas-thumb-btn { background: none; border: 0; padding: 0; cursor: pointer; flex-shrink: 0; line-height: 0; }
+  .xmas-thumb-row { display: flex; gap: 8px; overflow-x: auto; margin: 10px 0 4px; }
+  .xmas-thumb-row .xmas-town-thumb { width: 96px; height: 96px; min-width: 96px; }
   .links-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
   .link-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--gold); border-radius: 12px; overflow: hidden; color: inherit; text-decoration: none; }
   .tour-place { font-size: 13px; color: var(--ink-soft); padding: 0 12px; }
@@ -3984,10 +3986,9 @@ function xmasTownListHtml() {
   const go = { de: 'Zum Markt →', fr: 'Voir le marché →', nl: 'Naar de markt →', en: 'Open market →', ru: 'К рынку →', zh: '前往市集 →', he: '← לשוק' }[xmasLang] || 'Open market →';
   return '<div class="xmas-town-list">' + XMAS_ORDER.map((k, i) => {
     const photoKey = XMAS_TOWN_THUMB_KEY[k];
-    const thumbSrc = (XMAS_PHOTOS[photoKey] && XMAS_PHOTOS[photoKey][0]) || '';
-    const thumbHtml = thumbSrc ? `<img class="xmas-town-thumb" src="${thumbSrc}" alt="" loading="lazy" onerror="this.remove()">` : '';
-    const thumbBtn = thumbHtml ? `<button class="xmas-thumb-btn" data-xc="${k}" aria-label="${T(XMAS_CITY[k].name)}">${thumbHtml}</button>` : '';
-    return `<div class="route-card xmas-card"><div class="xmas-town-top">${thumbBtn}<div class="xmas-town-text"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div></div></div><button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`;
+    const thumbSrcs = XMAS_PHOTOS[photoKey] || [];
+    const thumbRow = thumbSrcs.length ? `<div class="xmas-thumb-row">${thumbSrcs.map(src => `<button class="xmas-thumb-btn" data-xc="${k}" aria-label="${T(XMAS_CITY[k].name)}"><img class="xmas-town-thumb" src="${src}" alt="" loading="lazy" onerror="this.remove()"></button>`).join('')}</div>` : '';
+    return `<div class="route-card xmas-card"><div class="xmas-town-top"><div class="xmas-town-text"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div></div></div>${thumbRow}<button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`;
   }).join('') + '</div>';
 }
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
@@ -4201,7 +4202,7 @@ const WINEMAKERS = [
     text: { de: 'Mehrfach ausgezeichnetes Weingut in Winningen, in der sechsten Generation geführt. Weinprobe und Verkauf: Termine und Gruppen auf Anfrage. Die Weine gibt es auch in der Vinothek im Cusanusstift in Bernkastel-Kues.',
             en: 'Award-winning winery in Winningen, run by the sixth generation. Tasting and sales: dates and groups on request. The wines are also available at the Vinothek im Cusanusstift in Bernkastel-Kues.',
             ru: 'Отмеченная наградами винодельня в Винингене, управляется в шестом поколении. Дегустация и продажа: даты и группы по запросу. Вина также есть в Vinothek im Cusanusstift в Бернкастель-Кюсе.' } },
-  { name: 'Weingut Kröber', icon: 'kroeber-emblem.webp', addr: 'Hahnenstraße 14, 56333 Winningen', ll: [50.3143486, 7.5193728], photos: ['winzer-10.webp', 'winzer-11.webp'],
+  { name: 'Weingut Kröber', icon: 'kroeber-emblem.webp', addr: 'Hahnenstraße 14, 56333 Winningen', ll: [50.3143486, 7.5193728], photos: ['kroeber-wine.webp', 'winzer-10.webp', 'winzer-11.webp'],
     text: { de: 'Weingut in Winningen, dazu die Brennerei der Familie: Brände und Liköre, seit über 100 Jahren. Weinprobe im Weingut: sechs Weine mit Brot, 200 € bis 10 Personen, je weitere Person 20 €. Weinberg-Wanderung mit Probe (Mai bis Oktober): 40 € pro Person, ab 10 Personen. Anfrage über weingut-kroeber.de/weinprobe/ oder telefonisch.',
             en: 'Winery in Winningen with the family’s distillery: brandies and liqueurs for over 100 years. Winery tasting of six wines with bread: €200 for up to 10 people, €20 per extra person. Vineyard hike with tasting (May to October): €40 per person, from 10 people. Request via weingut-kroeber.de/weinprobe/ or by phone.',
             ru: 'Винодельня в Винингене и семейная дистиллерия: бренди и ликёры уже более 100 лет. Дегустация шести вин с хлебом в винодельне: 200 € до 10 человек, каждый следующий — 20 €. Прогулка по винограднику с дегустацией (с мая по октябрь): 40 € с человека, от 10 человек. Заявка: weingut-kroeber.de/weinprobe/ или по телефону.' } },

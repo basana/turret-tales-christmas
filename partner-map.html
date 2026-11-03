@@ -630,43 +630,59 @@ PLACES.forEach((ll, i) => {
 const WINE_VIKING_LL = [50.31138325323096, 7.518923406620906];
 // Карта виноделов: GPS, поиск по названию (без списка на карте)
 function wineMapTools(map, items) {
-  // Поиск по названию (подсказки браузера, как в основной навигации), иконки ведут к карточке в списке
-  let userLayer = null;
-  const pick = it => { map.setView(it.ll, 16); if (it.go) it.go(); };
-  const ctl = L.control({ position: 'topleft' });
-  ctl.onAdd = () => {
-    const d = L.DomUtil.create('div');
-    d.style.cssText = 'background:#fff;padding:6px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.3);font:13px sans-serif;width:200px';
-    d.innerHTML = '<button type="button" id="wmGps" style="width:100%;padding:6px;border:1px solid #7A1026;background:#7A1026;color:#fff;border-radius:6px;cursor:pointer">📍 GPS</button>' +
-      '<input id="wmSearch" type="search" list="wmNames" placeholder="Name suchen" style="width:100%;margin-top:6px;padding:5px;box-sizing:border-box;border:1px solid #c8a878;border-radius:6px">' +
-      '<datalist id="wmNames">' + items.map(it => '<option value="' + it.name + '"></option>').join('') + '</datalist>';
-    L.DomEvent.disableClickPropagation(d);
-    L.DomEvent.disableScrollPropagation(d);
-    return d;
-  };
-  ctl.addTo(map);
+  // Как на основной карте: поиск сверху, кнопка GPS (вкл./выкл.) слева под ним, зум справа внизу. Списка на карте нет.
+  const box = map.getContainer();
+  if (map.zoomControl) map.zoomControl.remove();
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:absolute;z-index:1000;top:12px;left:12px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:8px 12px;box-shadow:0 4px 14px rgba(90,67,39,0.25);box-sizing:border-box';
+  bar.innerHTML = '<span style="font-size:13px;opacity:.75">🔎</span>' +
+    '<input id="wmSearch" type="text" list="wmNames" autocomplete="off" placeholder="Name suchen" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:13px sans-serif;color:#5A4327">' +
+    '<datalist id="wmNames">' + items.map(it => '<option value="' + it.name.replace(/"/g, '&quot;') + '"></option>').join('') + '</datalist>';
+  const gps = document.createElement('button');
+  gps.type = 'button';
+  gps.style.cssText = 'position:absolute;z-index:1000;top:78px;left:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:7px 12px;font:700 12px sans-serif;color:#5A4327;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,0.25)';
+  gps.innerHTML = '<span>📍</span><span>GPS</span>';
+  [bar, gps].forEach(el => { box.appendChild(el); L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); });
   if (WINE_VIKING_LL) L.marker(WINE_VIKING_LL, { icon: L.divIcon({ className: '', html: '<div style="background:#E30613;color:#fff;font:700 13px sans-serif;width:22px;height:22px;border-radius:50%;border:2px solid #fff;text-align:center;line-height:18px">V</div>', iconSize: [22, 22], iconAnchor: [11, 11] }) }).addTo(map).bindTooltip('Anleger Viking');
-  map.getContainer().addEventListener('input', e => {
-    if (!e.target || e.target.id !== 'wmSearch') return;
-    const exact = items.find(i => i.name === e.target.value);
-    if (exact) pick(exact);
+
+  // Поиск: точное имя из подсказок или Enter по части названия → карта и страница к карточке
+  const input = bar.querySelector('#wmSearch');
+  const pick = it => { map.setView(it.ll, 16); if (it.go) it.go(); };
+  input.addEventListener('input', () => { const it = items.find(i => i.name === input.value); if (it) pick(it); });
+  input.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const q = input.value.toLowerCase();
+    const it = items.find(i => i.name.toLowerCase().includes(q));
+    if (it) pick(it);
   });
-  map.getContainer().addEventListener('keydown', e => {
-    if (!e.target || e.target.id !== 'wmSearch' || e.key !== 'Enter') return;
-    const q = e.target.value.toLowerCase();
-    const hit = items.find(i => i.name.toLowerCase().includes(q));
-    if (hit) pick(hit);
-  });
-  map.getContainer().addEventListener('click', e => {
-    if (!e.target || e.target.id !== 'wmGps') return;
+
+  // GPS: нажатие включает слежение и синюю точку, второе нажатие выключает
+  let watchId = null, userLayer = null, fitted = false;
+  const setOn = on => {
+    gps.style.background = on ? 'linear-gradient(135deg,#94481F,#8f4a22)' : 'rgba(246,238,221,0.95)';
+    gps.style.color = on ? '#fff' : '#5A4327';
+  };
+  const stop = () => {
+    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+    if (userLayer) userLayer.remove();
+    userLayer = null; fitted = false; setOn(false);
+  };
+  const start = () => {
     if (!navigator.geolocation) { alert('GPS nicht verfügbar'); return; }
-    navigator.geolocation.getCurrentPosition(pos => {
+    setOn(true);
+    watchId = navigator.geolocation.watchPosition(pos => {
       const user = [pos.coords.latitude, pos.coords.longitude];
-      if (userLayer) userLayer.remove();
-      userLayer = L.circleMarker(user, { radius: 7, color: '#fff', weight: 2, fillColor: '#1d6fd6', fillOpacity: 1 }).addTo(map);
-      map.fitBounds(L.latLngBounds([user, ...items.map(i => i.ll)]), { padding: [24, 24], maxZoom: 15 });
-    }, () => alert('GPS nicht verfügbar'), { enableHighAccuracy: true, timeout: 10000 });
-  });
+      if (!userLayer) userLayer = L.circleMarker(user, { radius: 7, color: '#fff', weight: 2, fillColor: '#1d6fd6', fillOpacity: 1 }).addTo(map);
+      else userLayer.setLatLng(user);
+      if (!fitted) {
+        fitted = true;
+        map.fitBounds(L.latLngBounds([user, ...items.map(i => i.ll)]), { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
+      }
+    }, () => { alert('GPS nicht verfügbar'); stop(); }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
+  };
+  gps.addEventListener('click', () => (watchId === null ? start() : stop()));
 }
 function avatar(p) {
   return p.icon

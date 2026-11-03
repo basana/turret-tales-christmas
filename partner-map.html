@@ -626,6 +626,55 @@ PLACES.forEach((ll, i) => {
   });
 });
 
+// Причал Viking в Винингене: сюда вписать [lat, lng], когда известны. Пока null — расстояние от него не показывается.
+const WINE_VIKING_LL = null;
+// Карта виноделов: GPS, поиск по названию, список с расстояниями (от вас и от причала Viking)
+function wineMapTools(map, items) {
+  const toR = x => x * Math.PI / 180;
+  const dist = (a, b) => { const dLat = toR(b[0] - a[0]), dLng = toR(b[1] - a[1]); const h = Math.sin(dLat / 2) ** 2 + Math.cos(toR(a[0])) * Math.cos(toR(b[0])) * Math.sin(dLng / 2) ** 2; return 2 * 6371000 * Math.asin(Math.sqrt(h)); };
+  const fmt = m => m >= 1000 ? (m / 1000).toFixed(1).replace('.', ',') + ' km' : Math.round(m) + ' m';
+  let user = null, userLayer = null;
+  const ctl = L.control({ position: 'topleft' });
+  ctl.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.style.cssText = 'background:#fff;padding:6px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.3);font:13px sans-serif;width:230px;max-height:300px;overflow:auto';
+    d.innerHTML = '<button type="button" id="wmGps" style="width:100%;padding:6px;border:1px solid #7A1026;background:#7A1026;color:#fff;border-radius:6px;cursor:pointer">📍 GPS</button>' +
+      '<input id="wmSearch" type="search" placeholder="Name suchen" style="width:100%;margin-top:6px;padding:5px;box-sizing:border-box;border:1px solid #c8a878;border-radius:6px">' +
+      '<div id="wmList" style="margin-top:6px"></div>';
+    L.DomEvent.disableClickPropagation(d);
+    L.DomEvent.disableScrollPropagation(d);
+    return d;
+  };
+  ctl.addTo(map);
+  if (WINE_VIKING_LL) L.marker(WINE_VIKING_LL, { icon: L.divIcon({ className: '', html: '<div style="background:#E30613;color:#fff;font:700 13px sans-serif;width:22px;height:22px;border-radius:50%;border:2px solid #fff;text-align:center;line-height:18px">V</div>', iconSize: [22, 22], iconAnchor: [11, 11] }) }).addTo(map).bindTooltip('Anleger Viking');
+  const list = () => {
+    const el = document.getElementById('wmList');
+    if (!el) return;
+    const q = (document.getElementById('wmSearch').value || '').toLowerCase();
+    el.innerHTML = items.map((it, i) => ({ it, i })).filter(x => x.it.name.toLowerCase().includes(q)).map(({ it, i }) => {
+      const parts = [];
+      if (user) parts.push(fmt(dist(user, it.ll)) + ' von Ihnen');
+      if (WINE_VIKING_LL) parts.push(fmt(dist(WINE_VIKING_LL, it.ll)) + ' vom Anleger Viking');
+      return `<div data-i="${i}" style="padding:5px 2px;border-bottom:1px solid #eee;cursor:pointer"><b>${it.name}</b>${parts.length ? '<br><span style="color:#555;font-size:12px">' + parts.join(' · ') + '</span>' : ''}</div>`;
+    }).join('') || '<div style="padding:4px;color:#777">—</div>';
+  };
+  map.getContainer().addEventListener('input', e => { if (e.target && e.target.id === 'wmSearch') list(); });
+  map.getContainer().addEventListener('click', e => {
+    const row = e.target.closest && e.target.closest('#wmList [data-i]');
+    if (row) { const it = items[+row.dataset.i]; map.setView(it.ll, 16); it.go && it.go(); }
+    if (e.target && e.target.id === 'wmGps') {
+      if (!navigator.geolocation) { alert('GPS nicht verfügbar'); return; }
+      navigator.geolocation.getCurrentPosition(pos => {
+        user = [pos.coords.latitude, pos.coords.longitude];
+        if (userLayer) userLayer.remove();
+        userLayer = L.circleMarker(user, { radius: 7, color: '#fff', weight: 2, fillColor: '#1d6fd6', fillOpacity: 1 }).addTo(map);
+        map.fitBounds(L.latLngBounds([user, ...items.map(i => i.ll)]), { padding: [24, 24], maxZoom: 15 });
+        list();
+      }, () => alert('GPS nicht verfügbar'), { enableHighAccuracy: true, timeout: 10000 });
+    }
+  });
+  list();
+}
 function avatar(p) {
   return p.icon
     ? `<img class="partner-icon" src="${p.icon}" alt="${p.name}" width="64" height="64">`
@@ -915,7 +964,8 @@ function render() {
           .addTo(window.wineLeaf).bindTooltip(w.name)
           .on('click', () => { const c = document.getElementById('card-' + w.slug); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       });
-      window.wineLeaf.fitBounds(L.latLngBounds(WINERIES.filter(w => w.ll).map(w => w.ll)), { padding: [6, 6], maxZoom: 14 });
+      window.wineLeaf.fitBounds(L.latLngBounds(WINERIES.filter(w => w.ll).map(w => w.ll)), { padding: [28, 28], maxZoom: 15 });
+      wineMapTools(window.wineLeaf, WINERIES.filter(w => w.ll).map(w => ({ name: w.name, ll: w.ll, go: () => { const c = document.getElementById('card-' + w.slug); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); } })));
     }
     setTimeout(() => window.wineLeaf.invalidateSize(), 0);
   }

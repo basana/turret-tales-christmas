@@ -4178,9 +4178,30 @@ const XMAS_FOOD_TITLE = { de: 'Essen, Trinken & mehr', fr: 'Restauration & plus'
 // name, addr (строка адреса), ll ([широта, долгота] или null), text (описание по языкам).
 // Пока name = null, карточка показывает заглушку «адрес будет добавлен».
 const WINEMAKERS = [
-  { name: null, addr: null, ll: null, text: null },
-  { name: null, addr: null, ll: null, text: null },
-  { name: null, addr: null, ll: null, text: null },
+  { name: 'Weingut Weyh', addr: 'Röttgenweg 4, 56333 Winningen', ll: [50.3157978, 7.5226843], photos: ['winzer-1.webp', 'winzer-2.webp', 'winzer-3.webp'],
+    text: { de: 'Weinprobe mit fünf Weinen, kommentiert, dazu Brot und Wasser. Gruppen sind möglich. Termine und Preis auf Anfrage.',
+            en: 'Tasting of five wines with commentary, served with bread and water. Groups are possible. Dates and price on request.',
+            ru: 'Дегустация пяти вин с комментариями, с хлебом и водой. Возможны группы. Даты и цена по запросу.' } },
+  { name: 'Weingut Löwensteinhof', addr: 'Krambachweg, 56333 Winningen', ll: [50.3119216, 7.508947], photos: ['winzer-4.webp', 'winzer-5.webp'],
+    text: { de: 'Eigene Weine, Weinprobe und Verkauf. Außerdem Straußwirtschaft mit kleinen regionalen Speisen. Gruppen und Sprache werden noch geklärt.',
+            en: 'Own wines, tastings and sales. Also a wine tavern (Straußwirtschaft) with small regional dishes. Groups and language still to be confirmed.',
+            ru: 'Собственные вина, дегустации и продажа. Также Straußwirtschaft с небольшими региональными блюдами. Группы и язык уточняются.' } },
+  { name: 'Vinothek im Winninger Spital', addr: 'Weinhof 2, 56333 Winningen', ll: [50.3131176, 7.5201214], photos: ['winzer-6.webp', 'winzer-7.webp'],
+    text: { de: 'Weinladen mit Ausstellungen. Weinproben für Gruppen sind noch nicht bestätigt, bitte vorher anfragen.',
+            en: 'Wine shop with exhibitions. Tastings for groups are not yet confirmed, please ask in advance.',
+            ru: 'Винный магазин с выставками. Дегустации для групп пока не подтверждены, уточняйте заранее.' } },
+  { name: 'Weingut Knebelbrüder', addr: 'August-Horch-Straße 9, 56333 Winningen', ll: [50.314144, 7.5202499], photos: ['winzer-8.webp', 'winzer-9.webp'],
+    text: { de: 'Weingut in Winningen mit Hof und Keller. Angebot, Weinproben und Gruppen auf Anfrage.',
+            en: 'Winery in Winningen with courtyard and cellar. Offer, tastings and groups on request.',
+            ru: 'Винодельня в Винингене с двором и погребом. Программа, дегустации и группы по запросу.' } },
+  { name: 'Weingut Richard Richter', addr: 'Marktstraße 19, 56333 Winningen', ll: [50.3129042, 7.5167285], photos: ['richter-1.webp', 'richter-2.webp', 'richter-3.webp', 'richter-4.webp', 'richter-5.webp', 'richter-6.webp', 'richter-7.webp'],
+    text: { de: 'Mehrfach ausgezeichnetes Weingut in Winningen, in der sechsten Generation geführt. Weinprobe und Verkauf: Termine und Gruppen auf Anfrage.',
+            en: 'Award-winning winery in Winningen, run by the sixth generation. Tasting and sales: dates and groups on request.',
+            ru: 'Отмеченная наградами винодельня в Винингене, управляется в шестом поколении. Дегустация и продажа: даты и группы по запросу.' } },
+  { name: 'Weingut Kröber', addr: 'Hahnenstraße 14, 56333 Winningen', ll: [50.3143486, 7.5193728], photos: ['winzer-10.webp', 'winzer-11.webp'],
+    text: { de: 'Weingut in Winningen, dazu die Brennerei der Familie: Brände und Liköre, seit über 100 Jahren. Weinprobe und Verkauf: Termine und Gruppen auf Anfrage.',
+            en: 'Winery in Winningen with the family’s distillery: brandies and liqueurs for over 100 years. Tastings and sales: dates and groups on request.',
+            ru: 'Винодельня в Винингене и семейная дистиллерия: бренди и ликёры уже более 100 лет. Дегустации и продажа: даты и группы по запросу.' } },
 ];
 const WINE_UI = {
   de: { title: 'Weingüter & Weinproben', intro: 'Weingüter am Moselufer. Viele Gäste der Flusskreuzfahrt möchten Wein direkt beim Winzer probieren. Hier finden Sie Winzer mit Weinproben.', ph: 'Weingut – Adresse folgt' },
@@ -4382,8 +4403,10 @@ function renderWine() {
     const kicker = `<div class="route-kicker">W${i + 1}</div>`;
     if (!w.name) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${wui.ph}</div></div>`;
     const t = (w.text && (w.text[xmasLang] || w.text.en)) || '';
+    const gal = (w.photos || []).map(src => `<img src="${src}" alt="${w.name}" loading="lazy" style="width:100%;height:auto;display:block;border-radius:4px">`).join('');
+    const galHtml = gal ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px">${gal}</div>` : '';
     return `<div class="route-card xmas-card">${kicker}<div class="food-mia-text"><h3 class="buta-name">${w.name}</h3>` +
-      `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${w.addr || ''}</p><p style="margin:0">${t}</p></div></div>`;
+      `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${w.addr || ''}</p><p style="margin:0">${t}</p>${galHtml}</div></div>`;
   }).join('');
   el.innerHTML = `<h2 class="castle-name" style="margin:10px 0">${wui.title}</h2><p class="xmas-intro">${wui.intro}</p>` +
     `<div id="xmasWineMap" class="xmas-map"></div>` +

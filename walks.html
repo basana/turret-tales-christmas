@@ -77,6 +77,9 @@
   .card .num { font-family: var(--sans); font-weight: 700; color: var(--maroon); font-size: var(--fs-small); min-width: 26px; }
   .card .ph { flex: 1; border: 1px dashed var(--maroon); border-radius: 8px; padding: 14px 10px; text-align: center; color: var(--maroon); font-size: var(--fs-body); }
   .partner { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px; margin: 0 0 12px; }
+  .partner-head { display: flex; gap: 12px; align-items: center; }
+  .partner-head > div { min-width: 0; }
+  .partner-icon { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--maroon); flex: none; background: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--sans); font-size: 24px; font-weight: 700; color: var(--maroon); }
   .partner-name { font-size: var(--fs-h2); font-weight: 700; color: var(--maroon); margin: 0; line-height: 1.2; }
   .partner-cat { font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); margin-top: 2px; }
   .partner-desc { font-size: var(--fs-lead); line-height: 1.5; margin: 10px 0; }
@@ -86,8 +89,7 @@
   .partner-meta div { margin: 0 0 2px; }
   .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: var(--fs-small); margin: 0 0 14px; }
   .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 14px; }
-  .gallery img { width: 100%; height: auto; border-radius: 8px; display: block; }
-  .gallery img:first-child { grid-column: span 2; }
+  .gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; display: block; }
 
   /* === Карточка маршрута (вкладка «Wanderungen») === */
   .walk { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 16px; margin: 0 0 18px; }
@@ -609,7 +611,7 @@ const WINERIES = [
     }
   },
   {
-    slug: 'richter', name: 'Weingut Richard Richter', icon: null, photos: ['richter-1.webp', 'richter-2.webp', 'richter-3.webp', 'richter-4.webp', 'richter-5.webp', 'richter-6.webp', 'richter-7.webp'],
+    slug: 'richter', name: 'Weingut Richard Richter', icon: null, photos: ['richter-bottle.webp', 'richter-1.webp', 'richter-3.webp', 'richter-4.webp', 'richter-5.webp', 'richter-6.webp', 'richter-7.webp'],
     photoAlt: 'Weingut Richard Richter, Winningen',
     cat: { de: 'Weingut · Weinprobe auf Anfrage', en: 'Winery · tasting on request' },
     addr: 'Marktstraße 19, 56333 Winningen',
@@ -849,7 +851,9 @@ function drawWalkMap(w) {
 
 // ---- Weingüter ----
 function avatar(p) {
-  return p.icon ? `<img class="partner-icon" src="${p.icon}" alt="${p.name}" width="64" height="64">` : '';
+  return p.icon
+    ? `<img class="partner-icon" src="${p.icon}" alt="${p.name}" width="64" height="64">`
+    : `<div class="partner-icon" aria-hidden="true">${p.name.charAt(0)}</div>`;
 }
 function wineryCard(p) {
   const t = T[lang];
@@ -859,11 +863,15 @@ function wineryCard(p) {
   const webRow = p.web ? `<div><dt>Web:</dt> <dd><a href="${p.web}" target="_blank" rel="noopener">${p.web.replace('https://', '')}</a></dd></div>` : '';
   const meta = `<dl class="partner-meta"><div><dt>${t.addr}:</dt> <dd>${val(p.addr)}</dd></div><div><dt>${t.hours}:</dt> <dd>${val(hours)}</dd></div>${phoneRow}${webRow}</dl>`;
   const descText = p.desc ? (p.desc[lang] || p.desc.en) : '';
+  const gallery = p.photos && p.photos.length
+    ? `<div class="gallery">${p.photos.map(src => `<img src="${src}" alt="${p.photoAlt || p.name}" loading="lazy">`).join('')}</div>`
+    : '';
   return `<article class="partner" id="winery-${p.slug}">
-    <h3 class="partner-name">${p.name}</h3>
-    <p class="partner-cat">${p.cat ? (p.cat[lang] || p.cat.en) : ''}</p>
+    <div class="partner-head">${avatar(p)}<div><h3 class="partner-name">${p.name}</h3>
+    <p class="partner-cat">${p.cat ? (p.cat[lang] || p.cat.en) : ''}</p></div></div>
     <p class="partner-desc">${descText}</p>
     ${meta}
+    ${gallery}
   </article>`;
 }
 

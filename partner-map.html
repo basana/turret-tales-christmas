@@ -35,8 +35,7 @@
   .partner-name { font-size: 21px; font-weight: 700; color: var(--maroon); margin: 0; line-height: 1.2; }
   .partner-cat { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); margin-top: 2px; }
   .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 10px; }
-  .gallery img { width: 100%; height: auto; border-radius: 8px; display: block; }
-  .gallery img:first-child { grid-column: span 2; }
+  .gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; display: block; }
   .gallery .gallery-text { font-size: 14px; line-height: 1.4; margin: 0; align-self: start; }
   .gallery .gallery-text .partner-meta { margin: 8px 0 0; font-size: 13px; }
   .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: 14px; margin: 12px 0 10px; }
@@ -534,7 +533,7 @@ const WINERIES = [
     ll: [50.3129042, 7.5167285],
     name: 'Weingut Richard Richter',
     icon: null,
-    photos: ['richter-1.webp', 'richter-2.webp', 'richter-3.webp', 'richter-4.webp', 'richter-5.webp', 'richter-6.webp', 'richter-7.webp'],
+    photos: ['richter-bottle.webp', 'richter-1.webp', 'richter-3.webp', 'richter-4.webp', 'richter-5.webp', 'richter-6.webp', 'richter-7.webp'],
     photoAlt: 'Weingut Richard Richter, Winningen',
     cat: { de: 'Weingut · Weinprobe auf Anfrage', en: 'Winery · tasting on request', ru: 'Винодельня · дегустация по запросу' },
     addr: 'Marktstraße 19, 56333 Winningen',
@@ -908,7 +907,10 @@ function render() {
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(window.wineLeaf);
       WINERIES.forEach(w => {
         if (!w.ll) return;
-        L.circleMarker(w.ll, { radius: 7, color: '#fff', weight: 2, fillColor: '#C0202A', fillOpacity: 1 })
+        const wicon = w.icon
+          ? L.divIcon({ className: '', html: `<div class="pin"><img src="${w.icon}" alt="${w.name}"></div>`, iconSize: [56, 56], iconAnchor: [28, 28] })
+          : L.divIcon({ className: '', html: `<div class="pin"><span>${w.name.charAt(0)}</span></div>`, iconSize: [56, 56], iconAnchor: [28, 28] });
+        L.marker(w.ll, { icon: wicon })
           .addTo(window.wineLeaf).bindTooltip(w.name)
           .on('click', () => { const c = document.getElementById('card-' + w.slug); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       });

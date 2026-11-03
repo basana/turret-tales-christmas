@@ -1098,6 +1098,13 @@
   [dir="rtl"] .tab-arrow { transform: scaleX(-1); }
   [dir="rtl"] .xmas-pin-count { margin-left: 0; margin-right: 5px; }
   [dir="rtl"] .xmas-gps-row small { margin-left: 0; margin-right: 4px; }
+
+  .wine-promo { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 380px); box-sizing: border-box; background: #F5ECD6; border: 1px solid #c8a878; padding: 26px 22px 20px; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; box-shadow: 0 10px 28px rgba(60,30,10,0.35); }
+  .wine-promo[hidden] { display: none; }
+  .wine-promo-img { display: block; width: min(56vw, 200px); height: auto; margin: 0 auto 12px; }
+  .wine-promo-q { font-size: 17px; line-height: 1.3; margin: 0 0 12px; }
+  .wine-promo-link { display: inline-block; font-size: 17px; font-weight: 700; color: #7A1026; text-decoration: none; border-bottom: 1px solid #7A1026; }
+  .wine-promo-close { position: absolute; top: 4px; right: 8px; background: none; border: 0; color: #7A1026; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
 </style>
 </head>
 <body>
@@ -1226,6 +1233,12 @@
   <button class="food-promo-close" id="tourPromoClose" aria-label="×">×</button>
   <div id="tourPromoQ" class="food-promo-q"></div>
   <button class="food-promo-link" id="tourPromoLink"></button>
+</div>
+<div class="wine-promo" id="winePromo" hidden role="dialog" aria-label="Weinproben">
+  <button class="wine-promo-close" id="winePromoClose" aria-label="×">×</button>
+  <img class="wine-promo-img" src="wine-tasting-emblem.webp" alt="">
+  <div class="wine-promo-q" id="winePromoQ"></div>
+  <a class="wine-promo-link" id="winePromoLink" href="https://weingut-kroeber.de/weinprobe/" target="_blank" rel="noopener"></a>
 </div>
 <div class="mv-overlay" id="miaVoucher" role="dialog" aria-modal="true" aria-labelledby="mvTitle">
   <div class="mv-card">
@@ -6195,6 +6208,35 @@ if ('serviceWorker' in navigator) {
     try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
   }, 90000);
   close.addEventListener('click', () => { card.hidden = true; });
+})();
+</script>
+<script>
+// Окно с винными пробами (эмблема в центре). Раз в 4 минуты, пока открыт раздел с винодельнями.
+(function () {
+  const WP = { intervalMs: 240000, autoCloseMs: 30000 };
+  const TXT = {
+    de: ['Weinproben bei den Winzern in Winningen. Weingut Kröber: sechs Weine mit Brot, 200 € bis 10 Personen. Weinberg-Wanderung mit Probe, Mai bis Oktober, 40 € pro Person.', 'Anmeldung →'],
+    en: ['Wine tastings at the Winningen estates. Weingut Kröber: six wines with bread, €200 for up to 10 people. Vineyard hike with tasting, May to October, €40 per person.', 'Book →'],
+    ru: ['Дегустации в винодельнях Винингена. Kröber: шесть вин с хлебом, 200 € до 10 человек. Прогулка по винограднику с дегустацией, с мая по октябрь, 40 € с человека.', 'Записаться →']
+  };
+  const box = document.getElementById('winePromo');
+  let last = Date.now(), timer = null;
+  function hide() { box.hidden = true; clearTimeout(timer); }
+  function show() {
+    const l = (typeof lang !== 'undefined' && TXT[lang]) ? lang : 'en';
+    document.getElementById('winePromoQ').textContent = TXT[l][0];
+    document.getElementById('winePromoLink').textContent = TXT[l][1];
+    box.hidden = false;
+    timer = setTimeout(hide, WP.autoCloseMs);
+  }
+  function tick() {
+    if (Date.now() - last < WP.intervalMs || !box.hidden) return;
+    if (!(currentView === 'wine' && !document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open') && document.getElementById('tourPromo').hidden && document.getElementById('foodPromo').hidden && document.getElementById('shopPromo').hidden && (!document.getElementById('splash') || document.getElementById('splash').classList.contains('hide')))) return;
+    show(); last = Date.now();
+  }
+  document.getElementById('winePromoClose').addEventListener('click', hide);
+  document.getElementById('winePromoLink').addEventListener('click', hide);
+  setInterval(tick, 15000);
 })();
 </script>
 </body>

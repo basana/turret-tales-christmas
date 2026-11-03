@@ -36,6 +36,7 @@
   .partner-cat { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: var(--soft); margin-top: 2px; }
   .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 10px; }
   .gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; display: block; }
+  .gallery img[src$="richter-1.webp"] { grid-column: 1 / -1; aspect-ratio: auto; height: auto; object-fit: contain; }
   .gallery .gallery-text { font-size: 14px; line-height: 1.4; margin: 0; align-self: start; }
   .gallery .gallery-text .partner-meta { margin: 8px 0 0; font-size: 13px; }
   .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: 14px; margin: 12px 0 10px; }
@@ -533,7 +534,7 @@ const WINERIES = [
     ll: [50.3129042, 7.5167285],
     name: 'Weingut Richard Richter',
     icon: 'richter-logo.webp',
-    photos: ['richter-bottle.webp', 'richter-vinothek.webp', 'richter-1.webp', 'richter-3.webp', 'richter-4.webp', 'richter-5.webp', 'richter-6.webp', 'richter-7.webp'],
+    photos: ['richter-bottle.webp', 'richter-vinothek.webp', 'richter-3.webp', 'richter-6.webp', 'richter-7.webp', 'richter-1.webp'],
     photoAlt: 'Weingut Richard Richter, Winningen',
     cat: { de: 'Weingut · Weinprobe auf Anfrage', en: 'Winery · tasting on request', ru: 'Винодельня · дегустация по запросу' },
     addr: 'Marktstraße 19, 56333 Winningen',

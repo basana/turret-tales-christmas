@@ -155,6 +155,7 @@
   .xmas-card { margin-bottom: 14px; }
   .xmas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
   .xmas-cell { aspect-ratio: 4 / 3; border: 1.5px dashed #c8a878; border-radius: 10px; background: rgba(245,236,214,0.6); }
+  .xmas-grid > .xmas-cell-img:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .xmas-cell-img { position: relative; margin: 0; padding: 0; border: none; overflow: hidden; background: #7A1026; aspect-ratio: 1 / 1; }
   .xmas-cell-img img { display: block; width: 100%; height: 100%; object-fit: contain; }
   .xmas-cell-img figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 10px; background: #7A1026; color: #fff; font-family: 'EB Garamond', serif; font-size: 16px; font-weight: 700; text-align: center; }
@@ -3552,17 +3553,17 @@ const XMAS_PHOTOS = {
   'koblenz-hoerter': ['koblenz-hoerter-1.webp','koblenz-hoerter-2.webp','koblenz-hoerter-3.webp'],
   'mia-gelateria': ['mia-gelateria-main.webp','mia-gelateria-1.webp'],
   'koblenz-jesuitenplatz': ['koblenz-jesuitenplatz-1.webp'],
-  'koblenz-am-plan': [],
+  'koblenz-am-plan': ['markt-foto-4.jpg'],
   'koblenz-goerresplatz': ['koblenz-goerresplatz-1.webp','koblenz-goerresplatz-2.webp'],
   'koblenz-muenzplatz': ['koblenz-muenzplatz-1.webp','koblenz-muenzplatz-2.webp'],
   'koblenz-zentralplatz': ['koblenz-zentralplatz-1.webp','koblenz-zentralplatz-2.webp'],
   'koblenz-liebfrauen': ['koblenz-liebfrauen-1.webp'],
   'koblenz-festung': ['ehrenbreitstein-xmas-1.webp','ehrenbreitstein-xmas-2.webp','ehrenbreitstein-xmas-3.webp','ehrenbreitstein-xmas-4.webp','ehrenbreitstein-xmas-5.webp','ehrenbreitstein-xmas-6.webp'],
   'lahnstein-markt': ['lahnstein-markt-1.webp','lahnstein-markt-3.webp'],
-  'lahnstein-rosengarten': [],
-  'lahnstein-friedrichssegen': [],
+  'lahnstein-rosengarten': ['markt-foto-1.jpg'],
+  'lahnstein-friedrichssegen': ['markt-foto-5.jpg'],
   'ruedesheim-markt': ['ruedesheim-markt-1.webp','ruedesheim-markt-4.webp'],
-  'boppard-markt': ['boppard-markt-1.webp'],
+  'boppard-markt': ['boppard-markt-1.webp','boppard.jpg'],
   'bacharach-markt': ['bacharach-markt-1.webp','bacharach-markt-2.webp'],
   'oberwesel-markt': ['oberwesel-markt.jpg','oberwesel-markt_2.jpg'],
 };

@@ -22,7 +22,7 @@
   .langs button { font-family: Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 14px; border: 1px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
   .langs button.active { background: var(--maroon); color: #fff; }
   .intro { background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 14px 0; font-size: 17px; line-height: 1.5; }
-  #map { width: 100%; height: 420px; border-radius: 12px; border: 1px solid var(--gold); margin: 6px 0 12px; }
+  #map, #wine-map { width: 100%; height: 420px; border-radius: 12px; border: 1px solid var(--gold); margin: 6px 0 12px; }
   .secnav { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 0 0 6px; }
   .secnav a { font-family: Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 14px; border: 1px solid var(--maroon); color: var(--maroon); text-decoration: none; background: #fff; }
   .sec { font-size: 22px; color: var(--maroon); margin: 22px 0 10px; font-weight: 700; border-bottom: 1px solid var(--gold); padding-bottom: 4px; scroll-margin-top: 12px; }
@@ -172,7 +172,7 @@
 
 <div id="view-shop" hidden><div id="shop-cards"></div></div>
 
-<div id="view-wine" hidden><div id="wine-cards"></div></div>
+<div id="view-wine" hidden><div id="wine-map"></div><div id="wine-cards"></div></div>
 
 <div class="contact" id="t-contact"></div>
 
@@ -430,6 +430,7 @@ const TABS = {
 const WINERIES = [
   {
     slug: 'weyh',
+    ll: [50.3157978, 7.5226843],
     name: 'Weingut Weyh',
     icon: null,
     photos: ['winzer-1.webp', 'winzer-2.webp', 'winzer-3.webp'],
@@ -453,6 +454,7 @@ const WINERIES = [
   },
   {
     slug: 'vinothek-winningen',
+    ll: [50.3131176, 7.5201214],
     name: 'Vinothek im Winninger Spital',
     icon: null,
     photos: ['winzer-6.webp', 'winzer-7.webp'],
@@ -484,6 +486,7 @@ const WINERIES = [
   },
   {
     slug: 'loewensteinhof',
+    ll: [50.3119216, 7.508947],
     name: 'Weingut Löwensteinhof',
     icon: null,
     photos: ['winzer-4.webp', 'winzer-5.webp'],
@@ -502,6 +505,7 @@ const WINERIES = [
   },
   {
     slug: 'knebelbrueder',
+    ll: [50.314144, 7.5202499],
     name: 'Weingut Knebelbrüder',
     icon: null,
     photos: ['winzer-8.webp', 'winzer-9.webp'],
@@ -520,6 +524,7 @@ const WINERIES = [
   },
   {
     slug: 'richter',
+    ll: [50.3129042, 7.5167285],
     name: 'Weingut Richard Richter',
     icon: null,
     photos: ['richter-1.webp', 'richter-2.webp', 'richter-3.webp', 'richter-4.webp', 'richter-5.webp', 'richter-6.webp', 'richter-7.webp'],
@@ -538,6 +543,7 @@ const WINERIES = [
   },
   {
     slug: 'kroeber',
+    ll: [50.3143486, 7.5193728],
     name: 'Weingut Kröber',
     icon: null,
     photos: ['winzer-10.webp', 'winzer-11.webp'],
@@ -889,6 +895,20 @@ function render() {
     `<h2 class="sec">${tt.wTitle}</h2>` + WINERIES.map((w, i) => w.name
       ? partnerCard(w, i + 1)
       : `<div class="card"><div class="num">W${i + 1}</div><div class="ph">${tt.wPh}</div></div>`).join('');
+  if (view === 'wine' && typeof L !== 'undefined') {
+    if (!window.wineLeaf) {
+      window.wineLeaf = L.map('wine-map', { scrollWheelZoom: false, zoomSnap: 0 });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(window.wineLeaf);
+      WINERIES.forEach(w => {
+        if (!w.ll) return;
+        L.circleMarker(w.ll, { radius: 7, color: '#fff', weight: 2, fillColor: '#C0202A', fillOpacity: 1 })
+          .addTo(window.wineLeaf).bindTooltip(w.name)
+          .on('click', () => { const c = document.getElementById('card-' + w.slug); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+      });
+      window.wineLeaf.fitBounds(L.latLngBounds(WINERIES.filter(w => w.ll).map(w => w.ll)), { padding: [6, 6], maxZoom: 14 });
+    }
+    setTimeout(() => window.wineLeaf.invalidateSize(), 0);
+  }
   document.getElementById('t-contact').innerHTML = t.contact;
   document.title = t.title + ' · Turret Tales';
 

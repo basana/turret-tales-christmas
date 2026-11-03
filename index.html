@@ -1222,6 +1222,11 @@
   </div>
   <button class="food-promo-link" id="shopPromoLink"></button>
 </div>
+<div class="food-promo tour-promo" id="tourPromo" hidden role="dialog" aria-label="Führungen">
+  <button class="food-promo-close" id="tourPromoClose" aria-label="×">×</button>
+  <div id="tourPromoQ" class="food-promo-q"></div>
+  <button class="food-promo-link" id="tourPromoLink"></button>
+</div>
 <div class="mv-overlay" id="miaVoucher" role="dialog" aria-modal="true" aria-labelledby="mvTitle">
   <div class="mv-card">
     <div class="mv-brand" id="mvBrand"></div>
@@ -3720,6 +3725,74 @@ function hideFoodPromo() { const box = document.getElementById('foodPromo'); if 
 document.getElementById('foodPromoClose').addEventListener('click', () => { hideFoodPromo(); promoNextAt = Date.now() + PROMO.dismissMs; });
 document.getElementById('foodPromoLink').addEventListener('click', () => { hideFoodPromo(); switchView('food'); });
 setInterval(promoTick, 15000);
+
+// Окно с экскурсиями: в разделах Weihnachtsorte, Weingüter, Burgen и Route — не чаще раза в 4 минуты.
+// Крестик и автоматическое закрытие через 30 секунд.
+const TOUR_PROMO = { intervalMs: 240000, autoCloseMs: 30000, whatsapp: 'https://wa.me/491772850207' };
+const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'castles', 'route'];
+const TOUR_PROMO_TEXT = {
+  christmas: {
+    de: 'Weihnachtsmärkte mit Gästeführer: Koblenz im Advent, mit der Geschichte hinter jedem Platz.',
+    en: 'Christmas markets with a guide: Koblenz in Advent, with the story behind every square.',
+    ru: 'Рождественские рынки с гидом: Кобленц в адвенте и история каждой площади.',
+    link: { de: 'Anfrage per WhatsApp →', en: 'Ask on WhatsApp →', ru: 'Написать в WhatsApp →' }
+  },
+  wine: {
+    de: 'Weingüter in Winningen: Führung und Weinprobe an der Mosel, mit Blick auf die Lagen.',
+    en: 'Wine estates in Winningen: a guided walk and tasting on the Moselle, with views of the vineyards.',
+    ru: 'Винодельни Винингена: экскурсия и дегустация на Мозели с видом на виноградники.',
+    link: { de: 'Anfrage per WhatsApp →', en: 'Ask on WhatsApp →', ru: 'Написать в WhatsApp →' }
+  },
+  castles: {
+    de: 'Marksburg privat: Führung auf der Burg, die nie erobert wurde, als Einzeltermin nach Absprache.',
+    en: 'Marksburg private tour: the castle that was never conquered, as a private visit by appointment.',
+    ru: 'Частная экскурсия в Марксбург: замок, который никогда не был взят, по договорённости.',
+    link: { de: 'Anfrage per WhatsApp →', en: 'Ask on WhatsApp →', ru: 'Написать в WhatsApp →' }
+  },
+  route: {
+    de: 'Rhein- und Moselstrecken mit Gästeführer. Gruppen mit Mini-Bus oder Großbus (17 Plätze) auf Absprache.',
+    en: 'Rhine and Mosel routes with a guide. Groups by mini-bus or 17-seat coach, by arrangement.',
+    ru: 'Маршруты по Рейну и Мозели с гидом. Группы на мини-автобусе или на автобусе на 17 мест.',
+    link: { de: 'Anfrage per WhatsApp →', en: 'Ask on WhatsApp →', ru: 'Написать в WhatsApp →' }
+  }
+};
+let tourPromoLastAt = Date.now();
+let tourPromoTimer = null;
+function tourPromoLang() {
+  const active = document.querySelector('.header-controls .pill-btn.active');
+  const l = (active && active.dataset.lang) || lang;
+  return ['de', 'en', 'ru'].includes(l) ? l : 'en';
+}
+function renderTourPromo() {
+  const l = tourPromoLang();
+  const t = TOUR_PROMO_TEXT[currentView];
+  document.getElementById('tourPromoQ').textContent = t[l] || t.en;
+  document.getElementById('tourPromoLink').textContent = (t.link[l] || t.link.en);
+}
+function hideTourPromo() {
+  const box = document.getElementById('tourPromo');
+  if (box) box.hidden = true;
+  clearTimeout(tourPromoTimer);
+}
+function showTourPromo() {
+  const box = document.getElementById('tourPromo');
+  if (!box || !box.hidden) return false;
+  if (!TOUR_PROMO_VIEWS.includes(currentView)) return false;
+  if (!document.getElementById('foodPromo').hidden || !document.getElementById('shopPromo').hidden) return false;
+  if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
+  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open')) return false;
+  renderTourPromo();
+  box.hidden = false;
+  tourPromoTimer = setTimeout(hideTourPromo, TOUR_PROMO.autoCloseMs);
+  return true;
+}
+function tourPromoTick() {
+  if (Date.now() - tourPromoLastAt < TOUR_PROMO.intervalMs) return;
+  if (showTourPromo()) tourPromoLastAt = Date.now();
+}
+document.getElementById('tourPromoClose').addEventListener('click', hideTourPromo);
+document.getElementById('tourPromoLink').addEventListener('click', () => { hideTourPromo(); window.open(TOUR_PROMO.whatsapp, '_blank', 'noopener'); });
+setInterval(tourPromoTick, 15000);
 
 // Логотип и название «Rhine Guide» в шапке возвращают на начальный экран приложения
 function goStart() {

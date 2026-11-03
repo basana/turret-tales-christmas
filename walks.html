@@ -563,6 +563,30 @@ const WALKS = [
 // ===== Винодельни (вкладка «Weingüter & Weinproben») =====
 const WINERIES = [
   {
+    slug: 'richter', name: 'Weingut Richard Richter', icon: 'richter-logo.webp', photos: ['richter-bottle.webp', 'richter-vinothek.webp', 'richter-3.webp', 'richter-6.webp', 'richter-7.webp', 'richter-1.webp'],
+    photoAlt: 'Weingut Richard Richter, Winningen',
+    cat: { de: 'Weingut · Weinprobe auf Anfrage', en: 'Winery · tasting on request' },
+    addr: 'Marktstraße 19, 56333 Winningen',
+    hours: null,
+    phone: '+49 2606 311', web: 'https://www.weingut-richter.net', gmaps: null,
+    desc: {
+      de: 'Mehrfach ausgezeichnetes Weingut in Winningen, in der sechsten Generation geführt. Weinprobe und Verkauf: Termine und Gruppen auf Anfrage. Die Weine gibt es auch in der Vinothek im Cusanusstift in Bernkastel-Kues.',
+      en: 'Award-winning winery in Winningen, run by the sixth generation. Tasting and sales: dates and groups on request. The wines are also available at the Vinothek im Cusanusstift in Bernkastel-Kues.'
+    }
+  },
+  {
+    slug: 'kroeber', name: 'Weingut Kröber', icon: 'kroeber-emblem.webp', photos: ['winzer-10.webp', 'winzer-11.webp'],
+    photoAlt: 'Weingut Kröber, Winningen',
+    cat: { de: 'Weingut · Brennerei · Hofverkauf', en: 'Winery · distillery · farm sales' },
+    addr: 'Hahnenstraße 14, 56333 Winningen',
+    hours: null,
+    phone: '+49 2606 351', web: 'https://weingut-kroeber.de', gmaps: null,
+    desc: {
+      de: 'Weingut in Winningen, dazu die Brennerei der Familie: Brände und Liköre, seit über 100 Jahren. Weinprobe im Weingut: sechs Weine mit Brot, 200 € bis 10 Personen, je weitere Person 20 €. Weinberg-Wanderung mit Probe (Mai bis Oktober): 40 € pro Person, ab 10 Personen. Anfrage über weingut-kroeber.de/weinprobe/ oder telefonisch.',
+      en: 'Winery in Winningen with the family’s distillery: brandies and liqueurs for over 100 years. Winery tasting of six wines with bread: €200 for up to 10 people, €20 per extra person. Vineyard hike with tasting (May to October): €40 per person, from 10 people. Request via weingut-kroeber.de/weinprobe/ or by phone.'
+    }
+  },
+  {
     slug: 'weyh', name: 'Weingut Weyh', icon: 'weyh-logo.webp', photos: ['winzer-1.webp', 'winzer-2.webp', 'winzer-3.webp'],
     photoAlt: 'Weingut Weyh, Winningen',
     cat: { de: 'Weingut · Weinprobe für Gruppen', en: 'Winery · tasting for groups' },
@@ -609,30 +633,6 @@ const WINERIES = [
       de: 'Die Knebels bauen seit 1642 in Winningen Wein an, inzwischen in zwölfter Generation. Das Weingut Fred Knebel wirtschaftet in heutiger Form seit 1987 auf 5,5 Hektar. Chris und Alex Knebel führen es heute und keltern Riesling von den steilen Terrassen über der Mosel. Weinproben und Gruppen nach Absprache.',
       en: 'The Knebel family has grown grapes in Winningen since 1642, now in its twelfth generation. The Fred Knebel estate has operated in its present form since 1987, working 5.5 hectares. Today Chris and Alex Knebel run it, producing Riesling from the steep terraces above the Moselle. Tastings and groups by arrangement.',
       ru: 'Семья Кнебель выращивает виноград в Винингене с 1642 года, сейчас это двенадцатое поколение. Винодельня Fred Knebel работает в нынешнем формате с 1987 года и обрабатывает 5,5 гектара. Сегодня её ведут Крис и Алекс Кнебель: они делают Рислинг с крутых террас над Мозелем. Дегустации и группы по договорённости.'
-    }
-  },
-  {
-    slug: 'richter', name: 'Weingut Richard Richter', icon: 'richter-logo.webp', photos: ['richter-bottle.webp', 'richter-vinothek.webp', 'richter-3.webp', 'richter-6.webp', 'richter-7.webp', 'richter-1.webp'],
-    photoAlt: 'Weingut Richard Richter, Winningen',
-    cat: { de: 'Weingut · Weinprobe auf Anfrage', en: 'Winery · tasting on request' },
-    addr: 'Marktstraße 19, 56333 Winningen',
-    hours: null,
-    phone: '+49 2606 311', web: 'https://www.weingut-richter.net', gmaps: null,
-    desc: {
-      de: 'Mehrfach ausgezeichnetes Weingut in Winningen, in der sechsten Generation geführt. Weinprobe und Verkauf: Termine und Gruppen auf Anfrage. Die Weine gibt es auch in der Vinothek im Cusanusstift in Bernkastel-Kues.',
-      en: 'Award-winning winery in Winningen, run by the sixth generation. Tasting and sales: dates and groups on request. The wines are also available at the Vinothek im Cusanusstift in Bernkastel-Kues.'
-    }
-  },
-  {
-    slug: 'kroeber', name: 'Weingut Kröber', icon: 'kroeber-emblem.webp', photos: ['winzer-10.webp', 'winzer-11.webp'],
-    photoAlt: 'Weingut Kröber, Winningen',
-    cat: { de: 'Weingut · Brennerei · Hofverkauf', en: 'Winery · distillery · farm sales' },
-    addr: 'Hahnenstraße 14, 56333 Winningen',
-    hours: null,
-    phone: '+49 2606 351', web: 'https://weingut-kroeber.de', gmaps: null,
-    desc: {
-      de: 'Weingut in Winningen, dazu die Brennerei der Familie: Brände und Liköre, seit über 100 Jahren. Weinprobe im Weingut: sechs Weine mit Brot, 200 € bis 10 Personen, je weitere Person 20 €. Weinberg-Wanderung mit Probe (Mai bis Oktober): 40 € pro Person, ab 10 Personen. Anfrage über weingut-kroeber.de/weinprobe/ oder telefonisch.',
-      en: 'Winery in Winningen with the family’s distillery: brandies and liqueurs for over 100 years. Winery tasting of six wines with bread: €200 for up to 10 people, €20 per extra person. Vineyard hike with tasting (May to October): €40 per person, from 10 people. Request via weingut-kroeber.de/weinprobe/ or by phone.'
     }
   },
   { slug: 'winningen-folgt', name: null, icon: null, photos: [], addr: null, hours: null, phone: null, web: null, gmaps: null, desc: null }

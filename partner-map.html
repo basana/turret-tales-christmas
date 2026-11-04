@@ -37,7 +37,8 @@
   .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 10px; }
   .gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; display: block; }
   .gallery img[src$="richter-1.webp"] { grid-column: 1 / -1; aspect-ratio: auto; height: auto; object-fit: contain; }
-  .gallery .gallery-text { font-size: 14px; line-height: 1.4; margin: 0; align-self: start; }
+  .gallery .gallery-text { font-size: 14px; line-height: 1.4; margin: 0; align-self: end; min-width: 0; aspect-ratio: 1 / 1; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-end; overflow-wrap: anywhere; overflow: hidden; padding: 2px 0; }
+  .gallery .gallery-text .partner-meta { font-size: 13px; }
   .gallery .gallery-text .partner-meta { margin: 8px 0 0; font-size: 13px; }
   .photo-slot { border: 1px dashed var(--maroon); border-radius: 8px; padding: 22px 10px; text-align: center; color: var(--maroon); font-size: 14px; margin: 12px 0 10px; }
   .partner-desc { font-size: 17px; line-height: 1.5; margin: 0 0 10px; }
@@ -463,6 +464,7 @@ const WINERIES = [
     icon: 'kroeber-emblem.webp',
     photos: ['kroeber-wine.webp', 'kroeber-glasses.webp', 'winzer-11.webp'],
     photoAlt: 'Weingut Kröber, Winningen',
+    textSlot: 3, infoSlot: true, // Adresse in der freien Ecke der Galerie, unten rechts
     cat: { de: 'Weingut · Brennerei · Hofverkauf', en: 'Winery · distillery · farm sales', ru: 'Винодельня · дистиллерия · продажа на месте' },
     addr: 'Hahnenstraße 14, 56333 Winningen',
     hours: null,
@@ -759,7 +761,9 @@ function partnerCard(p, n) {
   const hasSlot = p.textSlot !== undefined && photos.length;
   const cells = photos.map((src, i) =>
     `<img src="${src}" alt="${i === 0 && p.photoAlt ? p.photoAlt : p.name}" loading="lazy">`);
-  if (hasSlot) cells.splice(p.textSlot, 0, `<div class="gallery-text">${descText}${wineMoreLinkP(p.slug)}${meta}</div>`);
+  if (hasSlot) cells.splice(p.textSlot, 0, p.infoSlot
+    ? `<div class="gallery-text">${meta}</div>`
+    : `<div class="gallery-text">${descText}${wineMoreLinkP(p.slug)}${meta}</div>`);
   const photo = photos.length
     ? `<div class="gallery">${cells.join('')}</div>`
     : `<div class="photo-slot">${t.photoSlot}</div>`;
@@ -776,7 +780,7 @@ function partnerCard(p, n) {
       </div>
     </div>
     ${photo}
-    ${hasSlot ? '' : `<p class="partner-desc">${descText}${wineMoreLinkP(p.slug)}</p>`}
+    ${hasSlot && !p.infoSlot ? '' : `<p class="partner-desc">${descText}${wineMoreLinkP(p.slug)}</p>`}
     ${hasSlot ? '' : meta}
     <div class="btns">${link}${coupon}</div>
   </article>`;

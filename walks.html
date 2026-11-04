@@ -67,6 +67,9 @@
   .walks-gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; border-radius: 12px; border: 1px solid var(--gold); }
   .walks-gallery img:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
   .walks-gallery img.wide { grid-column: 1 / -1; aspect-ratio: 1000 / 452; }
+  .walk-desc::after { content: ''; display: block; clear: both; }
+  .walk-float { float: left; width: 44%; margin: 4px 16px 10px 0; border-radius: 12px; border: 1px solid var(--gold); }
+  .walk-float.r { float: right; margin: 6px 0 10px 16px; }
   .pending { color: var(--soft); font-style: italic; }
   .ptabs { display: flex; gap: 8px; overflow-x: auto; flex-wrap: nowrap; margin: 8px 0 14px; scrollbar-width: none; scroll-behavior: smooth; }
   .ptabs::-webkit-scrollbar { display: none; }
@@ -179,7 +182,7 @@
   [dir="rtl"] .editorial-photo { float: right; margin: 2px 0 6px 12px; transform: none; }
   [dir="rtl"] .walk-wear, [dir="rtl"] .walk-suit { padding-left: 0; padding-right: 20px; }
 
-  .wine-promo { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 60; width: min(92vw, 380px); box-sizing: border-box; background: #F5ECD6; border: 1px solid #c8a878; padding: 26px 22px 20px; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; box-shadow: 0 10px 28px rgba(60,30,10,0.35); }
+  .wine-promo { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2000; width: min(92vw, 380px); box-sizing: border-box; background: #F5ECD6; border: 1px solid #c8a878; padding: 26px 22px 20px; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; box-shadow: 0 10px 28px rgba(60,30,10,0.35); }
   .wine-promo[hidden] { display: none; }
   .wine-promo-img { display: block; width: min(56vw, 200px); height: auto; margin: 0 auto 12px; }
   .wine-promo-q { font-size: 17px; line-height: 1.3; margin: 0 0 12px; }
@@ -396,7 +399,8 @@ const T = {
 // Координаты старта и причала — точные. Контур петли на карте — схематичный набросок.
 const WALKS = [
   {
-    slug: 'hexenpfad', photos: ['walks-ship-2.webp', 'winzer-10.webp'],
+    slug: 'hexenpfad', photos: [],
+    inline: [{ src: 'winningen-cyclist.webp', pos: 'tl' }, { src: 'walks-ship-1.webp', pos: 'br' }],
     name: { de: 'Weinbergrunde am Hexenhügel', en: 'Vineyard loop at the Hexenhügel', fr: 'Boucle viticole du Hexenhügel', nl: 'Wijngaardlus bij de Hexenhügel', ru: 'Виноградная петля у Hexenhügel (Hexenpfad)', sv: 'Vingårdsslingan vid Hexenhügel' },
     tag: { de: 'Winningen · Rundwanderung', en: 'Winningen · circular walk', fr: 'Winningen · boucle', nl: 'Winningen · rondwandeling', ru: 'Вининген · кольцевой маршрут', sv: 'Winningen · rundvandring' },
     length: { de: '4,4 km', en: '4.4 km', fr: '4,4 km', nl: '4,4 km', ru: '4,4 км', sv: '4,4 km' },
@@ -562,8 +566,7 @@ const WALKS = [
         'Gäster med genomsnittlig kondition: hela slingan (4,4 km) med en eller två korta pauser på de branta avsnitten.',
         'Sportiga, aktiva gäster: hela slingan utan begränsning, på cirka 1:15 h.'
       ]
-    },
-    photos: []
+    }
   }
 ];
 
@@ -779,7 +782,14 @@ function walkCard(w) {
   const t = T[lang];
   const name = w.name[lang] || w.name.en;
   const tag = w.tag[lang] || w.tag.en;
-  const paras = (w.desc[lang] || w.desc.en).map(p => `<p>${p}</p>`).join('');
+  const descList = w.desc[lang] || w.desc.en;
+  const inl = w.inline || [];
+  const floatImgs = pos => inl.filter(f => f.pos === pos).map(f => `<img class="walk-float${pos === 'br' ? ' r' : ''}" src="${f.src}" alt="${name}" loading="lazy">`).join('');
+  const paras = descList.map((p, i) => {
+    const before = i === 0 ? floatImgs('tl') : '';
+    const after = i === descList.length - 1 ? floatImgs('br') : '';
+    return `<p>${before}${p}${after}</p>`;
+  }).join('');
   const poi = w.poi.map(p => {
     const pName = p.name[lang] || p.name.en;
     const pPhotos = p.photos && p.photos.length
@@ -801,7 +811,7 @@ function walkCard(w) {
   const suitability = w.suitability ? (w.suitability[lang] || w.suitability.en).map(x => `<li>${x}</li>`).join('') : '';
   const photos = w.photos && w.photos.length
     ? `<div class="gallery">${w.photos.map(src => `<img src="${src}" alt="${name}" loading="lazy">`).join('')}</div>`
-    : `<div class="photo-slot">${t.photoSlot}</div>`;
+    : (w.inline ? '' : `<div class="photo-slot">${t.photoSlot}</div>`);
   return `<article class="walk" id="walk-${w.slug}">
     <h2 class="walk-name">${name}</h2>
     <p class="walk-tag">${tag}</p>
@@ -1040,6 +1050,8 @@ function render() {
       </div>`;
     // Остальные фото — небольшая галерея.
     const galleryHtml = `<div class="walks-gallery">
+      <img class="wide" src="walks-ship-2.webp" alt="" loading="lazy">
+      <img src="winzer-10.webp" alt="" loading="lazy">
       <img src="winningen-ivy-wall.webp" alt="" loading="lazy">
       </div>`;
     document.getElementById('view-walks').innerHTML = heroHtml + introRowHtml + galleryHtml + WALKS.map(walkCard).join('');

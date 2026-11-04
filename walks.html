@@ -449,7 +449,7 @@ const WALKS = [
       { km: '0,2', photos: ['winningen-sekt.webp', 'walks-autumn-tower.webp'], photoAlt: 'Domgartenhütte, Winningen',
         name: { de: 'Aussichtspunkt Domgartenhütte', en: 'Domgartenhütte viewpoint', fr: 'Belvédère Domgartenhütte', nl: 'Uitzichtpunt Domgartenhütte', ru: 'Смотровая площадка Domgartenhütte', sv: 'Utsiktsplatsen Domgartenhütte' },
         text: { de: 'Hölzerne Schutzhütte mit Rosenbeet, erster freier Blick auf Weinberge und Moseltal.', en: 'Wooden shelter with a rose bed, the first open view over the vineyards and the Moselle valley.', fr: 'Abri en bois entouré de rosiers, première vue dégagée sur les vignobles et la vallée.', nl: 'Houten schuilhut met rozenperk, eerste vrij uitzicht over de wijngaarden en het Moezeldal.', ru: 'Деревянная беседка с клумбой роз, первый открытый вид на виноградники и долину Мозеля.', sv: 'Träskjul med rosenrabatt, första öppna vyn över vingårdarna och Moseldalen.' } },
-      { km: '2,0', photos: [], photoAlt: 'Winninger Weinbergterrassen',
+      { km: '2,0', photos: ['winningen-cyclist.webp', 'winzer-3.webp'], photoAlt: 'Winninger Weinbergterrassen',
         name: { de: 'Winninger Weinbergterrassen', en: 'Winningen vineyard terraces', fr: 'Terrasses viticoles de Winningen', nl: 'Wijngaardterrassen van Winningen', ru: 'Террасные виноградники Винингена', sv: 'Vingårdsterrasserna i Winningen' },
         text: { de: 'Historische Trockenmauer-Terrassen, Infotafel zur Artenvielfalt im Weinberg.', en: 'Historic dry-stone terraces, an information panel on the vineyard’s biodiversity.', fr: 'Terrasses historiques en pierre sèche, panneau d’information sur la biodiversité du vignoble.', nl: 'Historische droogstenen terrassen, informatiebord over de biodiversiteit in de wijngaard.', ru: 'Исторические террасы с сухой каменной кладкой, информационный стенд о биоразнообразии виноградника.', sv: 'Historiska terrasser med torrmur, informationstavla om den biologiska mångfalden i vingården.' } },
       { km: '3,0', photos: [], photoAlt: 'Aussichtspunkt Winninger Flugplatz',
@@ -593,7 +593,7 @@ const WINERIES = [
     }
   },
   {
-    slug: 'weyh', ll: [50.3157978, 7.5226843], name: 'Weingut Weyh', icon: 'weyh-logo.webp', photos: ['weyh-sign.webp', 'winzer-1.webp', 'winzer-2.webp', 'winzer-3.webp'],
+    slug: 'weyh', ll: [50.3157978, 7.5226843], name: 'Weingut Weyh', icon: 'weyh-logo.webp', photos: ['weyh-sign.webp', 'winzer-1.webp', 'winzer-2.webp', 'walks-ship-1.webp'],
     photoAlt: 'Weingut Weyh, Winningen',
     cat: { de: 'Weingut · Weinprobe für Gruppen', en: 'Winery · tasting for groups' },
     addr: 'Röttgenweg 4, 56333 Winningen',
@@ -1039,10 +1039,8 @@ function render() {
       </div>`;
     // Остальные фото — небольшая галерея.
     const galleryHtml = `<div class="walks-gallery">
-      <img src="winningen-cyclist.webp" alt="" loading="lazy">
       <img src="winzer-10.webp" alt="" loading="lazy">
       <img src="winningen-ivy-wall.webp" alt="" loading="lazy">
-      <img src="walks-ship-1.webp" alt="" loading="lazy">
       <img src="walks-ship-2.webp" alt="" loading="lazy">
       </div>`;
     document.getElementById('view-walks').innerHTML = heroHtml + introRowHtml + galleryHtml + WALKS.map(walkCard).join('');

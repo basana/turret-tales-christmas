@@ -66,6 +66,7 @@
   .walks-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0 0 20px; }
   .walks-gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; border-radius: 12px; border: 1px solid var(--gold); }
   .walks-gallery img:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
+  .walks-gallery img.wide { grid-column: 1 / -1; aspect-ratio: 1000 / 452; }
   .pending { color: var(--soft); font-style: italic; }
   .ptabs { display: flex; gap: 8px; overflow-x: auto; flex-wrap: nowrap; margin: 8px 0 14px; scrollbar-width: none; scroll-behavior: smooth; }
   .ptabs::-webkit-scrollbar { display: none; }

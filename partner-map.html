@@ -776,7 +776,7 @@ function partnerCard(p, n) {
       </div>
     </div>
     ${photo}
-    ${hasSlot ? '' : `<p class="partner-desc">${descText}</p>`}
+    ${hasSlot ? '' : `<p class="partner-desc">${descText}${wineMoreLinkP(p.slug)}</p>`}
     ${hasSlot ? '' : meta}
     <div class="btns">${link}${coupon}</div>
   </article>`;

@@ -1114,6 +1114,8 @@
   .wine-promo-q { font-size: 17px; line-height: 1.3; margin: 0 0 12px; }
   .wine-promo-link { display: inline-block; font-size: 17px; font-weight: 700; color: #7A1026; text-decoration: none; border-bottom: 1px solid #7A1026; }
   .wine-promo-close { position: absolute; top: 4px; right: 8px; background: none; border: 0; color: #7A1026; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
+  .winery-more { color: #7A1026; font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .winery-more:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -4519,6 +4521,10 @@ function wineMapTools(map, items) {
   setOn(false);
   drawSpot();
 }
+function wineMoreLink(w) {
+  const slug = /Kröber/.test(w.name) ? 'kroeber' : /Richter/.test(w.name) ? 'richter' : null;
+  return slug ? ` <a class="winery-more" href="weingut-${slug}.html">Mehr →</a>` : '';
+}
 function renderWine() {
   const el = document.getElementById('view-wine');
   if (!el) return;
@@ -4535,7 +4541,7 @@ function renderWine() {
       : `<img src="${src}" alt="${w.name}" loading="lazy" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;border-radius:4px">`).join('');
     const galHtml = gal ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px">${gal}</div>` : '';
     return `<div class="route-card xmas-card">${kicker}<div style="display:flex;gap:12px;align-items:center">${emblem}<div class="food-mia-text" style="flex:1;min-width:0"><h3 class="buta-name">${w.name}</h3>` +
-      `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${w.addr || ''}</p><p style="margin:0">${t}</p></div></div>${galHtml}</div>`;
+      `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${w.addr || ''}</p><p style="margin:0">${t}${wineMoreLink(w)}</p></div></div>${galHtml}</div>`;
   }).join('');
   el.innerHTML = `<h2 class="castle-name" style="margin:10px 0">${wui.title}</h2><p class="xmas-intro">${wui.intro}</p>` +
     `<div id="xmasWineMap" class="xmas-map"></div>` +

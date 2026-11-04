@@ -125,6 +125,8 @@
   .wine-promo-q { font-size: 17px; line-height: 1.3; margin: 0 0 12px; }
   .wine-promo-link { display: inline-block; font-size: 17px; font-weight: 700; color: #7A1026; text-decoration: none; border-bottom: 1px solid #7A1026; }
   .wine-promo-close { position: absolute; top: 4px; right: 8px; background: none; border: 0; color: #7A1026; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
+  .winery-more { color: #7A1026; font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .winery-more:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -735,6 +737,9 @@ function avatar(p) {
     : `<div class="partner-icon" aria-hidden="true">${p.name.charAt(0)}</div>`;
 }
 
+function wineMoreLinkP(slug) {
+  return ['kroeber', 'richter'].includes(slug) ? ` <a class="winery-more" href="weingut-${slug}.html">Mehr →</a>` : '';
+}
 function partnerCard(p, n) {
   const t = T[lang];
   const photos = p.photos || [];
@@ -754,7 +759,7 @@ function partnerCard(p, n) {
   const hasSlot = p.textSlot !== undefined && photos.length;
   const cells = photos.map((src, i) =>
     `<img src="${src}" alt="${i === 0 && p.photoAlt ? p.photoAlt : p.name}" loading="lazy">`);
-  if (hasSlot) cells.splice(p.textSlot, 0, `<div class="gallery-text">${descText}${meta}</div>`);
+  if (hasSlot) cells.splice(p.textSlot, 0, `<div class="gallery-text">${descText}${wineMoreLinkP(p.slug)}${meta}</div>`);
   const photo = photos.length
     ? `<div class="gallery">${cells.join('')}</div>`
     : `<div class="photo-slot">${t.photoSlot}</div>`;

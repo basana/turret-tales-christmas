@@ -188,6 +188,8 @@
   .pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #7A1026, 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .pin span { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #7A1026; }
+  .winery-more { color: #7A1026; font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .winery-more:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -964,6 +966,7 @@ function wineMapTools(map, items) {
   drawSpot();
 }
 
+const wineryMore = slug => ['kroeber', 'richter'].includes(slug) ? ` <a class="winery-more" href="weingut-${slug}.html">Mehr →</a>` : '';
 function wineryCard(p) {
   const t = T[lang];
   const val = v => v ? v : `<span class="pending">${t.pending}</span>`;
@@ -978,7 +981,7 @@ function wineryCard(p) {
   return `<article class="partner" id="winery-${p.slug}">
     <div class="partner-head">${avatar(p)}<div><h3 class="partner-name">${p.name}</h3>
     <p class="partner-cat">${p.cat ? (p.cat[lang] || p.cat.en) : ''}</p></div></div>
-    <p class="partner-desc">${descText}</p>
+    <p class="partner-desc">${descText}${wineryMore(p.slug)}</p>
     ${meta}
     ${gallery}
   </article>`;

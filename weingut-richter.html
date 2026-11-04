@@ -5,54 +5,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Weingut Richard Richter · Turret Tales</title>
 <style>
-  :root { --parchment: #F3E9D2; --card: #FBF5E6; --gold: #C9A05C; --maroon: #7A1026; --ink: #3E2C18; --ink-soft: #6B5238; }
+  /* Stil nach dem Weinprospekt von Richard Richter:
+     große Hintergrundfotos, dunkles Oliv, Schrift in hell/fett gemischt,
+     Flaschen freigestellt mit Glanz, kleine Seitenzahl-Reiter, kursive Bildunterschriften */
+  :root {
+    --olive: #3f4220; --olive-deep: #1f220d; --cream: #F4EEDB; --cream-dim: #CFC6A8;
+    --gold: #D8B56E; --sans: Helvetica, Arial, sans-serif;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--parchment); color: var(--ink); font-family: 'EB Garamond', Georgia, serif; font-size: 18px; line-height: 1.55; }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 22px 18px 60px; }
-  .back { display: inline-block; margin-bottom: 14px; color: var(--maroon); font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-decoration: none; }
-  .head { display: flex; gap: 16px; align-items: center; margin-bottom: 8px; }
-  .emblem { width: 84px; height: 84px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--maroon), 0 3px 8px rgba(0,0,0,.25); object-fit: cover; background: #fff; flex: none; }
-  h1 { margin: 0; color: var(--maroon); font-size: 30px; font-weight: 600; line-height: 1.15; }
-  .cat { margin: 4px 0 0; color: var(--ink-soft); font-size: 16px; }
-  .hero { width: 100%; border-radius: 12px; margin: 14px 0 18px; display: block; border: 1px solid var(--gold); }
-  h2 { color: var(--maroon); font-size: 22px; font-weight: 600; margin: 26px 0 10px; border-bottom: 1px solid var(--gold); padding-bottom: 4px; }
-  .card { background: var(--card); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; margin: 10px 0; }
-  .facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; }
-  .facts dt { color: var(--ink-soft); font-family: Helvetica, Arial, sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; padding-top: 3px; }
-  .facts dd { margin: 0; }
-  .price { font-size: 22px; color: var(--maroon); font-weight: 600; }
-  .note { color: var(--ink-soft); font-size: 15px; }
-  .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-  .btn { display: inline-block; padding: 10px 16px; border-radius: 999px; background: var(--maroon); color: #fff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-size: 14px; }
-  .btn.alt { background: transparent; color: var(--maroon); border: 1px solid var(--maroon); }
-  ul { margin: 6px 0 0; padding-left: 20px; }
-  li { margin: 4px 0; }
+  html, body { margin: 0; background: var(--olive-deep); color: var(--cream); font-family: 'EB Garamond', Georgia, serif; font-size: 18px; line-height: 1.5; }
+  body { max-width: 720px; margin: 0 auto; }
+  img { display: block; }
+
+  .back { position: absolute; top: 14px; left: 16px; z-index: 5; color: var(--cream); font-family: var(--sans); font-size: 14px; text-decoration: none; background: rgba(20,22,8,.55); padding: 6px 12px; border-radius: 999px; }
+
+  /* Titelbild: großes Foto, darüber dunkles Oliv */
+  .hero { position: relative; min-height: 88vh; display: flex; flex-direction: column; justify-content: space-between; padding: 22px 22px 34px; background: var(--olive) url('richter-7.webp') center / cover no-repeat; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(31,34,13,.55) 0%, rgba(31,34,13,.25) 40%, rgba(31,34,13,.9) 100%); }
+  .hero > * { position: relative; }
+  .hero-crest { width: 84px; height: 84px; border-radius: 50%; background: var(--cream); padding: 8px; margin: 40px auto 0; object-fit: contain; box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+  .hero-title { text-align: center; margin: 0; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+  .hero-title .small { display: block; font-family: var(--sans); font-size: 15px; letter-spacing: .42em; text-transform: uppercase; color: var(--cream-dim); margin-bottom: 4px; }
+  .hero-title .big { display: block; font-size: clamp(54px, 15vw, 96px); line-height: .9; font-weight: 700; color: #fff; letter-spacing: .01em; }
+  .hero-title .since { display: block; font-size: 17px; font-style: italic; color: var(--cream-dim); margin-top: 6px; }
+  .hero-foot { text-align: center; }
+  .hero-foot .line { display: block; font-size: clamp(30px, 8vw, 48px); line-height: 1.05; text-shadow: 0 2px 16px rgba(0,0,0,.55); }
+  .hero-foot .line .light { font-weight: 400; color: #D9D1B4; }
+  .hero-foot .line .bold { font-weight: 700; color: #fff; }
+  .hero-foot .cat { display: block; margin-top: 12px; font-size: 18px; font-style: italic; color: var(--cream-dim); }
+
+  /* Abschnitte: Seitenzahl-Reiter links, große Überschrift, Inhalt */
+  .page { position: relative; padding: 46px 24px 40px 58px; }
+  .tab { position: absolute; left: 0; top: 50px; width: 34px; padding: 6px 0; background: rgba(243,236,214,.82); color: var(--olive-deep); font-family: var(--sans); font-size: 13px; text-align: center; }
+  .kicker { font-family: var(--sans); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 0 0 6px; }
+  h2 { font-size: clamp(32px, 9vw, 44px); line-height: 1.05; font-weight: 400; margin: 0 0 18px; color: var(--cream); }
+  h2 b { font-weight: 700; color: #fff; }
+  p { margin: 0 0 12px; }
+
+  /* Großes Foto als Hintergrund mit Textkarte unten (Kontrast groß/klein) */
+  .panel { position: relative; min-height: 460px; display: flex; align-items: flex-end; background: var(--olive) url('richter-vinothek.webp') center / cover no-repeat; }
+  .panel::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(31,34,13,.0) 30%, rgba(31,34,13,.85) 100%); }
+  .panel-text { position: relative; padding: 24px; max-width: 540px; }
+  .panel-text p { font-size: 17px; }
+
+  /* Freigestellte Flasche: schwarzer Hintergrund des Fotos wird per screen-Mischung unsichtbar */
+  .bottle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center; }
+  .bottle-row img.cut { width: 100%; height: auto; mix-blend-mode: screen; filter: drop-shadow(0 0 14px rgba(230,200,120,.35)); }
+  .specs { font-family: var(--sans); font-size: 15px; font-style: italic; }
+  .specs dt { color: var(--gold); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-style: normal; margin-top: 12px; }
+  .specs dd { margin: 2px 0 0; color: var(--cream); font-size: 17px; font-style: italic; }
+  .specs dd.big { font-family: 'EB Garamond', Georgia, serif; font-size: 22px; font-style: normal; font-weight: 700; color: #fff; }
+
+  /* Breite Fläche mit Glas-Foto und kursiver Bildunterschrift */
+  .band { position: relative; min-height: 360px; margin-top: 14px; background: var(--olive-deep) url('richter-glass.webp') center / cover no-repeat; }
+  .band img { width: 100%; height: 360px; object-fit: contain; mix-blend-mode: screen; }
+  .caption { position: absolute; left: 22px; bottom: 14px; font-family: var(--sans); font-size: 13px; font-style: italic; color: var(--cream); text-align: left; max-width: 62%; text-shadow: 0 1px 6px rgba(0,0,0,.8); }
+
+  .caption-under { font-family: var(--sans); font-size: 13px; font-style: italic; color: var(--cream-dim); padding: 10px 24px 0; margin: 0; }
+  .note { font-size: 15px; font-style: italic; color: var(--cream-dim); padding: 0 24px 60px; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <a class="back" href="walks.html#view-wine" onclick="if (history.length > 1) { history.back(); return false; }">← Zurück zu den Weingütern</a>
-  <div class="head">
-    <img class="emblem" src="richter-logo.webp" alt="Weingut Richard Richter">
-    <div>
-      <h1>Weingut Richard Richter</h1>
-      <p class="cat">Winningen an der Mosel · Weinprobe auf Anfrage</p>
-    </div>
-  </div>
-  <img class="hero" src="richter-hero.webp" alt="Weingut Richard Richter">
+<a class="back" href="walks.html#view-wine" onclick="if (history.length > 1) { history.back(); return false; }">← Zurück zu den Weingütern</a>
 
-  <h2>Weinprobe</h2>
-  <div class="card">
+<section class="hero">
+  <img class="hero-crest" src="richter-logo.webp" alt="Wappen Richard Richter">
+  <h1 class="hero-title">
+    <span class="small">Richard</span>
+    <span class="big">Richter</span>
+    <span class="since">Since 1838</span>
+  </h1>
+  <div class="hero-foot">
+    <span class="line"><span class="light">Weinprobe</span> <span class="bold">auf Anfrage</span></span>
+    <span class="cat">Winningen an der Mosel</span>
+  </div>
+</section>
+
+<section class="page">
+  <span class="tab">1</span>
+  <p class="kicker">Weinprobe</p>
+  <h2>Termine nach <b>Absprache</b></h2>
+</section>
+
+<section class="panel">
+  <div class="panel-text">
     <p>Weinproben und Verkauf auf Anfrage. Termine und Gruppen werden direkt mit dem Weingut abgestimmt. Die Weine gibt es auch in der Vinothek im Cusanusstift in Bernkastel-Kues.</p>
   </div>
+</section>
 
-  <h2>Ort</h2>
-  <div class="card">
-    <p>Marktstraße 19, 56333 Winningen</p>
+<section class="page">
+  <span class="tab">2</span>
+  <p class="kicker">Ort</p>
+  <h2>Marktstraße <b>19</b></h2>
+  <div class="bottle-row">
+    <img class="cut" src="richter-bottle.webp" alt="Flasche Richard Richter">
+    <dl class="specs">
+      <dt>Adresse</dt>
+      <dd class="big">56333 Winningen</dd>
+      <dt>Vinothek</dt>
+      <dd>Cusanusstift, Bernkastel-Kues</dd>
+      <dt>Probe</dt>
+      <dd>Auf Anfrage</dd>
+    </dl>
   </div>
+</section>
 
-  <p class="note">Die Details zu Proben, Preisen und Terminen werden noch ergänzt. Diese Seite ist als Vorlage nach dem Muster des Weinguts Kröber aufgebaut.</p>
+<section class="band">
+  <img src="richter-glass.webp" alt="Weinglas Richard Richter">
+</section>
+<p class="caption-under">Die Weine gibt es auch in der Vinothek im Cusanusstift in Bernkastel-Kues.</p>
 
-</div>
+<p class="note">Die Details zu Proben, Preisen und Terminen werden noch ergänzt. Diese Seite ist als Vorlage nach dem Muster des Weinguts Kröber aufgebaut.</p>
 </body>
 </html>

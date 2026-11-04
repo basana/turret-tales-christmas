@@ -145,6 +145,8 @@
   .hist h3 { font-size: var(--fs-h3); color: var(--maroon); margin: 0 0 6px; }
   .hist p { font-size: var(--fs-lead); line-height: 1.5; margin: 0 0 6px; }
   .hist .meta { font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); }
+  .hist-photo { float: right; width: 40%; margin: 2px 0 10px 16px; border-radius: 10px; border: 1px solid var(--gold); }
+  .hist::after { content: ''; display: block; clear: both; }
 
   .contact { margin-top: 22px; background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: var(--fs-lead); line-height: 1.5; }
   .contact a { color: var(--maroon); }
@@ -691,6 +693,7 @@ const SIGHTS = [
   },
   {
     slug: 'august-horch',
+    photo: 'august-horch-label.webp',
     title: { de: 'August Horch', en: 'August Horch', fr: 'August Horch', nl: 'August Horch', ru: 'Август Хорх', sv: 'August Horch' },
     text: {
       de: 'Ehrenbürger August Horch (geboren 1868 in Winningen, in einer Winzer- und Schmiedefamilie) gründete die Automobilfirma Horch, aus der später die Marke Audi hervorging. Eine eigene Ausstellung im Ort erinnert an ihn.',
@@ -1004,7 +1007,8 @@ function wineryCard(p) {
 
 // ---- Sehenswürdigkeiten ----
 function sightCard(s) {
-  return `<div class="hist"><h3>${s.title[lang] || s.title.en}</h3><p>${s.text[lang] || s.text.en}</p></div>`;
+  const photo = s.photo ? `<img class="hist-photo" src="${s.photo}" alt="${s.title.en}" loading="lazy">` : '';
+  return `<div class="hist"><h3>${s.title[lang] || s.title.en}</h3>${photo}<p>${s.text[lang] || s.text.en}</p></div>`;
 }
 
 // ---- Weihnachtsmarkt ----

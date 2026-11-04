@@ -20,10 +20,10 @@
   .back { position: absolute; top: 14px; left: 16px; z-index: 5; color: var(--cream); font-family: var(--sans); font-size: 14px; text-decoration: none; background: rgba(20,22,8,.55); padding: 6px 12px; border-radius: 999px; }
 
   /* Titelbild: großes Foto, darüber dunkles Oliv */
-  .hero { position: relative; min-height: 88vh; display: flex; flex-direction: column; justify-content: space-between; padding: 22px 22px 34px; background: var(--olive) url('richter-6.webp') center / cover no-repeat; overflow: hidden; }
-  .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,12,8,.7) 0%, rgba(12,12,8,.55) 45%, rgba(12,12,8,.94) 100%); }
+  .hero { position: relative; min-height: 88vh; display: flex; flex-direction: column; justify-content: space-between; padding: 22px 22px 34px; background: var(--olive) url('richter-6.webp') center 65% / cover no-repeat; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,12,8,.55) 0%, rgba(12,12,8,.35) 45%, rgba(12,12,8,.88) 100%); }
   .hero > * { position: relative; }
-  .hero-crest { width: 84px; height: 84px; border-radius: 50%; background: var(--cream); padding: 8px; margin: 40px auto 0; object-fit: contain; box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+  .hero-crest { width: 84px; height: 84px; border-radius: 50%; background: transparent; padding: 0; margin: 40px auto 0; object-fit: contain; filter: brightness(0) invert(1); opacity: .85; }
   .hero-title { text-align: center; margin: 0; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
   .hero-title .small { display: block; font-family: var(--sans); font-size: 15px; letter-spacing: .42em; text-transform: uppercase; color: var(--cream-dim); margin-bottom: 4px; }
   .hero-title .big { display: block; font-size: clamp(54px, 15vw, 96px); line-height: .9; font-weight: 700; color: #fff; letter-spacing: .01em; }
@@ -62,7 +62,7 @@
   .caption { position: absolute; left: 22px; bottom: 14px; font-family: var(--sans); font-size: 13px; font-style: italic; color: var(--cream); text-align: left; max-width: 62%; text-shadow: 0 1px 6px rgba(0,0,0,.8); }
 
   .caption-under { font-family: var(--sans); font-size: 13px; font-style: italic; color: var(--cream-dim); padding: 10px 24px 0; margin: 0; }
-  .panel.dark { background: #0c0c08 url('richter-1.webp') center / cover no-repeat; min-height: 520px; }
+  .panel.dark { background: #0c0c08 url('richter-1.webp') center / cover no-repeat; min-height: 340px; }
   .panel.dark::before { background: linear-gradient(180deg, rgba(12,12,8,.2) 0%, rgba(12,12,8,.92) 100%); }
   .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 420px; }
   .duo > div { background-size: cover; background-position: center; }
@@ -82,7 +82,6 @@
     <span class="since">Since 1838</span>
   </h1>
   <div class="hero-foot">
-    <span class="line"><span class="light">Weinprobe</span> <span class="bold">auf Anfrage</span></span>
     <span class="cat">Winningen an der Mosel</span>
   </div>
 </section>

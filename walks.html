@@ -446,7 +446,7 @@ const WALKS = [
       ]
     },
     poi: [
-      { km: '0,2', photos: [], photoAlt: 'Domgartenhütte, Winningen',
+      { km: '0,2', photos: ['winningen-sekt.webp', 'walks-autumn-tower.webp'], photoAlt: 'Domgartenhütte, Winningen',
         name: { de: 'Aussichtspunkt Domgartenhütte', en: 'Domgartenhütte viewpoint', fr: 'Belvédère Domgartenhütte', nl: 'Uitzichtpunt Domgartenhütte', ru: 'Смотровая площадка Domgartenhütte', sv: 'Utsiktsplatsen Domgartenhütte' },
         text: { de: 'Hölzerne Schutzhütte mit Rosenbeet, erster freier Blick auf Weinberge und Moseltal.', en: 'Wooden shelter with a rose bed, the first open view over the vineyards and the Moselle valley.', fr: 'Abri en bois entouré de rosiers, première vue dégagée sur les vignobles et la vallée.', nl: 'Houten schuilhut met rozenperk, eerste vrij uitzicht over de wijngaarden en het Moezeldal.', ru: 'Деревянная беседка с клумбой роз, первый открытый вид на виноградники и долину Мозеля.', sv: 'Träskjul med rosenrabatt, första öppna vyn över vingårdarna och Moseldalen.' } },
       { km: '2,0', photos: [], photoAlt: 'Winninger Weinbergterrassen',
@@ -581,7 +581,7 @@ const WINERIES = [
     }
   },
   {
-    slug: 'kroeber', ll: [50.3143486, 7.5193728], name: 'Weingut Kröber', icon: 'kroeber-emblem.webp', photos: ['kroeber-wine.webp', 'winzer-10.webp', 'winzer-11.webp'],
+    slug: 'kroeber', ll: [50.3143486, 7.5193728], name: 'Weingut Kröber', icon: 'kroeber-emblem.webp', photos: ['kroeber-wine.webp', 'kroeber-glasses.webp', 'winzer-11.webp'],
     photoAlt: 'Weingut Kröber, Winningen',
     cat: { de: 'Weingut · Brennerei · Hofverkauf', en: 'Winery · distillery · farm sales' },
     addr: 'Hahnenstraße 14, 56333 Winningen',
@@ -593,7 +593,7 @@ const WINERIES = [
     }
   },
   {
-    slug: 'weyh', ll: [50.3157978, 7.5226843], name: 'Weingut Weyh', icon: 'weyh-logo.webp', photos: ['winzer-1.webp', 'winzer-2.webp', 'winzer-3.webp'],
+    slug: 'weyh', ll: [50.3157978, 7.5226843], name: 'Weingut Weyh', icon: 'weyh-logo.webp', photos: ['weyh-sign.webp', 'winzer-1.webp', 'winzer-2.webp', 'winzer-3.webp'],
     photoAlt: 'Weingut Weyh, Winningen',
     cat: { de: 'Weingut · Weinprobe für Gruppen', en: 'Winery · tasting for groups' },
     addr: 'Röttgenweg 4, 56333 Winningen',
@@ -1040,7 +1040,7 @@ function render() {
     // Остальные фото — небольшая галерея.
     const galleryHtml = `<div class="walks-gallery">
       <img src="winningen-cyclist.webp" alt="" loading="lazy">
-      <img src="winningen-sekt.webp" alt="" loading="lazy">
+      <img src="winzer-10.webp" alt="" loading="lazy">
       <img src="winningen-ivy-wall.webp" alt="" loading="lazy">
       </div>`;
     document.getElementById('view-walks').innerHTML = heroHtml + introRowHtml + galleryHtml + WALKS.map(walkCard).join('');

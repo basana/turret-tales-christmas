@@ -27,7 +27,7 @@
   body { padding: 0 16px 40px; max-width: 560px; margin: 0 auto; }
   header { padding: 22px 0 10px; text-align: center; }
   .brand-row { display: flex; align-items: center; justify-content: center; gap: 6px; }
-  .brand-emblem { width: 18px; height: 18px; object-fit: contain; opacity: 0.8; }
+  .brand-emblem { width: 21.6px; height: 21.6px; object-fit: contain; opacity: 0.8; }
   .brand { font-size: var(--fs-small); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); font-family: var(--sans); }
   h1 { font-size: var(--fs-h1); color: var(--maroon); margin: 6px 0 4px; font-weight: 700; }
   .sub { font-size: var(--fs-lead); color: var(--soft); margin: 0; }
@@ -231,7 +231,7 @@
   </div>
 </div>
 <header>
-  <div class="brand-row"><img class="brand-emblem" src="emblem.png" alt=""><div class="brand" id="t-brand">Turret Tales · Tours All Year Round</div></div>
+  <div class="brand-row"><img class="brand-emblem" src="emblem-stamp.webp" alt=""><div class="brand" id="t-brand">Turret Tales · Tours All Year Round</div></div>
   <h1 id="t-title">Winningen</h1>
   <p class="sub" id="t-sub"></p>
   <div class="langs">
@@ -747,6 +747,7 @@ const SIGHTS = [
 // ===== Рождественский рынок (вкладка «Weihnachtsmarkt») =====
 // Источник: festivalsindeutschland.de, «Winningen im Lichterglanz», подробная программа 2026 выходит осенью.
 const XMAS = {
+  photos: ['xmas-lichter-01.webp', 'xmas-lichter-02.webp', 'xmas-lichter-03.webp', 'xmas-lichter-04.webp', 'xmas-lichter-05.webp', 'xmas-lichter-06.webp', 'xmas-lichter-07.webp', 'xmas-lichter-08.webp', 'xmas-lichter-09.webp', 'xmas-lichter-10.webp', 'xmas-lichter-11.webp', 'xmas-lichter-12.webp'],
   title: { de: 'Winningen im Lichterglanz', en: 'Winningen im Lichterglanz (Christmas lights market)', fr: 'Winningen im Lichterglanz (marché de Noël)', nl: 'Winningen im Lichterglanz (kerstmarkt)', ru: 'Winningen im Lichterglanz (рождественский рынок)', sv: 'Winningen im Lichterglanz (julmarknad)' },
   date: { de: 'Fr 27.–So 29. November 2026 (1. Adventswochenende)', en: 'Fri 27–Sun 29 November 2026 (1st Advent weekend)', fr: 'ven. 27–dim. 29 novembre 2026 (1er week-end de l’Avent)', nl: 'vr 27–zo 29 november 2026 (1e adventsweekend)', ru: 'пт 27 – вс 29 ноября 2026 (1-й адвент-уикенд)', sv: 'fre 27–sön 29 november 2026 (1:a advent-helgen)' },
   place: { de: 'Historischer Dorfkern und Marktplatz, 56333 Winningen', en: 'Historic old town and market square, 56333 Winningen', fr: 'Centre historique et place du marché, 56333 Winningen', nl: 'Historische dorpskern en marktplein, 56333 Winningen', ru: 'Исторический центр посёлка и рыночная площадь, 56333 Winningen', sv: 'Historiska gamla stan och torget, 56333 Winningen' },
@@ -1023,7 +1024,8 @@ function xmasCard() {
   const t = T[lang];
   return `<div class="hist"><h3>${XMAS.title[lang] || XMAS.title.en}</h3>
     <p class="meta">${XMAS.date[lang] || XMAS.date.en} · ${XMAS.place[lang] || XMAS.place.en}</p>
-    <p>${XMAS.text[lang] || XMAS.text.en}</p></div>`;
+    <p>${XMAS.text[lang] || XMAS.text.en}</p>
+    <div class="gallery">${XMAS.photos.map(src => `<img src="${src}" alt="${XMAS.title.en}" loading="lazy">`).join('')}</div></div>`;
 }
 
 function render() {
@@ -1087,7 +1089,7 @@ function render() {
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(window.wineLeaf);
       wl.forEach(p => {
         const html = p.icon ? `<div class="pin"><img src="${p.icon}" alt="${p.name}"></div>` : `<div class="pin"><span>${p.name.charAt(0)}</span></div>`;
-        L.marker(p.ll, { icon: L.divIcon({ className: '', html, iconSize: [56, 56], iconAnchor: [28, 28] }) })
+        L.marker(p.ll, { icon: L.divIcon({ className: '', html, iconSize: [56, 56], iconAnchor: [28, 28] }), zIndexOffset: p.slug === 'richter' ? 3000 : p.slug === 'kroeber' ? 2000 : 0 })
           .addTo(window.wineLeaf).bindTooltip(p.name).on('click', go(p.slug));
       });
       window.wineLeaf.fitBounds(L.latLngBounds(wl.map(p => p.ll)), { padding: [28, 28], maxZoom: 15 });

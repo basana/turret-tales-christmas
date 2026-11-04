@@ -66,7 +66,9 @@
   .walks-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0 0 20px; }
   .walks-gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; border-radius: 12px; border: 1px solid var(--gold); }
   .walks-gallery img:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
-  .walks-gallery img.wide { grid-column: 1 / -1; aspect-ratio: 1000 / 452; }
+  .gallery .gallery-text { aspect-ratio: 1 / 1; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; overflow-wrap: anywhere; font-size: 14px; line-height: 1.4; margin: 0; }
+  .gallery .gallery-text .partner-meta { font-size: 13px; }
+  .walks-gallery img.wide { grid-column: 1 / -1; aspect-ratio: 440 / 154; }
   .walk-desc::after { content: ''; display: block; clear: both; }
   .walk-float { float: left; width: 44%; margin: 4px 16px 10px 0; border-radius: 12px; border: 1px solid var(--gold); }
   .walk-last { display: flex; align-items: flex-end; gap: 16px; }
@@ -221,7 +223,7 @@
     <span class="splash-lang-btn" data-lang="he">עברית</span>
   </div>
   <div class="splash-content">
-    <p class="splash-eyebrow">Winningen · Walks &amp; Wine</p>
+    <p class="splash-eyebrow">Mosel · Walks &amp; Wine</p>
     <h1 class="splash-title">Your Pace.<br>Your Path.<br>Your Mosel.</h1>
     <p class="splash-tagline">Vineyard paths and river views<br>above Winningen —<br>walked at your own pace.</p>
     <p class="splash-find">Find your trail.</p>
@@ -276,7 +278,7 @@ const RMAP = { de: 'Routenkarte', en: 'Route map', fr: 'Carte du parcours', nl: 
 
 const T = {
   de: {
-    brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'An der Mosel — für Gäste der Flusskreuzfahrt',
+    brand: 'Turret Tales · Tours All Year Round', title: 'Mosel', sub: 'An der Mosel — für Gäste der Flusskreuzfahrt',
     intro: 'Winningen, ein Winzerdorf an der Untermosel (erste Erwähnung 865), persönlich vorgestellt von Anatoly Basin / Team TAYR: geführte Wanderungen, Weingüter, Geschichte und Sehenswürdigkeiten für den Landgang.',
     letter: 'Liebe Gäste, ich begrüße Sie persönlich in Winningen! Als zertifizierter Gästeführer bin ich oft selbst mit Kreuzfahrtgruppen hier unterwegs – und genau aus dieser Erfahrung heraus habe ich diese Seite zusammengestellt: alles, was ich Ihnen sonst unterwegs erzähle, einmal zum Nachlesen, mit Karte und praktischen Hinweisen für Ihren Landgang. Ich wünsche Ihnen einen wunderschönen Spaziergang durch die Weinberge – und vielleicht sehen wir uns ja einmal persönlich.',
     contact: 'Interesse an einer geführten Wanderung oder Weinprobe für Ihre Gruppe? Schreiben Sie an <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> oder rufen Sie an: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="opacity:.75;font-size:.9em;">(auch WhatsApp/Telegram – gleiche Nummer)</span>.',
@@ -291,7 +293,7 @@ const T = {
     secWine: 'Weingüter in Winningen', secFood: 'Restaurants & Weinstuben', secSights: 'Sehenswürdigkeiten', secHist: 'Geschichte'
   },
   en: {
-    brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'On the Moselle — for river cruise guests',
+    brand: 'Turret Tales · Tours All Year Round', title: 'Moselle', sub: 'On the Moselle — for river cruise guests',
     intro: 'Winningen, a wine village on the lower Moselle (first mentioned in 865), presented personally by Anatoly Basin / Team TAYR: guided walks, wineries, history and sights for your shore excursion.',
     letter: 'Dear guests, welcome to Winningen! As a certified tour guide, I often lead cruise groups through this village myself – and that experience is exactly why I put this page together: everything I’d normally tell you along the way, now here to read, with a map and practical tips for your shore excursion. I hope you enjoy a beautiful walk through the vineyards – and who knows, maybe we’ll meet in person one day.',
     contact: 'Interested in a guided walk or wine tasting for your group? Write to <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> or call <a href="tel:+491772850207">+49 177 285 0207</a> <span style="opacity:.75;font-size:.9em;">(also WhatsApp/Telegram — same number)</span>.',
@@ -306,7 +308,7 @@ const T = {
     secWine: 'Wineries in Winningen', secFood: 'Restaurants & wine taverns', secSights: 'Sights', secHist: 'History'
   },
   fr: {
-    brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'Sur la Moselle — pour les croisiéristes',
+    brand: 'Turret Tales · Tours All Year Round', title: 'Moselle', sub: 'Sur la Moselle — pour les croisiéristes',
     intro: 'Winningen, village viticole de la Basse-Moselle (mentionné pour la première fois en 865), présenté personnellement par Anatoly Basin / Team TAYR : randonnées guidées, domaines viticoles, histoire et sites pour votre escale.',
     letter: 'Chers visiteurs, bienvenue à Winningen ! En tant que guide touristique certifié, j’accompagne souvent moi-même des groupes de croisiéristes ici – et c’est justement cette expérience qui m’a donné l’idée de cette page : tout ce que je vous raconterais en chemin, désormais à lire, avec une carte et des conseils pratiques pour votre escale. Je vous souhaite une très belle promenade à travers les vignes – et qui sait, peut-être nous croiserons-nous un jour.',
     contact: 'Intéressé par une randonnée guidée ou une dégustation pour votre groupe ? Écrivez à <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> ou appelez : <a href="tel:+491772850207">+49 177 285 0207</a> <span style="opacity:.75;font-size:.9em;">(aussi WhatsApp/Telegram — même numéro)</span>.',
@@ -321,7 +323,7 @@ const T = {
     secWine: 'Domaines à Winningen', secFood: 'Restaurants & bars à vin', secSights: 'Sites à voir', secHist: 'Histoire'
   },
   nl: {
-    brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'Aan de Moezel — voor riviercruisegasten',
+    brand: 'Turret Tales · Tours All Year Round', title: 'Moezel', sub: 'Aan de Moezel — voor riviercruisegasten',
     intro: 'Winningen, een wijndorp aan de Beneden-Moezel (voor het eerst vermeld in 865), persoonlijk gepresenteerd door Anatoly Basin / Team TAYR: begeleide wandelingen, wijnhuizen, geschiedenis en bezienswaardigheden voor uw excursie.',
     letter: 'Beste gasten, welkom in Winningen! Als gecertificeerd gids begeleid ik hier zelf regelmatig cruisegroepen – en juist die ervaring bracht mij op het idee voor deze pagina: alles wat ik u onderweg normaal zou vertellen, nu om te lezen, met een kaart en praktische tips voor uw excursie aan wal. Ik wens u een heerlijke wandeling door de wijngaarden – en wie weet ontmoeten we elkaar ooit persoonlijk.',
     contact: 'Interesse in een begeleide wandeling of wijnproeverij voor uw groep? Schrijf naar <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> of bel: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="opacity:.75;font-size:.9em;">(ook WhatsApp/Telegram — zelfde nummer)</span>.',
@@ -336,7 +338,7 @@ const T = {
     secWine: 'Wijnhuizen in Winningen', secFood: 'Restaurants & wijnlokalen', secSights: 'Bezienswaardigheden', secHist: 'Geschiedenis'
   },
   ru: {
-    brand: 'Turret Tales · Tours All Year Round', title: 'Вининген', sub: 'На Мозеле — для гостей речных круизов',
+    brand: 'Turret Tales · Tours All Year Round', title: 'Мозель', sub: 'На Мозеле — для гостей речных круизов',
     intro: 'Вининген, винодельческий посёлок в нижнем течении Мозеля (первое упоминание в 865 году), лично представляет Anatoly Basin / команда TAYR: пешие маршруты, винодельни, история и достопримечательности для вашей береговой экскурсии.',
     letter: 'Дорогие гости, добро пожаловать в Вининген! Как дипломированный гид, я сам часто вожу здесь круизные группы — и именно этот опыт подсказал мне идею этой страницы: всё, что я обычно рассказываю по дороге, теперь можно прочитать заранее — с картой и практическими советами для вашей береговой экскурсии. Желаю вам прекрасной прогулки среди виноградников — а может, однажды мы встретимся лично.',
     contact: 'Интересует пешая экскурсия или дегустация вина для вашей группы? Напишите на <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> или позвоните: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="opacity:.75;font-size:.9em;">(также WhatsApp/Telegram — тот же номер)</span>.',
@@ -351,7 +353,7 @@ const T = {
     secWine: 'Винодельни в Винингене', secFood: 'Рестораны и винные погребки', secSights: 'Достопримечательности', secHist: 'История'
   },
   sv: {
-    brand: 'Turret Tales · Tours All Year Round', title: 'Winningen', sub: 'Vid Mosel — för flodkryssningsgäster',
+    brand: 'Turret Tales · Tours All Year Round', title: 'Mosel', sub: 'Vid Mosel — för flodkryssningsgäster',
     intro: 'Winningen, en vinby vid nedre Mosel (först omnämnd 865), presenteras personligen av Anatoly Basin / Team TAYR: guidade vandringar, vingårdar, historia och sevärdheter för ert landstigning.',
     letter: 'Kära gäster, välkomna till Winningen! Som certifierad guide leder jag ofta själv kryssningsgrupper här – och just den erfarenheten gav mig idén till den här sidan: allt jag annars skulle berätta längs vägen finns nu att läsa, med karta och praktiska tips inför ert landstigning. Jag önskar er en underbar promenad bland vingårdarna – och vem vet, kanske möts vi en dag personligen.',
     contact: 'Intresserad av en guidad vandring eller vinprovning för er grupp? Skriv till <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> eller ring: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="opacity:.75;font-size:.9em;">(även WhatsApp/Telegram – samma nummer)</span>.',
@@ -366,7 +368,7 @@ const T = {
     secWine: 'Vingårdar i Winningen', secFood: 'Restauranger och vinkällare', secSights: 'Sevärdheter', secHist: 'Historia'
   },
   zh: {
-    brand: 'Turret Tales · Tours All Year Round', title: '维宁根', sub: '摩泽尔河畔 — 为河轮游客呈现',
+    brand: 'Turret Tales · Tours All Year Round', title: '摩泽尔', sub: '摩泽尔河畔 — 为河轮游客呈现',
     intro: '维宁根，摩泽尔河下游的一座酒乡小镇（首次文献记载于公元865年），由 Anatoly Basin / TAYR 团队亲自为您呈现：向导式徒步、酒庄、历史与景点，助您规划岸上观光。',
     letter: '亲爱的客人们，欢迎来到维宁根！作为一名持证导游，我经常亲自带团队游览这个小镇——正是这段经历让我整理了这个页面：把我平时沿途讲述的一切都写下来，供您阅读，并附上地图和岸上观光的实用建议。祝您在葡萄园间漫步愉快——说不定哪天我们会亲自相遇。',
     contact: '有兴趣为您的团队安排向导式徒步或品酒活动吗？请发邮件至 <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> 或致电：<a href="tel:+491772850207">+49 177 285 0207</a> <span style="opacity:.75;font-size:.9em;">（也可通过WhatsApp/Telegram联系，号码相同）</span>。',
@@ -381,7 +383,7 @@ const T = {
     secWine: '维宁根的酒庄', secFood: '餐厅与酒馆', secSights: '景点', secHist: '历史'
   },
   he: {
-    brand: 'Turret Tales · Tours All Year Round', title: 'וינינגן', sub: 'על נהר המוזל — לאורחי שייט הנהר',
+    brand: 'Turret Tales · Tours All Year Round', title: 'מוזל', sub: 'על נהר המוזל — לאורחי שייט הנהר',
     intro: 'וינינגן, כפר יין על גדות המוזל התחתון (אוזכר לראשונה בשנת 865), מוצג באופן אישי על ידי אנטולי באסין / צוות TAYR: טיולים רגליים מודרכים, יקבים, היסטוריה ואתרים לטיול החוף שלכם.',
     letter: 'אורחים יקרים, ברוכים הבאים לוינינגן! כמדריך טיולים מוסמך, אני מוביל כאן בעצמי לעיתים קרובות קבוצות משייט — ומתוך הניסיון הזה בדיוק נולד העמוד הזה: כל מה שאני בדרך כלל מספר לכם תוך כדי הדרך, עכשיו כאן לקריאה, עם מפה וטיפים מעשיים לטיול החוף שלכם. אני מאחל לכם טיול יפהפה בין הכרמים — ומי יודע, אולי ניפגש יום אחד באופן אישי.',
     contact: 'מעוניינים בטיול רגלי מודרך או בטעימת יין לקבוצה שלכם? כתבו אל <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a> או התקשרו: <a href="tel:+491772850207">+49 177 285 0207</a> <span style="opacity:.75;font-size:.9em;">(גם WhatsApp/טלגרם — אותו מספר)</span>.',
@@ -589,7 +591,7 @@ const WINERIES = [
     }
   },
   {
-    slug: 'kroeber', ll: [50.3143486, 7.5193728], name: 'Weingut Kröber', icon: 'kroeber-emblem.webp', photos: ['kroeber-wine.webp', 'kroeber-glasses.webp', 'winzer-11.webp'],
+    slug: 'kroeber', ll: [50.3143486, 7.5193728], name: 'Weingut Kröber', icon: 'kroeber-emblem.webp', photos: ['kroeber-wine.webp', 'kroeber-glasses.webp', 'winzer-11.webp'], textSlot: 3, infoSlot: true,
     photoAlt: 'Weingut Kröber, Winningen',
     cat: { de: 'Weingut · Brennerei · Hofverkauf', en: 'Winery · distillery · farm sales' },
     addr: 'Hahnenstraße 14, 56333 Winningen',
@@ -872,6 +874,10 @@ function drawWalkMap(w) {
   ];
   L.polyline(loop, { color: '#7A1026', weight: 4, opacity: .85 }).addTo(map);
   map.fitBounds(L.latLngBounds([w.pierLL, w.startLL, ...loop]), { padding: [20, 20], maxZoom: 15 });
+  wineMapTools(map, [
+    { name: t.legStart + ' · ' + w.startName, ll: w.startLL, go: () => map.setView(w.startLL, 16) },
+    { name: 'KD · ' + w.pierName, ll: w.pierLL, go: () => map.setView(w.pierLL, 16) }
+  ]);
 }
 
 // ---- Weingüter ----
@@ -993,14 +999,15 @@ function wineryCard(p) {
   const webRow = p.web ? `<div><dt>Web:</dt> <dd><a href="${p.web}" target="_blank" rel="noopener">${p.web.replace('https://', '')}</a></dd></div>` : '';
   const meta = `<dl class="partner-meta"><div><dt>${t.addr}:</dt> <dd>${val(p.addr)}</dd></div><div><dt>${t.hours}:</dt> <dd>${val(hours)}</dd></div>${phoneRow}${webRow}</dl>`;
   const descText = p.desc ? (p.desc[lang] || p.desc.en) : '';
-  const gallery = p.photos && p.photos.length
-    ? `<div class="gallery">${p.photos.map(src => `<img src="${src}" alt="${p.photoAlt || p.name}" loading="lazy">`).join('')}</div>`
-    : '';
+  const cells = (p.photos || []).map(src => `<img src="${src}" alt="${p.photoAlt || p.name}" loading="lazy">`);
+  const hasInfo = !!p.infoSlot && cells.length > 0;
+  if (hasInfo) cells.splice(p.textSlot ?? cells.length, 0, `<div class="gallery-text">${meta}</div>`);
+  const gallery = cells.length ? `<div class="gallery">${cells.join('')}</div>` : '';
   return `<article class="partner" id="winery-${p.slug}">
     <div class="partner-head">${avatar(p)}<div><h3 class="partner-name">${p.name}</h3>
     <p class="partner-cat">${p.cat ? (p.cat[lang] || p.cat.en) : ''}</p></div></div>
     <p class="partner-desc">${descText}${wineryMore(p.slug)}</p>
-    ${meta}
+    ${hasInfo ? '' : meta}
     ${gallery}
   </article>`;
 }

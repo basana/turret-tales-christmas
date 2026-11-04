@@ -395,7 +395,7 @@ const T = {
 // Координаты старта и причала — точные. Контур петли на карте — схематичный набросок.
 const WALKS = [
   {
-    slug: 'hexenpfad',
+    slug: 'hexenpfad', photos: ['walks-ship-2.webp', 'winzer-10.webp'],
     name: { de: 'Weinbergrunde am Hexenhügel', en: 'Vineyard loop at the Hexenhügel', fr: 'Boucle viticole du Hexenhügel', nl: 'Wijngaardlus bij de Hexenhügel', ru: 'Виноградная петля у Hexenhügel (Hexenpfad)', sv: 'Vingårdsslingan vid Hexenhügel' },
     tag: { de: 'Winningen · Rundwanderung', en: 'Winningen · circular walk', fr: 'Winningen · boucle', nl: 'Winningen · rondwandeling', ru: 'Вининген · кольцевой маршрут', sv: 'Winningen · rundvandring' },
     length: { de: '4,4 km', en: '4.4 km', fr: '4,4 km', nl: '4,4 km', ru: '4,4 км', sv: '4,4 km' },
@@ -1039,8 +1039,6 @@ function render() {
       </div>`;
     // Остальные фото — небольшая галерея.
     const galleryHtml = `<div class="walks-gallery">
-      <img src="walks-ship-2.webp" alt="" loading="lazy">
-      <img src="winzer-10.webp" alt="" loading="lazy">
       <img src="winningen-ivy-wall.webp" alt="" loading="lazy">
       </div>`;
     document.getElementById('view-walks').innerHTML = heroHtml + introRowHtml + galleryHtml + WALKS.map(walkCard).join('');

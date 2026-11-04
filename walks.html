@@ -69,7 +69,9 @@
   .walks-gallery img.wide { grid-column: 1 / -1; aspect-ratio: 1000 / 452; }
   .walk-desc::after { content: ''; display: block; clear: both; }
   .walk-float { float: left; width: 44%; margin: 4px 16px 10px 0; border-radius: 12px; border: 1px solid var(--gold); }
-  .walk-float.r { float: right; margin: 6px 0 10px 16px; }
+  .walk-last { display: flex; align-items: flex-end; gap: 16px; }
+  .walk-last p { flex: 1 1 auto; margin: 0; }
+  .walk-last img { flex: 0 0 44%; width: 44%; margin: 0 0 10px; border-radius: 12px; border: 1px solid var(--gold); }
   .pending { color: var(--soft); font-style: italic; }
   .ptabs { display: flex; gap: 8px; overflow-x: auto; flex-wrap: nowrap; margin: 8px 0 14px; scrollbar-width: none; scroll-behavior: smooth; }
   .ptabs::-webkit-scrollbar { display: none; }
@@ -400,7 +402,7 @@ const T = {
 const WALKS = [
   {
     slug: 'hexenpfad', photos: [],
-    inline: [{ src: 'winningen-cyclist.webp', pos: 'tl' }, { src: 'walks-ship-1.webp', pos: 'br' }],
+    inline: [{ src: 'walks-cyclist-crop.webp', pos: 'tl' }, { src: 'walks-ship-1.webp', pos: 'br' }],
     name: { de: 'Weinbergrunde am Hexenhügel', en: 'Vineyard loop at the Hexenhügel', fr: 'Boucle viticole du Hexenhügel', nl: 'Wijngaardlus bij de Hexenhügel', ru: 'Виноградная петля у Hexenhügel (Hexenpfad)', sv: 'Vingårdsslingan vid Hexenhügel' },
     tag: { de: 'Winningen · Rundwanderung', en: 'Winningen · circular walk', fr: 'Winningen · boucle', nl: 'Winningen · rondwandeling', ru: 'Вининген · кольцевой маршрут', sv: 'Winningen · rundvandring' },
     length: { de: '4,4 km', en: '4.4 km', fr: '4,4 km', nl: '4,4 km', ru: '4,4 км', sv: '4,4 km' },
@@ -787,8 +789,10 @@ function walkCard(w) {
   const floatImgs = pos => inl.filter(f => f.pos === pos).map(f => `<img class="walk-float${pos === 'br' ? ' r' : ''}" src="${f.src}" alt="${name}" loading="lazy">`).join('');
   const paras = descList.map((p, i) => {
     const before = i === 0 ? floatImgs('tl') : '';
-    const after = i === descList.length - 1 ? floatImgs('br') : '';
-    return `<p>${before}${p}${after}</p>`;
+    if (i === descList.length - 1 && inl.some(f => f.pos === 'br')) {
+      return `<div class="walk-last"><p>${before}${p}</p>${inl.filter(f => f.pos === 'br').map(f => `<img src="${f.src}" alt="${name}" loading="lazy">`).join('')}</div>`;
+    }
+    return `<p>${before}${p}</p>`;
   }).join('');
   const poi = w.poi.map(p => {
     const pName = p.name[lang] || p.name.en;

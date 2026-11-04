@@ -212,10 +212,12 @@
   body { max-width: 640px; }
   body::before { content: ''; position: fixed; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(31,34,13,.78) 0%, rgba(31,34,13,.95) 60%), url('winzer-2.webp') center / cover no-repeat; }
   /* Kopf: großes Foto, Titel groß, Untertitel kursiv */
-  header { position: relative; margin: 0 -16px; padding: 26px 16px 22px; min-height: 60vh; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(180deg, rgba(31,34,13,.25) 0%, rgba(31,34,13,.55) 55%, rgba(31,34,13,.95) 100%), url('winzer-2.webp') center / cover no-repeat; }
+  header { position: relative; margin: 0 -16px; padding: 22px 16px 20px; display: flex; flex-direction: column; justify-content: flex-start; background: #1f220d; }
+  header::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 300px; z-index: 0; background: linear-gradient(180deg, rgba(31,34,13,.25) 0%, rgba(31,34,13,.35) 55%, #1f220d 100%), url('winzer-2.webp') center 40% / cover no-repeat; }
+  header > * { position: relative; z-index: 1; }
   .brand-emblem { opacity: .95; }
   .brand { color: #E3D9BC; }
-  h1 { font-size: clamp(54px, 15vw, 80px); line-height: .92; font-weight: 700; color: #fff; text-align: center; text-shadow: 0 2px 18px rgba(0,0,0,.6); margin: 14px 0 6px; }
+  header h1 { font-size: clamp(44px, 12vw, 64px); line-height: .92; font-weight: 700; color: #fff; text-align: center; text-shadow: 0 2px 18px rgba(0,0,0,.6); margin: 14px 0 6px; }
   .sub { font-size: 18px; font-style: italic; color: #D9D1B4; text-align: center; }
   .langs button { background: transparent; color: #E3D9BC; border-color: #D8B56E; }
   .langs button.active { background: #E9D3A0; color: #1f220d; border-color: #E9D3A0; }

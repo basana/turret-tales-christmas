@@ -337,9 +337,9 @@ function draw(){
   ctx.clearRect(0,0,cv.width/dpr,cv.height/dpr);
 
   // Edges
-  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border').trim()||'#334155';
-  ctx.lineWidth = 1;
-  ctx.globalAlpha = 0.4;
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim()||'#94a3b8';
+  ctx.lineWidth = 1.5;
+  ctx.globalAlpha = 0.55;
   for(const[a,b] of edges){
     const na = nodes.find(n=>n.id===a), nb = nodes.find(n=>n.id===b);
     if(!na||!nb) continue;

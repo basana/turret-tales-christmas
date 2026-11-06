@@ -336,16 +336,35 @@ function draw(){
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,cv.width/dpr,cv.height/dpr);
 
-  // Edges
-  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim()||'#94a3b8';
-  ctx.lineWidth = 1.5;
-  ctx.globalAlpha = 0.55;
+  // Edges — colored by group, highlighted on selection
+  const mutedC = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim()||'#94a3b8';
   for(const[a,b] of edges){
     const na = nodes.find(n=>n.id===a), nb = nodes.find(n=>n.id===b);
     if(!na||!nb) continue;
     if(!matchesFilter(na)&&!matchesFilter(nb)) continue;
     const[x1,y1]=worldToScreen(na.sx+na.w/2, na.sy+na.h/2);
     const[x2,y2]=worldToScreen(nb.sx+nb.w/2, nb.sy+nb.h/2);
+    const isSelected = selectedNode && (a===selectedNode||b===selectedNode);
+    const sameGroup = na.g === nb.g;
+    // Color: same group → group color; cross-group → muted
+    const edgeColor = sameGroup ? groupColor(na.g) : mutedC;
+    // Priority: thicker if high-prio node involved
+    const pa = prio[a]||1, pb = prio[b]||1;
+    const maxP = Math.max(pa, pb);
+    const baseW = maxP>=3 ? 2.5 : maxP>=2 ? 2 : 1.5;
+    if(isSelected){
+      ctx.strokeStyle = edgeColor;
+      ctx.lineWidth = baseW + 1.5;
+      ctx.globalAlpha = 0.9;
+    } else if(selectedNode){
+      ctx.strokeStyle = mutedC;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.15;
+    } else {
+      ctx.strokeStyle = edgeColor;
+      ctx.lineWidth = baseW;
+      ctx.globalAlpha = 0.5;
+    }
     ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
   }
   ctx.globalAlpha = 1;
@@ -430,6 +449,7 @@ function roundRect(c,x,y,w,h,r){
 /* ===== DETAIL PANEL ===== */
 function showDetail(n){
   selectedNode = n.id;
+  draw();
   const d = document.getElementById('detail');
   const stClass = 'st-'+(n.status||'todo');
   let html = `<h2>${n.t}</h2><div class="sub">${n.sub||''}</div>`;
@@ -564,7 +584,7 @@ function setupEvents(){
   // Detail close
   document.getElementById('detailClose').addEventListener('click',()=>{
     document.getElementById('detail').classList.remove('open');
-    selectedNode=null;
+    selectedNode=null; draw();
   });
 
   // Canvas interactions — pan canvas OR drag individual node

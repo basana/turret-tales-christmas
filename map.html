@@ -94,6 +94,22 @@ canvas:active{cursor:grabbing}
 .zoom-ctrl button{width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .zoom-ctrl button:hover{border-color:var(--accent)}
 
+
+/* ACTIVITY FEED */
+.feed-toggle{position:relative}
+.feed-dot{position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+.feed-panel{position:absolute;top:0;right:0;width:360px;height:100%;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:0;display:none;z-index:55}
+.feed-panel.open{display:flex;flex-direction:column}
+.feed-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.feed-header h2{font-size:15px;font-weight:600}
+.feed-header .feed-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px}
+.feed-body{padding:12px 16px;flex:1;overflow-y:auto}
+.feed-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.feed-item:last-child{border-bottom:none}
+.feed-time{color:var(--muted);font-size:11px;margin-bottom:3px}
+.feed-msg{line-height:1.4}
+.feed-files{margin-top:4px;color:var(--muted);font-size:11px}
+.feed-empty{color:var(--muted);text-align:center;padding:40px 0;font-size:13px}
 /* LAYOUT */
 .app{display:flex;flex-direction:column;height:100vh}
 .main{display:flex;flex:1;overflow:hidden;position:relative}
@@ -122,6 +138,7 @@ canvas:active{cursor:grabbing}
       <option value="later">Später</option>
     </select>
     <span class="spacer"></span>
+    <button id="feedBtn" class="feed-toggle" title="Letzte Änderungen">⚡<span class="feed-dot"></span></button>
     <button id="themeBtn" title="Dark / Light">🌓</button>
     <button id="resetBtn" title="Ansicht zurücksetzen">⟲</button>
   </div>
@@ -138,6 +155,17 @@ canvas:active{cursor:grabbing}
     <div class="detail" id="detail">
       <button class="close-btn" id="detailClose">✕</button>
       <div id="detailContent"></div>
+    </div>
+
+    <!-- ACTIVITY FEED -->
+    <div class="feed-panel" id="feedPanel">
+      <div class="feed-header">
+        <h2>Änderungen</h2>
+        <button class="feed-close" id="feedClose">✕</button>
+      </div>
+      <div class="feed-body" id="feedBody">
+        <div class="feed-empty">Lade...</div>
+      </div>
     </div>
     <div class="list-view" id="listView"></div>
     <div class="links-view" id="linksView"></div>
@@ -200,8 +228,8 @@ function init(){
   // Parse nodes — scale positions
   nodes = (DATA.nodes||[]).map(n => ({
     ...n,
-    sx: n.x * 7.5 + 80,
-    sy: n.y * 2.8 + 80,
+    sx: n.x * 4.8 + 60,
+    sy: n.y * 1.6 + 60,
     w: NODE_W * (prio[n.id]===3?1.15:prio[n.id]===2?1.05:1),
     h: NODE_H
   }));
@@ -563,8 +591,62 @@ function setupEvents(){
   window.addEventListener('resize',()=>{resize();});
 }
 
+
+/* ===== ACTIVITY FEED ===== */
+function initFeed(){
+  const btn = document.getElementById('feedBtn');
+  const panel = document.getElementById('feedPanel');
+  const closeBtn = document.getElementById('feedClose');
+  const body = document.getElementById('feedBody');
+
+  btn.addEventListener('click', ()=>{
+    panel.classList.toggle('open');
+    // close detail panel if open
+    document.getElementById('detail').classList.remove('open');
+    if(panel.classList.contains('open')) loadFeed(body);
+  });
+  closeBtn.addEventListener('click', ()=> panel.classList.remove('open'));
+
+  // auto-load on start
+  loadFeed(body);
+}
+
+async function loadFeed(container){
+  try{
+    const r = await fetch('https://api.github.com/repos/basana/turret-tales-christmas/commits?per_page=15');
+    if(!r.ok) throw new Error(r.status);
+    const commits = await r.json();
+    if(!commits.length){ container.innerHTML='<div class="feed-empty">Keine Einträge</div>'; return; }
+    container.innerHTML = commits.map(c=>{
+      const d = new Date(c.commit.author.date);
+      const ago = timeAgo(d);
+      const msg = c.commit.message.split('\n')[0];
+      const files = c.files ? c.files.map(f=>f.filename).join(', ') : '';
+      return '<div class="feed-item">' +
+        '<div class="feed-time">' + ago + ' · ' + d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}) + '</div>' +
+        '<div class="feed-msg">' + escHtml(msg) + '</div>' +
+        (files ? '<div class="feed-files">' + escHtml(files) + '</div>' : '') +
+        '</div>';
+    }).join('');
+  }catch(e){
+    container.innerHTML='<div class="feed-empty">Feed nicht verfügbar</div>';
+  }
+}
+
+function timeAgo(date){
+  const s = Math.floor((Date.now()-date)/1000);
+  if(s<60) return 'gerade eben';
+  if(s<3600) return Math.floor(s/60)+'m';
+  if(s<86400) return Math.floor(s/3600)+'h';
+  const d=Math.floor(s/86400);
+  return d===1?'gestern':d+'d';
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
 /* ===== START ===== */
 loadData();
+initFeed();
 </script>
 </body>
 </html>

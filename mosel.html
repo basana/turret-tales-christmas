@@ -103,12 +103,15 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 @keyframes gpsHaloPulse{0%{box-shadow:0 0 0 0 rgba(181,96,46,.5)}70%{box-shadow:0 0 0 14px rgba(181,96,46,0)}100%{box-shadow:0 0 0 0 rgba(181,96,46,0)}}
 
 /* ═══════════════ MAP TOOLTIP ═══════════════ */
-.mosel-tooltip{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--rust);padding:10px 14px;background:var(--paper);border:1.5px solid var(--gold);border-radius:12px;box-shadow:0 4px 16px rgba(90,67,39,.2);line-height:1.4;max-width:260px}
-.mosel-tooltip .tt-name{font-size:18px;font-weight:700;color:var(--rust);margin-bottom:4px}
-.mosel-tooltip .tt-desc{font-family:var(--sans);font-size:13px;color:var(--ink-soft);font-weight:400;line-height:1.4}
+.mosel-tooltip{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--rust);padding:12px 16px;background:var(--paper);border:1.5px solid var(--gold);border-radius:12px;box-shadow:0 4px 16px rgba(90,67,39,.2);line-height:1.4;width:240px;max-width:70vw;white-space:normal!important;word-wrap:break-word}
+.mosel-tooltip .tt-name{font-size:18px;font-weight:700;color:var(--rust);margin-bottom:4px;white-space:normal}
+.mosel-tooltip .tt-desc{font-family:var(--sans);font-size:13px;color:var(--ink-soft);font-weight:400;line-height:1.4;white-space:normal}
 .mosel-tooltip .tt-dist{font-family:var(--sans);font-size:13px;color:var(--green);font-weight:700;margin-top:5px}
 .mosel-tooltip .tt-link{font-family:var(--sans);font-size:13px;color:var(--wine);font-weight:600;margin-top:5px;display:block;text-decoration:none}
-.leaflet-tooltip.mosel-tooltip{opacity:1!important}
+.leaflet-tooltip.mosel-tooltip{opacity:1!important;white-space:normal!important}
+.leaflet-tooltip-left.mosel-tooltip::before{border-left-color:var(--paper)}
+.leaflet-tooltip-right.mosel-tooltip::before{border-right-color:var(--paper)}
+.leaflet-tooltip-top.mosel-tooltip::before{border-top-color:var(--paper)}
 
 /* ═══════════════ STATION LIST ═══════════════ */
 .st-list{padding:12px 14px}
@@ -153,6 +156,27 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .legend-card h3{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--purple);margin-bottom:4px}
 .legend-card .lc-place{font-family:var(--sans);font-size:11px;color:var(--ink-soft);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
 .legend-card p{font-size:14.5px;line-height:1.65;color:var(--ink);font-style:italic}
+/* ═══════════════ ROUTE MAP CAROUSEL ═══════════════ */
+.route-map-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:0;margin:0 -16px 16px;scrollbar-width:none}
+.route-map-carousel::-webkit-scrollbar{display:none}
+.route-map-slide{flex:0 0 100%;scroll-snap-align:start;padding:0 16px;box-sizing:border-box}
+.route-map-slide svg{width:100%;height:auto;border-radius:14px;border:1.5px solid var(--gold);box-shadow:0 4px 16px rgba(90,67,39,.12);background:linear-gradient(145deg,#f0e8d0,#e8dcc0)}
+.route-dots{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
+.route-dot{width:10px;height:10px;border-radius:50%;background:var(--gold-light);border:1.5px solid var(--gold);cursor:pointer;transition:all .2s}
+.route-dot.active{background:var(--wine);border-color:var(--wine);transform:scale(1.15)}
+.route-dot-label{font-family:var(--sans);font-size:10px;color:var(--ink-soft);text-align:center;margin-top:3px}
+/* SVG map styles */
+.svg-river{fill:none;stroke:#7FB5C9;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
+.svg-river-bg{fill:none;stroke:#C5DFE8;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;opacity:.4}
+.svg-vineyard{fill:#8BAF5A;opacity:.25}
+.svg-town{cursor:pointer}
+.svg-town circle{fill:var(--wine);stroke:var(--gold);stroke-width:2}
+.svg-town text{font-family:var(--serif);font-size:11px;font-weight:700;fill:var(--ink)}
+.svg-castle{fill:var(--terracotta);opacity:.8}
+.svg-label-bg{fill:var(--paper);stroke:var(--gold);stroke-width:.5;rx:4;opacity:.9}
+.svg-section-title{font-family:var(--serif);font-size:14px;font-weight:700;fill:var(--wine);text-anchor:middle}
+.svg-banner{fill:var(--paper);stroke:var(--gold);stroke-width:1}
+.svg-compass{fill:none;stroke:var(--ink-soft);stroke-width:1;opacity:.5}
 .route-stop{display:flex;align-items:flex-start;gap:12px;margin-bottom:0;padding:12px 0;border-bottom:1px solid var(--gold-light)}
 .route-stop:last-child{border-bottom:none}
 .route-num{width:30px;height:30px;border-radius:50%;background:var(--wine);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:11px;font-weight:700;flex-shrink:0;border:2px solid var(--gold)}
@@ -250,6 +274,10 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
   <div class="route-tab">
     <h2 id="routeTitle">Route entlang der Mosel</h2>
     <p id="routeIntro"></p>
+    <!-- SVG Map Carousel -->
+    <div class="route-map-carousel" id="routeCarousel"></div>
+    <div class="route-dots" id="routeDots"></div>
+    <!-- Route list below -->
     <div id="routeList"></div>
     <div class="owner"></div>
   </div>
@@ -439,7 +467,7 @@ splashEl.addEventListener('click',e=>{
     splashEl.hidden = true;
     renderList();
     renderSagen();
-    renderRoute();
+    renderRoute();renderRouteMap();
     if(map) updateMarkers();
   }
 });
@@ -604,6 +632,119 @@ function renderSagen(){
 // ═══════════════════════════════════════
 // ROUTE TAB
 // ═══════════════════════════════════════
+function renderRouteMap(){
+  // Real Moselle coordinates transformed to SVG viewBox
+  // Each slide: 340x320 viewBox
+  const slides = [
+    { title:'Untere Mosel',subtitle:'Koblenz → Alken',
+      // River path: Koblenz(top-right) winding down-left to Alken
+      river:'M290,35 C270,55 285,85 260,105 C235,125 210,110 195,135 C180,160 200,180 180,205 C160,230 140,220 120,245 C100,270 80,260 60,285',
+      towns:[
+        {x:290,y:30,num:'01',name:'Koblenz',side:'right',anchor:'start',bank:'Deutsches Eck'},
+        {x:245,y:120,num:'02',name:'Winningen',side:'left',anchor:'end',bank:'L'},
+        {x:210,y:145,num:'03',name:'Kobern-Gondorf',side:'right',anchor:'start',bank:'R'},
+        {x:90,y:270,num:'04',name:'Alken',side:'left',anchor:'end',bank:'L',castle:'Burg Thurant'}
+      ],
+      // Rhine confluence at Koblenz
+      rhine:'M310,10 C305,25 295,30 290,35',
+      extra:'<text x="315" y="18" class="svg-section-title" style="font-size:9px;fill:var(--river);text-anchor:start">Rhein ↗</text>'
+    },
+    { title:'Cochem',subtitle:'Burg Eltz → Beilstein',
+      river:'M280,30 C260,55 240,50 220,80 C200,110 230,130 210,160 C190,190 160,175 140,200 C120,225 140,255 120,280',
+      towns:[
+        {x:300,y:55,num:'05',name:'Burg Eltz',side:'right',anchor:'start',bank:'→ Seitental',eltz:true},
+        {x:215,y:100,num:'06',name:'Cochem',side:'left',anchor:'end',bank:'L',castle:'Reichsburg'},
+        {x:130,y:220,num:'07',name:'Beilstein',side:'right',anchor:'start',bank:'R',cat:true}
+      ],
+      extra:''
+    },
+    { title:'Mittelmosel',subtitle:'Calmont → Traben-Trarbach',
+      river:'M280,25 C260,50 230,45 210,70 C190,95 210,120 190,145 C170,170 140,160 120,185 C100,210 130,240 110,265 C90,290 60,280 50,300',
+      towns:[
+        {x:250,y:50,num:'08',name:'Calmont 65°',side:'right',anchor:'start',bank:'R'},
+        {x:180,y:130,num:'09',name:'Zell',side:'left',anchor:'end',bank:'L'},
+        {x:110,y:230,num:'10',name:'Bernkastel-Kues',side:'left',anchor:'end',bank:'L'},
+        {x:60,y:290,num:'11',name:'Traben-Trarbach',side:'right',anchor:'start',bank:'R/L'}
+      ],
+      extra:''
+    }
+  ];
+
+  const carousel = document.getElementById('routeCarousel');
+  const dots = document.getElementById('routeDots');
+  let html = '';
+  let dotHtml = '';
+
+  slides.forEach((sl,i) => {
+    let townsHtml = '';
+    sl.towns.forEach(tw => {
+      const tx = tw.anchor==='end' ? tw.x-14 : tw.x+14;
+      const ty = tw.y+4;
+      const castleHtml = tw.castle ? '<text x="'+(tw.anchor==='end'?tw.x-14:tw.x+14)+'" y="'+(tw.y+16)+'" style="font-size:9px;fill:var(--terracotta);font-family:var(--sans);text-anchor:'+tw.anchor+'">🏰 '+tw.castle+'</text>' : '';
+      const catHtml = tw.cat ? '<text x="'+(tw.x+30)+'" y="'+(tw.y+16)+'" style="font-size:12px">🐈‍⬛</text>' : '';
+      const eltzArrow = tw.eltz ? '<line x1="'+(tw.x-10)+'" y1="'+tw.y+'" x2="'+(tw.x-35)+'" y2="'+(tw.y-5)+'" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>' : '';
+      townsHtml += '<g class="svg-town" onclick="showDetail(''+getStationId(tw.num)+'')">';
+      townsHtml += '<circle cx="'+tw.x+'" cy="'+tw.y+'" r="9"/>';
+      townsHtml += '<text x="'+tw.x+'" y="'+(tw.y+3.5)+'" text-anchor="middle" style="font-size:8px;fill:#fff;font-family:var(--sans);font-weight:700">'+tw.num+'</text>';
+      townsHtml += '<text x="'+tx+'" y="'+ty+'" text-anchor="'+tw.anchor+'" class="svg-town-label">'+tw.name+'</text>';
+      townsHtml += castleHtml + catHtml + eltzArrow;
+      townsHtml += '</g>';
+    });
+
+    html += '<div class="route-map-slide">';
+    html += '<svg viewBox="0 0 340 320" xmlns="http://www.w3.org/2000/svg">';
+    html += '<defs><marker id="arrowhead" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto"><polygon points="0 0, 6 2, 0 4" fill="var(--ink-soft)"/></marker></defs>';
+    // Parchment background texture
+    html += '<rect width="340" height="320" fill="url(#parchBg'+i+')" rx="14"/>';
+    html += '<defs><linearGradient id="parchBg'+i+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5ecd5"/><stop offset="50%" stop-color="#ede2c8"/><stop offset="100%" stop-color="#e8d9b8"/></linearGradient></defs>';
+    // Vineyard areas (decorative)
+    html += '<ellipse cx="60" cy="100" rx="35" ry="50" class="svg-vineyard"/>';
+    html += '<ellipse cx="280" cy="200" rx="30" ry="45" class="svg-vineyard"/>';
+    html += '<ellipse cx="160" cy="270" rx="40" ry="30" class="svg-vineyard"/>';
+    // River
+    if(sl.rhine) html += '<path d="'+sl.rhine+'" class="svg-river" style="stroke-width:5;opacity:.4"/>';
+    html += '<path d="'+sl.river+'" class="svg-river-bg"/>';
+    html += '<path d="'+sl.river+'" class="svg-river"/>';
+    // Title banner
+    html += '<rect x="80" y="2" width="180" height="22" class="svg-banner" rx="6"/>';
+    html += '<text x="170" y="16" class="svg-section-title">'+sl.title+'</text>';
+    // Towns
+    html += townsHtml;
+    // Extra elements
+    if(sl.extra) html += sl.extra;
+    // Compass rose (bottom-right)
+    html += '<g transform="translate(305,290)"><circle r="12" fill="var(--paper)" stroke="var(--gold)" stroke-width="1"/><text x="0" y="-4" text-anchor="middle" style="font-size:7px;fill:var(--ink);font-family:var(--sans);font-weight:700">N</text><line x1="0" y1="-2" x2="0" y2="-9" stroke="var(--ink)" stroke-width="1.5"/><line x1="0" y1="2" x2="0" y2="9" stroke="var(--ink-soft)" stroke-width="1"/></g>';
+    html += '</svg></div>';
+
+    dotHtml += '<div class="route-dot'+(i===0?' active':'')+'" data-slide="'+i+'"><div class="route-dot-label">'+(i+1)+'</div></div>';
+  });
+
+  carousel.innerHTML = html;
+  dots.innerHTML = dotHtml;
+
+  // Snap scroll observer
+  const slideEls = carousel.querySelectorAll('.route-map-slide');
+  const dotEls = dots.querySelectorAll('.route-dot');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        const idx = [...slideEls].indexOf(e.target);
+        dotEls.forEach((d,j) => d.classList.toggle('active',j===idx));
+      }
+    });
+  },{root:carousel,threshold:0.6});
+  slideEls.forEach(s => observer.observe(s));
+  dotEls.forEach(d => d.addEventListener('click',() => {
+    const idx = parseInt(d.dataset.slide);
+    slideEls[idx].scrollIntoView({behavior:'smooth',block:'nearest',inline:'start'});
+  }));
+}
+
+function getStationId(num){
+  const ids=['deutsches-eck','winningen','kobern-gondorf','alken','burg-eltz','cochem','beilstein','calmont','bernkastel','traben-trarbach','zell'];
+  return ids[parseInt(num)-1]||'';
+}
+
 function renderRoute(){
   const c=document.getElementById('routeList');
   let html='';
@@ -648,7 +789,7 @@ function updateMarkers(){
     // Tooltip on hover (not popup on click)
     const dist=distText(st);
     const tooltipHtml=`<div class="tt-name">${t(st.name)}</div><div class="tt-desc">${t(st.desc).slice(0,80)}…</div>${dist?'<div class="tt-dist">📍 '+dist+'</div>':''}<a class="tt-link" href="#" onclick="event.preventDefault();showDetail('${st.id}')">Details →</a>`;
-    m.bindTooltip(tooltipHtml,{className:'mosel-tooltip',direction:'top',offset:[0,-18],sticky:false,interactive:true});
+    m.bindTooltip(tooltipHtml,{className:'mosel-tooltip',direction:'auto',offset:[0,-18],sticky:false,interactive:true});
     // Also allow click to open detail
     m.on('click',()=>showDetail(st.id));
     markers.push(m);
@@ -779,7 +920,7 @@ try{const s=localStorage.getItem('moselLang');if(s&&UI.pillStations[s])lang=s}ca
 setLang(lang);
 renderList();
 renderSagen();
-renderRoute();
+renderRoute();renderRouteMap();
 </script>
 </body>
 </html>

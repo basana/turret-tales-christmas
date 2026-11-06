@@ -225,14 +225,26 @@ function init(){
   urg = DATA.urg || {};
   edges = DATA.edges || [];
 
-  // Parse nodes — scale positions
+  // Parse nodes — column-based positioning
+  const COL_X = {20:0, 280:1, 540:2, 800:3};
+  const COL_GAP = NODE_W + 40; // 300px per column
   nodes = (DATA.nodes||[]).map(n => ({
     ...n,
-    sx: n.x * 4.8 + 60,
-    sy: n.y * 1.6 + 60,
+    sx: (COL_X[n.x]||0) * COL_GAP + 40,
+    sy: n.y * 1.5 + 40,
     w: NODE_W * (prio[n.id]===3?1.15:prio[n.id]===2?1.05:1),
     h: NODE_H
   }));
+  // Fix Y overlaps per column
+  const colGroups = {};
+  nodes.forEach(n => { const c=COL_X[n.x]||0; (colGroups[c]=colGroups[c]||[]).push(n); });
+  Object.values(colGroups).forEach(col => {
+    col.sort((a,b)=>a.sy-b.sy);
+    for(let i=1;i<col.length;i++){
+      const minY = col[i-1].sy + col[i-1].h + 10;
+      if(col[i].sy < minY) col[i].sy = minY;
+    }
+  });
 
   buildTicker();
   buildGroupFilter();

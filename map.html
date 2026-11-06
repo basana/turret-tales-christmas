@@ -185,7 +185,7 @@ let filterGroup='', filterStatus='', filterSearch='';
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
 
-const NODE_W = 220, NODE_H = 72, NODE_R = 10;
+const NODE_W = 260, NODE_H = 82, NODE_R = 12;
 const STATUS_LABELS = {ok:'Erledigt',wip:'In Arbeit',wait:'Wartet',later:'Später',todo:'Geplant'};
 
 /* ===== INIT ===== */
@@ -200,8 +200,8 @@ function init(){
   // Parse nodes — scale positions
   nodes = (DATA.nodes||[]).map(n => ({
     ...n,
-    sx: n.x * 4.2 + 60,
-    sy: n.y * 1.1 + 60,
+    sx: n.x * 7.5 + 80,
+    sy: n.y * 2.8 + 80,
     w: NODE_W * (prio[n.id]===3?1.15:prio[n.id]===2?1.05:1),
     h: NODE_H
   }));
@@ -357,21 +357,21 @@ function draw(){
 
     // Title
     ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim()||'#e2e8f0';
-    ctx.font = `600 ${Math.max(11,13*cam.z)}px system-ui`;
+    ctx.font = `600 ${Math.max(13,15*cam.z)}px system-ui`;
     ctx.textBaseline='top';
     const title = n.t.length > 28 ? n.t.slice(0,26)+'…' : n.t;
-    ctx.fillText(title, x+14*cam.z, y+12*cam.z, w-30*cam.z);
+    ctx.fillText(title, x+16*cam.z, y+14*cam.z, w-36*cam.z);
 
     // Subtitle
     ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim()||'#94a3b8';
-    ctx.font = `${Math.max(9,11*cam.z)}px system-ui`;
+    ctx.font = `${Math.max(11,13*cam.z)}px system-ui`;
     const sub = (n.sub||'').length > 34 ? (n.sub||'').slice(0,32)+'…' : (n.sub||'');
-    ctx.fillText(sub, x+14*cam.z, y+32*cam.z, w-30*cam.z);
+    ctx.fillText(sub, x+16*cam.z, y+36*cam.z, w-36*cam.z);
 
     // Status label
-    ctx.font = `600 ${Math.max(8,9*cam.z)}px system-ui`;
+    ctx.font = `600 ${Math.max(10,11*cam.z)}px system-ui`;
     ctx.fillStyle = statusColor(n.status);
-    ctx.fillText(STATUS_LABELS[n.status]||n.status||'', x+14*cam.z, y+50*cam.z);
+    ctx.fillText(STATUS_LABELS[n.status]||n.status||'', x+16*cam.z, y+58*cam.z);
   }
 
   requestAnimationFrame(draw);

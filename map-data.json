@@ -1,0 +1,342 @@
+{
+  "ticker": {
+    "just_finished": "UX-Empfehlungen und Premium-Ideen in Konzept übernommen",
+    "now_working": "Projektkarte als lokales Werkzeug (map.html + map-data.json)",
+    "next_up": "Links/Rechts-Ufer-Anzeige, kontextuelle WhatsApp-Taste"
+  },
+  "updated": "2026-11-05",
+
+  "groups": {
+    "product":   {"t":"Produkt",                "c":"var(--g-product)"},
+    "audience":  {"t":"Gäste und Partner",       "c":"var(--g-audience)"},
+    "marketing": {"t":"Marketing",               "c":"var(--g-marketing)"},
+    "dev":       {"t":"Entwicklung und Betrieb",  "c":"var(--g-dev)"},
+    "services":  {"t":"Dienste und Konten",       "c":"var(--g-services)"},
+    "print":     {"t":"Druck",                    "c":"var(--g-print)"},
+    "legal":     {"t":"Marke und Recht",          "c":"var(--g-legal)"}
+  },
+
+  "nodes": [
+    {"id":"app","g":"product","x":20,"y":40,"t":"Turret Tales (Rhine Guide)","sub":"Web-App · 23 Stationen","status":"wip",
+     "s":"Interaktive Web-App zu den Burgen zwischen Koblenz und Bingen.",
+     "d":"Karte mit Stationen, Legenden und Fakten zu jeder Burg, Sprachen EN und RU. Der Gast führt sich selbst, der Guide ergänzt live. Versionen Basic, Lite, Premium und eine Partnerversion für Cafés sind geplant. Offline funktioniert heute nur teilweise: Karte und Schrift laden noch aus dem Netz.",
+     "where":"Dateien: index.html, sw.js, manifest.json, Bilder. Quelle: GitHub. Live: Netlify.",
+     "check":"Version und Zahl der Stationen auf der Live-Adresse prüfen (Stand: 23)."},
+
+    {"id":"stations","g":"product","x":20,"y":104,"t":"23 Stationen","sub":"Liste castles in index.html","status":"ok",
+     "s":"Jede Station hat Name, Koordinaten, Texte in EN und RU und fünf Bildplätze.",
+     "d":"Station hinzufügen oder entfernen: Eintrag im Array castles, Bilder als name.jpg bis name_5.jpg, Einwohnerzahl in Info und Route, Versionsnummer in sw.js erhöhen, Zahl in den Dokumenten ändern. Hildegard ist entfernt. Stahleck: 4 Bilder (5. aus der Liste gestrichen). Schönburg: 3 Bilder, es fehlen 4 und 5.",
+     "where":"index.html (Array castles)","check":"Jede Station braucht mindestens ein Bild; Dateinamen klein, ohne Leerzeichen."},
+
+    {"id":"features","g":"product","x":20,"y":168,"t":"Funktionen und Versionen","sub":"Basic · Lite · Premium · Partner","status":"wip",
+     "s":"Was die App kann und für wen.",
+     "d":"Basic: Karte und Stationen. Lite: GPS-Begleitung. Premium: Zusatzfunktionen (noch nicht festgelegt). Partnerversion: Kategorien Café, Restaurant und Souvenirs, Demo «Рядом» ist geplant, noch nicht gebaut. Navigator in Stufen: 1) Pfeil und Entfernung, 2) Straßenrouten, 3) optional Abbiegehinweise, 4) KI-Helfer später. Lebende Führungen als eigenes Paket. Wer die App bezahlt, ist offen (Vorschlag: der Partner).",
+     "where":"Notizen: aktuelle-schritte, Abschnitt «Решения по продукту»","check":"Festlegen, welche Version zuerst kommt."},
+
+    {"id":"brand","g":"product","x":20,"y":232,"t":"Name und Marke","sub":"Tours All Year Round · Turret Tales","status":"ok",
+     "s":"Firmenname und Name der App.",
+     "d":"Tours All Year Round ist der Firmenname (Facebook, Emblem, Postkarten, Visitenkarte). Turret Tales ist der Arbeitsname der App (Entscheidung 14.10.2026). Im Code und im Brief an Madlen steht noch Rhine Guide. Impressum und Fußzeile: «by Tours All Year Round». Markenschutz: Anwalt verschoben, Selbstprüfung gemacht, Antrag später selbst.",
+     "where":"Notizen: name-pruefung-turret-tales, marke-und-foerderung (Obsidian)","check":"Bedingungen des EUIPO-Fonds auf der offiziellen Seite lesen."},
+
+    {"id":"funnel","g":"product","x":20,"y":296,"t":"Marketing-Trichter","sub":"Karte → App → Führung","status":"wip",
+     "s":"Wie aus Besuchern Gäste werden.",
+     "d":"Postkarte oder Visitenkarte mit QR → Kartenseite → App (mit ?src=mailchimp, damit die Quelle in der Statistik steht) → Kontakt über WhatsApp → Führung. Zielgruppen: Kreuzfahrtgäste, Individualgäste, Partner (Cafés, Kioske). Verteilung am Stolzenfels: etwa 200 Besucher am Tag, letzte Führung in der Burg am 31.10.",
+     "where":"Notizen: tour-marketing-funnel (Obsidian)","check":"Kommt die Quelle mailchimp in GoatCounter an?"},
+
+    {"id":"ux_improvements","g":"product","x":20,"y":552,"t":"UX-Verbesserungen","sub":"Profi-Empfehlungen · 6 Punkte","status":"wait",
+     "s":"Professionelle UX-Analyse für Kreuzfahrt-Touristen.",
+     "d":"1) Vertrauenstext bei WhatsApp-Taste. 2) Gehzeit statt Kilometer. 3) PWA-Banner. 4) Touch-Zielgrößen ≥48px. 5) Zurück-zum-Anleger-Taste. 6) Kontrast bei Sonnenlicht. Quelle: externer UX-Experte.",
+     "where":"Konzeptbeschreibung (claude/konzeptbeschreibung-partner-2026-11-05.md)","check":"Punkt 1 und 2 zuerst umsetzen."},
+
+    {"id":"premium_features","g":"product","x":20,"y":616,"t":"Premium-Funktionen","sub":"Kalkulator · Audioguide · Checkliste","status":"wait",
+     "s":"Neue Funktionen aus der Wettbewerbsanalyse.",
+     "d":"1) Links/Rechts-Ufer-Anzeige (1h). 2) Kontextuelle WhatsApp-Taste (30min). 3) Kalkulator «Schaffe ich es zum Schiff?» (1 Tag). 4) Checkliste «Schon gesehen» (halber Tag). 5) Audioguide mit GPS-Trigger (1–2 Wochen). 6) Wetter + Plan B (2–3 Tage).",
+     "where":"Konzeptbeschreibung (claude/konzeptbeschreibung-partner-2026-11-05.md)","check":"Links/Rechts und WhatsApp-Taste als Erstes."},
+
+    {"id":"live_tours","g":"product","x":20,"y":680,"t":"Live-Touren","sub":"Online-Führungen · Virtuelle Weinproben","status":"later",
+     "s":"Digitale Erlebnisse über den Navigator.",
+     "d":"Online-Stadtführungen per Videostream, virtuelle Weinproben mit Mosel-Winzern (Weinpaket vorab), voraufgezeichnete Touren als Premium-Archiv. Integration als eigener Bereich im Navigator neben den Führungen vor Ort. Buchung über Stripe/Calendly.",
+     "where":"Konzeptbeschreibung (claude/konzeptbeschreibung-partner-2026-11-05.md)","check":"Technische Architektur und Integration planen (Frühjahr 2027)."},
+
+    {"id":"cruise","g":"audience","x":280,"y":40,"t":"Kreuzfahrtgäste","sub":"Viking · Saga · Travmondo","status":"ok",
+     "s":"Gruppen, die Koblenz und Cochem an einem Tag besuchen.",
+     "d":"Wenig Zeit in der Stadt, oft kein Datenroaming. Deshalb ist Offline wichtig. Führungen laufen über Reiseveranstalter, Anfragen über Travmondo.",
+     "where":"Notizen: travmondo-requests, profile","check":"Offline-Funktion vor dem Einsatz mit dem Handy testen."},
+
+    {"id":"independent","g":"audience","x":280,"y":104,"t":"Individualgäste","sub":"Stadt, Wanderer, Wiederkehrer","status":"ok",
+     "s":"Gäste, die selbst unterwegs sind.",
+     "d":"Finden die App über Postkarte, Café, QR oder Suche. Interesse an Legenden und Geschichte. Wichtig: schnelle Karte und klare Stationen.",
+     "where":"—","check":"Besuche in GoatCounter ansehen, um Quellen zu vergleichen."},
+
+    {"id":"partners","g":"audience","x":280,"y":168,"t":"Partner: Cafés, Restaurants, Kioske","sub":"Demo «Рядом» (geplant)","status":"wip",
+     "s":"Gastgeber, die Gäste an die App weiterleiten.",
+     "d":"Idee: Der Partner zeigt QR oder Karte, der Gast sieht Stationen in der Nähe. Kategorien Café, Restaurant, Souvenirs. Kein Vertrag bisher. Für die Demo braucht es 2–3 Namen und Fotos, nur mit Zustimmung der Inhaber.",
+     "where":"Notizen: tour-marketing-funnel (Café-Partnerschaft)","check":"Erste Gespräche führen, Demo bauen."},
+
+    {"id":"touroperators","g":"audience","x":280,"y":232,"t":"Reiseveranstalter","sub":"Travmondo · Saga · Viking","status":"ok",
+     "s":"Kanal für Gruppen und Führungen.",
+     "d":"Aufträge kommen über Plattformen. Die Koordination läuft über Madlen Donath. Für sie ist der Brief über die App gedacht, ohne NDA und ohne Preise.",
+     "where":"Notizen: madlen-donath, travmondo-requests","check":"Brief an Madlen: versendet oder nicht?"},
+
+    {"id":"xmas","g":"product","x":20,"y":360,"t":"Turret Tales Weihnachts-Navigator","sub":"Rhein · Startbildschirm (geplant)","status":"wip",
+     "s":"Gleiche App mit weihnachtlichem Start und Weihnachtsbild für Koblenz.",
+     "d":"Startbildschirm mit Weihnachtsmotiv, große Kacheln, Schalter «Classic | Christmas». Demo nur auf Englisch. Märkte: Oberwesel, Boppard, Bacharach, Lahnstein bestätigt bzw. vorläufig; Koblenz und Braubach offen.",
+     "where":"Projekt MAP: claude/weihnachts-navigator.md, aktuelle-schritte Punkte 19–20",
+     "check":"Weihnachtsbild für Koblenz vom Kunden; Termine bestätigen."},
+
+    {"id":"mosel","g":"product","x":20,"y":424,"t":"Mosel-Version","sub":"zum Verkauf an Touristen (geplant)","status":"wip",
+     "s":"Eigene Ausgabe des Navigators für die Mosel, getrennt verkauft.",
+     "d":"Vorschlag: Cochem, Zell, Traben-Trarbach, Bernkastel-Kues. Termine: Cochem 21.11.–21.12.2026, Burgweihnacht 12./13.12., Zell 28.11., Traben-Trarbach 20.11.–02.01. Kommt nach dem Rhein-Teil. Neu: eigene Seite walks.html für Winningen (Wanderungen, Weingüter, Geschichte, Sehenswürdigkeiten, Weihnachtsmarkt) ist live.",
+     "where":"Projekt MAP: aktuelle-schritte Punkt 22, weihnachts-navigator (Mosel)",
+     "check":"Preis und Verkaufsweg festlegen."},
+
+    {"id":"meetings","g":"product","x":20,"y":488,"t":"Встречи · Meetings","sub":"Abschnitt im MAP-Plan","status":"wip",
+     "s":"Treffen und Gespräche mit Partnern und Interessenten.",
+     "d":"Hier stehen Termine, Gesprächsnotizen und Ergebnisse, zum Beispiel Madlen Donath und Frau Woyda (GDKE / Festungsshop). Winningen-Weingüter kontaktiert am 03.11.",
+     "where":"Projekt MAP: aktuelle-schritte, Abschnitt «Встречи»",
+     "check":"Kröber-Treffen am 06.11."},
+
+    {"id":"touristinfo","g":"audience","x":280,"y":616,"t":"Touristinformationen","sub":"Rhein und Mosel · Idee","status":"wait",
+     "s":"Den Navigator als Angebot für ihre Gäste vorschlagen.",
+     "d":"Touristinformationen zeigen die App ihren Gästen, die Gäste laden sie herunter. Noch niemand angesprochen.",
+     "where":"Projekt MAP: aktuelle-schritte Punkt 21","check":"Liste der Ansprechpartner erstellen."},
+
+    {"id":"friends","g":"audience","x":280,"y":680,"t":"Hotels und Cafés an der Mosel","sub":"Kontakte von Bekannten (zu sammeln)","status":"wait",
+     "s":"Mögliche Partner für Auslage und Empfehlung.",
+     "d":"Bekannte Hotels und Cafés an der Mosel. Namen und Kontakte fehlen noch. Nur mit Zustimmung der Inhaber als Beispiele zeigen.",
+     "where":"Projekt MAP: aktuelle-schritte Punkt 23","check":"Liste mit Namen und Kontakten schicken."},
+
+    {"id":"koblenztouristik","g":"audience","x":280,"y":744,"t":"Koblenz-Touristik","sub":"Erste Firma für den Navigator · Demo zuerst","status":"wait",
+     "s":"Lokale Tourismusfirma in Koblenz, bei der Anatoly zertifiziert ist.",
+     "d":"Zuerst die Demo für Koblenz zeigen (Standard- und Weihnachtsversion), dann das Angebot. Wer zahlt, ist offen.",
+     "where":"Projekt MAP: aktuelle-schritte, Punkt 21","check":"Termin für die Vorführung vereinbaren; was brauchen sie?"},
+
+    {"id":"demo","g":"product","x":20,"y":744,"t":"Demo Koblenz (Englisch)","sub":"Priorität 1 · große Kacheln","status":"wip",
+     "s":"Erste Vorführung nur für Koblenz, nur auf Englisch.",
+     "d":"Große Kacheln mit Bildern, Weihnachtsmotiv zentral, Schalter Classic | Christmas. Station Koblenz mit eigenem Weihnachtsbild (Bild liefert Anatoly). Erst Demo fertig, dann vorführen.",
+     "where":"Kopie von index.html, Projekt MAP: aktuelle-schritte, Punkt 19","check":"Weihnachtsbild für Koblenz geliefert?"},
+
+    {"id":"xmasdata","g":"product","x":20,"y":808,"t":"Weihnachtsmärkte: Daten","sub":"Rhein: Oberwesel, Boppard, Bacharach, Lahnstein","status":"wip",
+     "s":"Termine und Orte für die Weihnachtsversion.",
+     "d":"Bestätigt: Oberwesel 28.–29.11., Boppard 27.11.–06.12., Bacharach 05.–06.12. Vorläufig: Lahnstein 28.11.–20.12. Offen: Koblenz 2026, Braubach, St. Goar, Kaub, Bingen. Mosel als Option: Cochem, Zell, Traben-Trarbach. Winningen: «Winningen im Lichterglanz», 27.–29.11.2026.",
+     "where":"Projekt MAP: claude/weihnachts-navigator.md","check":"Koblenz-Termine 2026 bei der Tourist-Info erfragen."},
+
+    {"id":"winningen","g":"product","x":20,"y":872,"t":"Winningen-Seite","sub":"walks.html · Weingüter · Wanderungen","status":"wip",
+     "s":"Eigene Seite für Winningen mit Wanderungen, Weingütern und Weihnachtsmarkt.",
+     "d":"walks.html ist live. Weingüter-Karten (Weyh, Löwensteinhof, Vinothek, Knebelbrüder) erstellt. Richter-Brochure (weingut-richter.html) in Arbeit. Winningen-Prospekt (walks-prospekt.html, dunkle Variante) in Arbeit. Briefe an 5 Weingüter am 03.11 gesendet.",
+     "where":"walks.html, weingut-richter.html, walks-prospekt.html","check":"Antworten der Weingüter abwarten; Kröber-Treffen 06.11."},
+
+    {"id":"madlen","g":"audience","x":280,"y":296,"t":"Madlen Donath","sub":"Koordinatorin · Brief gesendet","status":"wip",
+     "s":"Erste Partnerin für die Präsentation der App.",
+     "d":"Brief mit Link turrettales.de gesendet. Ohne NDA und ohne Preise. Antwort noch ausstehend.",
+     "where":"Gmail","check":"Antwort abwarten."},
+
+    {"id":"card","g":"marketing","x":280,"y":380,"t":"Digitale Visitenkarte","sub":"QRCodeChimp · toursallyearround","status":"ok",
+     "s":"Visitenkarte mit Links, WhatsApp und Button zur App.",
+     "d":"Profilseite mit Telefon, WhatsApp, Website und Button zur App. Der Button «View Rhine Guide» zeigt noch auf die alte GitHub-Seite. Das Profil heißt toursallyearround. Auf gedruckten Postkarten steht laut älteren Notizen eine andere Seite (rlugsqdxl7q8): das ist zu prüfen. NFC-Karten sollen auf dieselbe Visitenkarte zeigen.",
+     "where":"QRCodeChimp-Konto","check":"QR auf einer Postkarte scannen: welche Seite öffnet sich? Button auf die Netlify-Adresse umstellen."},
+
+    {"id":"postcards","g":"marketing","x":280,"y":444,"t":"Postkarten","sub":"Polaroid · Koblenz A6 · Mittelrhein","status":"wip",
+     "s":"Gedruckte Karten mit QR-Code.",
+     "d":"Koblenz A6: 500 Stück früher bestellt, 280 g, 30 €. Zweite Serie «Замки и города Среднего Рейна» in Arbeit. Mosel und Sagenstraße für Frühjahr 2027 geplant.",
+     "where":"Obsidian: koblenz-postcards, rhine-castle-postcards · Druckerei: Saxoprint","check":"Papier 200 g oder 150 g wählen; für den Druck Profil PSO Coated v3 verwenden."},
+
+    {"id":"social","g":"marketing","x":280,"y":508,"t":"Instagram und Facebook","sub":"Turret Tales · zweites Profil geplant","status":"wait",
+     "s":"Kanäle für Sichtbarkeit.",
+     "d":"Zweites Instagram-Profil für Turret Tales ist geplant. Facebook: bestehende Gästeführer-Seite. Name Turret Tales auf Facebook noch nicht geprüft.",
+     "where":"Konten: Instagram, Facebook","check":"Ist der Handle frei? Welches E-Mail-Konto nutzt das neue Profil?"},
+
+    {"id":"konzept","g":"marketing","x":280,"y":572,"t":"Konzeptbeschreibung","sub":"Dokument für Partner","status":"ok",
+     "s":"Beschreibung des Navigators für potenzielle Partner.",
+     "d":"Umfassende Unterlage mit Kernfunktionen, UX-Verbesserungen, Premium-Features, Live-Touren und Partnervorteilen. Stand 05.11.2026.",
+     "where":"claude/konzeptbeschreibung-partner-2026-11-05.md","check":"Vor jedem Partnergespräch aktualisieren."},
+
+    {"id":"github","g":"dev","x":540,"y":40,"t":"GitHub","sub":"basana/turret-tales-christmas","status":"ok",
+     "s":"Quellcode und Bilder der App.",
+     "d":"Repository basana/turret-tales-christmas aktiv, GitHub Pages live. Alte Seite basana.github.io/rhein-guide-publicD_A noch aktiv: abschalten, sobald die Visitenkarte umgestellt ist.",
+     "where":"github.com/basana","check":"Alte Seite (Pages) abschalten, nachdem der Button umgestellt ist."},
+
+    {"id":"netlify","g":"dev","x":540,"y":104,"t":"Netlify","sub":"Hosting · turrettales.de","status":"ok",
+     "s":"Hier läuft die App live.",
+     "d":"turrettales.de verbunden. Kostenloser Plan mit Kreditlimit. Eine falsch angelegte Seite (meek-banoffee-643a5a) soll gelöscht werden.",
+     "where":"app.netlify.com","check":"Im Billing-Bereich Kredite prüfen."},
+
+    {"id":"netlifycli","g":"dev","x":540,"y":168,"t":"Netlify CLI (Terminal)","sub":"Mac · Node 24","status":"ok",
+     "s":"Befehle für das Veröffentlichen vom Computer.",
+     "d":"Installiert über npm (mit sudo). Anmeldung erledigt. Der Ordner ~/Desktop/site-deploy ist mit turret-tales verbunden.",
+     "where":"Terminal, Ordner ~/Desktop/site-deploy","check":"Vor jedem Deploy die Version in sw.js erhöhen."},
+
+    {"id":"deploy","g":"dev","x":540,"y":232,"t":"Ablauf: Veröffentlichung","sub":"von der Änderung bis live","status":"ok",
+     "s":"Die Reihenfolge, die immer gilt.",
+     "d":"1) Dateien ändern. 2) Auf GitHub hochladen. 3) Version in sw.js erhöhen. 4) Prüfen. Netlify und GitHub sind nicht verbunden: beides muss passieren.",
+     "where":"Dokument: netlify-deploy-anleitung (Projekt MAP)","check":"Nach jedem Deploy: Zahl der Stationen und Version prüfen."},
+
+    {"id":"goatcounter","g":"dev","x":540,"y":296,"t":"GoatCounter","sub":"rhine-guide.goatcounter.com","status":"ok",
+     "s":"Besucherstatistik ohne Cookies.",
+     "d":"Zählt die Aufrufe der App. Quellen erkennt sie über ?src=mailchimp.",
+     "where":"goatcounter.com (Anmeldung)","check":"Erscheint die Quelle mailchimp nach der Umstellung?"},
+
+    {"id":"obsidian","g":"dev","x":540,"y":380,"t":"Obsidian (iCloud)","sub":"Ordner RheinApp/MAP","status":"ok",
+     "s":"Notizen zu Systemen, Links, Marke und Postkarten.",
+     "d":"Archive der Updates. Wichtige Notizen: name-der-app, rhine-guide-app, qr-seiten, todo.",
+     "where":"iCloud Drive/Obsidian/RheinApp/MAP/","check":"update8 einlegen, alte Versionen löschen."},
+
+    {"id":"topaz","g":"print","x":540,"y":444,"t":"Bildbearbeitung","sub":"Topaz AI · Affinity Photo","status":"ok",
+     "s":"Vorbereitung der Bilder für Druck und Web.",
+     "d":"Topaz AI wird einmal zur Druckgröße hochskaliert. Affinity Photo: Verlaufsumsetzung, Ebenen, Masken. Für den Druck: CMYK mit Profil PSO Coated v3.",
+     "where":"Affinity-Dateien (lokal)","check":"Originale mit Ebenen sichern."},
+
+    {"id":"icloud","g":"services","x":540,"y":508,"t":"iCloud MAP","sub":"Fotos, Emblem, Material","status":"ok",
+     "s":"Ablage für Originalfotos.",
+     "d":"Originalfotos, Emblem, Materialien. Claude kann iCloud-Freigaben nicht lesen; Bilder deshalb über GitHub oder Google Drive hochladen.",
+     "where":"iCloud Drive","check":"Originale nicht löschen."},
+
+    {"id":"qrcode","g":"services","x":800,"y":40,"t":"QRCodeChimp","sub":"Visitenkarte und Ziel der QR-Codes","status":"ok",
+     "s":"Dienst für Profile und QR-Codes.",
+     "d":"Limit von 1000 Scans im Monat. Die Weiterleitung eines bereits gedruckten QR ändern kostet 200 USD.",
+     "where":"QRCodeChimp-Konto","check":"Limit und Kosten prüfen, bevor die Auflage steigt."},
+
+    {"id":"nfc","g":"services","x":800,"y":104,"t":"NFC-Karten und Aufkleber","sub":"noch nicht bestellt","status":"wait",
+     "s":"Berühren statt scannen.",
+     "d":"Kreditkartenformat, 200–400 Stück, Budget bis 200 €, Chip NTAG216. Die Adresse im Chip erst nach Entscheidung über Namen und Domain festlegen.",
+     "where":"Notizen: NFC-Karten und Schlüsselanhänger","check":"Nicht drucken, bevor Name und Adresse feststehen."},
+
+    {"id":"saxoprint","g":"print","x":800,"y":168,"t":"Saxoprint","sub":"Kundennummer 101581753","status":"ok",
+     "s":"Druckerei für Postkarten.",
+     "d":"Letzte Bestellung: 500 A6, 4/4 beidseitig, 280 g, 30 €.",
+     "where":"Gmail basinprivat (Entwurf) · Saxoprint-Konto","check":"Entwurf ergänzen und senden."},
+
+    {"id":"ionos","g":"services","x":800,"y":232,"t":"Domain turrettales.de","sub":"IONOS · 12 Monate","status":"ok",
+     "s":"Eigene Adresse für QR-Codes und NFC.",
+     "d":"Gekauft 14.10.2026. Plan: turrettales.de/go als dauerhafte Adresse. Domain mit Netlify verbunden.",
+     "where":"IONOS-Konto","check":"Rechnung abgelegt?"},
+
+    {"id":"gmail","g":"services","x":800,"y":296,"t":"Gmail","sub":"basinprivat@gmail.com","status":"ok",
+     "s":"Post und Entwürfe.",
+     "d":"Entwürfe: Anfrage an Saxoprint. Dieses Konto ist mit Claude verbunden.",
+     "where":"basinprivat@gmail.com","check":"Entwurf Saxoprint: Kontakt eintragen, senden."},
+
+    {"id":"gdrive","g":"services","x":800,"y":360,"t":"Google Drive","sub":"Konto basinprivat (privat)","status":"ok",
+     "s":"Dateiablage. Derzeit ist nur das private Konto mit Claude verbunden.",
+     "d":"Für Bilder aus anderen Konten: Ordner mit basinprivat@gmail.com teilen.",
+     "where":"Konten: Notizen accounts (Projekt MAP)","check":"Ordner teilen und Zugriff testen."},
+
+    {"id":"leaflet","g":"dev","x":800,"y":424,"t":"Karte: Leaflet und OpenStreetMap","sub":"Kacheln von externem Server","status":"ok",
+     "s":"Darstellung der Karte in der App.",
+     "d":"Leaflet-Code kommt von cdnjs, die Kacheln von tile.openstreetmap.org. Ohne Internet keine Karte. Geplant: lokal ablegen, damit Offline funktioniert.",
+     "where":"index.html","check":"Offline-Test nach dem Umbau."},
+
+    {"id":"gfonts","g":"dev","x":800,"y":488,"t":"Schrift: Google Fonts","sub":"EB Garamond","status":"ok",
+     "s":"Schrift der App.",
+     "d":"Wird von fonts.googleapis.com geladen. Geplant: lokal ablegen.",
+     "where":"index.html","check":"Mit dem Offline-Umbau erledigen."},
+
+    {"id":"whatsapp","g":"services","x":800,"y":552,"t":"WhatsApp (Kontakt)","sub":"Nummer in App und Visitenkarte","status":"ok",
+     "s":"Hauptkontakt für Buchungen.",
+     "d":"Link wa.me/… steht in der App und auf der Visitenkarte.",
+     "where":"index.html, QRCodeChimp","check":"Ist die Nummer aktuell?"},
+
+    {"id":"euipo","g":"legal","x":800,"y":616,"t":"Markenschutz (EUIPO)","sub":"SME Fund 2026 · Frist 04.12.2026","status":"wait",
+     "s":"Förderung für die Marke.",
+     "d":"Laut Artikeln erstattet der Fonds bis zu 75 % der Amtsgebühren. Offen: Bedingungen prüfen, Anwalt verschoben.",
+     "where":"euipo.europa.eu","check":"Auf der offiziellen Seite die Bedingungen lesen."},
+
+    {"id":"woyda","g":"audience","x":280,"y":360,"t":"Festungsshop (GDKE)","sub":"Frau Woyda · Angebot 02.11","status":"wip",
+     "s":"Verkauf von Postkarten im Festungsshop Ehrenbreitstein.",
+     "d":"Angebot gesendet am 02.11: Einkaufspreis 0,40 € netto, zwei Muster, drei Fragen. Antwort bis 15.11 erbeten.",
+     "where":"Gmail","check":"Antwort bis 15.11 abwarten."},
+
+    {"id":"reuffel","g":"audience","x":280,"y":424,"t":"Reuffel Bazaar","sub":"Buchhandlung Koblenz","status":"wip",
+     "s":"Partner für Postkarten und Navigator.",
+     "d":"Treffen mit dem jungen Filialleiter am 29.10. stattgefunden. Kostenloser und kostenpflichtiger Level vorgeschlagen.",
+     "where":"partner-map.html","check":"Ergebnis des Treffens nachfragen."},
+
+    {"id":"winningen_weingueter","g":"audience","x":280,"y":488,"t":"Weingüter Winningen","sub":"5 Betriebe kontaktiert 03.11","status":"wip",
+     "s":"Winzerpartner für den Navigator.",
+     "d":"Briefe gesendet an: Löwensteinhof, Weyh, Knebelbrüder, Richter, Vinothek im Winninger Spital. Treffen mit Kröber vorgeschlagen für 06.11. Kröber nicht auf Karte (Entscheidung ausstehend).",
+     "where":"walks.html, weingut-richter.html","check":"Antworten abwarten; Kröber-Treffen 06.11."},
+
+    {"id":"stripe","g":"services","x":800,"y":680,"t":"Stripe","sub":"Premium-Zahlungen (pausiert)","status":"wait",
+     "s":"Einmalzahlung für Premium-Zugang.",
+     "d":"4 Pakete: 7/14/30/90 Tage. App bleibt vorerst Beta — kein Verkauf, erst Beobachtung der Nutzung.",
+     "where":"premium.html","check":"Erst starten, wenn Beta-Phase abgeschlossen."}
+  ],
+
+  "edges": [
+    ["app","stations"],["app","features"],["app","brand"],["app","funnel"],["app","github"],["app","netlify"],["app","goatcounter"],["app","leaflet"],["app","gfonts"],["app","whatsapp"],
+    ["app","ux_improvements"],["app","premium_features"],["app","live_tours"],
+    ["funnel","card"],["funnel","postcards"],["funnel","social"],["funnel","cruise"],["funnel","independent"],["funnel","partners"],["funnel","konzept"],
+    ["cruise","touroperators"],
+    ["koblenztouristik","demo"],["demo","xmasdata"],["xmasdata","xmas"],["koblenztouristik","app"],["koblenztouristik","touristinfo"],
+    ["app","xmas"],["app","mosel"],["app","winningen"],["mosel","touristinfo"],["mosel","friends"],["xmas","postcards"],["touristinfo","app"],["friends","partners"],["touroperators","madlen"],["madlen","app"],
+    ["card","qrcode"],["card","nfc"],["card","whatsapp"],["card","netlify"],
+    ["postcards","saxoprint"],["postcards","topaz"],["postcards","qrcode"],["saxoprint","gmail"],["gmail","madlen"],
+    ["nfc","ionos"],["ionos","netlify"],["brand","ionos"],["brand","euipo"],["obsidian","funnel"],["icloud","topaz"],["gdrive","icloud"],
+    ["github","deploy"],["netlify","netlifycli"],["netlifycli","deploy"],["deploy","netlify"],["deploy","goatcounter"],
+    ["woyda","postcards"],["reuffel","postcards"],["reuffel","partners"],
+    ["winningen","winningen_weingueter"],["winningen_weingueter","partners"],
+    ["premium_features","stripe"],["live_tours","stripe"],
+    ["meetings","woyda"],["meetings","reuffel"],["meetings","winningen_weingueter"],["meetings","madlen"],["meetings","koblenztouristik"]
+  ],
+
+  "prio": {
+    "app":3,"funnel":3,"card":3,"postcards":3,"deploy":3,
+    "netlify":2,"github":2,"madlen":2,"saxoprint":2,"euipo":2,"brand":2,"qrcode":2,"ionos":2,"nfc":2,"touroperators":2,"social":2,
+    "ux_improvements":2,"premium_features":2,"winningen":2,"konzept":2,"live_tours":2
+  },
+
+  "link_groups": [
+    {"t":"Turret Tales — Weihnachts-/Mosel-Version (GitHub Pages, live)","items":[
+      {"t":"Hauptseite (Rhein, Weihnachten)","u":"https://basana.github.io/turret-tales-christmas/","status":"live"},
+      {"t":"Essen & Trinken / Weingüter","u":"https://basana.github.io/turret-tales-christmas/partner-map.html","status":"live"},
+      {"t":"Winningen: Wanderungen, Weingüter","u":"https://basana.github.io/turret-tales-christmas/walks.html","status":"live"},
+      {"t":"Richter-Brochure","u":"https://basana.github.io/turret-tales-christmas/weingut-richter.html","status":"live"},
+      {"t":"Winningen Prospekt (dunkel)","u":"https://basana.github.io/turret-tales-christmas/walks-prospekt.html","status":"live"},
+      {"t":"GitHub-Repository (Quellcode)","u":"https://github.com/basana/turret-tales-christmas","status":"live"}
+    ]},
+    {"t":"Rhine Guide — Hauptversion (älter)","items":[
+      {"t":"Netlify (turrettales.de)","u":"https://turrettales.de","status":"live"},
+      {"t":"Alte GitHub-Pages-Seite (ablösen)","u":"https://basana.github.io/rhein-guide-publicD_A","status":"old"},
+      {"t":"GitHub-Repository (öffentlich)","u":"https://github.com/basana/rhein-guide-publicd_a","status":"live"}
+    ]},
+    {"t":"Visitenkarte, QR und Statistik","items":[
+      {"t":"Digitale Visitenkarte (toursallyearround)","u":"https://qrcodechimp.page/page/toursallyearround","status":"live"},
+      {"t":"GoatCounter (Besucherstatistik)","u":"https://rhine-guide.goatcounter.com","status":"live"},
+      {"t":"WhatsApp-Kontakt","u":"https://wa.me/491772850207","status":"live"}
+    ]}
+  ],
+
+  "open": [
+    ["Links/Rechts-Ufer-Anzeige bei Burgen umsetzen","premium_features","r"],
+    ["Kontextuelle WhatsApp-Taste an mehreren Stellen","ux_improvements","r"],
+    ["Antwort Madlen abwarten","madlen","r"],
+    ["Kröber-Treffen 06.11","winningen_weingueter","r"],
+    ["Antworten Winningen-Weingüter abwarten","winningen_weingueter","y"],
+    ["Antwort Frau Woyda bis 15.11","woyda","y"],
+    ["Gehzeit statt Kilometer bei Stationen","ux_improvements","y"],
+    ["Kalkulator «Schaffe ich es zum Schiff?»","premium_features","y"],
+    ["Checkliste «Schon gesehen» (Gamification)","premium_features","y"],
+    ["PWA-Banner «Zum Startbildschirm hinzufügen»","ux_improvements","y"],
+    ["Touch-Zielgrößen ≥48px prüfen","ux_improvements","y"],
+    ["Winningen-Seite: Fotos, Restaurants, GPX-Track","winningen","y"],
+    ["Weihnachtsmärkte: Koblenz-Termine 2026 erfragen","xmasdata","y"],
+    ["Demo Koblenz: Startbildschirm, Weihnachtsbild","demo","y"],
+    ["Koblenz-Touristik: Termin für Vorführung","koblenztouristik","y"],
+    ["Audioguide: kurze Legenden aufnehmen (1–2 Min.)","premium_features","g"],
+    ["Wetter + Plan B: Open-Meteo API + Inhalte","premium_features","g"],
+    ["Live-Touren: technische Architektur planen","live_tours","g"],
+    ["EUIPO SME Fund: Bedingungen prüfen, Frist 04.12.2026","euipo","y"],
+    ["NFC: nicht drucken, bevor Name und Adresse feststehen","nfc","g"],
+    ["Instagram: Handle und E-Mail für zweites Profil","social","g"],
+    ["Mosel-Version: Preis und Verkaufsweg festlegen","mosel","g"],
+    ["Touristinformationen: Ansprechpartner sammeln","touristinfo","g"],
+    ["Hotels und Cafés an der Mosel: Namen und Kontakte","friends","g"],
+    ["Premium-Verkauf via Stripe erst nach Beta-Phase","stripe","g"]
+  ],
+
+  "urg": {
+    "r":{"t":"Diese Woche","c":"#B3261E"},
+    "y":{"t":"Bis Monatsende","c":"#B7791F"},
+    "g":{"t":"Später","c":"#6b7280"}
+  }
+}

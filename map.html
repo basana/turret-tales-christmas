@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Turret Tales — Projektkarte</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;
+  --accent:#60a5fa;--accent2:#818cf8;
+  --g-product:#3b82f6;--g-audience:#f59e0b;--g-marketing:#10b981;
+  --g-dev:#8b5cf6;--g-services:#ec4899;--g-print:#f97316;--g-legal:#6366f1;
+  --ticker-bg:#1e293b;
+}
+[data-theme=light]{
+  --bg:#f1f5f9;--surface:#fff;--border:#cbd5e1;--text:#1e293b;--muted:#64748b;
+  --accent:#2563eb;--accent2:#4f46e5;
+  --g-product:#2563eb;--g-audience:#d97706;--g-marketing:#059669;
+  --g-dev:#7c3aed;--g-services:#db2777;--g-print:#ea580c;--g-legal:#4f46e5;
+  --ticker-bg:#e2e8f0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh}
+/* TICKER */
+.ticker{display:flex;gap:12px;padding:8px 16px;background:var(--ticker-bg);border-bottom:1px solid var(--border);font-size:13px;align-items:center;flex-wrap:wrap;z-index:100;position:relative}
+.ticker-item{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;background:var(--surface);border:1px solid var(--border)}
+.ticker-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ticker-dot.done{background:#22c55e}
+.ticker-dot.wip{background:#f59e0b;animation:pulse 1.5s infinite}
+.ticker-dot.next{background:#60a5fa}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.ticker-label{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.ticker-text{color:var(--text)}
+.ticker-date{margin-left:auto;color:var(--muted);font-size:11px}
+/* TOOLBAR */
+.toolbar{display:flex;gap:6px;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center;flex-wrap:wrap}
+.toolbar button,.toolbar select{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+.toolbar button:hover{border-color:var(--accent)}
+.toolbar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.toolbar .spacer{flex:1}
+.toolbar input[type=text]{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:5px 12px;border-radius:6px;font-size:13px;width:180px}
+/* TABS */
+.tab-bar{display:flex;gap:0;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab-bar button{background:transparent;color:var(--muted);border:none;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent}
+.tab-bar button.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* CANVAS */
+.canvas-wrap{position:relative;flex:1;overflow:hidden}
+canvas{display:block;width:100%;height:100%;cursor:grab}
+canvas:active{cursor:grabbing}
+/* DETAIL PANEL */
+.detail{position:absolute;top:0;right:0;width:380px;height:100%;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:20px;display:none;z-index:50}
+.detail.open{display:block}
+.detail h2{font-size:18px;margin-bottom:4px}
+.detail .sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+.detail .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase}
+.detail .section{margin-top:16px}
+.detail .section h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.detail .section p,.detail .section li{font-size:14px;line-height:1.5}
+.detail ul{padding-left:16px}
+.detail .close-btn{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px}
+/* LIST VIEW */
+.list-view{display:none;flex:1;overflow-y:auto;padding:16px}
+.list-view.active{display:block}
+.list-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:8px;cursor:pointer}
+.list-card:hover{border-color:var(--accent)}
+.list-card h3{font-size:15px;margin-bottom:2px}
+.list-card .lsub{font-size:12px;color:var(--muted)}
+.list-card .lgroup{font-size:11px;padding:2px 6px;border-radius:3px;color:#fff;float:right}
+/* LINKS VIEW */
+.links-view{display:none;flex:1;overflow-y:auto;padding:16px}
+.links-view.active{display:block}
+.links-group{margin-bottom:20px}
+.links-group h3{font-size:14px;margin-bottom:8px;color:var(--accent)}
+.link-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:14px}
+.link-item a{color:var(--accent);text-decoration:none}
+.link-item a:hover{text-decoration:underline}
+.link-dot{width:8px;height:8px;border-radius:50%}
+/* OPEN VIEW */
+.open-view{display:none;flex:1;overflow-y:auto;padding:16px}
+.open-view.active{display:block}
+.open-section{margin-bottom:20px}
+.open-section h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.open-section h3 .odot{width:10px;height:10px;border-radius:50%}
+.open-item{padding:6px 0;font-size:14px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:baseline}
+.open-item .onode{font-size:11px;color:var(--muted);flex-shrink:0}
+/* LEGEND */
+.legend{position:absolute;bottom:12px;left:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;z-index:40;display:flex;gap:12px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-swatch{width:12px;height:12px;border-radius:3px}
+/* STATUS BADGE COLORS */
+.st-ok{background:#22c55e;color:#fff}.st-wip{background:#f59e0b;color:#fff}.st-wait{background:#60a5fa;color:#fff}.st-later{background:#6b7280;color:#fff}.st-todo{background:#a855f7;color:#fff}
+/* ZOOM */
+.zoom-ctrl{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:column;gap:4px;z-index:40}
+.zoom-ctrl button{width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.zoom-ctrl button:hover{border-color:var(--accent)}
+
+/* LAYOUT */
+.app{display:flex;flex-direction:column;height:100vh}
+.main{display:flex;flex:1;overflow:hidden;position:relative}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- TICKER -->
+  <div class="ticker" id="ticker"></div>
+  <!-- TAB BAR -->
+  <div class="tab-bar" id="tabbar">
+    <button class="active" data-tab="map">Karte</button>
+    <button data-tab="list">Liste</button>
+    <button data-tab="links">Links</button>
+    <button data-tab="open">Offen</button>
+  </div>
+  <!-- TOOLBAR -->
+  <div class="toolbar" id="toolbar">
+    <input type="text" id="search" placeholder="Suchen…">
+    <select id="groupFilter"><option value="">Alle Gruppen</option></select>
+    <select id="statusFilter">
+      <option value="">Alle Status</option>
+      <option value="wip">In Arbeit</option>
+      <option value="ok">Erledigt</option>
+      <option value="wait">Wartet</option>
+      <option value="later">Später</option>
+    </select>
+    <span class="spacer"></span>
+    <button id="themeBtn" title="Dark / Light">🌓</button>
+    <button id="resetBtn" title="Ansicht zurücksetzen">⟲</button>
+  </div>
+  <!-- MAIN -->
+  <div class="main">
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="cv"></canvas>
+      <div class="legend" id="legend"></div>
+      <div class="zoom-ctrl">
+        <button id="zoomIn">+</button>
+        <button id="zoomOut">−</button>
+      </div>
+    </div>
+    <div class="detail" id="detail">
+      <button class="close-btn" id="detailClose">✕</button>
+      <div id="detailContent"></div>
+    </div>
+    <div class="list-view" id="listView"></div>
+    <div class="links-view" id="linksView"></div>
+    <div class="open-view" id="openView"></div>
+  </div>
+</div>
+
+<script>
+/* ===== DATA LOADING ===== */
+let DATA = null;
+
+async function loadData() {
+  try {
+    // Try fetch first (works in Safari file://, and any http server)
+    const r = await fetch('map-data.json');
+    DATA = await r.json();
+  } catch(e) {
+    // Fallback: XMLHttpRequest (more permissive in some browsers for file://)
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'map-data.json', false);
+      xhr.send();
+      if (xhr.status === 200 || xhr.status === 0) {
+        DATA = JSON.parse(xhr.responseText);
+      }
+    } catch(e2) {
+      document.getElementById('app').innerHTML =
+        '<div style="padding:40px;text-align:center;color:#f87171">' +
+        '<h2>map-data.json konnte nicht geladen werden</h2>' +
+        '<p style="margin-top:12px;color:#94a3b8">In Chrome: <code>open -a "Google Chrome" --args --allow-file-access-from-files</code><br>' +
+        'Oder: <code>python3 -m http.server 8080</code> im Ordner starten.</p></div>';
+      return;
+    }
+  }
+  init();
+}
+
+/* ===== GLOBALS ===== */
+let nodes=[], edges=[], groups={}, prio={}, linkGroups=[], openItems=[], urg={};
+let cam={x:0,y:0,z:1};
+let selectedNode=null;
+let currentTab='map';
+let filterGroup='', filterStatus='', filterSearch='';
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+
+const NODE_W = 220, NODE_H = 72, NODE_R = 10;
+const STATUS_LABELS = {ok:'Erledigt',wip:'In Arbeit',wait:'Wartet',later:'Später',todo:'Geplant'};
+
+/* ===== INIT ===== */
+function init(){
+  groups = DATA.groups;
+  prio = DATA.prio || {};
+  linkGroups = DATA.link_groups || [];
+  openItems = DATA.open || [];
+  urg = DATA.urg || {};
+  edges = DATA.edges || [];
+
+  // Parse nodes — scale positions
+  nodes = (DATA.nodes||[]).map(n => ({
+    ...n,
+    sx: n.x * 4.2 + 60,
+    sy: n.y * 1.1 + 60,
+    w: NODE_W * (prio[n.id]===3?1.15:prio[n.id]===2?1.05:1),
+    h: NODE_H
+  }));
+
+  buildTicker();
+  buildGroupFilter();
+  buildLegend();
+  buildLinkGroups();
+  buildOpenItems();
+  buildListView();
+  setupEvents();
+  resize();
+  resetCam();
+  draw();
+}
+
+/* ===== TICKER ===== */
+function buildTicker(){
+  const tk = DATA.ticker || {};
+  const el = document.getElementById('ticker');
+  el.innerHTML = `
+    <div class="ticker-item"><span class="ticker-dot done"></span><span class="ticker-label">Erledigt</span><span class="ticker-text">${tk.just_finished||'—'}</span></div>
+    <div class="ticker-item"><span class="ticker-dot wip"></span><span class="ticker-label">Jetzt</span><span class="ticker-text">${tk.now_working||'—'}</span></div>
+    <div class="ticker-item"><span class="ticker-dot next"></span><span class="ticker-label">Nächstes</span><span class="ticker-text">${tk.next_up||'—'}</span></div>
+    <span class="ticker-date">Stand: ${DATA.updated||'—'}</span>
+  `;
+}
+
+/* ===== FILTERS ===== */
+function buildGroupFilter(){
+  const sel = document.getElementById('groupFilter');
+  for(const[k,v] of Object.entries(groups)){
+    const o = document.createElement('option'); o.value=k; o.textContent=v.t; sel.appendChild(o);
+  }
+}
+
+function matchesFilter(n){
+  if(filterGroup && n.g !== filterGroup) return false;
+  if(filterStatus && n.status !== filterStatus) return false;
+  if(filterSearch){
+    const s = filterSearch.toLowerCase();
+    if(!(n.t||'').toLowerCase().includes(s) && !(n.sub||'').toLowerCase().includes(s) && !(n.s||'').toLowerCase().includes(s)) return false;
+  }
+  return true;
+}
+
+/* ===== LEGEND ===== */
+function buildLegend(){
+  const el = document.getElementById('legend');
+  let html = '';
+  for(const[k,v] of Object.entries(groups)){
+    html += `<div class="legend-item"><div class="legend-swatch" style="background:${v.c}"></div>${v.t}</div>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ===== CANVAS DRAWING ===== */
+function resize(){
+  const wrap = document.getElementById('canvasWrap');
+  cv.width = wrap.clientWidth * devicePixelRatio;
+  cv.height = wrap.clientHeight * devicePixelRatio;
+  cv.style.width = wrap.clientWidth + 'px';
+  cv.style.height = wrap.clientHeight + 'px';
+}
+
+function resetCam(){
+  if(!nodes.length) return;
+  const xs = nodes.map(n=>n.sx), ys = nodes.map(n=>n.sy);
+  const minX=Math.min(...xs)-100, maxX=Math.max(...xs)+NODE_W+100;
+  const minY=Math.min(...ys)-100, maxY=Math.max(...ys)+NODE_H+100;
+  const cw=cv.width/devicePixelRatio, ch=cv.height/devicePixelRatio;
+  cam.z = Math.min(cw/(maxX-minX), ch/(maxY-minY), 1.5);
+  cam.x = (cw - (maxX+minX)*cam.z)/2;
+  cam.y = (ch - (maxY+minY)*cam.z)/2;
+}
+
+function worldToScreen(x,y){ return [x*cam.z+cam.x, y*cam.z+cam.y]; }
+function screenToWorld(x,y){ return [(x-cam.x)/cam.z, (y-cam.y)/cam.z]; }
+
+function groupColor(g){
+  const map = {product:'#3b82f6',audience:'#f59e0b',marketing:'#10b981',dev:'#8b5cf6',services:'#ec4899',print:'#f97316',legal:'#6366f1'};
+  return map[g]||'#64748b';
+}
+function statusColor(s){
+  const map = {ok:'#22c55e',wip:'#f59e0b',wait:'#60a5fa',later:'#6b7280',todo:'#a855f7'};
+  return map[s]||'#64748b';
+}
+
+function draw(){
+  const dpr = devicePixelRatio;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cv.width/dpr,cv.height/dpr);
+
+  // Edges
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border').trim()||'#334155';
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.4;
+  for(const[a,b] of edges){
+    const na = nodes.find(n=>n.id===a), nb = nodes.find(n=>n.id===b);
+    if(!na||!nb) continue;
+    if(!matchesFilter(na)&&!matchesFilter(nb)) continue;
+    const[x1,y1]=worldToScreen(na.sx+na.w/2, na.sy+na.h/2);
+    const[x2,y2]=worldToScreen(nb.sx+nb.w/2, nb.sy+nb.h/2);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  // Nodes
+  for(const n of nodes){
+    if(!matchesFilter(n)) continue;
+    const[x,y]=worldToScreen(n.sx,n.sy);
+    const w=n.w*cam.z, h=n.h*cam.z;
+    if(x+w<0||y+h<0||x>cv.width/dpr||y>cv.height/dpr) continue;
+
+    const gc = groupColor(n.g);
+    const p = prio[n.id]||1;
+    const bw = p===3?3:p===2?2:1;
+
+    // Shadow
+    ctx.shadowColor='rgba(0,0,0,0.3)';ctx.shadowBlur=8*cam.z;ctx.shadowOffsetY=2*cam.z;
+
+    // Body
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim()||'#1e293b';
+    roundRect(ctx,x,y,w,h,NODE_R*cam.z);
+    ctx.fill();
+    ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+
+    // Left border accent
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x+NODE_R*cam.z,y);ctx.lineTo(x+NODE_R*cam.z,y);
+    ctx.arc(x+NODE_R*cam.z,y+NODE_R*cam.z,NODE_R*cam.z,Math.PI*1.5,Math.PI,true);
+    ctx.lineTo(x,y+h-NODE_R*cam.z);
+    ctx.arc(x+NODE_R*cam.z,y+h-NODE_R*cam.z,NODE_R*cam.z,Math.PI,Math.PI*0.5,true);
+    ctx.lineTo(x+NODE_R*cam.z,y+h);
+    ctx.lineTo(x+NODE_R*cam.z,y);
+    ctx.closePath();
+    ctx.fillStyle=gc;ctx.fill();
+    ctx.restore();
+
+    // Border
+    if(selectedNode===n.id){
+      ctx.strokeStyle=gc; ctx.lineWidth=bw+2;
+    } else {
+      ctx.strokeStyle=gc; ctx.lineWidth=bw;
+    }
+    roundRect(ctx,x,y,w,h,NODE_R*cam.z); ctx.stroke();
+
+    // Status dot
+    const dotR = 5*cam.z;
+    ctx.fillStyle = statusColor(n.status);
+    ctx.beginPath(); ctx.arc(x+w-14*cam.z, y+14*cam.z, dotR,0,Math.PI*2); ctx.fill();
+
+    // Title
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim()||'#e2e8f0';
+    ctx.font = `600 ${Math.max(11,13*cam.z)}px system-ui`;
+    ctx.textBaseline='top';
+    const title = n.t.length > 28 ? n.t.slice(0,26)+'…' : n.t;
+    ctx.fillText(title, x+14*cam.z, y+12*cam.z, w-30*cam.z);
+
+    // Subtitle
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim()||'#94a3b8';
+    ctx.font = `${Math.max(9,11*cam.z)}px system-ui`;
+    const sub = (n.sub||'').length > 34 ? (n.sub||'').slice(0,32)+'…' : (n.sub||'');
+    ctx.fillText(sub, x+14*cam.z, y+32*cam.z, w-30*cam.z);
+
+    // Status label
+    ctx.font = `600 ${Math.max(8,9*cam.z)}px system-ui`;
+    ctx.fillStyle = statusColor(n.status);
+    ctx.fillText(STATUS_LABELS[n.status]||n.status||'', x+14*cam.z, y+50*cam.z);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+function roundRect(c,x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);
+  c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);
+  c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);
+  c.closePath();
+}
+
+/* ===== DETAIL PANEL ===== */
+function showDetail(n){
+  selectedNode = n.id;
+  const d = document.getElementById('detail');
+  const stClass = 'st-'+(n.status||'todo');
+  let html = `<h2>${n.t}</h2><div class="sub">${n.sub||''}</div>`;
+  html += `<span class="badge ${stClass}">${STATUS_LABELS[n.status]||n.status||'?'}</span>`;
+  html += ` <span class="badge" style="background:${groupColor(n.g)};color:#fff">${(groups[n.g]||{}).t||n.g}</span>`;
+  if(n.s) html += `<div class="section"><h3>Beschreibung</h3><p>${n.s}</p></div>`;
+  if(n.d) html += `<div class="section"><h3>Details</h3><p>${n.d}</p></div>`;
+  if(n.where) html += `<div class="section"><h3>Wo?</h3><p>${n.where}</p></div>`;
+  if(n.check) html += `<div class="section"><h3>Prüfen</h3><p>${n.check}</p></div>`;
+
+  // Connected nodes
+  const connected = edges.filter(e=>e[0]===n.id||e[1]===n.id).map(e=>e[0]===n.id?e[1]:e[0]);
+  if(connected.length){
+    html += `<div class="section"><h3>Verbunden mit</h3><ul>`;
+    for(const cid of connected){
+      const cn = nodes.find(nn=>nn.id===cid);
+      if(cn) html += `<li style="cursor:pointer;color:var(--accent)" onclick="showDetail(nodes.find(n=>n.id==='${cid}'))">${cn.t}</li>`;
+    }
+    html += `</ul></div>`;
+  }
+
+  // Open items for this node
+  const myOpen = openItems.filter(o=>o[1]===n.id);
+  if(myOpen.length){
+    html += `<div class="section"><h3>Offene Punkte</h3><ul>`;
+    for(const o of myOpen){
+      const urgInfo = urg[o[2]]||{};
+      html += `<li><span style="color:${urgInfo.c||'#6b7280'}">●</span> ${o[0]}</li>`;
+    }
+    html += `</ul></div>`;
+  }
+
+  document.getElementById('detailContent').innerHTML = html;
+  d.classList.add('open');
+}
+
+/* ===== LIST VIEW ===== */
+function buildListView(){
+  const el = document.getElementById('listView');
+  let html = '';
+  const grouped = {};
+  for(const n of nodes){ (grouped[n.g]=grouped[n.g]||[]).push(n); }
+  for(const[g,ns] of Object.entries(grouped)){
+    const gi = groups[g]||{t:g};
+    html += `<h3 style="margin:16px 0 8px;color:${groupColor(g)}">${gi.t}</h3>`;
+    for(const n of ns){
+      html += `<div class="list-card" data-id="${n.id}"><span class="lgroup" style="background:${statusColor(n.status)}">${STATUS_LABELS[n.status]||''}</span><h3>${n.t}</h3><div class="lsub">${n.sub||''}</div></div>`;
+    }
+  }
+  el.innerHTML = html;
+  el.querySelectorAll('.list-card').forEach(c=>{
+    c.addEventListener('click',()=>{
+      const n = nodes.find(nn=>nn.id===c.dataset.id);
+      if(n) showDetail(n);
+    });
+  });
+}
+
+/* ===== LINKS VIEW ===== */
+function buildLinkGroups(){
+  const el = document.getElementById('linksView');
+  let html = '';
+  for(const lg of linkGroups){
+    html += `<div class="links-group"><h3>${lg.t}</h3>`;
+    for(const it of lg.items){
+      const dc = it.status==='live'?'#22c55e':it.status==='old'?'#f59e0b':'#6b7280';
+      html += `<div class="link-item"><div class="link-dot" style="background:${dc}"></div><a href="${it.u}" target="_blank">${it.t}</a></div>`;
+    }
+    html += `</div>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ===== OPEN VIEW ===== */
+function buildOpenItems(){
+  const el = document.getElementById('openView');
+  const byUrg = {r:[],y:[],g:[]};
+  for(const o of openItems){ (byUrg[o[2]]=byUrg[o[2]]||[]).push(o); }
+  let html = '';
+  for(const u of ['r','y','g']){
+    const ui = urg[u]||{t:u,c:'#6b7280'};
+    html += `<div class="open-section"><h3><span class="odot" style="background:${ui.c}"></span>${ui.t} (${(byUrg[u]||[]).length})</h3>`;
+    for(const o of (byUrg[u]||[])){
+      const nn = nodes.find(n=>n.id===o[1]);
+      html += `<div class="open-item"><span class="onode">[${nn?nn.t:o[1]}]</span> ${o[0]}</div>`;
+    }
+    html += `</div>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ===== EVENTS ===== */
+function setupEvents(){
+  // Tabs
+  document.getElementById('tabbar').addEventListener('click',e=>{
+    if(e.target.tagName!=='BUTTON') return;
+    currentTab = e.target.dataset.tab;
+    document.querySelectorAll('.tab-bar button').forEach(b=>b.classList.toggle('active',b.dataset.tab===currentTab));
+    document.getElementById('canvasWrap').style.display = currentTab==='map'?'':'none';
+    document.getElementById('listView').classList.toggle('active',currentTab==='list');
+    document.getElementById('linksView').classList.toggle('active',currentTab==='links');
+    document.getElementById('openView').classList.toggle('active',currentTab==='open');
+    document.getElementById('legend').style.display = currentTab==='map'?'':'none';
+    document.querySelector('.zoom-ctrl').style.display = currentTab==='map'?'':'none';
+  });
+
+  // Filters
+  document.getElementById('groupFilter').addEventListener('change',e=>{filterGroup=e.target.value;});
+  document.getElementById('statusFilter').addEventListener('change',e=>{filterStatus=e.target.value;});
+  document.getElementById('search').addEventListener('input',e=>{filterSearch=e.target.value;});
+
+  // Theme
+  document.getElementById('themeBtn').addEventListener('click',()=>{
+    const html = document.documentElement;
+    html.dataset.theme = html.dataset.theme==='light'?'dark':'light';
+    if(!html.dataset.theme||html.dataset.theme==='dark') delete html.dataset.theme;
+  });
+
+  // Reset
+  document.getElementById('resetBtn').addEventListener('click',()=>{resetCam();});
+
+  // Zoom buttons
+  document.getElementById('zoomIn').addEventListener('click',()=>{
+    const cw=cv.width/devicePixelRatio/2, ch=cv.height/devicePixelRatio/2;
+    cam.z*=1.3; cam.x=cw-(cw-cam.x)*1.3; cam.y=ch-(ch-cam.y)*1.3;
+  });
+  document.getElementById('zoomOut').addEventListener('click',()=>{
+    const cw=cv.width/devicePixelRatio/2, ch=cv.height/devicePixelRatio/2;
+    cam.z/=1.3; cam.x=cw-(cw-cam.x)/1.3; cam.y=ch-(ch-cam.y)/1.3;
+  });
+
+  // Detail close
+  document.getElementById('detailClose').addEventListener('click',()=>{
+    document.getElementById('detail').classList.remove('open');
+    selectedNode=null;
+  });
+
+  // Canvas interactions
+  let drag=false, dragX=0, dragY=0;
+  cv.addEventListener('mousedown',e=>{drag=true;dragX=e.clientX;dragY=e.clientY;});
+  cv.addEventListener('mousemove',e=>{
+    if(!drag) return;
+    cam.x+=e.clientX-dragX; cam.y+=e.clientY-dragY;
+    dragX=e.clientX; dragY=e.clientY;
+  });
+  cv.addEventListener('mouseup',()=>{drag=false;});
+  cv.addEventListener('mouseleave',()=>{drag=false;});
+  cv.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const rect=cv.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    const f = e.deltaY<0?1.15:1/1.15;
+    cam.z*=f; cam.x=mx-(mx-cam.x)*f; cam.y=my-(my-cam.y)*f;
+  },{passive:false});
+
+  // Click on node
+  cv.addEventListener('click',e=>{
+    const rect=cv.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    const[wx,wy]=screenToWorld(mx,my);
+    for(const n of nodes){
+      if(!matchesFilter(n)) continue;
+      if(wx>=n.sx && wx<=n.sx+n.w && wy>=n.sy && wy<=n.sy+n.h){
+        showDetail(n);
+        return;
+      }
+    }
+  });
+
+  // Resize
+  window.addEventListener('resize',()=>{resize();});
+}
+
+/* ===== START ===== */
+loadData();
+</script>
+</body>
+</html>

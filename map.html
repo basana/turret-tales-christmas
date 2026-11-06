@@ -274,7 +274,7 @@ function resetCam(){
   const minY=Math.min(...ys)-100, maxY=Math.max(...ys)+NODE_H+100;
   const cw=cv.width/devicePixelRatio, ch=cv.height/devicePixelRatio;
   const fitZ = Math.min(cw/(maxX-minX), ch/(maxY-minY), 1.5);
-  cam.z = Math.max(fitZ, 0.7);
+  cam.z = Math.max(fitZ, 0.35);
   cam.x = (cw - (maxX+minX)*cam.z)/2;
   cam.y = (ch - (maxY+minY)*cam.z)/2;
 }

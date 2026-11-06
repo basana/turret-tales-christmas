@@ -683,7 +683,7 @@ function renderRouteMap(){
       const castleHtml = tw.castle ? '<text x="'+(tw.anchor==='end'?tw.x-14:tw.x+14)+'" y="'+(tw.y+16)+'" style="font-size:9px;fill:var(--terracotta);font-family:var(--sans);text-anchor:'+tw.anchor+'">🏰 '+tw.castle+'</text>' : '';
       const catHtml = tw.cat ? '<text x="'+(tw.x+30)+'" y="'+(tw.y+16)+'" style="font-size:12px">🐈‍⬛</text>' : '';
       const eltzArrow = tw.eltz ? '<line x1="'+(tw.x-10)+'" y1="'+tw.y+'" x2="'+(tw.x-35)+'" y2="'+(tw.y-5)+'" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>' : '';
-      townsHtml += '<g class="svg-town" onclick="showDetail(''+getStationId(tw.num)+'')">';
+      townsHtml += '<g class="svg-town" onclick="showDetail(\x27'+getStationId(tw.num)+'\x27)">';
       townsHtml += '<circle cx="'+tw.x+'" cy="'+tw.y+'" r="9"/>';
       townsHtml += '<text x="'+tw.x+'" y="'+(tw.y+3.5)+'" text-anchor="middle" style="font-size:8px;fill:#fff;font-family:var(--sans);font-weight:700">'+tw.num+'</text>';
       townsHtml += '<text x="'+tx+'" y="'+ty+'" text-anchor="'+tw.anchor+'" class="svg-town-label">'+tw.name+'</text>';

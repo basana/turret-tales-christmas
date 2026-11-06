@@ -141,6 +141,7 @@ canvas:active{cursor:grabbing}
     <button id="feedBtn" class="feed-toggle" title="Letzte Änderungen">⚡<span class="feed-dot"></span></button>
     <button id="themeBtn" title="Dark / Light">🌓</button>
     <button id="resetBtn" title="Ansicht zurücksetzen">⟲</button>
+    <button id="resetLayoutBtn" title="Rahmenlayout zurücksetzen" style="font-size:11px">⟲ Layout</button>
   </div>
   <!-- MAIN -->
   <div class="main">
@@ -224,6 +225,16 @@ function init(){
   openItems = DATA.open || [];
   urg = DATA.urg || {};
   edges = DATA.edges || [];
+
+  // Restore saved node positions from localStorage
+  try {
+    const saved = JSON.parse(localStorage.getItem('map-node-positions')||'{}');
+    if(Object.keys(saved).length){
+      nodes.forEach(n => {
+        if(saved[n.id]) { n.sx = saved[n.id].x; n.sy = saved[n.id].y; }
+      });
+    }
+  } catch(e){}
 
   // Parse nodes — column-based positioning
   const COL_X = {20:0, 280:1, 540:2, 800:3};
@@ -570,6 +581,11 @@ function setupEvents(){
 
   // Reset
   document.getElementById('resetBtn').addEventListener('click',()=>{resetCam();});
+  document.getElementById('resetLayoutBtn').addEventListener('click',()=>{
+    try { localStorage.removeItem('map-node-positions'); } catch(e){}
+    // Reload to get original positions from data
+    location.reload();
+  });
 
   // Zoom buttons
   document.getElementById('zoomIn').addEventListener('click',()=>{
@@ -612,13 +628,23 @@ function setupEvents(){
       // Move the node in world coords
       dragNode.sx += dx/cam.z;
       dragNode.sy += dy/cam.z;
+      selectedNode = dragNode.id; // highlight connections while dragging
     } else {
       // Pan camera
       cam.x+=dx; cam.y+=dy;
     }
     dragX=e.clientX; dragY=e.clientY;
   });
-  cv.addEventListener('mouseup',()=>{drag=false; dragNode=null;});
+  cv.addEventListener('mouseup',()=>{
+    if(dragNode && didDrag){
+      // Save all node positions to localStorage
+      const pos = {};
+      nodes.forEach(n => { pos[n.id] = {x: n.sx, y: n.sy}; });
+      try { localStorage.setItem('map-node-positions', JSON.stringify(pos)); } catch(e){}
+      selectedNode = null;
+    }
+    drag=false; dragNode=null;
+  });
   cv.addEventListener('mouseleave',()=>{drag=false; dragNode=null;});
   cv.addEventListener('wheel',e=>{
     e.preventDefault();

@@ -536,10 +536,10 @@ function setupEvents(){
     document.querySelector('.zoom-ctrl').style.display = currentTab==='map'?'':'none';
   });
 
-  // Filters
-  document.getElementById('groupFilter').addEventListener('change',e=>{filterGroup=e.target.value;});
-  document.getElementById('statusFilter').addEventListener('change',e=>{filterStatus=e.target.value;});
-  document.getElementById('search').addEventListener('input',e=>{filterSearch=e.target.value;});
+  // Filters — auto-focus on visible nodes after change
+  document.getElementById('groupFilter').addEventListener('change',e=>{filterGroup=e.target.value; fitVisible();});
+  document.getElementById('statusFilter').addEventListener('change',e=>{filterStatus=e.target.value; fitVisible();});
+  document.getElementById('search').addEventListener('input',e=>{filterSearch=e.target.value; fitVisibleDebounced();});
 
   // Theme
   document.getElementById('themeBtn').addEventListener('click',()=>{
@@ -567,26 +567,54 @@ function setupEvents(){
     selectedNode=null;
   });
 
-  // Canvas interactions
+  // Canvas interactions — pan canvas OR drag individual node
   let drag=false, dragX=0, dragY=0;
-  cv.addEventListener('mousedown',e=>{drag=true;dragX=e.clientX;dragY=e.clientY;});
+  let dragNode=null; // node being dragged
+  cv.addEventListener('mousedown',e=>{
+    const rect=cv.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    const[wx,wy]=screenToWorld(mx,my);
+    // Check if clicking on a node — if so, drag the node
+    dragNode=null;
+    for(let i=nodes.length-1;i>=0;i--){
+      const n=nodes[i];
+      if(!matchesFilter(n)) continue;
+      if(wx>=n.sx && wx<=n.sx+n.w && wy>=n.sy && wy<=n.sy+n.h){
+        dragNode=n; break;
+      }
+    }
+    drag=true; dragX=e.clientX; dragY=e.clientY;
+  });
   cv.addEventListener('mousemove',e=>{
     if(!drag) return;
-    cam.x+=e.clientX-dragX; cam.y+=e.clientY-dragY;
+    const dx=e.clientX-dragX, dy=e.clientY-dragY;
+    if(dragNode){
+      // Move the node in world coords
+      dragNode.sx += dx/cam.z;
+      dragNode.sy += dy/cam.z;
+    } else {
+      // Pan camera
+      cam.x+=dx; cam.y+=dy;
+    }
     dragX=e.clientX; dragY=e.clientY;
   });
-  cv.addEventListener('mouseup',()=>{drag=false;});
-  cv.addEventListener('mouseleave',()=>{drag=false;});
+  cv.addEventListener('mouseup',()=>{drag=false; dragNode=null;});
+  cv.addEventListener('mouseleave',()=>{drag=false; dragNode=null;});
   cv.addEventListener('wheel',e=>{
     e.preventDefault();
     const rect=cv.getBoundingClientRect();
     const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-    const f = e.deltaY<0?1.15:1/1.15;
+    const f = e.deltaY<0?1.06:1/1.06;
     cam.z*=f; cam.x=mx-(mx-cam.x)*f; cam.y=my-(my-cam.y)*f;
   },{passive:false});
 
-  // Click on node
+  // Click on node — suppress if dragged
+  let didDrag=false;
+  const origDown=cv.onmousedown;
+  cv.addEventListener('mousedown',e=>{didDrag=false;});
+  cv.addEventListener('mousemove',e=>{if(drag) didDrag=true;});
   cv.addEventListener('click',e=>{
+    if(didDrag) return; // was a drag, not a click
     const rect=cv.getBoundingClientRect();
     const mx=e.clientX-rect.left, my=e.clientY-rect.top;
     const[wx,wy]=screenToWorld(mx,my);
@@ -603,6 +631,36 @@ function setupEvents(){
   window.addEventListener('resize',()=>{resize();});
 }
 
+
+/* ===== FIT VISIBLE NODES ===== */
+function fitVisible(){
+  const vis = nodes.filter(n=>matchesFilter(n));
+  if(!vis.length){ resetCam(); return; }
+  const xs = vis.map(n=>n.sx), ys = vis.map(n=>n.sy);
+  const minX=Math.min(...xs)-60, maxX=Math.max(...xs)+NODE_W+60;
+  const minY=Math.min(...ys)-60, maxY=Math.max(...ys)+NODE_H+60;
+  const cw=cv.width/devicePixelRatio, ch=cv.height/devicePixelRatio;
+  const fitZ = Math.min(cw/(maxX-minX), ch/(maxY-minY), 1.5);
+  // Animate smoothly
+  const targetZ = Math.max(fitZ, 0.35);
+  const targetX = (cw - (maxX+minX)*targetZ)/2;
+  const targetY = (ch - (maxY+minY)*targetZ)/2;
+  // Simple ease
+  const steps=12; let step=0;
+  const startZ=cam.z, startX=cam.x, startY=cam.y;
+  function ease(){
+    step++;
+    const t=step/steps;
+    const s=t<.5?2*t*t:(1-Math.pow(-2*t+2,2)/2);
+    cam.z=startZ+(targetZ-startZ)*s;
+    cam.x=startX+(targetX-startX)*s;
+    cam.y=startY+(targetY-startY)*s;
+    if(step<steps) requestAnimationFrame(ease);
+  }
+  ease();
+}
+let fitVisibleTimer=null;
+function fitVisibleDebounced(){ clearTimeout(fitVisibleTimer); fitVisibleTimer=setTimeout(fitVisible,300); }
 
 /* ===== ACTIVITY FEED ===== */
 function initFeed(){

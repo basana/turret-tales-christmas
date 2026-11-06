@@ -13,7 +13,7 @@
   --parchment:#F6EEDD;--paper:#FBF6EA;--ink:#5A4327;--ink-soft:#7A5A2A;
   --rust:#7A1026;--terracotta:#94481F;--gold:#C9A05C;--gold-light:rgba(201,160,92,.3);
   --wine:#6B1D3A;--green:#3A6B35;--river:#3A7CA5;--white:#fff;
-  --cream-text:#FCEEDD;--maroon:#7A1026;
+  --cream-text:#FCEEDD;--maroon:#7A1026;--purple:#6B4C8A;--olive:#5A6B35;
   --sans:system-ui,-apple-system,sans-serif;--serif:'EB Garamond',Garamond,'Times New Roman',serif;
   --pad:16px;
 }
@@ -29,9 +29,6 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .splash-gradient{position:absolute;inset:0;background:linear-gradient(45deg,rgba(12,8,4,.78) 0%,rgba(12,8,4,.4) 18%,rgba(12,8,4,.08) 40%,rgba(12,8,4,.25) 100%)}
 .splash-watermark-wrap{--wm:clamp(96px,32vw,150px);position:absolute;z-index:1;pointer-events:none;top:env(safe-area-inset-top);left:0;width:calc(var(--wm)*.765);height:calc(var(--wm)*.765)}
 .splash img.splash-watermark{position:absolute;z-index:1;pointer-events:none;inset:0;width:100%;height:100%;object-fit:contain;opacity:.9}
-.splash-section-toggle{position:absolute;z-index:2;top:calc(14px + env(safe-area-inset-top));left:14px;display:flex;gap:0;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.5)}
-.splash-section-btn{font-family:var(--sans);font-size:11px;font-weight:700;padding:6px 11px;cursor:pointer;background:rgba(255,255,255,.15);color:var(--cream-text);border:none;letter-spacing:.02em;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.splash-section-btn.active{background:var(--terracotta);color:var(--cream-text)}
 .splash-lang{position:absolute;z-index:2;top:calc(14px + env(safe-area-inset-top));right:14px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:50%}
 .splash-lang-btn{font-family:var(--sans);font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:14px;cursor:pointer;background:#fff;color:var(--maroon);border:1px solid var(--maroon)}
 .splash-lang-btn.active{background:var(--terracotta);color:var(--cream-text);border-color:var(--terracotta)}
@@ -45,29 +42,26 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 
 /* ═══════════════ HEADER ═══════════════ */
 .hdr{background:linear-gradient(135deg,var(--wine),#4a0e20);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:1000;border-bottom:1px solid var(--gold)}
-.hdr-back{color:var(--gold);text-decoration:none;font-size:22px;line-height:1;opacity:.9}
 .hdr-emblem{width:28px;height:28px;opacity:.85;flex-shrink:0}
 .hdr h1{font-family:var(--serif);font-size:19px;font-weight:600;flex:1;letter-spacing:.02em}
 .hdr-lang{background:rgba(255,255,255,.12);border:1px solid rgba(201,160,92,.4);color:#fff;font-family:var(--sans);font-size:12px;padding:5px 9px;border-radius:8px;cursor:pointer}
 
-/* ═══════════════ SEARCH ═══════════════ */
-.search-bar{background:var(--parchment);padding:8px 12px;border-bottom:1px solid var(--gold-light);flex-shrink:0}
-.search-wrap{position:relative}
-.search-wrap input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--gold);border-radius:10px;font-family:var(--serif);font-size:15px;background:var(--paper);color:var(--ink);outline:none}
-.search-wrap input:focus{border-color:var(--terracotta);box-shadow:0 0 0 3px rgba(148,72,31,.12)}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.5}
-.search-results{position:absolute;top:100%;left:0;right:0;background:var(--paper);border:1px solid var(--gold);border-top:none;border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;z-index:900;display:none}
-.search-results.open{display:block}
-.search-item{padding:10px 12px;font-size:14px;border-bottom:1px solid var(--gold-light);cursor:pointer}
-.search-item:active,.search-item:hover{background:var(--parchment)}
-.search-item .si-name{font-family:var(--serif);font-weight:600;color:var(--rust)}
-.search-item .si-sub{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-top:2px}
-
-/* ═══════════════ TABS ═══════════════ */
-.tabs{display:flex;border-bottom:1px solid var(--gold-light);background:var(--parchment);flex-shrink:0;overflow-x:auto}
-.tab{flex:1;min-width:0;padding:10px 6px 8px;text-align:center;font-family:var(--sans);font-size:11.5px;font-weight:600;color:var(--ink-soft);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em}
-.tab.active{color:var(--wine);border-bottom-color:var(--wine)}
-.tab-icon{display:block;font-size:19px;margin-bottom:2px}
+/* ═══════════════ PILL MENU (Rhine-style) ═══════════════ */
+.pill-menu{display:flex;align-items:center;gap:0;background:linear-gradient(135deg,var(--wine),#4a0e20);padding:6px 10px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-bottom:1px solid var(--gold)}
+.pill-menu::-webkit-scrollbar{display:none}
+.pill-btn{flex-shrink:0;font-family:var(--sans);font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:all .15s;margin:0 3px}
+.pill-btn[data-color="wine"]{background:var(--wine);color:#fff;border:1.5px solid var(--gold)}
+.pill-btn[data-color="wine"].active{background:var(--gold);color:var(--wine)}
+.pill-btn[data-color="gold"]{background:transparent;color:var(--gold);border:1.5px solid var(--gold)}
+.pill-btn[data-color="gold"].active{background:var(--gold);color:var(--wine)}
+.pill-btn[data-color="purple"]{background:transparent;color:#c4a0e0;border:1.5px solid #9B7EC0}
+.pill-btn[data-color="purple"].active{background:#9B7EC0;color:#fff}
+.pill-btn[data-color="olive"]{background:transparent;color:#a8b87a;border:1.5px solid var(--olive)}
+.pill-btn[data-color="olive"].active{background:var(--olive);color:#fff}
+.pill-btn[data-color="green"]{background:transparent;color:#7abf7a;border:1.5px solid var(--green)}
+.pill-btn[data-color="green"].active{background:var(--green);color:#fff}
+.pill-btn[data-color="red"]{background:var(--rust);color:#fff;border:1.5px solid var(--gold)}
+.pill-btn[data-color="red"].active{background:var(--gold);color:var(--rust)}
 
 /* ═══════════════ PANELS ═══════════════ */
 .panel{flex:1;overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
@@ -89,7 +83,16 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
   color:var(--ink);cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,.25);
 }
 .gps-toggle-btn.active{background:linear-gradient(135deg,var(--terracotta),#8f4a22);color:#fff;border-color:rgba(255,255,255,.75)}
-.gps-panel{position:absolute;z-index:1000;top:50px;left:12px;display:none;flex-direction:column;gap:7px;max-width:210px}
+.gps-save-btn{
+  position:absolute;z-index:1000;top:50px;left:12px;
+  display:none;align-items:center;gap:6px;
+  background:rgba(246,238,221,.95);border:1px solid var(--gold);border-radius:20px;
+  padding:7px 12px 7px 10px;font-family:var(--sans);font-size:12px;font-weight:700;
+  color:var(--ink);cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,.25);
+}
+.gps-save-btn.show{display:flex}
+.gps-save-btn.saved{background:var(--green);color:#fff;border-color:rgba(255,255,255,.75)}
+.gps-panel{position:absolute;z-index:1000;top:88px;left:12px;display:none;flex-direction:column;gap:7px;max-width:210px}
 .gps-panel.show{display:flex}
 .gps-panel-row{display:none;align-items:center;gap:8px;background:rgba(246,238,221,.95);border:1px solid var(--gold);border-radius:12px;padding:8px 12px;font-family:var(--sans);color:var(--ink);box-shadow:0 4px 14px rgba(90,67,39,.25)}
 .gps-panel-row.show{display:flex}
@@ -98,6 +101,14 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .gps-user-halo{width:22px;height:22px;border-radius:50%;background:rgba(181,96,46,.35);display:flex;align-items:center;justify-content:center;animation:gpsHaloPulse 1.8s ease-in-out infinite}
 .gps-user-halo::after{content:'';width:10px;height:10px;border-radius:50%;background:var(--terracotta);border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.4)}
 @keyframes gpsHaloPulse{0%{box-shadow:0 0 0 0 rgba(181,96,46,.5)}70%{box-shadow:0 0 0 14px rgba(181,96,46,0)}100%{box-shadow:0 0 0 0 rgba(181,96,46,0)}}
+
+/* ═══════════════ MAP TOOLTIP ═══════════════ */
+.mosel-tooltip{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--rust);padding:10px 14px;background:var(--paper);border:1.5px solid var(--gold);border-radius:12px;box-shadow:0 4px 16px rgba(90,67,39,.2);line-height:1.4;max-width:260px}
+.mosel-tooltip .tt-name{font-size:18px;font-weight:700;color:var(--rust);margin-bottom:4px}
+.mosel-tooltip .tt-desc{font-family:var(--sans);font-size:13px;color:var(--ink-soft);font-weight:400;line-height:1.4}
+.mosel-tooltip .tt-dist{font-family:var(--sans);font-size:13px;color:var(--green);font-weight:700;margin-top:5px}
+.mosel-tooltip .tt-link{font-family:var(--sans);font-size:13px;color:var(--wine);font-weight:600;margin-top:5px;display:block;text-decoration:none}
+.leaflet-tooltip.mosel-tooltip{opacity:1!important}
 
 /* ═══════════════ STATION LIST ═══════════════ */
 .st-list{padding:12px 14px}
@@ -127,14 +138,28 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .detail-info{margin-top:14px;padding:14px;background:var(--parchment);border:1px solid var(--gold-light);border-radius:12px}
 .detail-info h4{font-family:var(--sans);font-size:13px;color:var(--terracotta);margin-bottom:6px;font-weight:700}
 .detail-info p{font-size:14px;line-height:1.6;color:var(--ink-soft)}
+.detail-legend{margin-top:14px;padding:14px;background:#F5EDE0;border:1px solid var(--gold);border-radius:12px}
+.detail-legend h4{font-family:var(--sans);font-size:13px;color:var(--purple);margin-bottom:6px;font-weight:700}
+.detail-legend p{font-size:14.5px;line-height:1.65;color:var(--ink);font-style:italic}
 .detail-back{display:block;padding:14px 16px;font-family:var(--serif);font-size:15px;color:var(--wine);font-weight:600;text-align:center;cursor:pointer;margin-bottom:20px}
 
-/* ═══════════════ INFO ═══════════════ */
-.info-tab{padding:18px 16px}
-.info-tab h2{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--rust);margin-bottom:10px}
-.info-tab p{font-size:15px;line-height:1.65;color:var(--ink-soft);margin-bottom:14px}
+/* ═══════════════ SAGEN / ROUTE / INFO ═══════════════ */
+.info-tab,.sagen-tab,.route-tab{padding:18px 16px}
+.info-tab h2,.sagen-tab h2,.route-tab h2{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--rust);margin-bottom:10px}
+.info-tab p,.sagen-tab p,.route-tab p{font-size:15px;line-height:1.65;color:var(--ink-soft);margin-bottom:14px}
 .info-link{display:block;padding:14px;background:var(--paper);border:1px solid var(--gold);border-radius:12px;margin-bottom:10px;text-decoration:none;color:var(--ink);font-family:var(--serif);font-size:15px;font-weight:600;box-shadow:0 2px 8px rgba(90,67,39,.06)}
 .info-link span{font-family:var(--sans);font-size:12px;color:var(--ink-soft);font-weight:400;display:block;margin-top:3px}
+.legend-card{background:#F5EDE0;border:1px solid var(--gold);border-radius:14px;padding:16px;margin-bottom:14px}
+.legend-card h3{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--purple);margin-bottom:4px}
+.legend-card .lc-place{font-family:var(--sans);font-size:11px;color:var(--ink-soft);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+.legend-card p{font-size:14.5px;line-height:1.65;color:var(--ink);font-style:italic}
+.route-stop{display:flex;align-items:flex-start;gap:12px;margin-bottom:0;padding:12px 0;border-bottom:1px solid var(--gold-light)}
+.route-stop:last-child{border-bottom:none}
+.route-num{width:30px;height:30px;border-radius:50%;background:var(--wine);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:11px;font-weight:700;flex-shrink:0;border:2px solid var(--gold)}
+.route-info{flex:1}
+.route-info h4{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--rust);margin-bottom:2px;cursor:pointer}
+.route-info .ri-sub{font-family:var(--sans);font-size:12px;color:var(--ink-soft)}
+.route-drive{font-family:var(--sans);font-size:12px;color:var(--green);padding:6px 0 6px 42px;font-weight:600}
 .owner{font-family:var(--sans);font-size:11px;text-align:center;color:var(--ink-soft);padding:14px;opacity:.65}
 .mosel-marker{background:var(--wine);color:#fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:11px;font-weight:700;border:2px solid var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.3)}
 </style>
@@ -151,11 +176,6 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
   <img class="splash-bg" src="mosel-cochem-reichsburg-night.jpg" alt="" onerror="this.style.display='none'">
   <div class="splash-gradient"></div>
   <div class="splash-watermark-wrap"><img class="splash-watermark" src="emblem-stamp-white.webp" alt=""></div>
-
-  <div class="splash-section-toggle" id="splashSectionToggle">
-    <button class="splash-section-btn active" data-sec="day1" id="splashSecDay1">Untere Mosel</button>
-    <button class="splash-section-btn" data-sec="day2" id="splashSecDay2">Mittelmosel</button>
-  </div>
 
   <div class="splash-lang">
     <span class="splash-lang-btn" data-lang="de">DE</span>
@@ -174,7 +194,6 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 
 <!-- ═══════════ HEADER ═══════════ -->
 <div class="hdr">
-  <a href="index.html" class="hdr-back">‹</a>
   <img class="hdr-emblem" src="emblem-stamp-white.webp" alt="" onerror="this.style.display='none'">
   <h1 id="headerTitle">Mosel Navigator</h1>
   <select class="hdr-lang" id="langSel" onchange="setLang(this.value)">
@@ -184,18 +203,13 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
   </select>
 </div>
 
-<div class="search-bar">
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="Station suchen…" autocomplete="off">
-    <div class="search-results" id="searchResults"></div>
-  </div>
-</div>
-
-<div class="tabs">
-  <div class="tab active" data-tab="list" onclick="showTab('list')"><span class="tab-icon">📍</span><span class="tab-label">Stationen</span></div>
-  <div class="tab" data-tab="mapPanel" onclick="showTab('mapPanel')"><span class="tab-icon">🗺</span><span class="tab-label">Karte</span></div>
-  <div class="tab" data-tab="info" onclick="showTab('info')"><span class="tab-icon">ℹ️</span><span class="tab-label">Info</span></div>
+<!-- ═══════════ PILL MENU (Rhine-style) ═══════════ -->
+<div class="pill-menu" id="pillMenu">
+  <div class="pill-btn active" data-tab="list" data-color="wine" onclick="showTab('list')">Stationen</div>
+  <div class="pill-btn" data-tab="mapPanel" data-color="gold" onclick="showTab('mapPanel')">Karte</div>
+  <div class="pill-btn" data-tab="sagen" data-color="purple" onclick="showTab('sagen')">Sagen</div>
+  <div class="pill-btn" data-tab="route" data-color="green" onclick="showTab('route')">Route</div>
+  <div class="pill-btn" data-tab="info" data-color="olive" onclick="showTab('info')">Info</div>
 </div>
 
 <div class="panel active" id="list">
@@ -206,6 +220,7 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 <div class="panel" id="mapPanel">
   <div id="map"></div>
   <button class="gps-toggle-btn" id="gpsToggleBtn"><span>📍</span><span id="gpsToggleLabel">GPS</span></button>
+  <button class="gps-save-btn" id="gpsSaveBtn"><span>📌</span><span id="gpsSaveLabel">Meinen Ort merken</span></button>
   <div class="gps-panel" id="gpsPanel">
     <div class="gps-panel-row" id="gpsDistancePanel">
       <div>
@@ -223,6 +238,23 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
   <div id="detailContent"></div>
 </div>
 
+<div class="panel" id="sagen">
+  <div class="sagen-tab">
+    <h2 id="sagenTitle">Sagen &amp; Legenden der Mosel</h2>
+    <div id="sagenList"></div>
+    <div class="owner"></div>
+  </div>
+</div>
+
+<div class="panel" id="route">
+  <div class="route-tab">
+    <h2 id="routeTitle">Route entlang der Mosel</h2>
+    <p id="routeIntro"></p>
+    <div id="routeList"></div>
+    <div class="owner"></div>
+  </div>
+</div>
+
 <div class="panel" id="info">
   <div class="info-tab">
     <h2 id="infoTitle">Über den Mosel Navigator</h2>
@@ -237,88 +269,125 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ═══════════════════════════════════════
-// DATA
+// DATA — Cochem moves to Mittelmosel per user request
 // ═══════════════════════════════════════
 const STATIONS = [
   {id:'deutsches-eck',num:'01',section:'day1',
     name:{de:'Koblenz, Deutsches Eck',en:'Koblenz, Deutsches Eck',ru:'Кобленц, Немецкий угол'},
     lat:50.3647,lng:7.6056,img:'',
     desc:{de:'Am Zusammenfluss von Rhein und Mosel steht das monumentale Kaiser-Wilhelm-Denkmal. Das Deutsche Eck erhielt seinen Namen 1216 vom hier angesiedelten Deutschen Orden. Ausgangspunkt für Mosel-Kreuzfahrten und Fahrten flussaufwärts.',en:'At the confluence of Rhine and Moselle stands the monumental Kaiser Wilhelm memorial. The Deutsches Eck got its name in 1216 from the Teutonic Order settled here. Starting point for Moselle cruises upstream.',ru:'У слияния Рейна и Мозеля стоит монументальный памятник кайзеру Вильгельму I. Немецкий угол получил имя в 1216 году от обосновавшегося здесь Тевтонского ордена. Отправная точка для круизов вверх по Мозелю.'},
-    tips:{de:'Seilbahn zur Festung Ehrenbreitstein gegenüber.',en:'Cable car to Ehrenbreitstein Fortress opposite.',ru:'Канатная дорога к крепости Эренбрайтштайн напротив.'}},
+    tips:{de:'Seilbahn zur Festung Ehrenbreitstein gegenüber.',en:'Cable car to Ehrenbreitstein Fortress opposite.',ru:'Канатная дорога к крепости Эренбрайтштайн напротив.'},
+    legend:{de:'Der Deutsche Orden errichtete 1216 sein Ordenshaus an dieser Landzunge — seitdem trägt sie den Namen „Deutsches Eck". Als im 19. Jahrhundert ein Standort für das Kaiser-Wilhelm-Denkmal gesucht wurde, fiel die Wahl auf diesen symbolträchtigen Ort am Zusammenfluss zweier großer Ströme.',en:'The Teutonic Order established their house on this headland in 1216 — hence the name "German Corner". When a site was sought for the Kaiser Wilhelm monument in the 19th century, this symbolic confluence of two great rivers was chosen.',ru:'Тевтонский орден основал своё подворье на этой косе в 1216 году — с тех пор она носит имя «Немецкий угол». Когда в XIX веке искали место для памятника кайзеру Вильгельму, выбрали это символическое место у слияния двух великих рек.'},
+    legendTitle:{de:'Der Deutsche Orden am Zusammenfluss',en:'The Teutonic Order at the Confluence',ru:'Тевтонский орден у слияния рек'},
+    driveNext:{de:'→ 12 Min. / 10 km nach Winningen',en:'→ 12 min / 10 km to Winningen',ru:'→ 12 мин / 10 км до Виннингена'}},
   {id:'winningen',num:'02',section:'day1',
     name:{de:'Winningen',en:'Winningen',ru:'Виннинген'},
     lat:50.3122,lng:7.5206,img:'winningen-landscape.webp',
-    desc:{de:'Einer der ältesten Weinorte an der Mosel mit steilen Weinbergterrassen und historischen Fachwerkhäusern. Hier findet das älteste Weinfest Deutschlands statt. Wanderweg Hexenpfad durch die Weinberge mit Panoramablick auf das Moseltal. Geburtsort von August Horch, dem Gründer von Audi.',en:'One of the oldest wine villages on the Moselle with steep vineyard terraces and historic half-timbered houses. Home to Germany\'s oldest wine festival. Hexenpfad hiking trail through vineyards with panoramic Moselle valley views. Birthplace of August Horch, founder of Audi.',ru:'Один из старейших винодельческих посёлков на Мозеле с крутыми виноградными террасами и историческими фахверковыми домами. Здесь проходит старейший винный фестиваль Германии. Тропа ведьм (Hexenpfad) через виноградники с панорамным видом на долину Мозеля. Родина Августа Хорьха, основателя Audi.'},
-    tips:{de:'Anlegestelle K-D Landungsbrücke. Hexenpfad ab dem Sportplatz, 4,4 km, ca. 1:15 Std.',en:'K-D landing pier. Hexenpfad from the sports ground, 4.4 km, ~1:15 hrs.',ru:'Причал K-D Landungsbrücke. Тропа ведьм от спортплощадки, 4,4 км, ~1:15 ч.'},
-    pier:{lat:50.312216,lng:7.520550}},
+    desc:{de:'Einer der ältesten Weinorte an der Mosel mit steilen Weinbergterrassen und historischen Fachwerkhäusern. Hier findet das älteste Weinfest Deutschlands statt. Wanderweg Hexenpfad durch die Weinberge. Geburtsort von August Horch, dem Gründer von Audi.',en:'One of the oldest wine villages on the Moselle with steep vineyard terraces and historic half-timbered houses. Home to Germany\'s oldest wine festival. Hexenpfad hiking trail through vineyards. Birthplace of August Horch, founder of Audi.',ru:'Один из старейших винодельческих посёлков на Мозеле с крутыми виноградными террасами. Здесь проходит старейший винный фестиваль Германии. Тропа ведьм через виноградники. Родина Августа Хорьха, основателя Audi.'},
+    tips:{de:'Anlegestelle K-D Landungsbrücke. Hexenpfad: 4,4 km, ca. 1:15 Std.',en:'K-D landing pier. Hexenpfad: 4.4 km, ~1:15 hrs.',ru:'Причал K-D. Тропа ведьм: 4,4 км, ~1:15 ч.'},
+    pier:{lat:50.312216,lng:7.520550},
+    legend:{de:'Der Name „Hexenpfad" erinnert an die „weisen Frauen" des Weinbauortes, die Kräuter in den steilen Weinbergen sammelten. Im Mittelalter wurden sie der Hexerei bezichtigt. Der Pfad durch die Steillagen gilt als einer der schönsten Weinbergswanderwege Deutschlands.',en:'The name "Hexenpfad" (Witches\' Path) recalls the "wise women" of the wine village who gathered herbs in the steep vineyards. In the Middle Ages they were accused of witchcraft. The path through the steep slopes is one of Germany\'s most beautiful vineyard trails.',ru:'Название «Тропа ведьм» напоминает о «мудрых женщинах» этого виноградарского посёлка, которые собирали травы на крутых склонах. В средние века их обвиняли в колдовстве. Тропа через крутые виноградники — одна из красивейших в Германии.'},
+    legendTitle:{de:'Die weisen Frauen vom Hexenpfad',en:'The Wise Women of Hexenpfad',ru:'Мудрые женщины с Тропы ведьм'},
+    driveNext:{de:'→ 8 Min. / 7 km nach Kobern-Gondorf',en:'→ 8 min / 7 km to Kobern-Gondorf',ru:'→ 8 мин / 7 км до Коберн-Гондорфа'}},
   {id:'kobern-gondorf',num:'03',section:'day1',
     name:{de:'Kobern-Gondorf',en:'Kobern-Gondorf',ru:'Коберн-Гондорф'},
     lat:50.2945,lng:7.4630,img:'',
-    desc:{de:'Doppelort an der Mosel mit der romanischen Matthiaskapelle auf dem Burgberg — einem der bedeutendsten romanischen Kleinbauten am Rhein. Zwei Burgruinen und historische Fachwerkhäuser prägen den Ort. Bekannt für den Uhlen-Riesling aus den Steillagen.',en:'Twin village on the Moselle with the Romanesque Matthias Chapel on the castle hill — one of the most important small Romanesque buildings on the Rhine. Two castle ruins and historic half-timbered houses characterize the town. Known for Uhlen Riesling from the steep vineyards.',ru:'Двойной посёлок на Мозеле с романской капеллой Святого Матфия на замковом холме — одной из важнейших малых романских построек на Рейне. Две замковые руины и исторические фахверковые дома. Известен рислингом Uhlen с крутых виноградников.'},
-    tips:{de:'Matthiaskapelle: Aufstieg ca. 15 Min. vom Ort.',en:'Matthias Chapel: ~15 min walk up from the village.',ru:'Капелла Св. Матфия: подъём ~15 мин от посёлка.'}},
+    desc:{de:'Doppelort an der Mosel mit der romanischen Matthiaskapelle auf dem Burgberg — einem der bedeutendsten romanischen Kleinbauten am Rhein. Zwei Burgruinen und historische Fachwerkhäuser prägen den Ort. Bekannt für den Uhlen-Riesling aus den Steillagen.',en:'Twin village on the Moselle with the Romanesque Matthias Chapel on the castle hill — one of the most important small Romanesque buildings on the Rhine. Two castle ruins and historic half-timbered houses. Known for Uhlen Riesling.',ru:'Двойной посёлок на Мозеле с романской капеллой Святого Матфия на замковом холме. Две замковые руины и фахверковые дома. Известен рислингом Uhlen.'},
+    tips:{de:'Matthiaskapelle: Aufstieg ca. 15 Min. vom Ort.',en:'Matthias Chapel: ~15 min walk up.',ru:'Капелла Св. Матфия: подъём ~15 мин.'},
+    legend:{de:'Die Matthiaskapelle soll eine Reliquie des Apostels Matthias beherbergt haben, die ein Kreuzfahrer aus dem Heiligen Land mitbrachte. Die sechseckige Kapelle wurde um 1220 als Grablege erbaut und ist ein einzigartiges Beispiel romanischer Zentralbaukunst.',en:'The Matthias Chapel is said to have housed a relic of the Apostle Matthias, brought by a crusader from the Holy Land. The hexagonal chapel was built around 1220 as a burial site and is a unique example of Romanesque central architecture.',ru:'Считается, что капелла Св. Матфия хранила реликвию апостола Матфия, привезённую крестоносцем из Святой земли. Шестиугольная капелла построена около 1220 года и является уникальным образцом романского центрического зодчества.'},
+    legendTitle:{de:'Die Reliquie des Apostels Matthias',en:'The Relic of Apostle Matthias',ru:'Реликвия апостола Матфия'},
+    driveNext:{de:'→ 10 Min. / 9 km nach Alken',en:'→ 10 min / 9 km to Alken',ru:'→ 10 мин / 9 км до Алькена'}},
   {id:'alken',num:'04',section:'day1',
-    name:{de:'Alken und Burg Thurant',en:'Alken and Thurant Castle',ru:'Алькен и замок Турант'},
+    name:{de:'Alken · Burg Thurant',en:'Alken · Thurant Castle',ru:'Алькен · Замок Турант'},
     lat:50.2486,lng:7.4531,img:'',
-    desc:{de:'Über dem Weinort Alken thront Burg Thurant — die einzige Doppelturmburg an der Mosel, erbaut um 1200 von Pfalzgraf Heinrich dem Langen. Nach einem Kreuzzug benannte er sie nach der syrischen Festung Thuron. Die Erzbischöfe von Köln und Trier teilten die Burg, daher die zwei Türme: Kölner Turm und Trierer Turm.',en:'Above the wine village of Alken stands Thurant Castle — the only twin-towered castle on the Moselle, built around 1200 by Count Palatine Henry the Long. After a crusade, he named it after the Syrian fortress of Thuron. The Archbishops of Cologne and Trier divided the castle, hence the two towers.',ru:'Над винодельческим посёлком Алькен возвышается замок Турант — единственный двубашенный замок на Мозеле, построенный около 1200 года пфальцграфом Генрихом Длинным. После крестового похода он назвал замок в честь сирийской крепости Тюрон. Архиепископы Кёльна и Трира разделили замок — отсюда две башни.'},
-    tips:{de:'Eintritt €5. Geschlossen Mitte Nov. – Feb.',en:'Admission €5. Closed mid-Nov to Feb.',ru:'Вход €5. Закрыт с сер. ноября по февраль.'}},
+    desc:{de:'Über dem Weinort Alken thront Burg Thurant — die einzige Doppelturmburg an der Mosel, erbaut um 1200. Pfalzgraf Heinrich der Lange benannte sie nach der syrischen Festung Thuron. Die Erzbischöfe von Köln und Trier teilten die Burg — daher die zwei Türme.',en:'Above the wine village of Alken stands Thurant Castle — the only twin-towered castle on the Moselle, built around 1200. Count Palatine Henry the Long named it after the Syrian fortress of Thuron. The Archbishops of Cologne and Trier divided the castle — hence the two towers.',ru:'Над Алькеном возвышается замок Турант — единственный двубашенный замок на Мозеле, построенный около 1200 года. Пфальцграф Генрих Длинный назвал его в честь сирийской крепости Тюрон. Архиепископы Кёльна и Трира разделили замок — отсюда две башни.'},
+    tips:{de:'Eintritt €5. Geschlossen Mitte Nov. – Feb.',en:'Admission €5. Closed mid-Nov to Feb.',ru:'Вход €5. Закрыт с сер. ноября по февраль.'},
+    legend:{de:'Pfalzgraf Heinrich „der Lange" nahm am Kreuzzug von 1197 teil und belagerte die Festung Toron (Thuron) in Syrien. So beeindruckt war er von der uneinnehmbaren Burg, dass er seine neue Burg an der Mosel nach ihr benannte. Nach seinem Tod stritten die Erzbischöfe von Köln und Trier so heftig um den Besitz, dass sie die Burg schließlich teilten — jeder bekam seinen eigenen Turm.',en:'Count Palatine Henry "the Long" took part in the Crusade of 1197 and besieged the fortress of Toron in Syria. So impressed was he by the impregnable castle that he named his new Moselle castle after it. After his death, the Archbishops of Cologne and Trier fought so fiercely over possession that they finally divided the castle — each got their own tower.',ru:'Пфальцграф Генрих «Длинный» участвовал в крестовом походе 1197 года и осаждал крепость Торон в Сирии. Он был так впечатлён неприступным замком, что назвал свой новый замок на Мозеле в его честь. После его смерти архиепископы Кёльна и Трира так яростно спорили за владение, что разделили замок — каждый получил свою башню.'},
+    legendTitle:{de:'Der Kreuzfahrer und die zwei Türme',en:'The Crusader and the Two Towers',ru:'Крестоносец и две башни'},
+    driveNext:{de:'→ 18 Min. / 15 km nach Burg Eltz',en:'→ 18 min / 15 km to Eltz Castle',ru:'→ 18 мин / 15 км до замка Эльц'}},
   {id:'burg-eltz',num:'05',section:'day1',
     name:{de:'Burg Eltz',en:'Eltz Castle',ru:'Замок Эльц'},
     lat:50.2049,lng:7.3368,img:'mosel-eltz.jpg',
-    desc:{de:'Eine der berühmtesten Burgen Deutschlands, versteckt in einem Seitental der Mosel. Burg Eltz wurde nie zerstört und befindet sich seit über 850 Jahren im Besitz derselben Familie. Die Schatzkammer zeigt Gold- und Silberarbeiten aus acht Jahrhunderten. Die Burg war auf dem 500-DM-Schein abgebildet.',en:'One of Germany\'s most famous castles, hidden in a side valley of the Moselle. Eltz Castle was never destroyed and has been owned by the same family for over 850 years. The treasury displays gold and silver works from eight centuries. The castle was depicted on the 500 DM banknote.',ru:'Один из знаменитейших замков Германии, спрятанный в боковой долине Мозеля. Замок Эльц никогда не был разрушен и более 850 лет принадлежит одной семье. Сокровищница хранит золотые и серебряные изделия восьми столетий. Замок был изображён на банкноте 500 немецких марок.'},
-    tips:{de:'Zufahrt über Münstermaifeld oder Wierschem. Fußweg vom Parkplatz ca. 15 Min.',en:'Access via Münstermaifeld or Wierschem. Walk from parking ~15 min.',ru:'Подъезд через Мюнстермайфельд или Виршем. Пешком от парковки ~15 мин.'}},
-  {id:'cochem',num:'06',section:'day1',
+    desc:{de:'Eine der berühmtesten Burgen Deutschlands, versteckt in einem Seitental der Mosel. Nie zerstört, seit über 850 Jahren im Besitz derselben Familie. Die Schatzkammer zeigt Kunstwerke aus acht Jahrhunderten. Auf dem 500-DM-Schein abgebildet.',en:'One of Germany\'s most famous castles, hidden in a side valley. Never destroyed, owned by the same family for over 850 years. The treasury displays art from eight centuries. Depicted on the 500 DM banknote.',ru:'Один из знаменитейших замков Германии, спрятанный в боковой долине. Никогда не разрушался, более 850 лет принадлежит одной семье. Сокровищница хранит произведения восьми столетий. Был на банкноте 500 немецких марок.'},
+    tips:{de:'Zufahrt über Münstermaifeld oder Wierschem. Fußweg ca. 15 Min.',en:'Access via Münstermaifeld or Wierschem. Walk ~15 min.',ru:'Подъезд через Мюнстермайфельд. Пешком ~15 мин.'},
+    legend:{de:'Als der kriegerische Erzbischof Balduin von Trier im 14. Jahrhundert alle Burgen der Umgebung unterwarf, trotzte Burg Eltz als einzige seiner Belagerung. Zwei Jahre lang hielten die Ritter der drei Familien Eltz stand. Schließlich schloss man Frieden — und die Burg blieb unbesiegt, die einzige an der Mosel, die nie zerstört wurde.',en:'When the warlike Archbishop Baldwin of Trier subjugated all surrounding castles in the 14th century, Eltz Castle alone defied his siege. For two years the knights of the three Eltz families held out. Finally peace was made — and the castle remained undefeated, the only one on the Moselle never destroyed.',ru:'Когда воинственный архиепископ Балдуин Трирский в XIV веке подчинил все замки округи, замок Эльц единственный противостоял его осаде. Два года рыцари трёх семей Эльц держали оборону. В конце концов заключили мир — и замок остался непобеждённым, единственным на Мозеле, который никогда не был разрушен.'},
+    legendTitle:{de:'Die unbesiegte Burg',en:'The Unconquered Castle',ru:'Непобеждённый замок'},
+    driveNext:{de:'→ 25 Min. / 22 km nach Cochem',en:'→ 25 min / 22 km to Cochem',ru:'→ 25 мин / 22 км до Кохема'}},
+  {id:'cochem',num:'06',section:'day2',
     name:{de:'Cochem',en:'Cochem',ru:'Кохем'},
     lat:50.1469,lng:7.1665,img:'mosel-cochem-reichsburg.jpg',
-    desc:{de:'Die kleinste Kreisstadt Deutschlands mit der Reichsburg als Wahrzeichen — sie thront auf einem Bergkegel über 100 Meter über der Mosel. Die historische Altstadt mit Fachwerkhäusern, dem barocken Rathaus am Marktplatz und dem Martinsbrunnen lädt zum Bummeln ein. Sesselbahn zum Pinnerkreuz mit Panoramablick.',en:'Germany\'s smallest county seat with the Reichsburg as its landmark — perched on a hilltop over 100 meters above the Moselle. The historic old town with half-timbered houses, baroque town hall at the market square, and St. Martin\'s fountain invite strolling. Cable car to Pinnerkreuz viewpoint.',ru:'Самый маленький районный центр Германии с имперским замком Райхсбург — он возвышается на горном конусе более чем на 100 метров над Мозелем. Исторический старый город с фахверковыми домами, барочной ратушей на рыночной площади и фонтаном Св. Мартина. Кресельная дорога к смотровой площадке Пиннеркройц.'},
-    tips:{de:'Reichsburg: Führungen täglich in der Saison. Burgweihnacht am 2. Adventswochenende.',en:'Reichsburg: guided tours daily in season. Castle Christmas on the 2nd Advent weekend.',ru:'Райхсбург: экскурсии ежедневно в сезон. Замковое Рождество во 2-е адвентские выходные.'}},
+    desc:{de:'Die kleinste Kreisstadt Deutschlands mit der Reichsburg als Wahrzeichen — über 100 Meter über der Mosel. Die historische Altstadt mit Fachwerkhäusern und dem Martinsbrunnen. Sesselbahn zum Pinnerkreuz.',en:'Germany\'s smallest county seat with the Reichsburg as landmark — over 100m above the Moselle. Historic old town with half-timbered houses and St. Martin\'s fountain. Cable car to Pinnerkreuz.',ru:'Самый маленький районный центр Германии с Райхсбургом — более 100 м над Мозелем. Исторический старый город с фахверковыми домами и фонтаном Св. Мартина. Кресельная дорога к Пиннеркройц.'},
+    tips:{de:'Reichsburg: Führungen täglich in der Saison. Burgweihnacht am 2. Adventswochenende.',en:'Reichsburg: guided tours daily in season. Castle Christmas on 2nd Advent weekend.',ru:'Райхсбург: экскурсии ежедневно в сезон. Замковое Рождество во 2-е адвентские выходные.'},
+    legend:{de:'1689 zerstörten französische Truppen die Reichsburg Cochem. Über 200 Jahre lag sie in Trümmern, bis der Berliner Kaufmann Louis Ravené sie 1868 erwarb und im neugotischen Stil wieder aufbauen ließ — als romantisches Märchenschloss, das heute das Wahrzeichen der Mosel ist.',en:'In 1689, French troops destroyed the Reichsburg. For over 200 years it lay in ruins until Berlin merchant Louis Ravené acquired it in 1868 and had it rebuilt in neo-Gothic style — as a romantic fairy-tale castle that is now the Moselle\'s landmark.',ru:'В 1689 году французские войска разрушили Райхсбург. Более 200 лет он лежал в руинах, пока берлинский купец Луи Равене не приобрёл его в 1868 году и не восстановил в неоготическом стиле — как романтический сказочный замок, ставший символом Мозеля.'},
+    legendTitle:{de:'Der Berliner Kaufmann und das Märchenschloss',en:'The Berlin Merchant and the Fairy-Tale Castle',ru:'Берлинский купец и сказочный замок'},
+    driveNext:{de:'→ 10 Min. / 9 km nach Beilstein',en:'→ 10 min / 9 km to Beilstein',ru:'→ 10 мин / 9 км до Байльштайна'}},
   {id:'beilstein',num:'07',section:'day2',
-    name:{de:'Beilstein, „Dornröschen der Mosel"',en:'Beilstein, "Sleeping Beauty of the Moselle"',ru:'Байльштайн, «Спящая красавица Мозеля»'},
+    name:{de:'Beilstein · „Dornröschen der Mosel"',en:'Beilstein · "Sleeping Beauty of the Moselle"',ru:'Байльштайн · «Спящая красавица Мозеля»'},
     lat:50.1097,lng:7.2369,img:'mosel-beilstein.jpg',
-    desc:{de:'Nur rund 140 Einwohner, aber einer der romantischsten Orte an der Mosel. Der gesamte Ort steht unter Denkmalschutz. Die Ruine der Burg Metternich überragt das Dorf. In der barocken Klosterkirche St. Joseph befindet sich die „Wunderbare Schwarze Madonna". Im Sommer findet der Beilsteiner Märchensommer statt — natürlich mit Dornröschen.',en:'Only about 140 residents, but one of the most romantic places on the Moselle. The entire village is a protected monument. The ruins of Metternich Castle tower above. In the baroque monastery church of St. Joseph sits the "Miraculous Black Madonna". In summer, the Beilstein Fairy Tale Festival takes place — naturally featuring Sleeping Beauty.',ru:'Всего около 140 жителей, но одно из самых романтичных мест на Мозеле. Весь посёлок — памятник архитектуры. Руины замка Меттерних возвышаются над деревней. В барочной монастырской церкви Св. Иосифа хранится «Чудотворная Чёрная Мадонна». Летом проходит фестиваль сказок — конечно, со Спящей красавицей.'},
-    tips:{de:'Fähre von Ellenz-Poltersdorf. Burg Metternich: Eintritt frei.',en:'Ferry from Ellenz-Poltersdorf. Metternich Castle: free admission.',ru:'Паром из Элленц-Полтерсдорфа. Замок Меттерних: вход свободный.'}},
+    desc:{de:'Nur rund 140 Einwohner, aber einer der romantischsten Orte an der Mosel. Unter Denkmalschutz. Ruine der Burg Metternich. „Wunderbare Schwarze Madonna" in der Klosterkirche St. Joseph.',en:'Only about 140 residents, one of the most romantic places on the Moselle. Protected monument. Metternich Castle ruins. "Miraculous Black Madonna" in St. Joseph monastery church.',ru:'Всего 140 жителей, но одно из романтичнейших мест на Мозеле. Памятник архитектуры. Руины замка Меттерних. «Чудотворная Чёрная Мадонна» в церкви Св. Иосифа.'},
+    tips:{de:'Fähre von Ellenz-Poltersdorf. Burg Metternich: Eintritt frei.',en:'Ferry from Ellenz-Poltersdorf. Metternich Castle: free admission.',ru:'Паром из Элленц-Полтерсдорфа. Замок Меттерних: вход свободный.'},
+    legend:{de:'Die „Wunderbare Schwarze Madonna" in der Klosterkirche wurde der Legende nach im 12. Jahrhundert von einem spanischen Karmelitermönch nach Beilstein gebracht. Das Bildnis soll Wunderheilungen bewirkt haben. Bis heute ist Beilstein ein Wallfahrtsort, und die kleine Kirche birgt das einzige gotische Chorgestühl an der Mosel.',en:'The "Miraculous Black Madonna" in the monastery church was, according to legend, brought to Beilstein in the 12th century by a Spanish Carmelite monk. The image is said to have performed miraculous healings. To this day Beilstein is a pilgrimage site, and the small church holds the only Gothic choir stalls on the Moselle.',ru:'«Чудотворная Чёрная Мадонна» в монастырской церкви, по легенде, была привезена в Байльштайн в XII веке испанским монахом-кармелитом. Говорят, образ совершал чудесные исцеления. До сих пор Байльштайн — место паломничества, а маленькая церковь хранит единственные готические хоры на Мозеле.'},
+    legendTitle:{de:'Die Schwarze Madonna von Beilstein',en:'The Black Madonna of Beilstein',ru:'Чёрная Мадонна Байльштайна'},
+    driveNext:{de:'→ 8 Min. / 7 km nach Calmont',en:'→ 8 min / 7 km to Calmont',ru:'→ 8 мин / 7 км до Кальмонта'}},
   {id:'calmont',num:'08',section:'day2',
-    name:{de:'Calmont, steilster Weinberg Europas',en:'Calmont, Europe\'s Steepest Vineyard',ru:'Кальмонт, самый крутой виноградник Европы'},
+    name:{de:'Calmont · Steilster Weinberg Europas',en:'Calmont · Europe\'s Steepest Vineyard',ru:'Кальмонт · Самый крутой виноградник Европы'},
     lat:50.1063,lng:7.1430,img:'mosel-calmont.jpg',
-    desc:{de:'Der Calmont zwischen Bremm und Ediger-Eller gilt mit bis zu 65° Neigung als steilster Weinberg Europas. Der Calmont-Klettersteig führt durch die Steillagen mit atemberaubendem Blick auf die Moselschleife. Die Terrassen aus Schieferstein speichern die Wärme und verleihen dem Riesling einen besonderen mineralischen Charakter.',en:'The Calmont between Bremm and Ediger-Eller, with up to 65° incline, is considered Europe\'s steepest vineyard. The Calmont Via Ferrata leads through the steep slopes with breathtaking views of the Moselle loop. The slate stone terraces store heat and give the Riesling a special mineral character.',ru:'Кальмонт между Бреммом и Эдигер-Эллером с уклоном до 65° считается самым крутым виноградником Европы. Виа феррата Кальмонт ведёт через крутые склоны с захватывающим видом на излучину Мозеля. Террасы из сланца накапливают тепло и придают рислингу особый минеральный характер.'},
-    tips:{de:'Klettersteig: festes Schuhwerk, Schwindelfreiheit nötig. Stufen und Leitern.',en:'Via Ferrata: sturdy shoes, head for heights required. Steps and ladders.',ru:'Виа феррата: крепкая обувь, без боязни высоты. Ступени и лестницы.'}},
+    desc:{de:'Der Calmont zwischen Bremm und Ediger-Eller — mit bis zu 65° Neigung steilster Weinberg Europas. Klettersteig mit Blick auf die Moselschleife. Schieferterrassen geben dem Riesling mineralischen Charakter.',en:'The Calmont between Bremm and Ediger-Eller — at up to 65° incline, Europe\'s steepest vineyard. Via Ferrata with views of the Moselle loop. Slate terraces give the Riesling a mineral character.',ru:'Кальмонт между Бреммом и Эдигер-Эллером — с уклоном до 65° самый крутой виноградник Европы. Виа феррата с видом на излучину Мозеля. Сланцевые террасы придают рислингу минеральность.'},
+    tips:{de:'Klettersteig: festes Schuhwerk, Schwindelfreiheit. Stufen und Leitern.',en:'Via Ferrata: sturdy shoes, head for heights. Steps and ladders.',ru:'Виа феррата: крепкая обувь, без боязни высоты. Ступени и лестницы.'},
+    legend:{de:'Der Legende nach wollte der Teufel den steilen Hang hinunterrutschen und hinterließ dabei die Furchen, die heute als Weinbergterrassen genutzt werden. Die Winzer von Bremm sagen, nur wer so verrückt sei wie der Teufel, baue an einem so steilen Hang Wein an — aber genau das mache den Calmont-Riesling einzigartig.',en:'Legend has it the Devil tried to slide down the steep slope and left behind the furrows that are now used as vineyard terraces. The winemakers of Bremm say only someone as crazy as the Devil would grow wine on such a steep slope — but that\'s exactly what makes Calmont Riesling unique.',ru:'По легенде, дьявол попытался съехать с крутого склона и оставил борозды, которые теперь служат виноградными террасами. Виноделы Бремма говорят, что только сумасшедший вроде дьявола стал бы выращивать виноград на таком склоне — но именно это делает рислинг Кальмонта уникальным.'},
+    legendTitle:{de:'Des Teufels Weinberg',en:'The Devil\'s Vineyard',ru:'Виноградник дьявола'},
+    driveNext:{de:'→ 35 Min. / 40 km nach Bernkastel-Kues',en:'→ 35 min / 40 km to Bernkastel-Kues',ru:'→ 35 мин / 40 км до Бернкастель-Кюса'}},
   {id:'bernkastel',num:'09',section:'day2',
     name:{de:'Bernkastel-Kues',en:'Bernkastel-Kues',ru:'Бернкастель-Кюс'},
     lat:49.9150,lng:7.0750,img:'',
-    desc:{de:'Doppelstadt an der Mittelmosel mit dem berühmten mittelalterlichen Marktplatz und dem Spitzhäuschen — einem der meistfotografierten Fachwerkhäuser Deutschlands. Über der Stadt thront die Ruine der Burg Landshut. Weinlage „Bernkasteler Doctor" gilt als eine der besten Riesling-Lagen weltweit.',en:'Twin town on the Middle Moselle with the famous medieval market square and the Spitzhäuschen — one of Germany\'s most photographed half-timbered houses. Above town stand the ruins of Landshut Castle. The "Bernkasteler Doctor" vineyard is considered one of the world\'s finest Riesling sites.',ru:'Двойной город на Средней Мозеле со знаменитой средневековой рыночной площадью и домиком Шпитцхойсхен — одним из самых фотографируемых фахверковых домов Германии. Над городом возвышаются руины замка Ландсхут. Виноградник «Bernkasteler Doctor» считается одним из лучших рислинговых участков в мире.'},
-    tips:{de:'Weinfest der Mittelmosel: Anfang September.',en:'Middle Moselle Wine Festival: early September.',ru:'Винный фестиваль Средней Мозеля: начало сентября.'}},
+    desc:{de:'Doppelstadt mit berühmtem mittelalterlichem Marktplatz und dem Spitzhäuschen. Ruine der Burg Landshut. Weinlage „Bernkasteler Doctor" — eine der besten Riesling-Lagen weltweit.',en:'Twin town with famous medieval market square and Spitzhäuschen. Landshut Castle ruins. "Bernkasteler Doctor" vineyard — one of the world\'s finest Riesling sites.',ru:'Двойной город со знаменитой средневековой площадью и Шпитцхойсхен. Руины замка Ландсхут. Виноградник «Bernkasteler Doctor» — один из лучших рислинговых участков в мире.'},
+    tips:{de:'Weinfest der Mittelmosel: Anfang September.',en:'Middle Moselle Wine Festival: early September.',ru:'Винный фестиваль: начало сентября.'},
+    legend:{de:'Im 14. Jahrhundert lag der Trierer Erzbischof Boemund II. todkrank auf Burg Landshut. Kein Arzt konnte helfen. Da brachte ein Winzer ihm einen Krug seines besten Weins. Der Erzbischof trank — und wurde gesund. Seitdem heißt die Weinlage „Bernkasteler Doctor", und der Wein gilt bis heute als einer der edelsten Deutschlands.',en:'In the 14th century, Archbishop Boemund II of Trier lay deathly ill at Landshut Castle. No doctor could help. Then a winemaker brought him a jug of his best wine. The Archbishop drank — and recovered. Since then the vineyard has been called "Bernkasteler Doctor", and the wine remains one of Germany\'s noblest.',ru:'В XIV веке архиепископ Трирский Боэмунд II лежал при смерти в замке Ландсхут. Ни один врач не мог помочь. Тогда винодел принёс ему кувшин лучшего вина. Архиепископ выпил — и выздоровел. С тех пор виноградник зовётся «Bernkasteler Doctor», а вино считается одним из благороднейших в Германии.'},
+    legendTitle:{de:'Der Wein, der den Bischof heilte',en:'The Wine That Healed the Bishop',ru:'Вино, исцелившее епископа'},
+    driveNext:{de:'→ 12 Min. / 12 km nach Traben-Trarbach',en:'→ 12 min / 12 km to Traben-Trarbach',ru:'→ 12 мин / 12 км до Трабен-Трарбаха'}},
   {id:'traben-trarbach',num:'10',section:'day2',
     name:{de:'Traben-Trarbach',en:'Traben-Trarbach',ru:'Трабен-Трарбах'},
     lat:49.9487,lng:7.1198,img:'',
-    desc:{de:'Jugendstil-Perle an der Mosel. Um 1900 war Traben-Trarbach der zweitgrößte Weinhandelsplatz der Welt. Die prächtigen Jugendstil-Villen und Weinkeller aus dieser Zeit prägen das Stadtbild. Der „Mosel Wein Nachts Markt" in den historischen Weinkellern ist Deutschlands einziger unterirdischer Weihnachtsmarkt.',en:'Art Nouveau gem on the Moselle. Around 1900, Traben-Trarbach was the world\'s second-largest wine trading center. The magnificent Art Nouveau villas and wine cellars from that era define the townscape. The "Mosel Wein Nachts Markt" in the historic wine cellars is Germany\'s only underground Christmas market.',ru:'Жемчужина югендштиля на Мозеле. Около 1900 года Трабен-Трарбах был вторым по величине центром торговли вином в мире. Великолепные виллы и винные погреба в стиле модерн той эпохи определяют облик города. «Mosel Wein Nachts Markt» в исторических погребах — единственный подземный рождественский рынок Германии.'},
-    tips:{de:'Weihnachtsmarkt: 20.11.–02.01., nur Fr–So und Sondertage.',en:'Christmas market: Nov 20–Jan 2, Fri–Sun and special days only.',ru:'Рождественский рынок: 20.11–02.01, только Пт–Вс и спецдни.'}},
+    desc:{de:'Jugendstil-Perle an der Mosel. Um 1900 zweitgrößter Weinhandelsplatz der Welt. Prächtige Jugendstil-Villen und historische Weinkeller. „Mosel Wein Nachts Markt" — Deutschlands einziger unterirdischer Weihnachtsmarkt.',en:'Art Nouveau gem on the Moselle. Around 1900, the world\'s second-largest wine trading center. Magnificent Art Nouveau villas and historic wine cellars. "Mosel Wein Nachts Markt" — Germany\'s only underground Christmas market.',ru:'Жемчужина югендштиля на Мозеле. Около 1900 года — второй в мире центр виноторговли. Великолепные виллы модерна и исторические погреба. «Mosel Wein Nachts Markt» — единственный подземный рождественский рынок Германии.'},
+    tips:{de:'Weihnachtsmarkt: 20.11.–02.01., Fr–So.',en:'Christmas market: Nov 20–Jan 2, Fri–Sun.',ru:'Рождественский рынок: 20.11–02.01, Пт–Вс.'},
+    legend:{de:'Unter den Straßen von Traben-Trarbach verbirgt sich ein labyrinthartiges Netz von Weinkellern. In der Blütezeit der Weinstadt lagerten hier Millionen Liter Wein. Nach dem Niedergang des Weinhandels verfielen die Keller — bis sie in den 2000er Jahren zum einzigen unterirdischen Weihnachtsmarkt Deutschlands umfunktioniert wurden.',en:'Beneath the streets of Traben-Trarbach lies a labyrinthine network of wine cellars. During the town\'s heyday, millions of liters of wine were stored here. After the wine trade declined, the cellars fell into disuse — until in the 2000s they were repurposed as Germany\'s only underground Christmas market.',ru:'Под улицами Трабен-Трарбаха скрывается лабиринт винных погребов. В расцвет города здесь хранились миллионы литров вина. После упадка виноторговли погреба пришли в запустение — пока в 2000-х их не превратили в единственный подземный рождественский рынок Германии.'},
+    legendTitle:{de:'Das Labyrinth unter der Stadt',en:'The Labyrinth Beneath the Town',ru:'Лабиринт под городом'},
+    driveNext:{de:'→ 15 Min. / 14 km nach Zell',en:'→ 15 min / 14 km to Zell',ru:'→ 15 мин / 14 км до Целля'}},
   {id:'zell',num:'11',section:'day2',
     name:{de:'Zell (Mosel)',en:'Zell (Moselle)',ru:'Целль (Мозель)'},
     lat:50.0284,lng:7.1850,img:'',
-    desc:{de:'Weinstadt an der Mosel, berühmt für die Weinlage „Zeller Schwarze Katz". Der Legende nach wählte ein Weinhändler das Fass, auf dem eine schwarze Katze saß — und traf die beste Wahl. Der runde Turm und die Reste der mittelalterlichen Stadtmauer sind sehenswert. Am 1. Advent findet der Zeller Adventsmarkt mit Märchenumzug statt.',en:'Wine town on the Moselle, famous for the "Zeller Schwarze Katz" (Black Cat) vineyard. Legend has it a wine merchant chose the barrel on which a black cat sat — and made the best choice. The round tower and remains of the medieval town wall are worth seeing. On the 1st Advent, the Zell Christmas market features a fairy tale parade.',ru:'Винный городок на Мозеле, знаменитый виноградником «Zeller Schwarze Katz» (Чёрная кошка из Целля). По легенде, виноторговец выбрал бочку, на которой сидела чёрная кошка — и сделал лучший выбор. Круглая башня и остатки средневековой городской стены заслуживают внимания. В 1-й Адвент проходит рождественский рынок со сказочным шествием.'},
-    tips:{de:'Adventsmarkt 2026: 28. November.',en:'Advent market 2026: November 28.',ru:'Адвентский рынок 2026: 28 ноября.'}}
+    desc:{de:'Weinstadt an der Mosel, berühmt für die Weinlage „Zeller Schwarze Katz". Runder Turm und Reste der mittelalterlichen Stadtmauer. Zeller Adventsmarkt am 1. Advent mit Märchenumzug.',en:'Wine town famous for the "Zeller Schwarze Katz" vineyard. Round tower and medieval town wall remains. Advent market on 1st Advent with fairy tale parade.',ru:'Винный городок, знаменитый виноградником «Чёрная кошка из Целля». Круглая башня и средневековые стены. Адвентский рынок в 1-й Адвент со сказочным шествием.'},
+    tips:{de:'Adventsmarkt 2026: 28. November.',en:'Advent market 2026: November 28.',ru:'Адвентский рынок 2026: 28 ноября.'},
+    legend:{de:'Drei Weinhändler aus Aachen konnten sich nicht einigen, welches Fass den besten Wein enthielt. Da sprang eine schwarze Katze auf eines der Fässer, fauchte und weigerte sich herunterzusteigen. Die Händler erkannten darin ein Zeichen und kauften den Wein dieses Fasses — der tatsächlich der beste war. Seitdem heißt die berühmteste Weinlage des Ortes „Schwarze Katz".',en:'Three wine merchants from Aachen couldn\'t agree which barrel held the best wine. Then a black cat jumped onto one of the barrels, hissed and refused to climb down. The merchants took it as a sign and bought that barrel\'s wine — which indeed was the finest. Since then the town\'s most famous vineyard has been called "Schwarze Katz" (Black Cat).',ru:'Три виноторговца из Аахена не могли решить, в какой бочке лучшее вино. Тогда на одну из бочек запрыгнула чёрная кошка, зашипела и отказалась спускаться. Торговцы сочли это знаком и купили вино из этой бочки — оно и правда оказалось лучшим. С тех пор знаменитейший виноградник городка зовётся «Чёрная кошка».'},
+    legendTitle:{de:'Die Schwarze Katz von Zell',en:'The Black Cat of Zell',ru:'Чёрная кошка из Целля'}}
 ];
 
 const SECTION_NAMES = {
-  day1:{de:'Untere Mosel: Koblenz – Cochem',en:'Lower Moselle: Koblenz – Cochem',ru:'Нижний Мозель: Кобленц — Кохем'},
-  day2:{de:'Mittelmosel: Beilstein – Traben-Trarbach',en:'Middle Moselle: Beilstein – Traben-Trarbach',ru:'Средний Мозель: Байльштайн — Трабен-Трарбах'}
+  day1:{de:'Untere Mosel',en:'Lower Moselle',ru:'Нижний Мозель'},
+  day2:{de:'Mittelmosel',en:'Middle Moselle',ru:'Средний Мозель'}
 };
 
 const UI = {
-  searchPh:{de:'Station suchen…',en:'Search station…',ru:'Найти станцию…'},
-  tabStations:{de:'Stationen',en:'Stations',ru:'Станции'},
-  tabMap:{de:'Karte',en:'Map',ru:'Карта'},
-  tabInfo:{de:'Info',en:'Info',ru:'Инфо'},
+  searchPh:{de:'Stadt oder Burg suchen …',en:'Search town or castle …',ru:'Найти город или замок …'},
+  pillStations:{de:'Stationen',en:'Stations',ru:'Станции'},
+  pillMap:{de:'Karte',en:'Map',ru:'Карта'},
+  pillSagen:{de:'Sagen',en:'Legends',ru:'Сказания'},
+  pillRoute:{de:'Route',en:'Route',ru:'Маршрут'},
+  pillInfo:{de:'Info',en:'Info',ru:'Инфо'},
   navigate:{de:'Navigation starten',en:'Start navigation',ru:'Начать навигацию'},
   walks:{de:'Wanderungen bei Winningen',en:'Walks near Winningen',ru:'Прогулки у Виннингена'},
   tips:{de:'Hinweis',en:'Tip',ru:'Совет'},
+  sageLbl:{de:'Sage',en:'Legend',ru:'Сказание'},
   back:{de:'← Zurück zur Liste',en:'← Back to list',ru:'← Назад к списку'},
   infoTitle:{de:'Über den Mosel Navigator',en:'About the Mosel Navigator',ru:'О навигаторе по Мозелю'},
-  infoT1:{de:'Dieser Navigator begleitet Sie entlang der Untermosel und Mittelmosel — von Koblenz bis Cochem und darüber hinaus. Jede Station bietet Informationen zu Sehenswürdigkeiten, Weingütern und Wanderwegen.',en:'This navigator accompanies you along the Lower and Middle Moselle — from Koblenz to Cochem and beyond. Each station provides information about sights, wineries and hiking trails.',ru:'Этот навигатор сопровождает вас вдоль Нижнего и Среднего Мозеля — от Кобленца до Кохема и далее. Каждая станция содержит информацию о достопримечательностях, виноделах и пеших маршрутах.'},
-  infoT2:{de:'Der Guide funktioniert auch ohne Internet, sobald die Seite einmal geladen wurde. Die GPS-Funktion zeigt Ihren Standort und die Entfernung zur nächsten Station.',en:'The guide also works offline once the page has been loaded. The GPS function shows your location and distance to the nearest station.',ru:'Гид работает и без интернета после первой загрузки. GPS показывает ваше местоположение и расстояние до ближайшей станции.'},
+  infoT1:{de:'Dieser Navigator begleitet Sie entlang der Mosel — von Koblenz über Cochem bis Traben-Trarbach. Jede Station bietet Informationen zu Sehenswürdigkeiten, Weingütern und Wanderwegen.',en:'This navigator accompanies you along the Moselle — from Koblenz via Cochem to Traben-Trarbach. Each station provides information about sights, wineries and hiking trails.',ru:'Этот навигатор сопровождает вас вдоль Мозеля — от Кобленца через Кохем до Трабен-Трарбаха. Каждая станция — достопримечательности, виноделы и пешие маршруты.'},
+  infoT2:{de:'GPS zeigt Ihren Standort und die Entfernung zur nächsten Station. Mit „Meinen Ort merken" speichern Sie Ihren aktuellen Standort.',en:'GPS shows your location and distance to the nearest station. Use "Save my location" to store your current position.',ru:'GPS показывает ваше местоположение и расстояние до ближайшей станции. Кнопка «Запомнить место» сохраняет вашу позицию.'},
   gpsToggle:{de:'GPS',en:'GPS',ru:'GPS'},
   gpsOn:{de:'GPS EIN',en:'GPS ON',ru:'GPS ВКЛ'},
   gpsLocating:{de:'Suche…',en:'Locating…',ru:'Поиск…'},
   gpsError:{de:'GPS-Fehler',en:'GPS error',ru:'Ошибка GPS'},
+  gpsSave:{de:'📌 Meinen Ort merken',en:'📌 Save my location',ru:'📌 Запомнить место'},
+  gpsSaved:{de:'📌 Ort gespeichert!',en:'📌 Location saved!',ru:'📌 Место сохранено!'},
   gpsDistanceTo:{de:n=>'bis '+n,en:n=>'to '+n,ru:n=>'до '+n},
   gpsArrived:{de:'Angekommen!',en:'Arrived!',ru:'Вы на месте!'},
   splashTitle:{de:'Ihr Mosel-<br>Navigator.',en:'Your Moselle<br>Navigator.',ru:'Ваш навигатор<br>по Мозелю.'},
@@ -326,21 +395,22 @@ const UI = {
   splashFind:{de:'Entdecken Sie die Mosel.',en:'Discover the Moselle.',ru:'Откройте для себя Мозель.'},
   splashBtn:{de:'Starten',en:'Start',ru:'Начать'},
   headerTitle:{de:'Mosel Navigator',en:'Moselle Navigator',ru:'Мозель-навигатор'},
-  splashSec1:{de:'Untere Mosel',en:'Lower Moselle',ru:'Нижний Мозель'},
-  splashSec2:{de:'Mittelmosel',en:'Middle Moselle',ru:'Средний Мозель'}
+  sagenTitle:{de:'Sagen & Legenden der Mosel',en:'Legends of the Moselle',ru:'Сказания и легенды Мозеля'},
+  routeTitle:{de:'Route entlang der Mosel',en:'Route Along the Moselle',ru:'Маршрут вдоль Мозеля'},
+  routeIntro:{de:'Von Koblenz flussaufwärts bis Zell — 11 Stationen, ca. 130 km, reine Fahrzeit ca. 2 Stunden.',en:'From Koblenz upstream to Zell — 11 stations, approx. 130 km, driving time approx. 2 hours.',ru:'От Кобленца вверх по реке до Целля — 11 станций, ок. 130 км, время в пути ок. 2 часов.'}
 };
 
 // ═══════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════
 let lang = 'de';
-let activeSection = 'all'; // 'all', 'day1', 'day2'
 let myPos = null;
 let map = null;
 let markers = [];
 let gpsActive = false;
 let gpsWatchId = null;
 let gpsMarker = null;
+let savedPos = null;
 
 // ═══════════════════════════════════════
 // SPLASH
@@ -353,19 +423,8 @@ function updateSplashLang(){
   document.getElementById('splashTagline').innerHTML = UI.splashTagline[lang];
   document.getElementById('splashFind').textContent = UI.splashFind[lang];
   document.getElementById('splashBtn').textContent = UI.splashBtn[lang];
-  document.getElementById('splashSecDay1').textContent = UI.splashSec1[lang];
-  document.getElementById('splashSecDay2').textContent = UI.splashSec2[lang];
 }
 updateSplashLang();
-
-// Section toggle on splash
-document.getElementById('splashSectionToggle').addEventListener('click',e=>{
-  const btn = e.target.closest('.splash-section-btn');
-  if(!btn) return;
-  document.querySelectorAll('.splash-section-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  activeSection = btn.dataset.sec;
-});
 
 splashEl.addEventListener('click',e=>{
   const lb = e.target.closest('.splash-lang-btn');
@@ -376,11 +435,12 @@ splashEl.addEventListener('click',e=>{
     updateSplashLang();
     return;
   }
-  if(e.target.closest('.splash-section-btn')) return; // handled above
-  if(e.target.closest('.splash-enter') || !e.target.closest('.splash-lang,.splash-section-toggle')){
+  if(e.target.closest('.splash-enter') || !e.target.closest('.splash-lang')){
     splashEl.hidden = true;
     renderList();
-    if(map) { updateMarkers(); fitFiltered(); }
+    renderSagen();
+    renderRoute();
+    if(map) updateMarkers();
   }
 });
 
@@ -400,7 +460,7 @@ splashEl.addEventListener('click',e=>{
 // ═══════════════════════════════════════
 // LANGUAGE
 // ═══════════════════════════════════════
-function t(obj){return obj[lang]||obj.de||''}
+function t(obj){if(!obj)return '';return obj[lang]||obj.de||''}
 function setLang(l){
   lang=l;
   document.getElementById('langSel').value=l;
@@ -409,23 +469,30 @@ function setLang(l){
   document.getElementById('infoTitle').textContent=UI.infoTitle[l];
   document.getElementById('infoText1').textContent=UI.infoT1[l];
   document.getElementById('infoText2').textContent=UI.infoT2[l];
-  document.querySelectorAll('.tab-label')[0].textContent=UI.tabStations[l];
-  document.querySelectorAll('.tab-label')[1].textContent=UI.tabMap[l];
-  document.querySelectorAll('.tab-label')[2].textContent=UI.tabInfo[l];
+  document.getElementById('sagenTitle').textContent=UI.sagenTitle[l];
+  document.getElementById('routeTitle').textContent=UI.routeTitle[l];
+  document.getElementById('routeIntro').textContent=UI.routeIntro[l];
+  // Pill labels
+  const pills=document.querySelectorAll('.pill-btn');
+  const pillLabels=['pillStations','pillMap','pillSagen','pillRoute','pillInfo'];
+  pills.forEach((p,i)=>{if(UI[pillLabels[i]])p.textContent=UI[pillLabels[i]][l]});
   if(!gpsActive)document.getElementById('gpsToggleLabel').textContent=UI.gpsToggle[l];
+  document.getElementById('gpsSaveLabel').textContent=UI.gpsSave[l].replace('📌 ','');
   renderList();
+  renderSagen();
+  renderRoute();
   if(map)updateMarkers();
 }
 
 // ═══════════════════════════════════════
-// TABS
+// TABS (pill menu)
 // ═══════════════════════════════════════
 function showTab(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pill-btn').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const tab=document.querySelector(`.tab[data-tab="${id}"]`);
-  if(tab)tab.classList.add('active');
+  const pill=document.querySelector(`.pill-btn[data-tab="${id}"]`);
+  if(pill)pill.classList.add('active');
   if(id==='mapPanel'&&!map)initMap();
   if(id==='mapPanel'&&map)map.invalidateSize();
 }
@@ -449,21 +516,12 @@ function distText(st){
 }
 
 // ═══════════════════════════════════════
-// FILTERED STATIONS
-// ═══════════════════════════════════════
-function filteredStations(){
-  if(activeSection==='all')return STATIONS;
-  return STATIONS.filter(s=>s.section===activeSection);
-}
-
-// ═══════════════════════════════════════
 // LIST
 // ═══════════════════════════════════════
 function renderList(){
   const c=document.getElementById('stList');
-  const list=filteredStations();
   let html='',lastSec='';
-  list.forEach(st=>{
+  STATIONS.forEach(st=>{
     if(st.section!==lastSec){
       lastSec=st.section;
       html+=`<div class="st-section">${t(SECTION_NAMES[st.section])}</div>`;
@@ -499,6 +557,8 @@ function showDetail(id){
   let extras='';
   if(st.id==='winningen') extras=`<a class="info-link" href="walks.html" style="margin-top:10px">🥾 ${UI.walks[lang]}<span>Hexenpfad, Weinberge</span></a>`;
 
+  const legendHtml=st.legend?`<div class="detail-legend"><h4>📜 ${t(st.legendTitle)}</h4><p>${t(st.legend)}</p></div>`:'';
+
   document.getElementById('detailContent').innerHTML=`
     ${heroHtml}
     <div class="detail-body">
@@ -510,11 +570,12 @@ function showDetail(id){
         ${st.pier?`<button class="detail-nav-btn pier" onclick="startNav(${st.pier.lat},${st.pier.lng})">⚓ Pier</button>`:''}
       </div>
       ${st.tips?`<div class="detail-info"><h4>${UI.tips[lang]}</h4><p>${t(st.tips)}</p></div>`:''}
+      ${legendHtml}
       ${extras}
       <div class="detail-back" onclick="showTab('list')">${UI.back[lang]}</div>
     </div>`;
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pill-btn').forEach(t=>t.classList.remove('active'));
   document.getElementById('detailPanel').classList.add('active');
   document.getElementById('detailPanel').scrollTop=0;
 }
@@ -524,22 +585,72 @@ function startNav(lat,lng){
 }
 
 // ═══════════════════════════════════════
-// MAP
+// SAGEN TAB
+// ═══════════════════════════════════════
+function renderSagen(){
+  const c=document.getElementById('sagenList');
+  let html='';
+  STATIONS.forEach(st=>{
+    if(!st.legend)return;
+    html+=`<div class="legend-card" onclick="showDetail('${st.id}')" style="cursor:pointer">
+      <div class="lc-place">${st.num} · ${t(st.name)}</div>
+      <h3>📜 ${t(st.legendTitle)}</h3>
+      <p>${t(st.legend)}</p>
+    </div>`;
+  });
+  c.innerHTML=html;
+}
+
+// ═══════════════════════════════════════
+// ROUTE TAB
+// ═══════════════════════════════════════
+function renderRoute(){
+  const c=document.getElementById('routeList');
+  let html='';
+  STATIONS.forEach((st,i)=>{
+    html+=`<div class="route-stop">
+      <div class="route-num">${st.num}</div>
+      <div class="route-info">
+        <h4 onclick="showDetail('${st.id}')">${t(st.name)}</h4>
+        <div class="ri-sub">${t(SECTION_NAMES[st.section])}</div>
+      </div>
+    </div>`;
+    if(st.driveNext) html+=`<div class="route-drive">${t(st.driveNext)}</div>`;
+  });
+  c.innerHTML=html;
+}
+
+// ═══════════════════════════════════════
+// MAP — tooltips on hover, not popups
 // ═══════════════════════════════════════
 function initMap(){
   map=L.map('map',{zoomControl:false}).setView([50.22,7.35],10);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);
   updateMarkers();
-  fitFiltered();
+  fitAll();
+  // Load saved position
+  try{const sp=localStorage.getItem('moselSaved');if(sp){savedPos=JSON.parse(sp);showSavedMarker()}}catch(e){}
+}
+let savedMarker=null;
+function showSavedMarker(){
+  if(!savedPos||!map)return;
+  if(savedMarker)map.removeLayer(savedMarker);
+  const icon=L.divIcon({className:'',html:'<div style="width:16px;height:16px;background:var(--green);border:2px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+  savedMarker=L.marker([savedPos.lat,savedPos.lng],{icon}).addTo(map);
+  savedMarker.bindTooltip(UI.gpsSaved[lang],{className:'mosel-tooltip',direction:'top',offset:[0,-10]});
 }
 function updateMarkers(){
   markers.forEach(m=>map.removeLayer(m));
   markers=[];
-  const list=filteredStations();
-  list.forEach(st=>{
+  STATIONS.forEach(st=>{
     const icon=L.divIcon({className:'',html:`<div class="mosel-marker">${st.num}</div>`,iconSize:[30,30],iconAnchor:[15,15]});
     const m=L.marker([st.lat,st.lng],{icon}).addTo(map);
-    m.bindPopup(`<b style="font-family:var(--serif)">${t(st.name)}</b><br><a href="#" onclick="event.preventDefault();showDetail('${st.id}')">Details →</a>`);
+    // Tooltip on hover (not popup on click)
+    const dist=distText(st);
+    const tooltipHtml=`<div class="tt-name">${t(st.name)}</div><div class="tt-desc">${t(st.desc).slice(0,80)}…</div>${dist?'<div class="tt-dist">📍 '+dist+'</div>':''}<a class="tt-link" href="#" onclick="event.preventDefault();showDetail('${st.id}')">Details →</a>`;
+    m.bindTooltip(tooltipHtml,{className:'mosel-tooltip',direction:'top',offset:[0,-18],sticky:false,interactive:true});
+    // Also allow click to open detail
+    m.on('click',()=>showDetail(st.id));
     markers.push(m);
   });
 }
@@ -547,22 +658,17 @@ function fitAll(){
   if(!map)return;
   map.fitBounds(L.latLngBounds(STATIONS.map(s=>[s.lat,s.lng])),{padding:[30,30]});
 }
-function fitFiltered(){
-  if(!map)return;
-  const list=filteredStations();
-  if(!list.length)return;
-  map.fitBounds(L.latLngBounds(list.map(s=>[s.lat,s.lng])),{padding:[30,30]});
-}
 
 // ═══════════════════════════════════════
-// GPS ON/OFF
+// GPS ON/OFF + SAVE LOCATION
 // ═══════════════════════════════════════
 const gpsToggleBtn=document.getElementById('gpsToggleBtn');
 const gpsToggleLabel=document.getElementById('gpsToggleLabel');
+const gpsSaveBtn=document.getElementById('gpsSaveBtn');
 
 function findNearestIdx(lat,lng){
   let best=-1,bestD=Infinity;
-  filteredStations().forEach((s,i)=>{const d=Math.pow(s.lat-lat,2)+Math.pow(s.lng-lng,2);if(d<bestD){bestD=d;best=i}});
+  STATIONS.forEach((s,i)=>{const d=Math.pow(s.lat-lat,2)+Math.pow(s.lng-lng,2);if(d<bestD){bestD=d;best=i}});
   return best;
 }
 
@@ -570,10 +676,9 @@ function updateGpsPanel(lat,lng){
   const panel=document.getElementById('gpsPanel');
   const row=document.getElementById('gpsDistancePanel');
   if(!panel)return;
-  const list=filteredStations();
   const ni=findNearestIdx(lat,lng);
   if(ni>=0){
-    const s=list[ni],d=distanceMeters(lat,lng,s.lat,s.lng);
+    const s=STATIONS[ni],d=distanceMeters(lat,lng,s.lat,s.lng);
     if(d<=50000){
       document.getElementById('gpsDistanceValue').textContent=d<=60?UI.gpsArrived[lang]:formatDist(d);
       document.getElementById('gpsDistanceName').textContent=d<=60?t(s.name):UI.gpsDistanceTo[lang](t(s.name));
@@ -589,6 +694,7 @@ function stopGps(){
   if(gpsMarker&&map){map.removeLayer(gpsMarker);gpsMarker=null}
   gpsToggleBtn.classList.remove('active');
   gpsToggleLabel.textContent=UI.gpsToggle[lang];
+  gpsSaveBtn.classList.remove('show');
   const p=document.getElementById('gpsPanel');if(p)p.classList.remove('show');
 }
 
@@ -597,6 +703,7 @@ function startGps(){
   gpsActive=true;
   gpsToggleBtn.classList.add('active');
   gpsToggleLabel.textContent=UI.gpsLocating[lang];
+  gpsSaveBtn.classList.add('show');
   gpsWatchId=navigator.geolocation.watchPosition(pos=>{
     const{latitude,longitude}=pos.coords;
     myPos={lat:latitude,lng:longitude};
@@ -606,6 +713,8 @@ function startGps(){
     if(gpsMarker)gpsMarker.setLatLng([latitude,longitude]);
     else if(map)gpsMarker=L.marker([latitude,longitude],{icon:haloIcon,zIndexOffset:1000}).addTo(map);
     updateGpsPanel(latitude,longitude);
+    // Update tooltips with distance
+    if(map)updateMarkers();
     renderList();
   },()=>{gpsToggleLabel.textContent=UI.gpsError[lang];setTimeout(()=>stopGps(),2500)},
   {enableHighAccuracy:true,maximumAge:10000,timeout:15000});
@@ -613,20 +722,45 @@ function startGps(){
 
 gpsToggleBtn.addEventListener('click',e=>{e.stopPropagation();gpsActive?stopGps():startGps()});
 
+// Save location
+gpsSaveBtn.addEventListener('click',e=>{
+  e.stopPropagation();
+  if(!myPos)return;
+  savedPos={lat:myPos.lat,lng:myPos.lng};
+  try{localStorage.setItem('moselSaved',JSON.stringify(savedPos))}catch(err){}
+  showSavedMarker();
+  gpsSaveBtn.classList.add('saved');
+  document.getElementById('gpsSaveLabel').textContent=UI.gpsSaved[lang].replace('📌 ','');
+  setTimeout(()=>{gpsSaveBtn.classList.remove('saved');document.getElementById('gpsSaveLabel').textContent=UI.gpsSave[lang].replace('📌 ','')},2000);
+});
+
 // ═══════════════════════════════════════
 // SEARCH
 // ═══════════════════════════════════════
 (function(){
-  const inp=document.getElementById('searchInput'),res=document.getElementById('searchResults');
-  inp.addEventListener('input',()=>{
-    const q=inp.value.trim().toLowerCase();
-    if(!q){res.classList.remove('open');return}
-    const hits=STATIONS.filter(s=>t(s.name).toLowerCase().includes(q)||t(s.desc).toLowerCase().includes(q));
-    if(!hits.length){res.classList.remove('open');return}
-    res.innerHTML=hits.map(s=>`<div class="search-item" onclick="showDetail('${s.id}');document.getElementById('searchResults').classList.remove('open');document.getElementById('searchInput').value='';"><div class="si-name">${t(s.name)}</div><div class="si-sub">${t(s.desc).slice(0,60)}…</div></div>`).join('');
-    res.classList.add('open');
-  });
-  document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))res.classList.remove('open')});
+  const inp=document.createElement('input');
+  inp.type='text';inp.id='searchInput';inp.autocomplete='off';
+  // Search is built into pills area — add a search bar below header
+  const sb=document.createElement('div');
+  sb.className='search-bar';sb.style.cssText='background:var(--parchment);padding:8px 12px;border-bottom:1px solid var(--gold-light);flex-shrink:0';
+  sb.innerHTML='<div class="search-wrap" style="position:relative"><span class="search-icon" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.5">🔍</span><input type="text" id="searchInput" placeholder="'+UI.searchPh[lang]+'" autocomplete="off" style="width:100%;padding:9px 12px 9px 34px;border:1px solid var(--gold);border-radius:10px;font-family:var(--serif);font-size:15px;background:var(--paper);color:var(--ink);outline:none"><div class="search-results" id="searchResults" style="position:absolute;top:100%;left:0;right:0;background:var(--paper);border:1px solid var(--gold);border-top:none;border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;z-index:900;display:none"></div></div>';
+  document.querySelector('.pill-menu').after(sb);
+
+  setTimeout(()=>{
+    const sinp=document.getElementById('searchInput'),res=document.getElementById('searchResults');
+    if(!sinp)return;
+    sinp.addEventListener('input',()=>{
+      const q=sinp.value.trim().toLowerCase();
+      if(!q){res.style.display='none';return}
+      const hits=STATIONS.filter(s=>t(s.name).toLowerCase().includes(q)||t(s.desc).toLowerCase().includes(q));
+      if(!hits.length){res.style.display='none';return}
+      res.innerHTML=hits.map(s=>`<div class="search-item" onclick="showDetail('${s.id}');document.getElementById('searchResults').style.display='none';document.getElementById('searchInput').value='';"><div class="si-name">${t(s.name)}</div><div class="si-sub">${t(s.desc).slice(0,60)}…</div></div>`).join('');
+      res.style.display='block';
+    });
+    sinp.addEventListener('focus',()=>{sinp.style.borderColor='var(--terracotta)';sinp.style.boxShadow='0 0 0 3px rgba(148,72,31,.12)'});
+    sinp.addEventListener('blur',()=>{sinp.style.borderColor='var(--gold)';sinp.style.boxShadow='none'});
+    document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))res.style.display='none'});
+  },100);
 })();
 
 // ═══════════════════════════════════════
@@ -641,9 +775,11 @@ function setOwner(){
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
-try{const s=localStorage.getItem('moselLang');if(s&&UI.searchPh[s])lang=s}catch(e){}
+try{const s=localStorage.getItem('moselLang');if(s&&UI.pillStations[s])lang=s}catch(e){}
 setLang(lang);
 renderList();
+renderSagen();
+renderRoute();
 </script>
 </body>
 </html>

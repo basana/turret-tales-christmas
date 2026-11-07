@@ -301,15 +301,16 @@ function buildTicker(){
 function buildGroupFilter(){
   const sel = document.getElementById('groupFilter');
   for(const[k,v] of Object.entries(groups)){
-    if(v.layer) continue; // layer groups have their own toggle buttons
     const o = document.createElement('option'); o.value=k; o.textContent=v.t; sel.appendChild(o);
   }
 }
 
 function matchesFilter(n){
-  // Layer nodes: only visible when their layer is toggled on
   const gi = groups[n.g];
-  if(gi && gi.layer){
+  // If this layer group is selected in dropdown, always show its nodes
+  if(filterGroup && gi && gi.layer && n.g === filterGroup) { /* pass — show it */ }
+  // Layer nodes: only visible when their layer is toggled on (if not selected in dropdown)
+  else if(gi && gi.layer){
     if(!layerVisible[n.g]) return false;
   }
   if(filterGroup && n.g !== filterGroup && !(gi && gi.layer && layerVisible[n.g])) return false;
@@ -613,7 +614,19 @@ function setupEvents(){
   });
 
   // Filters — auto-focus on visible nodes after change
-  document.getElementById('groupFilter').addEventListener('change',e=>{filterGroup=e.target.value; fitVisible();});
+  document.getElementById('groupFilter').addEventListener('change',e=>{
+    filterGroup=e.target.value;
+    // Auto-enable layer if a layer group is selected
+    if(filterGroup && groups[filterGroup] && groups[filterGroup].layer){
+      layerVisible[filterGroup] = true;
+      const btnMap = {journey:'layerJourney', sales:'layerSales', contact:'layerContact', pricing:'layerPricing'};
+      const btn = document.getElementById(btnMap[filterGroup]);
+      if(btn) btn.classList.add('on');
+      fitLayer(filterGroup);
+    } else {
+      fitVisible();
+    }
+  });
   document.getElementById('statusFilter').addEventListener('change',e=>{filterStatus=e.target.value; fitVisible();});
   document.getElementById('search').addEventListener('input',e=>{filterSearch=e.target.value; fitVisibleDebounced();});
 

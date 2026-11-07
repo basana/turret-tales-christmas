@@ -10,6 +10,7 @@
   --accent:#60a5fa;--accent2:#818cf8;
   --g-product:#3b82f6;--g-audience:#f59e0b;--g-marketing:#10b981;
   --g-dev:#8b5cf6;--g-services:#ec4899;--g-print:#f97316;--g-legal:#6366f1;
+  --g-contact:#14b8a6;--g-pricing:#f59e0b;
   --ticker-bg:#1e293b;
 }
 [data-theme=light]{
@@ -17,6 +18,7 @@
   --accent:#2563eb;--accent2:#4f46e5;
   --g-product:#2563eb;--g-audience:#d97706;--g-marketing:#059669;
   --g-dev:#7c3aed;--g-services:#db2777;--g-print:#ea580c;--g-legal:#4f46e5;
+  --g-contact:#0d9488;--g-pricing:#d97706;
   --ticker-bg:#e2e8f0;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -110,6 +112,11 @@ canvas:active{cursor:grabbing}
 .feed-msg{line-height:1.4}
 .feed-files{margin-top:4px;color:var(--muted);font-size:11px}
 .feed-empty{color:var(--muted);text-align:center;padding:40px 0;font-size:13px}
+/* LAYER TOGGLES */
+.layer-sep{width:1px;height:24px;background:var(--border);margin:0 4px}
+.layer-btn{position:relative;transition:all .2s}
+.layer-btn.on{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
+.layer-btn .layer-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
 /* LAYOUT */
 .app{display:flex;flex-direction:column;height:100vh}
 .main{display:flex;flex:1;overflow:hidden;position:relative}
@@ -138,6 +145,10 @@ canvas:active{cursor:grabbing}
       <option value="later">Später</option>
     </select>
     <span class="spacer"></span>
+    <span class="layer-sep"></span>
+    <button id="layerContact" class="layer-btn" title="Kontaktpunkte ein-/ausblenden"><span class="layer-dot" style="background:var(--g-contact)"></span>Kontaktpunkte</button>
+    <button id="layerPricing" class="layer-btn" title="Preisstruktur ein-/ausblenden"><span class="layer-dot" style="background:var(--g-pricing)"></span>Preisstruktur</button>
+    <span class="layer-sep"></span>
     <button id="feedBtn" class="feed-toggle" title="Letzte Änderungen">⚡<span class="feed-dot"></span></button>
     <button id="themeBtn" title="Dark / Light">🌓</button>
     <button id="resetBtn" title="Ansicht zurücksetzen">⟲</button>
@@ -210,6 +221,7 @@ let cam={x:0,y:0,z:1};
 let selectedNode=null;
 let currentTab='map';
 let filterGroup='', filterStatus='', filterSearch='';
+let layerVisible={contact:false, pricing:false}; // overlay layers hidden by default
 
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
@@ -285,12 +297,18 @@ function buildTicker(){
 function buildGroupFilter(){
   const sel = document.getElementById('groupFilter');
   for(const[k,v] of Object.entries(groups)){
+    if(v.layer) continue; // layer groups have their own toggle buttons
     const o = document.createElement('option'); o.value=k; o.textContent=v.t; sel.appendChild(o);
   }
 }
 
 function matchesFilter(n){
-  if(filterGroup && n.g !== filterGroup) return false;
+  // Layer nodes: only visible when their layer is toggled on
+  const gi = groups[n.g];
+  if(gi && gi.layer){
+    if(!layerVisible[n.g]) return false;
+  }
+  if(filterGroup && n.g !== filterGroup && !(gi && gi.layer && layerVisible[n.g])) return false;
   if(filterStatus && n.status !== filterStatus) return false;
   if(filterSearch){
     const s = filterSearch.toLowerCase();
@@ -304,6 +322,7 @@ function buildLegend(){
   const el = document.getElementById('legend');
   let html = '';
   for(const[k,v] of Object.entries(groups)){
+    if(v.layer) continue; // layer groups have their own toggle buttons
     html += `<div class="legend-item"><div class="legend-swatch" style="background:${v.c}"></div>${v.t}</div>`;
   }
   el.innerHTML = html;
@@ -334,7 +353,7 @@ function worldToScreen(x,y){ return [x*cam.z+cam.x, y*cam.z+cam.y]; }
 function screenToWorld(x,y){ return [(x-cam.x)/cam.z, (y-cam.y)/cam.z]; }
 
 function groupColor(g){
-  const map = {product:'#3b82f6',audience:'#f59e0b',marketing:'#10b981',dev:'#8b5cf6',services:'#ec4899',print:'#f97316',legal:'#6366f1'};
+  const map = {product:'#3b82f6',audience:'#f59e0b',marketing:'#10b981',dev:'#8b5cf6',services:'#ec4899',print:'#f97316',legal:'#6366f1',contact:'#14b8a6',pricing:'#eab308'};
   return map[g]||'#64748b';
 }
 function statusColor(s){
@@ -595,6 +614,18 @@ function setupEvents(){
   document.getElementById('zoomOut').addEventListener('click',()=>{
     const cw=cv.width/devicePixelRatio/2, ch=cv.height/devicePixelRatio/2;
     cam.z/=1.3; cam.x=cw-(cw-cam.x)/1.3; cam.y=ch-(ch-cam.y)/1.3;
+  });
+
+  // Layer toggles
+  document.getElementById('layerContact').addEventListener('click',function(){
+    layerVisible.contact = !layerVisible.contact;
+    this.classList.toggle('on', layerVisible.contact);
+    if(layerVisible.contact) fitVisible();
+  });
+  document.getElementById('layerPricing').addEventListener('click',function(){
+    layerVisible.pricing = !layerVisible.pricing;
+    this.classList.toggle('on', layerVisible.pricing);
+    if(layerVisible.pricing) fitVisible();
   });
 
   // Detail close

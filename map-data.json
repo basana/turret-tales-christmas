@@ -4,7 +4,7 @@
     "now_working": "Projektkarte als lokales Werkzeug (map.html + map-data.json)",
     "next_up": "Links/Rechts-Ufer-Anzeige, kontextuelle WhatsApp-Taste"
   },
-  "updated": "2026-11-05",
+  "updated": "2026-11-07",
 
   "groups": {
     "product":   {"t":"Produkt",                "c":"var(--g-product)"},
@@ -13,7 +13,14 @@
     "dev":       {"t":"Entwicklung und Betrieb",  "c":"var(--g-dev)"},
     "services":  {"t":"Dienste und Konten",       "c":"var(--g-services)"},
     "print":     {"t":"Druck",                    "c":"var(--g-print)"},
-    "legal":     {"t":"Marke und Recht",          "c":"var(--g-legal)"}
+    "legal":     {"t":"Marke und Recht",          "c":"var(--g-legal)"},
+    "contact":   {"t":"Kontaktpunkte",           "c":"var(--g-contact)", "layer":true},
+    "pricing":   {"t":"Preisstruktur",           "c":"var(--g-pricing)", "layer":true}
+  },
+
+  "layers": {
+    "contact": {"t":"📍 Kontaktpunkte", "desc":"Wo Kunden die Produkte finden"},
+    "pricing": {"t":"💰 Preisstruktur", "desc":"Wer zahlt wem wieviel"}
   },
 
   "nodes": [
@@ -259,7 +266,53 @@
     {"id":"stripe","g":"services","x":800,"y":680,"t":"Stripe","sub":"Premium-Zahlungen (pausiert)","status":"wait",
      "s":"Einmalzahlung für Premium-Zugang.",
      "d":"4 Pakete: 7/14/30/90 Tage. App bleibt vorerst Beta — kein Verkauf, erst Beobachtung der Nutzung.",
-     "where":"premium.html","check":"Erst starten, wenn Beta-Phase abgeschlossen."}
+     "where":"premium.html","check":"Erst starten, wenn Beta-Phase abgeschlossen."},
+
+    {"id":"cp_cruise","g":"contact","x":20,"y":960,"t":"Kreuzfahrtschiffe","sub":"Viking-Anleger · Stolzenfels · Koblenz","status":"ok",
+     "s":"Verteilpunkt bei Kreuzfahrtgästen: Postkarte + App-Hinweis bei Führungsbeginn.",
+     "d":"Ca. 200 Besucher/Tag am Stolzenfels. QR-Tracking: ?src=cruise. Postkarte oder Visitenkarte mit QR beim Start der Führung verteilen.",
+     "check":"QR-Parameter ?src=cruise in GoatCounter prüfen."},
+    {"id":"cp_cafe","g":"contact","x":280,"y":960,"t":"Cafés und Restaurants","sub":"Auslage · QR-Aufsteller · Barter","status":"wip",
+     "s":"Postkarten und QR-Aufsteller in Cafés der Altstadt. Modell: Tausch (Auslage gegen Erwähnung in App).",
+     "d":"Tracking: ?src=cafe_name. Erste Kandidaten: Buta Cafe. Partner-Demo «Рядом» geplant, noch nicht gebaut. Kein Vertrag bisher.",
+     "check":"Erste 2–3 Cafés ansprechen; Demo bauen."},
+    {"id":"cp_shop","g":"contact","x":540,"y":960,"t":"Souvenirläden","sub":"Reuffel · Festungsshop · Kioske","status":"wip",
+     "s":"Postkartenverkauf über Einzelhandel. Modell: Großhandel (EK 0,40 € netto, VK frei).",
+     "d":"Reuffel: Treffen 29.10 stattgefunden. Festungsshop: Angebot gesendet 02.11. Tracking: ?src=shop_name.",
+     "check":"Antworten Reuffel und Woyda abwarten."},
+    {"id":"cp_winery","g":"contact","x":800,"y":960,"t":"Weingüter","sub":"Winningen · 5 kontaktiert","status":"wip",
+     "s":"Gratis-Platzierung + organisierte Gruppen. Anatoly bringt Weinprobe-Gäste, Weingut zeigt App.",
+     "d":"5 Weingüter kontaktiert 03.11. Kröber-Treffen 06.11. Tracking: ?src=winery_name.",
+     "check":"Antworten abwarten; Kröber-Ergebnis eintragen."},
+    {"id":"cp_info","g":"contact","x":20,"y":1040,"t":"Touristinformationen","sub":"Noch nicht angesprochen","status":"wait",
+     "s":"Navigator als Angebot für deren Gäste. Modell: Gratis, mit Link auf der Infoseite.",
+     "d":"Touristinformationen zeigen die App ihren Gästen. Noch niemand angesprochen. Liste der Ansprechpartner fehlt.",
+     "check":"Liste der Ansprechpartner erstellen."},
+    {"id":"cp_online","g":"contact","x":280,"y":1040,"t":"Online-Kanäle","sub":"Social Media · QR · Website · NFC","status":"wip",
+     "s":"Digitale Kanäle: Instagram, Facebook, Visitenkarte (QRCodeChimp), NFC-Karten, turrettales.de.",
+     "d":"Zweites Instagram-Profil geplant. Visitenkarten-Button zeigt noch auf alte Seite. NFC-Karten noch nicht bestellt. Tracking: ?src=social, ?src=qr, ?src=nfc.",
+     "check":"Instagram-Handle prüfen; Button auf turrettales.de umstellen."},
+
+    {"id":"pr_premium","g":"pricing","x":20,"y":1160,"t":"Kunde → Premium","sub":"7/14/30/90 Tage · Stripe","status":"wait",
+     "s":"Endkunde zahlt Einmalpreis für Premium-Zugang über Stripe.",
+     "d":"4 Pakete geplant. Stripe deckt: Karten, Apple Pay, Google Pay, SEPA, Giropay, Klarna. PayPal nicht nötig. Erst nach Beta-Phase.",
+     "check":"Preise festlegen nach Beta."},
+    {"id":"pr_tour","g":"pricing","x":280,"y":1160,"t":"Kunde → Führung","sub":"Bar · Rechnung · über Veranstalter","status":"ok",
+     "s":"Gast zahlt für Führung direkt (bar/Rechnung) oder über Reiseveranstalter (Abrechnung über Madlen).",
+     "d":"Private Führungen: Bargeld oder Rechnung. Gruppen über Travmondo/Saga/Viking: Koordination über Madlen Donath.",
+     "check":"—"},
+    {"id":"pr_wholesale","g":"pricing","x":540,"y":1160,"t":"Partner kauft ein","sub":"Postkarten EK 0,40 € netto","status":"wip",
+     "s":"Partner kaufen Postkarten zum Großhandelspreis (EK 0,40 € netto). VK frei (meist 1–2 €).",
+     "d":"Gilt für: Festungsshop, Reuffel, Kioske. Saxoprint: 500 Stück, 280 g, ca. 30 €. Marge bei EK 0,40: ca. 100 % für den Partner.",
+     "check":"Mindestbestellmenge und Lieferweg klären."},
+    {"id":"pr_barter","g":"pricing","x":800,"y":1160,"t":"Tausch / Gratis","sub":"Café-Auslage · Weingut-Platzierung","status":"wip",
+     "s":"Kostenlose Platzierung gegen gegenseitige Empfehlung.",
+     "d":"Cafés: Gratis-Auslage, dafür Erwähnung in App. Weingüter: Gratis-Platzierung, dafür organisierte Gruppen. Touristinfos: Gratis.",
+     "check":"Erste Barter-Vereinbarungen treffen."},
+    {"id":"pr_stripe_flow","g":"pricing","x":20,"y":1240,"t":"Stripe-Zahlungsfluss","sub":"Karte · Apple Pay · SEPA · Klarna","status":"wait",
+     "s":"Alle Online-Zahlungen über Stripe. Kein PayPal nötig.",
+     "d":"Stripe deckt ab: Kreditkarten, Debitkarten, Apple Pay, Google Pay, SEPA-Lastschrift, Giropay, Klarna. Für Offline: Bargeld + Rechnung.",
+     "check":"Stripe-Konto einrichten wenn Beta abgeschlossen."}
   ],
 
   "edges": [
@@ -276,7 +329,18 @@
     ["woyda","postcards"],["reuffel","postcards"],["reuffel","partners"],
     ["winningen","winningen_weingueter"],["winningen_weingueter","partners"],
     ["premium_features","stripe"],["live_tours","stripe"],
-    ["meetings","woyda"],["meetings","reuffel"],["meetings","winningen_weingueter"],["meetings","madlen"],["meetings","koblenztouristik"]
+    ["meetings","woyda"],["meetings","reuffel"],["meetings","winningen_weingueter"],["meetings","madlen"],["meetings","koblenztouristik"],
+    ["cp_cruise","app"],["cp_cruise","postcards"],["cp_cruise","card"],["cp_cruise","cruise"],
+    ["cp_cafe","app"],["cp_cafe","postcards"],["cp_cafe","partners"],
+    ["cp_shop","postcards"],["cp_shop","reuffel"],["cp_shop","woyda"],
+    ["cp_winery","winningen"],["cp_winery","winningen_weingueter"],
+    ["cp_info","touristinfo"],["cp_info","app"],
+    ["cp_online","social"],["cp_online","card"],["cp_online","qrcode"],["cp_online","nfc"],
+    ["pr_premium","stripe"],["pr_premium","app"],
+    ["pr_tour","cruise"],["pr_tour","madlen"],
+    ["pr_wholesale","postcards"],["pr_wholesale","woyda"],["pr_wholesale","reuffel"],["pr_wholesale","saxoprint"],
+    ["pr_barter","cp_cafe"],["pr_barter","cp_winery"],["pr_barter","cp_info"],
+    ["pr_stripe_flow","stripe"],["pr_stripe_flow","pr_premium"]
   ],
 
   "prio": {

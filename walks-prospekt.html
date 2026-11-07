@@ -991,9 +991,13 @@ function wineMapTools(map, items) {
   let lastUser = null;
   const renderPanel = () => {
     if (!lastUser) { panel.style.display = 'none'; panel.innerHTML = ''; return; }
-    const near = items.map(it => ({ it, d: dist(lastUser, it.ll) })).sort((a, b) => a.d - b.d)[0];
+    const sorted = items.map(it => ({ it, d: dist(lastUser, it.ll) })).sort((a, b) => a.d - b.d);
     let html = '';
-    if (near) html += `<div data-go="${items.indexOf(near.it)}" style="${CARD};cursor:pointer"><div style="font-weight:700;font-size:15px">≈ ${fmtD(near.d)}</div><div>zu ${near.it.name}</div></div>`;
+    sorted.forEach((near, i) => {
+      const bold = i === 0 ? 'border:2px solid #7A1026;' : '';
+      const walkMin = Math.ceil(near.d * 1.3 / 75);
+      html += `<div data-go="${items.indexOf(near.it)}" style="${CARD};cursor:pointer;${bold}"><div style="font-weight:700;font-size:15px">≈ ${fmtD(near.d)} · ${walkMin} min</div><div>${i === 0 ? '⭐ ' : ''}${near.it.name}</div></div>`;
+    });
     const s = getSpot();
     if (s) html += `<div style="${CARD}"><div style="font-weight:700;font-size:15px">≈ ${fmtD(dist(lastUser, [s.lat, s.lng]))}</div><div>zu ${s.label || 'Mein Punkt'} <button type="button" data-clear="1" style="border:none;background:rgba(90,67,39,.12);border-radius:50%;width:20px;height:20px;cursor:pointer;margin-left:4px">✕</button></div></div>`;
     html += `<button type="button" data-save="1" style="${CARD};font-weight:700;cursor:pointer;text-align:left">📌 Meinen Punkt speichern</button>`;
@@ -1015,18 +1019,24 @@ function wineMapTools(map, items) {
     gps.style.background = on ? 'linear-gradient(135deg,#94481F,#8f4a22)' : 'rgba(246,238,221,0.95)';
     gps.style.color = on ? '#fff' : '#5A4327';
   };
+  const GPS_KEY = 'rhineGuideGpsActive';
   const stop = () => {
     if (watchId !== null) navigator.geolocation.clearWatch(watchId);
     watchId = null;
     if (userLayer) userLayer.remove();
     userLayer = null; fitted = false; lastUser = null; setOn(false); renderPanel();
+    try { localStorage.setItem(GPS_KEY, 'false'); } catch(e){}
   };
   const start = () => {
     if (!navigator.geolocation) { alert('GPS nicht verfügbar'); return; }
     setOn(true);
+    try { localStorage.setItem(GPS_KEY, 'true'); } catch(e){}
     watchId = navigator.geolocation.watchPosition(pos => {
       const user = [pos.coords.latitude, pos.coords.longitude];
       lastUser = user;
+      // Auto-update saved spot with current GPS position
+      setSpot({ lat: user[0], lng: user[1], label: 'Mein Standort' });
+      drawSpot();
       if (!userLayer) userLayer = L.circleMarker(user, { radius: 7, color: '#fff', weight: 2, fillColor: '#1d6fd6', fillOpacity: 1 }).addTo(map);
       else userLayer.setLatLng(user);
       if (!fitted) {
@@ -1039,6 +1049,8 @@ function wineMapTools(map, items) {
   gps.addEventListener('click', () => (watchId === null ? start() : stop()));
   setOn(false);
   drawSpot();
+  // Auto-start GPS if it was active on another map
+  try { if (localStorage.getItem(GPS_KEY) === 'true') start(); } catch(e){}
 }
 
 const wineryMore = slug => ['kroeber', 'richter'].includes(slug) ? ` <a class="winery-more" href="weingut-${slug}.html">Mehr →</a>` : '';

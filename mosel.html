@@ -851,6 +851,7 @@ function stopGps(){
   gpsToggleLabel.textContent=UI.gpsToggle[lang];
   gpsSaveBtn.classList.remove('show');
   const p=document.getElementById('gpsPanel');if(p)p.classList.remove('show');
+  try{localStorage.setItem('rhineGuideGpsActive','false')}catch(e){}
 }
 
 function startGps(){
@@ -871,11 +872,16 @@ function startGps(){
     // Update tooltips with distance
     if(map)updateMarkers();
     renderList();
-  },()=>{gpsToggleLabel.textContent=UI.gpsError[lang];setTimeout(()=>stopGps(),2500)},
+    // Auto-update saved spot with current GPS position
+    try{localStorage.setItem('rhineGuideSavedSpot',JSON.stringify({lat:latitude,lng:longitude,label:'Mein Standort'}))}catch(e){}
+  },()=>{gpsToggleLabel.textContent=UI.gpsError[lang];try{localStorage.setItem('rhineGuideGpsActive','false')}catch(e){};setTimeout(()=>stopGps(),2500)},
   {enableHighAccuracy:true,maximumAge:10000,timeout:15000});
+  try{localStorage.setItem('rhineGuideGpsActive','true')}catch(e){}
 }
 
 gpsToggleBtn.addEventListener('click',e=>{e.stopPropagation();gpsActive?stopGps():startGps()});
+// Auto-start GPS if it was active on another map
+try{if(localStorage.getItem('rhineGuideGpsActive')==='true')startGps()}catch(e){}
 
 // Save location
 gpsSaveBtn.addEventListener('click',e=>{

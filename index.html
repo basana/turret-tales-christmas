@@ -4040,15 +4040,20 @@ function xmasStartGps() {
       else xmasDrawGpsLayers();
     }
     xmasUpdateGpsPanel();
+    // Auto-update saved spot with current GPS position
+    try { localStorage.setItem(SAVED_SPOT_KEY, JSON.stringify({ lat: xmasGpsPos.lat, lng: xmasGpsPos.lng, label: 'Mein Standort' })); } catch(e){}
   }, () => {
     xmasSetGpsLabel(xmasG('err'));
     if (xmasGpsWatch !== null) navigator.geolocation.clearWatch(xmasGpsWatch);
     xmasGpsWatch = null;
+    try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
   }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
+  try { localStorage.setItem('rhineGuideGpsActive', 'true'); } catch(e){}
 }
 function xmasStopGps() {
   if (xmasGpsWatch !== null && navigator.geolocation) navigator.geolocation.clearWatch(xmasGpsWatch);
   xmasGpsWatch = null; xmasGpsPos = null;
+  try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
   if (xmasGpsMarker && xmasMapObj) xmasMapObj.removeLayer(xmasGpsMarker);
   xmasGpsMarker = null;
   xmasSetGpsLabel(xmasG('btn'));
@@ -4156,11 +4161,15 @@ function renderChristmas(townKey) {
   if (bk) bk.addEventListener('click', () => openXmasHome());
 
   const gpsBtn = document.getElementById('xmasGpsBtn');
-  if (gpsBtn) gpsBtn.addEventListener('click', () => {
-    if (xmasGpsWatch !== null) xmasStopGps();
-    else if (isPremiumUnlocked()) xmasStartGps();
-    else openPremiumPopup('xmas');
-  });
+  if (gpsBtn) {
+    gpsBtn.addEventListener('click', () => {
+      if (xmasGpsWatch !== null) xmasStopGps();
+      else if (isPremiumUnlocked()) xmasStartGps();
+      else openPremiumPopup('xmas');
+    });
+    // Auto-start GPS if it was active on another map
+    try { if (localStorage.getItem('rhineGuideGpsActive') === 'true' && isPremiumUnlocked()) xmasStartGps(); } catch(e){}
+  }
   xmasUpdateGpsPanel();
   if (!xmasTown && xmasListOnly) {
     // только список: карту не рисуем
@@ -6109,6 +6118,7 @@ function updateGpsDistancePanel(lat, lng) {
 
 function stopGps() {
   gpsActive = false;
+  try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
   if (gpsWatchId !== null && navigator.geolocation) {
     navigator.geolocation.clearWatch(gpsWatchId);
     gpsWatchId = null;
@@ -6123,6 +6133,7 @@ function stopGps() {
 function startGps() {
   if (!navigator.geolocation) { gpsToggleLabel.textContent = UI[lang].gpsError; return; }
   gpsActive = true;
+  try { localStorage.setItem('rhineGuideGpsActive', 'true'); } catch(e){}
   gpsToggleBtn.classList.add('active');
   gpsToggleLabel.textContent = UI[lang].gpsLocating;
 
@@ -6145,6 +6156,8 @@ function startGps() {
       if (leafletMap) leafletMap.panTo([latitude, longitude]);
 
       gpsLastLat = latitude; gpsLastLng = longitude;
+      // Auto-update saved spot with current GPS position
+      try { localStorage.setItem(SAVED_SPOT_KEY, JSON.stringify({ lat: latitude, lng: longitude, label: 'Mein Standort' })); } catch(e){}
       updateGpsDistancePanel(latitude, longitude);
 
       const nearest = findNearestCastleIndex(latitude, longitude);
@@ -6173,6 +6186,8 @@ if (gpsToggleBtn) {
     if (isPremiumUnlocked()) toggleGps();
     else openPremiumPopup('gps');
   });
+  // Auto-start GPS if it was active on another map
+  try { if (localStorage.getItem('rhineGuideGpsActive') === 'true' && isPremiumUnlocked()) startGps(); } catch(e){}
 }
 
 const gpsSaveSpotBtn = document.getElementById('gpsSaveSpotBtn');

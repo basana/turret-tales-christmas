@@ -45,7 +45,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:v
 .tab-bar button.active{color:var(--accent);border-bottom-color:var(--accent)}
 /* CANVAS */
 .canvas-wrap{position:relative;flex:1;overflow:hidden}
-canvas{display:block;width:100%;height:100%;cursor:grab}
+canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
 canvas:active{cursor:grabbing}
 /* DETAIL PANEL */
 .detail{position:absolute;top:0;right:0;width:380px;height:100%;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:20px;display:none;z-index:50}
@@ -704,6 +704,156 @@ function setupEvents(){
     const mx=e.clientX-rect.left, my=e.clientY-rect.top;
     const f = e.deltaY<0?1.06:1/1.06;
     cam.z*=f; cam.x=mx-(mx-cam.x)*f; cam.y=my-(my-cam.y)*f;
+  },{passive:false});
+
+  // ===== TOUCH SUPPORT =====
+  let touchId=null, touchStartX=0, touchStartY=0, touchMoved=false;
+  let pinchDist=null; // for two-finger zoom
+  function getTouchDist(t){
+    const dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY;
+    return Math.sqrt(dx*dx+dy*dy);
+  }
+  function getTouchCenter(t){
+    return {x:(t[0].clientX+t[1].clientX)/2, y:(t[0].clientY+t[1].clientY)/2};
+  }
+  cv.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    const touches=e.touches;
+    if(touches.length===2){
+      // Start pinch zoom
+      pinchDist=getTouchDist(touches);
+      touchId=null; dragNode=null; drag=false;
+      return;
+    }
+    if(touches.length!==1) return;
+    const t=touches[0];
+    touchId=t.identifier;
+    touchStartX=t.clientX; touchStartY=t.clientY; touchMoved=false;
+    const rect=cv.getBoundingClientRect();
+    const mx=t.clientX-rect.left, my=t.clientY-rect.top;
+    const[wx,wy]=screenToWorld(mx,my);
+    dragNode=null;
+    for(let i=nodes.length-1;i>=0;i--){
+      const n=nodes[i];
+      if(!matchesFilter(n)) continue;
+      if(wx>=n.sx && wx<=n.sx+n.w && wy>=n.sy && wy<=n.sy+n.h){
+        dragNode=n;
+        dragOrigPos={};
+        const connIds=edges.filter(e=>e[0]===n.id||e[1]===n.id).map(e=>e[0]===n.id?e[1]:e[0]);
+        connIds.forEach(cid=>{const cn=nodes.find(nd=>nd.id===cid);if(cn)dragOrigPos[cid]={x:cn.sx,y:cn.sy};});
+        dragStartPos={x:n.sx,y:n.sy};
+        break;
+      }
+    }
+    drag=true; dragX=t.clientX; dragY=t.clientY;
+  },{passive:false});
+
+  cv.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    const touches=e.touches;
+    if(touches.length===2 && pinchDist!==null){
+      // Pinch zoom
+      const newDist=getTouchDist(touches);
+      const f=newDist/pinchDist;
+      const rect=cv.getBoundingClientRect();
+      const c=getTouchCenter(touches);
+      const mx=c.x-rect.left, my=c.y-rect.top;
+      cam.z*=f; cam.x=mx-(mx-cam.x)*f; cam.y=my-(my-cam.y)*f;
+      pinchDist=newDist;
+      return;
+    }
+    if(touches.length!==1||!drag) return;
+    const t=touches[0];
+    if(t.identifier!==touchId) return;
+    const dx=t.clientX-dragX, dy=t.clientY-dragY;
+    if(Math.abs(t.clientX-touchStartX)>5||Math.abs(t.clientY-touchStartY)>5) touchMoved=true;
+    if(dragNode){
+      dragNode.sx+=dx/cam.z; dragNode.sy+=dy/cam.z;
+      selectedNode=dragNode.id;
+      const connEntries=Object.entries(dragOrigPos);
+      const gap=6, colOffsetX=dragNode.w+20;
+      const totalH=connEntries.length*(dragNode.h+gap)-gap;
+      const startY=dragNode.sy-totalH/2+dragNode.h/2;
+      connEntries.forEach(([cid,orig],idx)=>{
+        const cn=nodes.find(nd=>nd.id===cid);
+        if(!cn||cn===dragNode) return;
+        cn.sx+=(dragNode.sx+colOffsetX-cn.sx)*0.25;
+        cn.sy+=(startY+idx*(dragNode.h+gap)-cn.sy)*0.25;
+      });
+    } else {
+      cam.x+=dx; cam.y+=dy;
+    }
+    dragX=t.clientX; dragY=t.clientY;
+  },{passive:false});
+
+  cv.addEventListener('touchend',e=>{
+    e.preventDefault();
+    pinchDist=null;
+    if(dragNode && touchMoved){
+      // Same logic as mouseup — keep pulled nodes in place
+      if(dragOrigPos && Object.keys(dragOrigPos).length){
+        pulledNodeId=dragNode.id; pulledOrigPos={...dragOrigPos};
+        selectedNode=dragNode.id;
+        const connEntries=Object.entries(dragOrigPos);
+        const colOffsetX=dragNode.w+20;
+        const totalH=connEntries.length*(dragNode.h+6)-6;
+        const startY=dragNode.sy-totalH/2+dragNode.h/2;
+        connEntries.forEach(([cid,orig],idx)=>{
+          const cn=nodes.find(nd=>nd.id===cid);
+          if(!cn) return;
+          cn.sx=dragNode.sx+colOffsetX;
+          cn.sy=startY+idx*(dragNode.h+6);
+        });
+      }
+    }
+    if(!touchMoved && !dragNode){
+      // Tap on empty space — release pulled nodes
+      if(pulledNodeId && pulledOrigPos){
+        for(const[cid,orig] of Object.entries(pulledOrigPos)){
+          const cn=nodes.find(nd=>nd.id===cid);
+          if(cn){cn.sx=orig.x;cn.sy=orig.y;}
+        }
+        selectedNode=null; pulledNodeId=null; pulledOrigPos=null;
+      }
+    }
+    if(!touchMoved && dragNode){
+      // Tap on a node
+      const n=dragNode;
+      if(pulledNodeId && n.id===pulledNodeId && pulledOrigPos){
+        // Animate connected nodes back
+        const snapBack={};
+        for(const[cid,orig] of Object.entries(pulledOrigPos)){
+          const cn=nodes.find(nd=>nd.id===cid);
+          if(cn) snapBack[cid]={fromX:cn.sx,fromY:cn.sy,toX:orig.x,toY:orig.y,node:cn};
+        }
+        let frame=0;
+        const animId=setInterval(()=>{
+          frame++;
+          const t=frame/20, ease=1-Math.pow(1-t,3);
+          for(const sb of Object.values(snapBack)){
+            sb.node.sx=sb.fromX+(sb.toX-sb.fromX)*ease;
+            sb.node.sy=sb.fromY+(sb.toY-sb.fromY)*ease;
+          }
+          if(frame>=20){
+            clearInterval(animId);
+            const pos={};nodes.forEach(nn=>{pos[nn.id]={x:nn.sx,y:nn.sy};});
+            try{localStorage.setItem('map-node-positions',JSON.stringify(pos));}catch(e){}
+          }
+        },16);
+        selectedNode=null; pulledNodeId=null; pulledOrigPos=null;
+      } else {
+        // Normal tap — show detail, release any pulled state
+        if(pulledNodeId && pulledOrigPos){
+          for(const[cid,orig] of Object.entries(pulledOrigPos)){
+            const cn=nodes.find(nd=>nd.id===cid);
+            if(cn){cn.sx=orig.x;cn.sy=orig.y;}
+          }
+          pulledNodeId=null; pulledOrigPos=null;
+        }
+        showDetail(n);
+      }
+    }
+    drag=false; dragNode=null; dragOrigPos=null;
   },{passive:false});
 
   // Click on node — suppress if dragged

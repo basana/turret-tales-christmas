@@ -11,6 +11,7 @@
   --g-product:#3b82f6;--g-audience:#f59e0b;--g-marketing:#10b981;
   --g-dev:#8b5cf6;--g-services:#ec4899;--g-print:#f97316;--g-legal:#6366f1;
   --g-contact:#14b8a6;--g-pricing:#f59e0b;
+  --g-journey:#06b6d4;--g-sales:#e879f9;
   --ticker-bg:#1e293b;
 }
 [data-theme=light]{
@@ -19,6 +20,7 @@
   --g-product:#2563eb;--g-audience:#d97706;--g-marketing:#059669;
   --g-dev:#7c3aed;--g-services:#db2777;--g-print:#ea580c;--g-legal:#4f46e5;
   --g-contact:#0d9488;--g-pricing:#d97706;
+  --g-journey:#0891b2;--g-sales:#c026d3;
   --ticker-bg:#e2e8f0;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -148,6 +150,8 @@ canvas:active{cursor:grabbing}
     <span class="layer-sep"></span>
     <button id="layerContact" class="layer-btn" title="Kontaktpunkte ein-/ausblenden"><span class="layer-dot" style="background:var(--g-contact)"></span>Kontaktpunkte</button>
     <button id="layerPricing" class="layer-btn" title="Preisstruktur ein-/ausblenden"><span class="layer-dot" style="background:var(--g-pricing)"></span>Preisstruktur</button>
+    <button id="layerJourney" class="layer-btn" title="Kundenreise ein-/ausblenden"><span class="layer-dot" style="background:var(--g-journey)"></span>Kundenreise</button>
+    <button id="layerSales" class="layer-btn" title="Verkaufsmodelle ein-/ausblenden"><span class="layer-dot" style="background:var(--g-sales)"></span>Verkaufsmodelle</button>
     <span class="layer-sep"></span>
     <button id="feedBtn" class="feed-toggle" title="Letzte Änderungen">⚡<span class="feed-dot"></span></button>
     <button id="themeBtn" title="Dark / Light">🌓</button>
@@ -221,7 +225,7 @@ let cam={x:0,y:0,z:1};
 let selectedNode=null;
 let currentTab='map';
 let filterGroup='', filterStatus='', filterSearch='';
-let layerVisible={contact:false, pricing:false}; // overlay layers hidden by default
+let layerVisible={contact:false, pricing:false, journey:false, sales:false}; // overlay layers hidden by default
 
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
@@ -626,6 +630,16 @@ function setupEvents(){
     layerVisible.pricing = !layerVisible.pricing;
     this.classList.toggle('on', layerVisible.pricing);
     if(layerVisible.pricing) fitVisible();
+  });
+  document.getElementById("layerJourney").addEventListener("click",function(){
+    layerVisible.journey = !layerVisible.journey;
+    this.classList.toggle("on", layerVisible.journey);
+    if(layerVisible.journey) fitVisible();
+  });
+  document.getElementById("layerSales").addEventListener("click",function(){
+    layerVisible.sales = !layerVisible.sales;
+    this.classList.toggle("on", layerVisible.sales);
+    if(layerVisible.sales) fitVisible();
   });
 
   // Detail close

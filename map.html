@@ -162,6 +162,11 @@ canvas:active{cursor:grabbing}
   <div class="main">
     <div class="canvas-wrap" id="canvasWrap">
       <canvas id="cv"></canvas>
+      <div id="map-quick-nav" style="position:absolute;top:15px;left:15px;z-index:100;display:flex;gap:8px;background:rgba(255,255,255,0.85);padding:8px;border-radius:8px;backdrop-filter:blur(4px);flex-wrap:wrap">
+        <button onclick="focusGroup('pricing')" style="background:#10b981;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px">💶 Цены</button>
+        <button onclick="focusGroup('journey')" style="background:#f59e0b;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px">🛒 Путь клиента</button>
+        <button onclick="focusGroup('product')" style="background:#3b82f6;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px">📱 Продукт</button>
+      </div>
       <div class="legend" id="legend"></div>
       <div class="zoom-ctrl">
         <button id="zoomIn">+</button>
@@ -333,6 +338,62 @@ function buildLegend(){
   el.innerHTML = html;
 }
 
+/* ===== GROUP CONTAINERS & FLY-TO ===== */
+function drawGroupContainers(){
+  const groupMap = {};
+  nodes.forEach(n => {
+    if (!n.g) return;
+    if (!groupMap[n.g]) groupMap[n.g] = [];
+    groupMap[n.g].push(n);
+  });
+  const groupStyles = {
+    pricing: { bg:'rgba(16,185,129,0.06)', border:'#10b981', title:'💶 Ценообразование & Финансы' },
+    journey: { bg:'rgba(245,158,11,0.06)', border:'#f59e0b', title:'🛒 Путь клиента / Воронка' },
+    product: { bg:'rgba(59,130,246,0.06)', border:'#3b82f6', title:'📱 Продукт & Навигация' }
+  };
+  for (const [gName, gNodes] of Object.entries(groupMap)) {
+    const style = groupStyles[gName];
+    if (!style || gNodes.length === 0) continue;
+    let minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
+    gNodes.forEach(n => {
+      minX = Math.min(minX, n.sx);
+      minY = Math.min(minY, n.sy);
+      maxX = Math.max(maxX, n.sx + (n.w||NODE_W));
+      maxY = Math.max(maxY, n.sy + (n.h||NODE_H));
+    });
+    const pad = 24;
+    const [sx, sy] = worldToScreen(minX - pad, minY - pad - 24);
+    const sw = (maxX - minX + pad*2) * cam.z;
+    const sh = (maxY - minY + pad*2 + 24) * cam.z;
+    ctx.save();
+    ctx.fillStyle = style.bg;
+    ctx.strokeStyle = style.border;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(sx, sy, sw, sh, 12);
+    else ctx.rect(sx, sy, sw, sh);
+    ctx.fill();
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = style.border;
+    ctx.font = `bold ${Math.max(11, 13*cam.z)}px system-ui`;
+    ctx.fillText(style.title, sx + 8, sy + Math.max(12, 16*cam.z));
+    ctx.restore();
+  }
+}
+
+function focusGroup(groupName){
+  const gNodes = nodes.filter(n => n.g === groupName);
+  if (gNodes.length === 0) return;
+  const avgX = gNodes.reduce((s,n) => s + n.sx + (n.w||NODE_W)/2, 0) / gNodes.length;
+  const avgY = gNodes.reduce((s,n) => s + n.sy + (n.h||NODE_H)/2, 0) / gNodes.length;
+  const cw = cv.width / devicePixelRatio, ch = cv.height / devicePixelRatio;
+  cam.x = cw/2 - avgX * cam.z;
+  cam.y = ch/2 - avgY * cam.z;
+  draw();
+}
+
 /* ===== CANVAS DRAWING ===== */
 function resize(){
   const wrap = document.getElementById('canvasWrap');
@@ -370,6 +431,9 @@ function draw(){
   const dpr = devicePixelRatio;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,cv.width/dpr,cv.height/dpr);
+
+  // Group containers (background zones)
+  drawGroupContainers();
 
   // Edges — colored by group, highlighted on selection
   const mutedC = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim()||'#94a3b8';

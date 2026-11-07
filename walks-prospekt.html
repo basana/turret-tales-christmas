@@ -925,10 +925,17 @@ function drawWalkMap(w) {
   ];
   L.polyline(loop, { color: '#7A1026', weight: 4, opacity: .85 }).addTo(map);
   map.fitBounds(L.latLngBounds([w.pierLL, w.startLL, ...loop]), { padding: [20, 20], maxZoom: 15 });
-  wineMapTools(map, [
+  const walkItems = [
     { name: t.legStart + ' · ' + w.startName, ll: w.startLL, go: () => map.setView(w.startLL, 16) },
     { name: 'KD · ' + w.pierName, ll: w.pierLL, go: () => map.setView(w.pierLL, 16) }
-  ]);
+  ];
+  if (loop.length >= 6) {
+    const mid = Math.floor(loop.length / 2);
+    const hp = loop.reduce((best, pt) => (!best || pt[0] > best[0]) ? pt : best, null);
+    if (hp) walkItems.push({ name: '⛰ ' + (lang === 'ru' ? 'Высшая точка' : lang === 'en' ? 'Highest point' : 'Höchster Punkt') + ' (198 m)', ll: hp, go: () => map.setView(hp, 16) });
+    walkItems.push({ name: '🔄 ' + (lang === 'ru' ? 'Поворот маршрута' : lang === 'en' ? 'Loop midpoint' : 'Wendepunkt'), ll: loop[mid], go: () => map.setView(loop[mid], 16) });
+  }
+  wineMapTools(map, walkItems);
 }
 
 // ---- Weingüter ----

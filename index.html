@@ -559,6 +559,12 @@
     color: var(--ink-soft); font-size: 20px; cursor: pointer;
   }
   .btn-check.done { background: var(--done); color: #fff; border-color: var(--done); }
+  .btn-wa-share {
+    width: 48px; display: flex; align-items: center; justify-content: center;
+    background: #25d366; border: none; border-radius: 10px;
+    color: #fff; font-size: 20px; cursor: pointer;
+  }
+  .btn-wa-share:active { opacity: .7; }
 
   .story-block, .legend-block, .castle-card, .route-card, .info-card {
     background: var(--parchment-deep); border: 1px solid var(--gold); border-radius: 12px;
@@ -945,6 +951,9 @@
   .gps-toggle-btn.active { background: linear-gradient(135deg, var(--terracotta), #8f4a22); color: #fff; border-color: rgba(255,255,255,0.75); }
   .gps-toggle-btn .lock-star { font-size: 11px; color: var(--terracotta); }
   .gps-toggle-btn.active .lock-star { display: none; }
+  .nearest-toast { display:none; position:absolute; z-index:1000; bottom:12px; left:12px; right:60px; background:rgba(122,16,38,0.95); color:#F5ECD6; border-radius:14px; padding:10px 14px; box-shadow:0 4px 14px rgba(0,0,0,0.35); font:700 14px var(--sans); cursor:pointer; backdrop-filter:blur(4px); }
+  .nearest-toast.show { display:block; }
+  .nearest-toast .toast-dist { font-size:16px; }
   .gps-panel {
     position: absolute; z-index: 1000; top: 126px; left: 12px; display: none;
     flex-direction: column; gap: 7px; max-width: 210px;
@@ -983,6 +992,13 @@
     display: flex; align-items: center; justify-content: center; font-size: 13px;
     box-shadow: 0 2px 6px rgba(90,67,39,0.35);
   }
+  .poi-apotheke { background: #e8f5e9; border-color: #4caf50; font-size: 16px; }
+  .poi-wc { background: #e3f2fd; border-color: #2196f3; font-size: 16px; }
+  .poi-toggle-bar { position: absolute; z-index: 800; bottom: 50px; right: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .poi-toggle-btn { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #fff; font-size: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: all .2s; }
+  .poi-toggle-btn.apotheke { background: #e8f5e9; }
+  .poi-toggle-btn.wc { background: #e3f2fd; }
+  .poi-toggle-btn.active { box-shadow: 0 0 0 3px var(--gold), 0 2px 8px rgba(0,0,0,0.3); }
   .gps-user-halo {
     width: 22px; height: 22px; border-radius: 50%;
     background: rgba(181,96,46,0.35); display: flex; align-items: center; justify-content: center;
@@ -1351,6 +1367,7 @@
       <div class="stats">
         <div class="stat"><p id="statTownLabel"></p><p id="statTown"></p></div>
         <div class="stat"><p id="statBuiltLabel"></p><p id="statBuilt"></p></div>
+        <div class="stat" id="statBankWrap" style="display:none"><p id="statBankLabel"></p><p id="statBank"></p></div>
       </div>
 
       <div class="tour-badge" id="tourBadge" style="display:none;"><span class="dot"></span><span id="tourBadgeText"></span></div>
@@ -1375,6 +1392,7 @@
       <div class="actions">
         <button class="btn-play" id="playBtn">▶ <span id="playLabel">Listen</span></button>
         <button class="btn-check" id="checkBtn" aria-label="Mark as visited">✓</button>
+        <button class="btn-wa-share" id="waShareBtn" aria-label="Share via WhatsApp" title="WhatsApp">💬</button>
       </div>
       <div class="xmas-speech" id="xmasSpeechText"></div>
     </div>
@@ -1413,6 +1431,11 @@
           <span>📌</span><span id="gpsSaveSpotLabel">Save my spot</span>
         </button>
       </div>
+      <div class="nearest-toast" id="nearestToast"></div>
+      <div class="poi-toggle-bar">
+        <button class="poi-toggle-btn apotheke" onclick="togglePoiLayer('apotheke');this.classList.toggle('active')" title="Apotheken">💊</button>
+        <button class="poi-toggle-btn wc" onclick="togglePoiLayer('wc');this.classList.toggle('active')" title="WC / Toiletten">🚻</button>
+      </div>
       <div class="map-legend" id="mapLegend">
         <div class="map-legend-row">
           <div class="map-legend-icon"><img src="new-vector-castle.png" alt=""></div>
@@ -1443,6 +1466,7 @@
         <div class="map-panel-actions">
           <button class="map-panel-speak" id="mapPanelSpeak">🔊 Read Aloud</button>
           <button class="map-panel-open-guide" id="mapPanelOpenGuide">📖 Full info →</button>
+          <button class="btn-wa-share" id="mapPanelWa" style="margin-left:auto">💬</button>
         </div>
       </div>
     </div>
@@ -1909,12 +1933,82 @@ const castles = [
   }
 ];
 
+// Rhine bank: L = left (west), R = right (east)
+const CASTLE_BANK = {
+  koblenz_altstadt:'L', koblenz_city:'L', ehrenbreitstein:'R', stolzenfels:'L',
+  lahneck:'R', marksburg:'R', braubach:'R', boppard:'L',
+  maus:'R', rheinfels:'L', katz:'R', loreley:'R',
+  schoenburg:'L', gutenfels:'R', pfalzgrafenstein:'M', bacharach:'L', stahleck:'L',
+  sooneck:'L', reichenstein:'L', rheinstein:'L',
+  ruedesheim:'R', maeuseturm:'M', hildegard:'L'
+};
+castles.forEach(c => { if (c.id && CASTLE_BANK[c.id]) c.bank = CASTLE_BANK[c.id]; });
+
 // Кафе и сувенирные магазины на карте — отдельная категория точек.
 // Формат одной записи (пришлите список в таком виде — вставлю):
 // { type: 'cafe' | 'souvenir', name: "...", nameRu: "...", lat: 50.xxxx, lng: 7.xxxx }
 const pois = [
   // { type: 'cafe', name: "Café am Deutsches Eck", nameRu: "Кафе у Немецкого угла", lat: 50.3600, lng: 7.6010 },
 ];
+
+// Apotheken + Toiletten POI data along the Rhine (Koblenz–Bingen corridor)
+const POI_APOTHEKEN = [
+  { name: 'Schloss-Apotheke', lat: 50.3590, lng: 7.5975, city: 'Koblenz' },
+  { name: 'Festung-Apotheke', lat: 50.3628, lng: 7.6130, city: 'Ehrenbreitstein' },
+  { name: 'Löhr-Apotheke', lat: 50.3545, lng: 7.5900, city: 'Koblenz' },
+  { name: 'Apotheke Lahnstein', lat: 50.3080, lng: 7.6100, city: 'Lahnstein' },
+  { name: 'Hirsch-Apotheke', lat: 50.2560, lng: 7.6100, city: 'Braubach' },
+  { name: 'Loreleystadt-Apotheke', lat: 50.1540, lng: 7.7200, city: 'St. Goar' },
+  { name: 'Rats-Apotheke Oberwesel', lat: 50.1075, lng: 7.7260, city: 'Oberwesel' },
+  { name: 'Apotheke Bacharach', lat: 50.0575, lng: 7.7680, city: 'Bacharach' },
+  { name: 'Adler-Apotheke Bingen', lat: 49.9680, lng: 7.8960, city: 'Bingen' },
+  { name: 'Rosen-Apotheke', lat: 50.3250, lng: 7.5760, city: 'Waldesch' },
+];
+const POI_TOILETTEN = [
+  { name: 'WC Deutsches Eck', lat: 50.3647, lng: 7.6056, city: 'Koblenz' },
+  { name: 'WC Hbf Koblenz', lat: 50.3530, lng: 7.5870, city: 'Koblenz' },
+  { name: 'WC Forum Mittelrhein', lat: 50.3555, lng: 7.5920, city: 'Koblenz' },
+  { name: 'WC Festung Ehrenbreitstein', lat: 50.3649, lng: 7.6141, city: 'Koblenz' },
+  { name: 'WC Stolzenfels', lat: 50.3095, lng: 7.6055, city: 'Stolzenfels' },
+  { name: 'WC Marksburg', lat: 50.2730, lng: 7.6480, city: 'Braubach' },
+  { name: 'WC Loreley Besucherzentrum', lat: 50.1415, lng: 7.7325, city: 'Loreley' },
+  { name: 'WC Schiffsanleger St. Goar', lat: 50.1530, lng: 7.7110, city: 'St. Goar' },
+  { name: 'WC Oberwesel Schiffsanleger', lat: 50.1080, lng: 7.7240, city: 'Oberwesel' },
+  { name: 'WC Bacharach Rheinufer', lat: 50.0573, lng: 7.7690, city: 'Bacharach' },
+  { name: 'WC Bingen Rheinufer', lat: 49.9680, lng: 7.8930, city: 'Bingen' },
+];
+
+let apothekenLayer = null, toilettenLayer = null;
+let xmasApoLayer = null, xmasWcLayer = null;
+function _buildPoiLayer(mapObj, data, emoji, cssClass) {
+  const lg = L.layerGroup();
+  data.forEach(p => {
+    const ic = L.divIcon({ className: '', html: `<div class="poi-marker ${cssClass}">${emoji}</div>`, iconSize: [28, 28], iconAnchor: [14, 14] });
+    L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
+  });
+  lg.addTo(mapObj);
+  return lg;
+}
+function togglePoiLayer(type) {
+  if (!leafletMap) return;
+  if (type === 'apotheke') {
+    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; return; }
+    apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
+  } else {
+    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; return; }
+    toilettenLayer = _buildPoiLayer(leafletMap, POI_TOILETTEN, '🚻', 'poi-wc');
+  }
+}
+function toggleXmasPoiLayer(type) {
+  if (!xmasMapObj) return;
+  if (type === 'apotheke') {
+    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; return; }
+    xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
+  } else {
+    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; return; }
+    xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
+  }
+}
 
 function renderPois() {
   if (!leafletMap) return;
@@ -4058,6 +4152,7 @@ function xmasStopGps() {
   xmasGpsMarker = null;
   xmasSetGpsLabel(xmasG('btn'));
   const panel = document.getElementById('xmasGpsPanel'); if (panel) panel.innerHTML = '';
+  const xToast = document.getElementById('xmasNearestToast'); if (xToast) xToast.classList.remove('show');
 }
 function xmasSetGpsLabel(text, on) {
   const b = document.getElementById('xmasGpsBtn');
@@ -4110,6 +4205,18 @@ function xmasUpdateGpsPanel() {
     try { localStorage.setItem(XMAS_DEPART_KEY, dep.value); } catch (e) {}
     xmasUpdateGpsPanel();
   });
+
+  // Nearest market toast
+  const xToast = document.getElementById('xmasNearestToast');
+  if (xToast && rows.length > 0) {
+    const nr = rows[0];
+    const walkMin = xmasWalkMin(nr.d);
+    xToast.innerHTML = `⭐ ${nr.t.label}<br><span class="toast-dist">≈ ${formatDistance(nr.d)} · ${walkMin} ${xmasG('min')} 🚶</span>`;
+    xToast.classList.add('show');
+    xToast.onclick = () => { if (xmasMap) xmasMap.setView(nr.t.ll, 16); };
+  } else if (xToast) {
+    xToast.classList.remove('show');
+  }
 }
 
 function renderChristmas(townKey) {
@@ -4123,7 +4230,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
+  const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>' + '<div class="poi-toggle-bar" style="bottom:50px"><button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
@@ -4132,7 +4239,8 @@ function renderChristmas(townKey) {
   } else {
     const c = XMAS_CITY[xmasTown];
     const TX = T_(c.text);
-    body = `<h2 class="xmas-title">${TX.title}</h2>` + mapHtml + `<p class="xmas-intro">${TX.intro}</p>` +
+    const waXmasUrl = `https://wa.me/?text=${encodeURIComponent(TX.title + '\n' + TX.intro + '\n\nhttps://turret-tales.netlify.app/')}`;
+    body = `<h2 class="xmas-title">${TX.title}</h2><div style="text-align:right;margin:-8px 0 8px"><a href="${waXmasUrl}" target="_blank" rel="noopener" class="btn-wa-share" style="display:inline-flex;width:40px;height:40px;text-decoration:none;font-size:18px;border-radius:50%">💬</a></div>` + mapHtml + `<p class="xmas-intro">${TX.intro}</p>` +
       TX.cards.filter(k => k.title !== 'Mia Gelateria').map((k, i) => `
         <div class="route-card xmas-card" id="xmasCard${i}">
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
@@ -5146,6 +5254,19 @@ function renderGuide() {
   document.getElementById('statBuiltLabel').textContent = t.built;
   document.getElementById('statBuilt').textContent = lang === 'ru' ? s.builtRu : lang === 'de' ? (s.builtDe || s.built) : s.built;
 
+  // Bank (shore) indicator
+  const bankWrap = document.getElementById('statBankWrap');
+  if (bankWrap) {
+    if (s.bank) {
+      bankWrap.style.display = '';
+      const bankLabels = { L: { de: '⬅ Linkes Ufer', en: '⬅ Left bank', ru: '⬅ Левый берег' }, R: { de: '➡ Rechtes Ufer', en: '➡ Right bank', ru: '➡ Правый берег' }, M: { de: '🏝 Im Fluss', en: '🏝 In the river', ru: '🏝 На реке' } };
+      document.getElementById('statBankLabel').textContent = lang === 'ru' ? 'Берег' : lang === 'de' ? 'Ufer' : 'Shore';
+      document.getElementById('statBank').textContent = (bankLabels[s.bank] || {})[lang] || (bankLabels[s.bank] || {}).en || '';
+    } else {
+      bankWrap.style.display = 'none';
+    }
+  }
+
   const tourBadge = document.getElementById('tourBadge');
   const tourNote = lang === 'ru' ? s.tourNoteRu : lang === 'de' ? (s.tourNoteDe || s.tourNote) : s.tourNote;
   if (tourBadge) {
@@ -5186,6 +5307,15 @@ function renderGuide() {
   }
 
   applyStaticText();
+
+  // WhatsApp share button
+  const waBtn = document.getElementById('waShareBtn');
+  if (waBtn) {
+    waBtn.onclick = () => {
+      const txt = `${s.name} — ${s.town}\n${lang === 'ru' ? s.factsRu : s.facts}\n\nhttps://turret-tales.netlify.app/`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank', 'noopener');
+    };
+  }
 }
 
 // Заполняет список "что входит в бонусную версию" (<ul id="premiumPopupText">)
@@ -5643,13 +5773,25 @@ function showMapPanel(i) {
   // дата/факт основания (для города), город/место — вторым, если есть место.
   const builtText = lang === 'ru' ? c.builtRu : (lang === 'de' ? (c.builtDe || c.built) : c.built);
   const isTown = TOWN_IDS.has(c.id);
+  const bankLabel = c.bank === 'L' ? (lang === 'ru' ? '⬅ лев.' : lang === 'de' ? '⬅ links' : '⬅ left') :
+                    c.bank === 'R' ? (lang === 'ru' ? '➡ прав.' : lang === 'de' ? '➡ rechts' : '➡ right') :
+                    c.bank === 'M' ? '🏝' : '';
+  const bankSuffix = bankLabel ? ` • ${bankLabel}` : '';
   document.getElementById('mapPanelMeta').textContent = isTown
-    ? `${c.town} • ${builtText}`
-    : `${builtText} • ${c.town}`;
+    ? `${c.town} • ${builtText}${bankSuffix}`
+    : `${builtText} • ${c.town}${bankSuffix}`;
 
   const shortText = lang === 'ru' ? (c.sayRu || c.factsRu) : (lang === 'de' ? (c.sayDe || c.factsDe || c.say || c.facts) : (c.say || c.facts));
   document.getElementById('mapPanelDesc').textContent = shortText;
-  
+
+  const mpWa = document.getElementById('mapPanelWa');
+  if (mpWa) {
+    mpWa.onclick = () => {
+      const txt = `${c.name} — ${c.town}\n${shortText}\n\nhttps://turret-tales.netlify.app/`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank', 'noopener');
+    };
+  }
+
   panel.classList.add('open');
   if (!leafletMap) return;
 
@@ -6114,6 +6256,22 @@ function updateGpsDistancePanel(lat, lng) {
   }
 
   gpsPanel.classList.add('show');
+
+  // "What's nearest?" toast at the bottom
+  const toast = document.getElementById('nearestToast');
+  if (toast) {
+    const ni = findNearestCastleIndex(lat, lng);
+    if (ni >= 0) {
+      const nc = castles[ni];
+      const nd = distanceMeters(lat, lng, nc.lat, nc.lng);
+      const walkMin = Math.ceil(nd * 1.3 / 75);
+      toast.innerHTML = `⭐ ${nc.name}<br><span class="toast-dist">≈ ${formatDistance(nd)} · ${walkMin} min 🚶</span>`;
+      toast.classList.add('show');
+      toast.onclick = () => { if (leafletMap) leafletMap.setView([nc.lat, nc.lng], 15); selectCastle(ni); };
+    } else {
+      toast.classList.remove('show');
+    }
+  }
 }
 
 function stopGps() {
@@ -6128,6 +6286,8 @@ function stopGps() {
   gpsToggleLabel.textContent = UI[lang].gpsToggle;
   const panel = document.getElementById('gpsPanel');
   if (panel) panel.classList.remove('show');
+  const toast = document.getElementById('nearestToast');
+  if (toast) toast.classList.remove('show');
 }
 
 function startGps() {

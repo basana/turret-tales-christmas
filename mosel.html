@@ -96,6 +96,16 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .gps-panel.show{display:flex}
 .gps-panel-row{display:none;align-items:center;gap:8px;background:rgba(246,238,221,.95);border:1px solid var(--gold);border-radius:12px;padding:8px 12px;font-family:var(--sans);color:var(--ink);box-shadow:0 4px 14px rgba(90,67,39,.25)}
 .gps-panel-row.show{display:flex}
+.nearest-toast{display:none;position:absolute;z-index:1000;bottom:12px;left:12px;right:60px;background:rgba(122,16,38,0.95);color:#F5ECD6;border-radius:14px;padding:10px 14px;box-shadow:0 4px 14px rgba(0,0,0,0.35);font:700 14px var(--sans);cursor:pointer;backdrop-filter:blur(4px)}
+.nearest-toast.show{display:block}
+.nearest-toast .toast-dist{font-size:16px}
+.poi-toggle-bar{position:absolute;z-index:800;bottom:50px;right:12px;display:flex;flex-direction:column;gap:6px}
+.poi-toggle-btn{width:42px;height:42px;border-radius:50%;border:2px solid #fff;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.poi-toggle-btn.apotheke{background:#e8f5e9}
+.poi-toggle-btn.wc{background:#e3f2fd}
+.poi-toggle-btn.active{box-shadow:0 0 0 3px var(--gold),0 2px 8px rgba(0,0,0,0.3)}
+.poi-apotheke{background:#e8f5e9;border-color:#4caf50;font-size:16px}
+.poi-wc{background:#e3f2fd;border-color:#2196f3;font-size:16px}
 .gps-distance-value{font-size:15px;font-weight:700;color:var(--terracotta);line-height:1.2}
 .gps-distance-name{font-size:11.5px;color:var(--ink-soft);margin-top:1px}
 .gps-user-halo{width:22px;height:22px;border-radius:50%;background:rgba(181,96,46,.35);display:flex;align-items:center;justify-content:center;animation:gpsHaloPulse 1.8s ease-in-out infinite}
@@ -255,6 +265,11 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
         <div class="gps-distance-name" id="gpsDistanceName"></div>
       </div>
     </div>
+  </div>
+  <div class="nearest-toast" id="nearestToast"></div>
+  <div class="poi-toggle-bar">
+    <button class="poi-toggle-btn apotheke" onclick="toggleMoselPoi('apotheke');this.classList.toggle('active')" title="Apotheken">💊</button>
+    <button class="poi-toggle-btn wc" onclick="toggleMoselPoi('wc');this.classList.toggle('active')" title="WC">🚻</button>
   </div>
   <div class="map-btns">
     <button class="map-btn" onclick="fitAll()" title="Alle Stationen">⊞</button>
@@ -599,6 +614,7 @@ function showDetail(id){
       <div class="detail-btns">
         <button class="detail-nav-btn" onclick="startNav(${st.lat},${st.lng})">📍 ${UI.navigate[lang]}</button>
         ${st.pier?`<button class="detail-nav-btn pier" onclick="startNav(${st.pier.lat},${st.pier.lng})">⚓ Pier</button>`:''}
+        <button class="detail-nav-btn" style="background:#25d366;border-color:#25d366" onclick="window.open('https://wa.me/?text='+encodeURIComponent(t(st.name)+' — Mosel\\n'+t(st.desc).slice(0,120)+'\\n\\nhttps://turret-tales.netlify.app/mosel.html'),'_blank','noopener')">💬 WhatsApp</button>
       </div>
       ${st.tips?`<div class="detail-info"><h4>${UI.tips[lang]}</h4><p>${t(st.tips)}</p></div>`:''}
       ${legendHtml}
@@ -814,6 +830,47 @@ function fitAll(){
   map.fitBounds(L.latLngBounds(STATIONS.map(s=>[s.lat,s.lng])),{padding:[30,30]});
 }
 
+// Apotheken + Toiletten along the Mosel
+const MOSEL_APOTHEKEN=[
+  {name:'Mosel-Apotheke',lat:50.3122,lng:7.5206,city:'Winningen'},
+  {name:'Linden-Apotheke',lat:50.2945,lng:7.4630,city:'Kobern-Gondorf'},
+  {name:'Löwen-Apotheke',lat:50.2049,lng:7.3368,city:'Treis-Karden'},
+  {name:'Cochemer Apotheke',lat:50.1469,lng:7.1665,city:'Cochem'},
+  {name:'Burg-Apotheke',lat:50.1097,lng:7.2369,city:'Cochem'},
+  {name:'Mosel-Apotheke Zell',lat:50.0284,lng:7.1850,city:'Zell'},
+  {name:'Bernkastel-Apotheke',lat:49.9150,lng:7.0750,city:'Bernkastel-Kues'},
+];
+const MOSEL_TOILETTEN=[
+  {name:'WC Bahnhof Winningen',lat:50.3125,lng:7.5195,city:'Winningen'},
+  {name:'WC Fähranleger Kobern',lat:50.2950,lng:7.4620,city:'Kobern-Gondorf'},
+  {name:'WC Marktplatz Cochem',lat:50.1463,lng:7.1678,city:'Cochem'},
+  {name:'WC Reichsburg Cochem',lat:50.1440,lng:7.1670,city:'Cochem'},
+  {name:'WC Endertplatz Cochem',lat:50.1475,lng:7.1695,city:'Cochem'},
+  {name:'WC Marktplatz Zell',lat:50.0280,lng:7.1840,city:'Zell'},
+  {name:'WC Bernkastel Altstadt',lat:49.9155,lng:7.0740,city:'Bernkastel-Kues'},
+];
+let moselApoLayer=null,moselWcLayer=null;
+function toggleMoselPoi(type){
+  if(!map)return;
+  if(type==='apotheke'){
+    if(moselApoLayer){map.removeLayer(moselApoLayer);moselApoLayer=null;return}
+    moselApoLayer=L.layerGroup();
+    MOSEL_APOTHEKEN.forEach(p=>{
+      const ic=L.divIcon({className:'',html:'<div class="poi-marker poi-apotheke" style="width:26px;height:26px;border-radius:50%;background:#e8f5e9;border:2px solid #4caf50;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">💊</div>',iconSize:[28,28],iconAnchor:[14,14]});
+      L.marker([p.lat,p.lng],{icon:ic,zIndexOffset:500}).bindTooltip(`${p.name} · ${p.city}`).addTo(moselApoLayer);
+    });
+    moselApoLayer.addTo(map);
+  }else{
+    if(moselWcLayer){map.removeLayer(moselWcLayer);moselWcLayer=null;return}
+    moselWcLayer=L.layerGroup();
+    MOSEL_TOILETTEN.forEach(p=>{
+      const ic=L.divIcon({className:'',html:'<div class="poi-marker poi-wc" style="width:26px;height:26px;border-radius:50%;background:#e3f2fd;border:2px solid #2196f3;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">🚻</div>',iconSize:[28,28],iconAnchor:[14,14]});
+      L.marker([p.lat,p.lng],{icon:ic,zIndexOffset:500}).bindTooltip(`${p.name} · ${p.city}`).addTo(moselWcLayer);
+    });
+    moselWcLayer.addTo(map);
+  }
+}
+
 // ═══════════════════════════════════════
 // GPS ON/OFF + SAVE LOCATION
 // ═══════════════════════════════════════
@@ -841,6 +898,16 @@ function updateGpsPanel(lat,lng){
     }else row.classList.remove('show');
   }
   panel.classList.add('show');
+
+  // Nearest toast
+  const toast=document.getElementById('nearestToast');
+  if(toast&&ni>=0){
+    const s=STATIONS[ni],d=distanceMeters(lat,lng,s.lat,s.lng);
+    const walkMin=Math.ceil(d*1.3/75);
+    toast.innerHTML=`⭐ ${t(s.name)}<br><span class="toast-dist">≈ ${formatDist(d)} · ${walkMin} min 🚶</span>`;
+    toast.classList.add('show');
+    toast.onclick=()=>{if(map)map.setView([s.lat,s.lng],15)};
+  }else if(toast){toast.classList.remove('show')}
 }
 
 function stopGps(){
@@ -851,6 +918,7 @@ function stopGps(){
   gpsToggleLabel.textContent=UI.gpsToggle[lang];
   gpsSaveBtn.classList.remove('show');
   const p=document.getElementById('gpsPanel');if(p)p.classList.remove('show');
+  const toast=document.getElementById('nearestToast');if(toast)toast.classList.remove('show');
   try{localStorage.setItem('rhineGuideGpsActive','false')}catch(e){}
 }
 

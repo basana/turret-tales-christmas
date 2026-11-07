@@ -606,6 +606,8 @@ function setupEvents(){
   // Canvas interactions — pan canvas OR drag individual node
   let drag=false, dragX=0, dragY=0;
   let dragNode=null, dragOrigPos=null, dragStartPos=null; // node being dragged + gravity pull state
+  let pulledNodeId=null; // node whose connected nodes are currently pulled out (stays after mouseup)
+  let pulledOrigPos=null; // original positions of pulled nodes (for return-on-click)
   cv.addEventListener('mousedown',e=>{
     const rect=cv.getBoundingClientRect();
     const mx=e.clientX-rect.left, my=e.clientY-rect.top;
@@ -638,16 +640,23 @@ function setupEvents(){
       dragNode.sx += dx/cam.z;
       dragNode.sy += dy/cam.z;
       selectedNode = dragNode.id; // highlight connections while dragging
-      // Gravity pull: connected nodes follow partially
-      const pullStrength = 0.3; // 30% pull toward dragged node
-      const totalDx = dragNode.sx - dragStartPos.x;
-      const totalDy = dragNode.sy - dragStartPos.y;
-      for(const[cid, orig] of Object.entries(dragOrigPos)){
+      // Gravity pull: connected nodes snap into vertical column beside dragged node
+      const connEntries = Object.entries(dragOrigPos);
+      const gap = 6; // gap between stacked nodes in world coords
+      const colOffsetX = dragNode.w + 20; // column offset to the right
+      // Stack connected nodes vertically, centered on the dragged node
+      const totalH = connEntries.length * (dragNode.h + gap) - gap;
+      const startY = dragNode.sy - totalH/2 + dragNode.h/2;
+      connEntries.forEach(([cid, orig], idx) => {
         const cn = nodes.find(nd=>nd.id===cid);
-        if(!cn || cn===dragNode) continue;
-        cn.sx = orig.x + totalDx * pullStrength;
-        cn.sy = orig.y + totalDy * pullStrength;
-      }
+        if(!cn || cn===dragNode) return;
+        // Target: vertical column to the right of dragged node
+        const targetX = dragNode.sx + colOffsetX;
+        const targetY = startY + idx * (dragNode.h + gap);
+        // Snap quickly (lerp 0.25 per frame for smooth movement)
+        cn.sx += (targetX - cn.sx) * 0.25;
+        cn.sy += (targetY - cn.sy) * 0.25;
+      });
     } else {
       // Pan camera
       cam.x+=dx; cam.y+=dy;
@@ -656,43 +665,31 @@ function setupEvents(){
   });
   cv.addEventListener('mouseup',()=>{
     if(dragNode && didDrag){
-      // Animate connected nodes back to their original positions
+      // Keep connected nodes where they are (don't snap back)
+      // Remember which node was pulled so click can release them
       if(dragOrigPos && Object.keys(dragOrigPos).length){
-        const snapBack = {};
-        for(const[cid, orig] of Object.entries(dragOrigPos)){
+        pulledNodeId = dragNode.id;
+        pulledOrigPos = {...dragOrigPos};
+        selectedNode = dragNode.id; // keep edges highlighted
+        // Do one final snap to exact column positions
+        const connEntries = Object.entries(dragOrigPos);
+        const colOffsetX = dragNode.w + 20;
+        const totalH = connEntries.length * (dragNode.h + 6) - 6;
+        const startY = dragNode.sy - totalH/2 + dragNode.h/2;
+        connEntries.forEach(([cid, orig], idx) => {
           const cn = nodes.find(nd=>nd.id===cid);
-          if(cn) snapBack[cid] = {fromX:cn.sx, fromY:cn.sy, toX:orig.x, toY:orig.y, node:cn};
-        }
-        let frame=0; const totalFrames=20;
-        function easeBack(){
-          frame++;
-          const t = frame/totalFrames;
-          const ease = 1-Math.pow(1-t,3); // ease-out cubic
-          for(const sb of Object.values(snapBack)){
-            sb.node.sx = sb.fromX + (sb.toX-sb.fromX)*ease;
-            sb.node.sy = sb.fromY + (sb.toY-sb.fromY)*ease;
-          }
-          if(frame<totalFrames) requestAnimationFrame(easeBack);
-          else {
-            // Save final positions (only the dragged node moved permanently)
-            const pos = {};
-            nodes.forEach(n => { pos[n.id] = {x: n.sx, y: n.sy}; });
-            try { localStorage.setItem('map-node-positions', JSON.stringify(pos)); } catch(e){}
-          }
-        }
-        requestAnimationFrame(easeBack);
-      } else {
-        const pos = {};
-        nodes.forEach(n => { pos[n.id] = {x: n.sx, y: n.sy}; });
-        try { localStorage.setItem('map-node-positions', JSON.stringify(pos)); } catch(e){}
+          if(!cn) return;
+          cn.sx = dragNode.sx + colOffsetX;
+          cn.sy = startY + idx * (dragNode.h + 6);
+        });
       }
-      selectedNode = null;
+      // Don't save pulled positions to localStorage (they're temporary)
     }
     drag=false; dragNode=null; dragOrigPos=null;
   });
   cv.addEventListener('mouseleave',()=>{
-    // If dragging, snap connected nodes back immediately
-    if(dragNode && dragOrigPos){
+    if(dragNode && dragOrigPos && !didDrag){
+      // Cancel incomplete drag — restore positions
       for(const[cid, orig] of Object.entries(dragOrigPos)){
         const cn = nodes.find(nd=>nd.id===cid);
         if(cn){ cn.sx=orig.x; cn.sy=orig.y; }
@@ -722,9 +719,59 @@ function setupEvents(){
     for(const n of nodes){
       if(!matchesFilter(n)) continue;
       if(wx>=n.sx && wx<=n.sx+n.w && wy>=n.sy && wy<=n.sy+n.h){
+        // If clicking the pulled node, animate connected nodes back to original positions
+        if(pulledNodeId && n.id===pulledNodeId && pulledOrigPos){
+          const snapBack = {};
+          for(const[cid, orig] of Object.entries(pulledOrigPos)){
+            const cn = nodes.find(nd=>nd.id===cid);
+            if(cn) snapBack[cid] = {fromX:cn.sx, fromY:cn.sy, toX:orig.x, toY:orig.y, node:cn};
+          }
+          let frame=0; const totalFrames=20;
+          function easeBack(){
+            frame++;
+            const t = frame/totalFrames;
+            const ease = 1-Math.pow(1-t,3);
+            for(const sb of Object.values(snapBack)){
+              sb.node.sx = sb.fromX + (sb.toX-sb.fromX)*ease;
+              sb.node.sy = sb.fromY + (sb.toY-sb.fromY)*ease;
+            }
+            if(frame>=totalFrames){
+              // Save restored positions
+              const pos = {};
+              nodes.forEach(nn => { pos[nn.id] = {x: nn.sx, y: nn.sy}; });
+              try { localStorage.setItem('map-node-positions', JSON.stringify(pos)); } catch(e){}
+            }
+          }
+          // Run animation via draw loop
+          let animId = setInterval(()=>{
+            easeBack();
+            if(frame>=20){ clearInterval(animId); }
+          }, 16);
+          selectedNode = null;
+          pulledNodeId = null;
+          pulledOrigPos = null;
+          return;
+        }
+        // Normal click — show detail. Also release any pulled state
+        if(pulledNodeId && pulledOrigPos){
+          // Return pulled nodes first
+          for(const[cid, orig] of Object.entries(pulledOrigPos)){
+            const cn = nodes.find(nd=>nd.id===cid);
+            if(cn){ cn.sx=orig.x; cn.sy=orig.y; }
+          }
+          pulledNodeId=null; pulledOrigPos=null;
+        }
         showDetail(n);
         return;
       }
+    }
+    // Clicked empty space — also release pulled nodes
+    if(pulledNodeId && pulledOrigPos){
+      for(const[cid, orig] of Object.entries(pulledOrigPos)){
+        const cn = nodes.find(nd=>nd.id===cid);
+        if(cn){ cn.sx=orig.x; cn.sy=orig.y; }
+      }
+      selectedNode=null; pulledNodeId=null; pulledOrigPos=null;
     }
   });
 

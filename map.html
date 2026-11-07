@@ -150,8 +150,8 @@ canvas:active{cursor:grabbing}
     <span class="layer-sep"></span>
     <button id="layerContact" class="layer-btn" title="Kontaktpunkte ein-/ausblenden"><span class="layer-dot" style="background:var(--g-contact)"></span>Kontaktpunkte</button>
     <button id="layerPricing" class="layer-btn" title="Preisstruktur ein-/ausblenden"><span class="layer-dot" style="background:var(--g-pricing)"></span>Preisstruktur</button>
-    <button id="layerJourney" class="layer-btn" title="Kundenreise ein-/ausblenden"><span class="layer-dot" style="background:var(--g-journey)"></span>Kundenreise</button>
-    <button id="layerSales" class="layer-btn" title="Verkaufsmodelle ein-/ausblenden"><span class="layer-dot" style="background:var(--g-sales)"></span>Verkaufsmodelle</button>
+    <button id="layerJourney" class="layer-btn on" title="Kundenreise ein-/ausblenden"><span class="layer-dot" style="background:var(--g-journey)"></span>Kundenreise</button>
+    <button id="layerSales" class="layer-btn on" title="Verkaufsmodelle ein-/ausblenden"><span class="layer-dot" style="background:var(--g-sales)"></span>Verkaufsmodelle</button>
     <span class="layer-sep"></span>
     <button id="feedBtn" class="feed-toggle" title="Letzte Änderungen">⚡<span class="feed-dot"></span></button>
     <button id="themeBtn" title="Dark / Light">🌓</button>
@@ -225,7 +225,7 @@ let cam={x:0,y:0,z:1};
 let selectedNode=null;
 let currentTab='map';
 let filterGroup='', filterStatus='', filterSearch='';
-let layerVisible={contact:false, pricing:false, journey:false, sales:false}; // overlay layers hidden by default
+let layerVisible={contact:false, pricing:false, journey:true, sales:true}; // overlay layers hidden by default
 
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
@@ -481,8 +481,30 @@ function roundRect(c,x,y,w,h,r){
 }
 
 /* ===== DETAIL PANEL ===== */
+function centerOnNode(n){
+  const cw=cv.width/devicePixelRatio, ch=cv.height/devicePixelRatio;
+  const detailW = window.innerWidth > 600 ? 380 : 0;
+  const availW = cw - detailW;
+  const targetZ = Math.max(cam.z, 0.8);
+  const targetX = availW/2 - (n.sx + n.w/2)*targetZ;
+  const targetY = ch/2 - (n.sy + n.h/2)*targetZ;
+  const steps=12; let step=0;
+  const startZ=cam.z, startX=cam.x, startY=cam.y;
+  function ease(){
+    step++;
+    const t=step/steps;
+    const s=t<.5?2*t*t:(1-Math.pow(-2*t+2,2)/2);
+    cam.z=startZ+(targetZ-startZ)*s;
+    cam.x=startX+(targetX-startX)*s;
+    cam.y=startY+(targetY-startY)*s;
+    if(step<steps) requestAnimationFrame(ease);
+  }
+  ease();
+}
+
 function showDetail(n){
   selectedNode = n.id;
+  centerOnNode(n);
   draw();
   const d = document.getElementById('detail');
   const stClass = 'st-'+(n.status||'todo');
@@ -634,12 +656,12 @@ function setupEvents(){
   document.getElementById("layerJourney").addEventListener("click",function(){
     layerVisible.journey = !layerVisible.journey;
     this.classList.toggle("on", layerVisible.journey);
-    if(layerVisible.journey) fitVisible();
+    if(layerVisible.journey) fitLayer("journey");
   });
   document.getElementById("layerSales").addEventListener("click",function(){
     layerVisible.sales = !layerVisible.sales;
     this.classList.toggle("on", layerVisible.sales);
-    if(layerVisible.sales) fitVisible();
+    if(layerVisible.sales) fitLayer("sales");
   });
 
   // Detail close
@@ -976,6 +998,32 @@ function setupEvents(){
 
 
 /* ===== FIT VISIBLE NODES ===== */
+function fitLayer(groupId){
+  const vis = nodes.filter(n=>n.g===groupId);
+  if(!vis.length){ fitVisible(); return; }
+  const xs = vis.map(n=>n.sx), ys = vis.map(n=>n.sy);
+  const pad=80;
+  const minX=Math.min(...xs)-pad, maxX=Math.max(...xs)+NODE_W+pad;
+  const minY=Math.min(...ys)-pad, maxY=Math.max(...ys)+NODE_H+pad;
+  const cw=cv.width/devicePixelRatio, ch=cv.height/devicePixelRatio;
+  const fitZ = Math.min(cw/(maxX-minX), ch/(maxY-minY), 1.8);
+  const targetZ = Math.max(fitZ, 0.5);
+  const targetX = (cw - (maxX+minX)*targetZ)/2;
+  const targetY = (ch - (maxY+minY)*targetZ)/2;
+  const steps=14; let step=0;
+  const startZ=cam.z, startX=cam.x, startY=cam.y;
+  function ease(){
+    step++;
+    const t=step/steps;
+    const s=t<.5?2*t*t:(1-Math.pow(-2*t+2,2)/2);
+    cam.z=startZ+(targetZ-startZ)*s;
+    cam.x=startX+(targetX-startX)*s;
+    cam.y=startY+(targetY-startY)*s;
+    if(step<steps) requestAnimationFrame(ease);
+  }
+  ease();
+}
+
 function fitVisible(){
   const vis = nodes.filter(n=>matchesFilter(n));
   if(!vis.length){ resetCam(); return; }

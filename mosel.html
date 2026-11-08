@@ -68,7 +68,7 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .panel.active{display:block}
 
 /* ═══════════════ MAP ═══════════════ */
-#mapPanel{display:none;position:relative;padding:10px 12px}
+#mapPanel{display:none;position:relative;padding:10px 18px}
 #mapPanel.active{display:block;overflow-y:auto}
 #map{width:100%;height:62vh;min-height:400px;border-radius:14px;border:1.5px solid var(--gold);overflow:hidden;position:relative}
 .map-btns{position:absolute;bottom:20px;right:12px;z-index:800;display:flex;flex-direction:column;gap:8px}
@@ -95,7 +95,8 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .gps-save-btn.saved{background:var(--green);color:#fff;border-color:rgba(255,255,255,.75)}
 .gps-panel{position:absolute;z-index:1000;top:88px;left:12px;display:none;flex-direction:column;gap:7px;max-width:210px}
 .gps-panel.show{display:flex}
-.gps-panel-row{display:none!important}
+.gps-panel-row{display:none}
+.gps-panel-row.show{display:flex}
 .nearest-toast{display:none;position:absolute;z-index:1000;top:100px;left:12px;width:fit-content;max-width:75vw;background:rgba(122,16,38,0.95);color:#F5ECD6;border-radius:14px;padding:13px 18px;box-shadow:0 4px 14px rgba(0,0,0,0.35);font:700 18px var(--sans);cursor:pointer;backdrop-filter:blur(4px)}
 .nearest-toast.show{display:block}
 .nearest-toast .toast-dist{font-size:20px}
@@ -105,6 +106,8 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .poi-toggle-btn.wc{background:#e3f2fd}
 .poi-toggle-btn.active{box-shadow:0 0 0 4px var(--gold),0 2px 10px rgba(0,0,0,0.35);animation:poiPulse 1.2s ease-out infinite}
 @keyframes poiPulse{0%{box-shadow:0 0 0 4px var(--gold),0 0 0 4px rgba(200,168,120,0.7)}50%{box-shadow:0 0 0 4px var(--gold),0 0 0 18px rgba(200,168,120,0)}100%{box-shadow:0 0 0 4px var(--gold),0 0 0 4px rgba(200,168,120,0)}}
+@keyframes poiMarkerPulse{0%{box-shadow:0 2px 6px rgba(0,0,0,.3),0 0 0 0 rgba(76,175,80,0.45)}70%{box-shadow:0 2px 6px rgba(0,0,0,.3),0 0 0 10px rgba(76,175,80,0)}100%{box-shadow:0 2px 6px rgba(0,0,0,.3),0 0 0 0 rgba(76,175,80,0)}}
+@keyframes poiMarkerPulseBlue{0%{box-shadow:0 2px 6px rgba(0,0,0,.3),0 0 0 0 rgba(33,150,243,0.45)}70%{box-shadow:0 2px 6px rgba(0,0,0,.3),0 0 0 10px rgba(33,150,243,0)}100%{box-shadow:0 2px 6px rgba(0,0,0,.3),0 0 0 0 rgba(33,150,243,0)}}
 .poi-apotheke{background:#e8f5e9;border-color:#4caf50;font-size:20px}
 .poi-wc{background:#e3f2fd;border-color:#2196f3;font-size:20px}
 .gps-distance-value{font-size:15px;font-weight:700;color:var(--terracotta);line-height:1.2}
@@ -125,7 +128,7 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .leaflet-tooltip-top.mosel-tooltip::before{border-top-color:var(--paper)}
 
 /* ═══════════════ STATION LIST ═══════════════ */
-.st-list{padding:12px 14px}
+.st-list{padding:12px 18px}
 .st-section{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--wine);padding:18px 0 8px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--gold-light);margin-bottom:8px}
 .st-card{background:var(--paper);border:1px solid var(--gold);border-radius:14px;margin-bottom:12px;cursor:pointer;transition:box-shadow .15s;overflow:hidden;box-shadow:0 2px 8px rgba(90,67,39,.08)}
 .st-card:active{box-shadow:0 4px 16px rgba(90,67,39,.18)}
@@ -142,7 +145,7 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .detail-hero-wrap{position:relative;width:100%;border-bottom:1px solid var(--gold)}
 .detail-hero{width:100%;height:auto;max-height:50vh;object-fit:cover;object-position:center 30%;display:block}
 .detail-hero-empty{width:100%;height:160px;background:linear-gradient(135deg,var(--wine),var(--terracotta));display:flex;align-items:center;justify-content:center;font-size:52px}
-.detail-body{padding:16px 16px 24px}
+.detail-body{padding:16px 18px 24px}
 .detail-body h2{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--rust);margin-bottom:4px}
 .detail-sub{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-bottom:14px;letter-spacing:.02em}
 .detail-body .desc{font-size:16px;line-height:1.7;margin-bottom:18px}
@@ -836,7 +839,7 @@ function fitAll(){
 
 // Apotheken + Toiletten along the Mosel
 const MOSEL_APOTHEKEN=[
-  {name:'Mosel-Apotheke',lat:50.3122,lng:7.5206,city:'Winningen'},
+  {name:'Kastor-Apotheke',lat:50.3090,lng:7.4600,city:'Kobern-Gondorf'},
   {name:'Linden-Apotheke',lat:50.2945,lng:7.4630,city:'Kobern-Gondorf'},
   {name:'Löwen-Apotheke',lat:50.2049,lng:7.3368,city:'Treis-Karden'},
   {name:'Cochemer Apotheke',lat:50.1469,lng:7.1665,city:'Cochem'},
@@ -845,7 +848,8 @@ const MOSEL_APOTHEKEN=[
   {name:'Bernkastel-Apotheke',lat:49.9150,lng:7.0750,city:'Bernkastel-Kues'},
 ];
 const MOSEL_TOILETTEN=[
-  {name:'WC Bahnhof Winningen',lat:50.3125,lng:7.5195,city:'Winningen'},
+  {name:'Nette Toilette · Rathaus',lat:50.3138,lng:7.5218,city:'Winningen'},
+  {name:'Nette Toilette · Weinhof',lat:50.3130,lng:7.5232,city:'Winningen'},
   {name:'WC Fähranleger Kobern',lat:50.2950,lng:7.4620,city:'Kobern-Gondorf'},
   {name:'WC Marktplatz Cochem',lat:50.1463,lng:7.1678,city:'Cochem'},
   {name:'WC Reichsburg Cochem',lat:50.1440,lng:7.1670,city:'Cochem'},
@@ -857,7 +861,8 @@ let moselApoLayer=null,moselWcLayer=null;
 function _moselPoiLayer(data,emoji,cssClass){
   const lg=L.layerGroup();
   data.forEach(p=>{
-    const ic=L.divIcon({className:'',html:`<div class="poi-marker ${cssClass}" style="width:32px;height:32px;border-radius:50%;background:${cssClass==='poi-apotheke'?'#e8f5e9':'#e3f2fd'};border:2px solid ${cssClass==='poi-apotheke'?'#4caf50':'#2196f3'};display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 6px rgba(0,0,0,.3)">${emoji}</div>`,iconSize:[34,34],iconAnchor:[17,17]});
+    const anim=cssClass==='poi-apotheke'?'poiMarkerPulse':'poiMarkerPulseBlue';
+    const ic=L.divIcon({className:'',html:`<div class="poi-marker ${cssClass}" style="width:38px;height:38px;border-radius:50%;background:${cssClass==='poi-apotheke'?'#e8f5e9':'#e3f2fd'};border:2px solid ${cssClass==='poi-apotheke'?'#4caf50':'#2196f3'};display:flex;align-items:center;justify-content:center;font-size:22px;animation:${anim} 2s ease-in-out infinite">${emoji}</div>`,iconSize:[40,40],iconAnchor:[20,20]});
     const m=L.marker([p.lat,p.lng],{icon:ic,zIndexOffset:500}).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
     m.on('click',()=>{
       map.setView([p.lat,p.lng],17,{animate:true});
@@ -991,7 +996,7 @@ gpsSaveBtn.addEventListener('click',e=>{
   inp.type='text';inp.id='searchInput';inp.autocomplete='off';
   // Search is built into pills area — add a search bar below header
   const sb=document.createElement('div');
-  sb.className='search-bar';sb.style.cssText='background:var(--parchment);padding:8px 12px;border-bottom:1px solid var(--gold-light);flex-shrink:0';
+  sb.className='search-bar';sb.style.cssText='background:var(--parchment);padding:8px 18px;border-bottom:1px solid var(--gold-light);flex-shrink:0';
   sb.innerHTML='<div class="search-wrap" style="position:relative"><span class="search-icon" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.5">🔍</span><input type="text" id="searchInput" placeholder="'+UI.searchPh[lang]+'" autocomplete="off" style="width:100%;padding:9px 12px 9px 34px;border:1px solid var(--gold);border-radius:10px;font-family:var(--serif);font-size:15px;background:var(--paper);color:var(--ink);outline:none"><div class="search-results" id="searchResults" style="position:absolute;top:100%;left:0;right:0;background:var(--paper);border:1px solid var(--gold);border-top:none;border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;z-index:900;display:none"></div></div>';
   document.querySelector('.pill-menu').after(sb);
 
@@ -1009,6 +1014,15 @@ gpsSaveBtn.addEventListener('click',e=>{
     sinp.addEventListener('focus',()=>{sinp.style.borderColor='var(--terracotta)';sinp.style.boxShadow='0 0 0 3px rgba(148,72,31,.12)'});
     sinp.addEventListener('blur',()=>{sinp.style.borderColor='var(--gold)';sinp.style.boxShadow='none'});
     document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))res.style.display='none'});
+    // Rotating placeholder hints (Airbnb-style)
+    const hints={
+      de:['Stadt oder Burg suchen…','Wo ist Cochem?','Apotheke · WC finden','Route zur Reichsburg?'],
+      en:['Search town or castle…','Where is Cochem?','Find pharmacy · WC','Route to Reichsburg?'],
+      ru:['Найти город или замок…','Где Кохем?','Аптека · WC','Маршрут к Райхсбург?']
+    };
+    let hIdx=0;
+    const rotateHint=()=>{if(sinp.value===''){hIdx=(hIdx+1)%(hints[lang]||hints.de).length;sinp.placeholder=(hints[lang]||hints.de)[hIdx]}};
+    setInterval(rotateHint,3000);
   },100);
 })();
 

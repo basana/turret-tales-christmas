@@ -1028,7 +1028,7 @@
     transition: opacity .3s;
   }
   .poi-gps-hint.show { opacity: 1; pointer-events: auto; }
-  .poi-toggle-bar { position: absolute; z-index: 800; top: 50%; right: 12px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
+  .poi-toggle-bar { position: absolute; z-index: 800; top: 30%; right: 12px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
   .poi-toggle-btn { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; font-size: 36px; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
   .poi-toggle-btn.wc { background: #e3f2fd; }
@@ -2183,12 +2183,8 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
     if (d < minD) { minD = d; nearest = p; }
   });
   if (nearest) {
-    // If GPS is active, show both user position AND nearest POI
-    if (ref) {
-      mapObj.fitBounds([ref, [nearest.lat, nearest.lng]], { padding: [40, 40], maxZoom: 17, animate: true });
-    } else {
-      mapObj.setView([nearest.lat, nearest.lng], 17, { animate: true });
-    }
+    // GPS is always available here (function returns early if not) — show user + nearest POI together
+    mapObj.fitBounds([ref, [nearest.lat, nearest.lng]], { padding: [40, 40], maxZoom: 17, animate: true });
     _showPoiToast(mapObj, nearest, emoji);
   }
 }

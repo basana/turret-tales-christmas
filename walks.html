@@ -1067,7 +1067,6 @@ function wineMapTools(map, items) {
   setOn(false);
   drawSpot();
   // Auto-start GPS if it was active on another map
-  try { if (localStorage.getItem(GPS_KEY) === 'true') start(); } catch(e){}
 }
 
 const wineryMore = slug => ['kroeber', 'richter'].includes(slug) ? ` <a class="winery-more" href="weingut-${slug}.html">Mehr →</a>` : '';

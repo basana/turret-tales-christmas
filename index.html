@@ -4244,7 +4244,12 @@ function xmasGpsBtnHtml() {
   return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn">📍 ${xmasG('btn')}${lock}</button>`;
 }
 function xmasGpsTargets() {
-  if (!xmasTown) return XMAS_ORDER.map(k => ({ label: XMAS_CITY[k].name[xmasLang] || XMAS_CITY[k].name.de, ll: XMAS_GEO[k].center }));
+  if (!xmasTown) return XMAS_ORDER.filter(k => XMAS_CITY[k] && XMAS_GEO[k]).flatMap(k => {
+    const c = XMAS_CITY[k];
+    const tx = c.text[xmasLang] || c.text.en || c.text.de;
+    const cityName = c.name[xmasLang] || c.name.de;
+    return XMAS_GEO[k].pins.map((ll, i) => ({ label: `${(tx.cards[i] && tx.cards[i].title) || tx.title} · ${cityName}`, ll }));
+  });
   const c = XMAS_CITY[xmasTown];
   const tx = c.text[xmasLang] || c.text.en || c.text.de;
   return XMAS_GEO[xmasTown].pins.map((ll, i) => ({ label: (tx.cards[i] && tx.cards[i].title) || tx.title, ll }));
@@ -4281,8 +4286,6 @@ function xmasStartGps() {
       else xmasDrawGpsLayers();
     }
     xmasUpdateGpsPanel();
-    // Auto-update saved spot with current GPS position
-    try { localStorage.setItem(SAVED_SPOT_KEY, JSON.stringify({ lat: xmasGpsPos.lat, lng: xmasGpsPos.lng, label: 'Mein Standort' })); } catch(e){}
   }, () => {
     xmasSetGpsLabel(xmasG('err'));
     if (xmasGpsWatch !== null) navigator.geolocation.clearWatch(xmasGpsWatch);
@@ -4440,8 +4443,7 @@ function renderChristmas(townKey) {
       else if (isPremiumUnlocked()) xmasStartGps();
       else openPremiumPopup('xmas');
     });
-    // Auto-start GPS if it was active on another map
-    try { if (localStorage.getItem('rhineGuideGpsActive') === 'true' && isPremiumUnlocked()) xmasStartGps(); } catch(e){}
+    // GPS startet nicht automatisch beim Laden: Standort nur auf Wunsch aktiv
   }
   xmasUpdateGpsPanel();
   if (!xmasTown && xmasListOnly) {
@@ -6498,8 +6500,6 @@ function startGps() {
       if (leafletMap) leafletMap.panTo([latitude, longitude]);
 
       gpsLastLat = latitude; gpsLastLng = longitude;
-      // Auto-update saved spot with current GPS position
-      try { localStorage.setItem(SAVED_SPOT_KEY, JSON.stringify({ lat: latitude, lng: longitude, label: 'Mein Standort' })); } catch(e){}
       updateGpsDistancePanel(latitude, longitude);
 
       const nearest = findNearestCastleIndex(latitude, longitude);
@@ -6528,8 +6528,7 @@ if (gpsToggleBtn) {
     if (isPremiumUnlocked()) toggleGps();
     else openPremiumPopup('gps');
   });
-  // Auto-start GPS if it was active on another map
-  try { if (localStorage.getItem('rhineGuideGpsActive') === 'true' && isPremiumUnlocked()) startGps(); } catch(e){}
+  // GPS startet nicht automatisch: nur auf Wunsch
 }
 
 const gpsSaveSpotBtn = document.getElementById('gpsSaveSpotBtn');

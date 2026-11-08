@@ -966,8 +966,7 @@ function startGps(){
 }
 
 gpsToggleBtn.addEventListener('click',e=>{e.stopPropagation();gpsActive?stopGps():startGps()});
-// Auto-start GPS if it was active on another map
-try{if(localStorage.getItem('rhineGuideGpsActive')==='true')startGps()}catch(e){}
+// GPS startet nicht automatisch: nur auf Wunsch
 
 // Save location
 gpsSaveBtn.addEventListener('click',e=>{

@@ -104,6 +104,10 @@
     100% { box-shadow: 0 0 0 0 rgba(181,96,46,0); }
   }
   .saved-spot-marker { font-size: 26px; line-height: 30px; text-align: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+  .gps-distance-panel { font-family: Helvetica, Arial, sans-serif; font-size: 14px; margin: 6px 0 10px; display: none; flex-wrap: wrap; gap: 6px; }
+  .gps-distance-panel .gps-dist-card { display: inline-flex; align-items: center; gap: 6px; background: rgba(246,238,221,0.95); border: 1px solid #C9A05C; border-radius: 14px; padding: 6px 12px; cursor: pointer; box-shadow: 0 2px 6px rgba(90,67,39,0.15); color: #5A4327; }
+  .gps-distance-panel .gps-dist-card.nearest { border: 2px solid #7A1026; }
+  .gps-distance-panel .gps-spot-btn { display: inline-flex; align-items: center; gap: 4px; background: rgba(246,238,221,0.85); border: 1px dashed #C9A05C; border-radius: 14px; padding: 6px 12px; cursor: pointer; color: #5A4327; font-size: 13px; }
   .ptabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 8px 0 14px; }
   .ptabs button { font-family: Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700; padding: 9px 18px; border-radius: 18px; border: 2px solid var(--maroon); background: #fff; color: var(--maroon); cursor: pointer; }
   .ptabs button.active { background: var(--maroon); color: #fff; }
@@ -196,7 +200,7 @@
 
 <div id="view-shop" hidden><div id="shop-cards"></div></div>
 
-<div id="view-wine" hidden><div id="wine-map"></div><div id="wine-cards"></div></div>
+<div id="view-wine" hidden><div id="wine-map"></div><div class="gps-distance-panel" id="gpsPanel-wine"></div><div id="wine-cards"></div></div>
 
 <div class="contact" id="t-contact"></div>
 
@@ -646,27 +650,28 @@ PLACES.forEach((ll, i) => {
 
 // Причал Viking в Винингене: сюда вписать [lat, lng], когда известны. Пока null — расстояние от него не показывается.
 const WINE_VIKING_LL = [50.31138325323096, 7.518923406620906];
+// Global GPS manager: only one map's GPS active at a time
+window._gpsManager = window._gpsManager || { activeStop: null };
+
 // Карта виноделов: GPS, поиск по названию (без списка на карте)
-function wineMapTools(map, items) {
-  // Как на основной карте: поиск сверху, кнопка GPS ON/GPS, карточка ближайшего места, сохранённая точка (📌) с общим ключом rhineGuideSavedSpot
+function wineMapTools(map, items, panelId) {
   const box = map.getContainer();
+  const extPanel = document.getElementById(panelId);
   if (map.zoomControl) map.zoomControl.remove();
   L.control.zoom({ position: 'bottomright' }).addTo(map);
+  const searchId = panelId.replace(/[^a-zA-Z0-9]/g, '');
   const bar = document.createElement('div');
   bar.style.cssText = 'position:absolute;z-index:1000;top:12px;left:12px;right:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:8px 12px;box-shadow:0 4px 14px rgba(90,67,39,0.25);box-sizing:border-box';
   bar.innerHTML = '<span style="font-size:13px;opacity:.75">🔎</span>' +
-    '<input id="wmSearch" type="text" list="wmNames" autocomplete="off" placeholder="Name suchen" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:13px sans-serif;color:#5A4327">' +
-    '<datalist id="wmNames">' + items.map(it => '<option value="' + it.name.replace(/"/g, '&quot;') + '"></option>').join('') + '</datalist>';
+    `<input id="wmSearch-${searchId}" type="text" list="wmNames-${searchId}" autocomplete="off" placeholder="Name suchen" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:13px sans-serif;color:#5A4327">` +
+    `<datalist id="wmNames-${searchId}">` + items.map(it => '<option value="' + it.name.replace(/"/g, '&quot;') + '"></option>').join('') + '</datalist>';
   const gps = document.createElement('button');
   gps.type = 'button';
   gps.style.cssText = 'position:absolute;z-index:1000;top:78px;left:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:7px 12px;font:700 12px sans-serif;color:#5A4327;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,0.25)';
-  const panel = document.createElement('div');
-  panel.style.cssText = 'position:absolute;z-index:1000;top:122px;left:12px;display:none;flex-direction:column;gap:7px;max-width:230px;box-sizing:border-box';
-  [bar, gps, panel].forEach(el => { box.appendChild(el); L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); });
+  [bar, gps].forEach(el => { box.appendChild(el); L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); });
   if (WINE_VIKING_LL) L.marker(WINE_VIKING_LL, { icon: L.divIcon({ className: '', html: '<div style="background:#E30613;color:#fff;font:700 13px sans-serif;width:22px;height:22px;border-radius:50%;border:2px solid #fff;text-align:center;line-height:18px">V</div>', iconSize: [22, 22], iconAnchor: [11, 11] }) }).addTo(map).bindTooltip('Anleger Viking');
 
-  // Поиск: точное имя из подсказок или Enter по части названия → карта и страница к карточке
-  const input = bar.querySelector('#wmSearch');
+  const input = bar.querySelector(`#wmSearch-${searchId}`);
   const pick = it => { map.setView(it.ll, 16); if (it.go) it.go(); };
   input.addEventListener('input', () => { const it = items.find(i => i.name === input.value); if (it) pick(it); });
   input.addEventListener('keydown', e => {
@@ -676,46 +681,26 @@ function wineMapTools(map, items) {
     if (it) pick(it);
   });
 
-  // Расстояния: прямая × 1,3 / 75 м в минуту — время пешком, как на основной карте
   const toR = x => x * Math.PI / 180;
   const dist = (a, b) => { const dLat = toR(b[0] - a[0]), dLng = toR(b[1] - a[1]); const h = Math.sin(dLat / 2) ** 2 + Math.cos(toR(a[0])) * Math.cos(toR(b[0])) * Math.sin(dLng / 2) ** 2; return 2 * 6371000 * Math.asin(Math.sqrt(h)); };
   const fmtD = m => m >= 1000 ? (m / 1000).toFixed(1).replace('.', ',') + ' km' : Math.round(m) + ' m';
 
-  // Сохранённая точка: тот же ключ, что на основной карте
-  const SPOT_KEY = 'rhineGuideSavedSpot';
-  const getSpot = () => { try { return JSON.parse(localStorage.getItem(SPOT_KEY) || 'null'); } catch (e) { return null; } };
-  const setSpot = s => { try { localStorage.setItem(SPOT_KEY, JSON.stringify(s)); } catch (e) {} };
-  let spotMarker = null;
-  const drawSpot = () => {
-    if (spotMarker) { spotMarker.remove(); spotMarker = null; }
-    const s = getSpot();
-    if (!s) return;
-    spotMarker = L.marker([s.lat, s.lng], { icon: L.divIcon({ className: '', html: '<div style="font-size:26px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.45))">📌</div>', iconSize: [30, 30], iconAnchor: [15, 28] }), zIndexOffset: 900 }).addTo(map).bindTooltip(s.label || 'Mein Punkt');
-  };
-
-  // Карточки под кнопкой GPS (только при включённом GPS)
-  const CARD = 'background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:14px;padding:8px 12px;box-shadow:0 4px 14px rgba(90,67,39,0.25);font:13px sans-serif;color:#5A4327;box-sizing:border-box';
   let lastUser = null;
   const renderPanel = () => {
-    if (!lastUser) { panel.style.display = 'none'; panel.innerHTML = ''; return; }
-    const near = items.map(it => ({ it, d: dist(lastUser, it.ll) })).sort((a, b) => a.d - b.d)[0];
-    let html = '';
-    if (near) html += `<div data-go="${items.indexOf(near.it)}" style="${CARD};cursor:pointer"><div style="font-weight:700;font-size:15px">≈ ${fmtD(near.d)}</div><div>zu ${near.it.name}</div></div>`;
-    const s = getSpot();
-    if (s) html += `<div style="${CARD}"><div style="font-weight:700;font-size:15px">≈ ${fmtD(dist(lastUser, [s.lat, s.lng]))}</div><div>zu ${s.label || 'Mein Punkt'} <button type="button" data-clear="1" style="border:none;background:rgba(90,67,39,.12);border-radius:50%;width:20px;height:20px;cursor:pointer;margin-left:4px">✕</button></div></div>`;
-    html += `<button type="button" data-save="1" style="${CARD};font-weight:700;cursor:pointer;text-align:left">📌 Meinen Punkt speichern</button>`;
-    panel.innerHTML = html;
-    panel.style.display = 'flex';
+    if (!extPanel) return;
+    if (!lastUser) { extPanel.style.display = 'none'; extPanel.innerHTML = ''; return; }
+    const sorted = items.map(it => ({ it, d: dist(lastUser, it.ll) })).sort((a, b) => a.d - b.d);
+    let html = sorted.map((r, i) =>
+      `<div class="gps-dist-card${i === 0 ? ' nearest' : ''}" data-go="${items.indexOf(r.it)}"><b>≈ ${fmtD(r.d)}</b> ${r.it.name}</div>`
+    ).join('');
+    extPanel.innerHTML = html;
+    extPanel.style.display = 'flex';
   };
-  panel.addEventListener('click', e => {
-    const t = e.target.closest && e.target.closest('[data-go],[data-save],[data-clear]');
-    if (!t) return;
-    if (t.dataset.go !== undefined) pick(items[+t.dataset.go]);
-    else if (t.dataset.save) { if (lastUser) { setSpot({ lat: lastUser[0], lng: lastUser[1], label: 'Mein Punkt' }); drawSpot(); renderPanel(); } }
-    else if (t.dataset.clear) { setSpot(null); drawSpot(); renderPanel(); }
+  if (extPanel) extPanel.addEventListener('click', e => {
+    const card = e.target.closest('[data-go]');
+    if (card) pick(items[+card.dataset.go]);
   });
 
-  // GPS: нажатие включает слежение и синюю точку, второе нажатие выключает
   let watchId = null, userLayer = null, fitted = false;
   const setOn = on => {
     gps.innerHTML = on ? '<span>📍</span><span>GPS ON</span>' : '<span>📍</span><span>GPS</span>';
@@ -727,37 +712,31 @@ function wineMapTools(map, items) {
     watchId = null;
     if (userLayer) userLayer.remove();
     userLayer = null; fitted = false; lastUser = null; setOn(false); renderPanel();
+    if (window._gpsManager.activeStop === stop) window._gpsManager.activeStop = null;
   };
   const start = () => {
     if (!navigator.geolocation) { alert('GPS nicht verfügbar'); return; }
+    if (window._gpsManager.activeStop && window._gpsManager.activeStop !== stop) {
+      window._gpsManager.activeStop();
+    }
+    window._gpsManager.activeStop = stop;
     setOn(true);
     watchId = navigator.geolocation.watchPosition(pos => {
       const user = [pos.coords.latitude, pos.coords.longitude];
       lastUser = user;
-      const haloIcon = L.divIcon({
-        className: '', html: '<div class="gps-user-halo"></div>',
-        iconSize: [22, 22], iconAnchor: [11, 11]
-      });
-      if (!userLayer) userLayer = L.marker(user, { icon: haloIcon, zIndexOffset: 1000 }).addTo(map);
+      if (!userLayer) userLayer = L.marker(user, { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [22, 22], iconAnchor: [11, 11] }), zIndexOffset: 1000 }).addTo(map);
       else userLayer.setLatLng(user);
       if (!fitted) {
         fitted = true;
-        // Find nearest item to show user + nearest together (like main nav)
         let nearest = 0, minD = Infinity;
-        items.forEach((it, idx) => {
-          const d = Math.hypot(user[0] - it.ll[0], user[1] - it.ll[1]);
-          if (d < minD) { minD = d; nearest = idx; }
-        });
+        items.forEach((it, idx) => { const d = Math.hypot(user[0] - it.ll[0], user[1] - it.ll[1]); if (d < minD) { minD = d; nearest = idx; } });
         map.fitBounds([[user[0], user[1]], items[nearest].ll], { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
-      } else {
-        map.panTo(user);
-      }
+      } else { map.panTo(user); }
       renderPanel();
     }, () => { alert('GPS nicht verfügbar'); stop(); }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
   };
   gps.addEventListener('click', () => (watchId === null ? start() : stop()));
   setOn(false);
-  drawSpot();
 }
 function avatar(p) {
   return p.icon
@@ -968,9 +947,20 @@ function renderGpsPanel() {
   panel.innerHTML = html;
 }
 
+function stopFoodGps() {
+  if (gpsWatch !== null) { navigator.geolocation.clearWatch(gpsWatch); gpsWatch = null; }
+  gpsOn = false; gpsPos = null;
+  updateGpsUi();
+  if (window._gpsManager.activeStop === stopFoodGps) window._gpsManager.activeStop = null;
+}
 function startGps() {
   if (!navigator.geolocation) { gpsPos = null; document.getElementById('gpsPanel').innerHTML = `<p class="gps-hint">${gl('err')}</p>`; return; }
   if (gpsWatch !== null) return;
+  // Stop other map's GPS first
+  if (window._gpsManager.activeStop && window._gpsManager.activeStop !== stopFoodGps) {
+    window._gpsManager.activeStop();
+  }
+  window._gpsManager.activeStop = stopFoodGps;
   gpsWatch = navigator.geolocation.watchPosition(pos => {
     gpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     drawGpsMarkers();
@@ -1054,7 +1044,7 @@ function render() {
           .on('click', () => { const c = document.getElementById('card-' + w.slug); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       });
       window.wineLeaf.fitBounds(L.latLngBounds(WINERIES.filter(w => w.ll).map(w => w.ll)), { padding: [28, 28], maxZoom: 15 });
-      wineMapTools(window.wineLeaf, WINERIES.filter(w => w.ll).map(w => ({ name: w.name, ll: w.ll, go: () => { const c = document.getElementById('card-' + w.slug); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); } })));
+      wineMapTools(window.wineLeaf, WINERIES.filter(w => w.ll).map(w => ({ name: w.name, ll: w.ll, go: () => { const c = document.getElementById('card-' + w.slug); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); } })), 'gpsPanel-wine');
     }
     setTimeout(() => window.wineLeaf.invalidateSize(), 0);
   }
@@ -1080,6 +1070,10 @@ function render() {
 document.getElementById('ptabs').addEventListener('click', e => {
   const b = e.target.closest('button[data-v]');
   if (!b) return;
+  // Stop any active GPS when switching tabs
+  if (window._gpsManager && window._gpsManager.activeStop) {
+    window._gpsManager.activeStop();
+  }
   view = b.dataset.v;
   render();
   window.scrollTo(0, 0);

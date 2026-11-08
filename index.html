@@ -2069,7 +2069,7 @@ function _showPoiToast(mapObj, poi, emoji) {
   }
   let userPos = null;
   if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) userPos = [gpsLastLat, gpsLastLng];
-  else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) userPos = xmasGpsPos;
+  else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) userPos = [xmasGpsPos.lat, xmasGpsPos.lng];
   if (userPos) {
     const d = distanceMeters(userPos[0], userPos[1], poi.lat, poi.lng);
     const walkMin = Math.ceil(d * 1.3 / 75);
@@ -4555,7 +4555,7 @@ function xmasUpdateGpsPanel() {
       };
       if (!xToast._dismissed) {
         clearTimeout(xToast._hideTimer);
-        xToast._hideTimer = setTimeout(() => xToast.classList.remove('show'), 8000);
+        xToast._hideTimer = setTimeout(() => xToast.classList.remove('show'), 4000);
       } else {
         xToast.classList.remove('show');
       }

@@ -201,6 +201,17 @@
     70% { box-shadow: 0 0 0 14px rgba(181,96,46,0); }
     100% { box-shadow: 0 0 0 0 rgba(181,96,46,0); }
   }
+  /* === POI marker pulse animation === */
+  @keyframes poiPulse {
+    0% { box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 0 0 0 rgba(76,175,80,0.45); }
+    70% { box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 0 0 10px rgba(76,175,80,0); }
+    100% { box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 0 0 0 rgba(76,175,80,0); }
+  }
+  @keyframes poiPulseBlue {
+    0% { box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 0 0 0 rgba(33,150,243,0.45); }
+    70% { box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 0 0 10px rgba(33,150,243,0); }
+    100% { box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 0 0 0 rgba(33,150,243,0); }
+  }
   .legal { margin-top: 18px; padding-top: 10px; border-top: 1px solid rgba(122,16,38,.25); font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); text-align: center; }
 
   /* === Заставка (splash) первого экрана — по образцу index.html / partner-map.html ===
@@ -924,7 +935,7 @@ function drawWalkMap(w) {
     [lat0, lng0]
   ];
   L.polyline(loop, { color: '#7A1026', weight: 4, opacity: .85 }).addTo(map);
-  map.fitBounds(L.latLngBounds([w.pierLL, w.startLL, ...loop]), { padding: [20, 20], maxZoom: 15 });
+  map.fitBounds(L.latLngBounds([w.pierLL, w.startLL, ...loop]), { paddingTopLeft: [20, 20], paddingBottomRight: [20, 50], maxZoom: 15 });
   // Walk POIs: start, pier, plus key points along the loop for distance display
   const walkItems = [
     { name: t.legStart + ' · ' + w.startName, ll: w.startLL, go: () => map.setView(w.startLL, 16) },
@@ -968,22 +979,28 @@ function wineMapTools(map, items, panelId) {
   bar.innerHTML = '<span style="font-size:13px;opacity:.75">🔎</span>' +
     `<input id="${searchId}" type="text" list="${namesId}" autocomplete="off" placeholder="Name suchen" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font:13px sans-serif;color:#5A4327">` +
     `<datalist id="${namesId}">` + items.map(it => '<option value="' + it.name.replace(/"/g, '&quot;') + '"></option>').join('') + '</datalist>';
+  // Rotating placeholder hints
+  const hints = ['Weingut suchen…', 'Wo ist der KD-Anleger?', 'Route zum Start?', 'Apotheke · WC finden'];
+  let hintIdx = 0;
+  const searchInput = bar.querySelector('#' + searchId);
+  const rotateHint = () => { if (searchInput.value === '') { hintIdx = (hintIdx + 1) % hints.length; searchInput.placeholder = hints[hintIdx]; } };
+  setInterval(rotateHint, 3000);
 
   // GPS button — stays ON map
   const gps = document.createElement('button');
   gps.type = 'button';
-  gps.style.cssText = 'position:absolute;z-index:1000;top:78px;left:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:7px 12px;font:700 12px sans-serif;color:#5A4327;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,0.25)';
+  gps.style.cssText = 'position:absolute;z-index:1000;top:56px;left:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:7px 12px;font:700 12px sans-serif;color:#5A4327;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,0.25)';
 
   // POI buttons — stay ON map
   const poiBar = document.createElement('div');
-  poiBar.style.cssText = 'position:absolute;z-index:800;top:30%;right:12px;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px';
+  poiBar.style.cssText = 'position:absolute;z-index:800;top:56px;right:12px;display:flex;flex-direction:column;gap:6px';
   const WINNINGEN_APO = [
-    { name: 'Mosel-Apotheke', lat: 50.3122, lng: 7.5206, city: 'Winningen' },
-    { name: 'Schloss-Apotheke', lat: 50.3590, lng: 7.5975, city: 'Koblenz' },
+    { name: 'Kastor-Apotheke', lat: 50.3090, lng: 7.4600, city: 'Kobern-Gondorf' },
+    { name: 'Schloss-Apotheke', lat: 50.3530, lng: 7.5890, city: 'Koblenz' },
   ];
   const WINNINGEN_WC = [
-    { name: 'WC Bahnhof Winningen', lat: 50.3125, lng: 7.5195, city: 'Winningen' },
-    { name: 'WC Weindorf Winningen', lat: 50.3140, lng: 7.5230, city: 'Winningen' },
+    { name: 'Nette Toilette · Rathaus', lat: 50.3138, lng: 7.5218, city: 'Winningen' },
+    { name: 'Nette Toilette · Weinhof', lat: 50.3130, lng: 7.5232, city: 'Winningen' },
   ];
   let wApoL = null, wWcL = null;
   function mkPoiBtn(emoji, title, cssExtra) {
@@ -999,7 +1016,7 @@ function wineMapTools(map, items, panelId) {
     if (wApoL) { map.removeLayer(wApoL); wApoL = null; apoBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)'; return; }
     wApoL = L.layerGroup();
     WINNINGEN_APO.forEach(p => {
-      const ic = L.divIcon({ className: '', html: '<div style="width:26px;height:26px;border-radius:50%;background:#e8f5e9;border:2px solid #4caf50;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">💊</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+      const ic = L.divIcon({ className: '', html: '<div style="width:38px;height:38px;border-radius:50%;background:#e8f5e9;border:2px solid #4caf50;display:flex;align-items:center;justify-content:center;font-size:22px;animation:poiPulse 2s ease-in-out infinite">💊</div>', iconSize: [40, 40], iconAnchor: [20, 20] });
       L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(wApoL);
     });
     wApoL.addTo(map);
@@ -1010,7 +1027,7 @@ function wineMapTools(map, items, panelId) {
     if (wWcL) { map.removeLayer(wWcL); wWcL = null; wcBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)'; return; }
     wWcL = L.layerGroup();
     WINNINGEN_WC.forEach(p => {
-      const ic = L.divIcon({ className: '', html: '<div style="width:26px;height:26px;border-radius:50%;background:#e3f2fd;border:2px solid #2196f3;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">🚻</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+      const ic = L.divIcon({ className: '', html: '<div style="width:38px;height:38px;border-radius:50%;background:#e3f2fd;border:2px solid #2196f3;display:flex;align-items:center;justify-content:center;font-size:22px;animation:poiPulseBlue 2s ease-in-out infinite">🚻</div>', iconSize: [40, 40], iconAnchor: [20, 20] });
       L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(wWcL);
     });
     wWcL.addTo(map);
@@ -1117,7 +1134,7 @@ function wineMapTools(map, items, panelId) {
           const d = Math.hypot(user[0] - it.ll[0], user[1] - it.ll[1]);
           if (d < minD) { minD = d; nearest = idx; }
         });
-        map.fitBounds([[user[0], user[1]], items[nearest].ll], { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
+        map.fitBounds([[user[0], user[1]], items[nearest].ll], { paddingTopLeft: [24, 80], paddingBottomRight: [24, 50], maxZoom: 15 });
       } else {
         map.panTo(user);
       }

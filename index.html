@@ -1001,6 +1001,14 @@
     50% { box-shadow: 0 0 0 18px rgba(198,40,40,0); transform: scale(1.1); }
     100% { box-shadow: 0 0 0 0 rgba(198,40,40,0); transform: scale(1); }
   }
+  .poi-gps-hint {
+    position: absolute; z-index: 900; bottom: 200px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.82); color: #fff; padding: 14px 22px; border-radius: 14px;
+    font: 600 clamp(15px,4vw,18px) var(--sans); text-align: center;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4); opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+  }
+  .poi-gps-hint.show { opacity: 1; pointer-events: auto; }
   .poi-toggle-bar { position: absolute; z-index: 800; bottom: 110px; right: 12px; display: flex; flex-direction: column; gap: 6px; }
   .poi-toggle-btn { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; font-size: 36px; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
@@ -2090,8 +2098,11 @@ function _showEmergencyPopup() {
     ep.setAttribute('role', 'dialog');
     ep.style.cssText = 'z-index:10001';
     ep.innerHTML = `<button class="food-promo-close" onclick="document.getElementById('emergencyPopup').hidden=true" aria-label="×">×</button>
-      <div class="food-promo-q" id="emergencyQ" style="white-space:pre-line;font-size:clamp(22px,6vw,30px)"></div>
-      <a id="emergencyCall" href="#" style="display:inline-block;margin:18px auto 0;padding:16px 28px;background:#c62828;color:#fff;border-radius:14px;font:700 clamp(18px,5vw,24px) var(--sans);text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.3)"></a>`;
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;width:100%">
+        <div style="font-size:56px">🆘</div>
+        <div class="food-promo-q" id="emergencyQ" style="white-space:pre-line;font-size:clamp(24px,7vw,34px);margin:0"></div>
+        <a id="emergencyCall" href="#" style="display:inline-block;padding:18px 32px;background:#c62828;color:#fff;border-radius:16px;font:700 clamp(20px,5.5vw,26px) var(--sans);text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.3)"></a>
+      </div>`;
     document.body.appendChild(ep);
   }
   const l = (typeof poiPopupLang === 'function') ? poiPopupLang() : 'en';
@@ -2102,12 +2113,41 @@ function _showEmergencyPopup() {
   callBtn.href = 'https://wa.me/4915738000978?text=' + encodeURIComponent('I need help / Ich brauche Hilfe');
   ep.hidden = false;
 }
+const POI_GPS_HINT = {
+  de: 'Aktivieren Sie GPS, um das nächste Objekt zu finden',
+  en: 'Enable GPS to find the nearest location',
+  ru: 'Включите GPS, чтобы найти ближайший объект',
+  fr: 'Activez le GPS pour trouver le lieu le plus proche',
+  nl: 'Schakel GPS in om de dichtstbijzijnde locatie te vinden',
+  zh: '启用GPS以查找最近的位置',
+  he: 'הפעל GPS כדי למצוא את המיקום הקרוב ביותר'
+};
+function _showGpsHint(mapObj) {
+  const cont = mapObj.getContainer();
+  let h = cont.querySelector('.poi-gps-hint');
+  if (h) { h.classList.add('show'); return; }
+  h = document.createElement('div');
+  h.className = 'poi-gps-hint show';
+  const l = (typeof poiPopupLang === 'function') ? poiPopupLang() : 'en';
+  h.innerHTML = '<span style="font-size:28px">📍</span> ' + (POI_GPS_HINT[l] || POI_GPS_HINT.en);
+  cont.appendChild(h);
+  setTimeout(() => h.classList.remove('show'), 6000);
+}
+function _hideGpsHint(mapObj) {
+  const h = mapObj.getContainer().querySelector('.poi-gps-hint');
+  if (h) h.classList.remove('show');
+}
 function _zoomToNearestPoi(mapObj, poiList, emoji) {
-  // determine reference point: GPS position or map center
+  // determine reference point: GPS position ONLY — never map center
   let ref;
   if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
   else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
-  else { const c = mapObj.getCenter(); ref = [c.lat, c.lng]; }
+  else {
+    // No GPS — show hint, don't zoom to random location
+    _showGpsHint(mapObj);
+    return;
+  }
+  _hideGpsHint(mapObj);
   // find nearest
   let nearest = null, minD = Infinity;
   poiList.forEach(p => {
@@ -2122,11 +2162,11 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
 function togglePoiLayer(type) {
   if (!leafletMap) return;
   if (type === 'apotheke') {
-    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); if (!toilettenLayer) _stopPoiEmergency(); return; }
+    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!toilettenLayer) _stopPoiEmergency(); return; }
     apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
   } else {
-    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); if (!apothekenLayer) _stopPoiEmergency(); return; }
+    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!apothekenLayer) _stopPoiEmergency(); return; }
     toilettenLayer = _buildPoiLayer(leafletMap, POI_TOILETTEN, '🚻', 'poi-wc');
     _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
   }
@@ -2140,11 +2180,11 @@ function _hidePoiToasts(mapObj) {
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
   if (type === 'apotheke') {
-    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); if (!xmasWcLayer) _stopPoiEmergency(); return; }
+    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasWcLayer) _stopPoiEmergency(); return; }
     xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
   } else {
-    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); if (!xmasApoLayer) _stopPoiEmergency(); return; }
+    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasApoLayer) _stopPoiEmergency(); return; }
     xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
     _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
   }
@@ -4360,6 +4400,12 @@ function xmasStartGps() {
     if (xmasMapObj) {
       if (xmasGpsMarker) xmasGpsMarker.setLatLng([xmasGpsPos.lat, xmasGpsPos.lng]);
       else xmasDrawGpsLayers();
+      // POI re-zoom: on first GPS fix while POI active, zoom to nearest
+      if (!xmasMapObj._poiGpsZoomed && (xmasApoLayer || xmasWcLayer)) {
+        xmasMapObj._poiGpsZoomed = true;
+        if (xmasApoLayer) _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
+        else if (xmasWcLayer) _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
+      }
     }
     xmasUpdateGpsPanel();
   }, () => {
@@ -6576,6 +6622,12 @@ function startGps() {
       if (leafletMap) leafletMap.panTo([latitude, longitude]);
 
       gpsLastLat = latitude; gpsLastLng = longitude;
+      // POI re-zoom: on first GPS fix while POI active, zoom to nearest
+      if (!leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
+        leafletMap._poiGpsZoomed = true;
+        if (apothekenLayer) _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
+        else if (toilettenLayer) _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
+      }
       updateGpsDistancePanel(latitude, longitude);
 
       const nearest = findNearestCastleIndex(latitude, longitude);

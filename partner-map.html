@@ -60,6 +60,7 @@
   .pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--maroon), 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .pin span { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: var(--maroon); }
+  .partner.hl { box-shadow: 0 0 0 3px rgba(122,16,38,.4); transition: box-shadow .3s; }
   .modal { position: fixed; inset: 0; background: rgba(40,20,10,.55); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 10; }
   .modal.open { display: flex; }
   .coupon { background: var(--paper); border: 2px solid var(--maroon); border-radius: 14px; padding: 18px; width: 100%; max-width: 380px; text-align: center; position: relative; }
@@ -1089,6 +1090,22 @@ document.querySelectorAll('.langs button').forEach(b => b.addEventListener('clic
   render();
 }));
 render();
+// Hash navigation: scroll to card after render (e.g. #card-buta)
+function scrollToHash() {
+  const h = location.hash;
+  if (!h) return;
+  const el = document.getElementById(h.slice(1));
+  if (el) {
+    // Hide splash if navigating to a specific card
+    const sp = document.getElementById('foodSplash');
+    if (sp) sp.hidden = true;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('hl');
+    setTimeout(() => el.classList.remove('hl'), 1500);
+  }
+}
+setTimeout(scrollToHash, 300);
+window.addEventListener('hashchange', scrollToHash);
 // Заставка при открытии: касание по ней скрывает её; кнопки языков сразу переключают страницу
 const splashEl = document.getElementById('foodSplash');
 function markSplashLang() {

@@ -1028,7 +1028,7 @@
     transition: opacity .3s;
   }
   .poi-gps-hint.show { opacity: 1; pointer-events: auto; }
-  .poi-toggle-bar { position: absolute; z-index: 800; bottom: 14px; right: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .poi-toggle-bar { position: absolute; z-index: 800; top: 50%; right: 12px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
   .poi-toggle-btn { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; font-size: 36px; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
   .poi-toggle-btn.wc { background: #e3f2fd; }
@@ -1055,6 +1055,8 @@
     70% { box-shadow: 0 0 0 36px rgba(200,168,120,0); }
     100% { box-shadow: 0 0 0 0 rgba(200,168,120,0); }
   }
+  .map-reset-btn { position: absolute; z-index: 800; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 8px; border: 2px solid var(--gold); background: rgba(246,238,221,0.95); color: var(--ink); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+  .map-reset-btn:active { background: var(--gold); }
   .gps-user-halo {
     width: 22px; height: 22px; border-radius: 50%;
     background: rgba(181,96,46,0.35); display: flex; align-items: center; justify-content: center;
@@ -2078,7 +2080,7 @@ function _showPoiToast(mapObj, poi, emoji) {
   toast.classList.add('show');
   toast.onclick = () => { mapObj.setView([poi.lat, poi.lng], 17); };
   clearTimeout(toast._hideTimer);
-  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 8000);
+  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 4000);
 }
 // ── POI Emergency mode: block popups, show "need help?" after 30s ──
 let _poiEmergencyMode = false;
@@ -2181,7 +2183,12 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
     if (d < minD) { minD = d; nearest = p; }
   });
   if (nearest) {
-    mapObj.setView([nearest.lat, nearest.lng], 17, { animate: true });
+    // If GPS is active, show both user position AND nearest POI
+    if (ref) {
+      mapObj.fitBounds([ref, [nearest.lat, nearest.lng]], { padding: [40, 40], maxZoom: 17, animate: true });
+    } else {
+      mapObj.setView([nearest.lat, nearest.lng], 17, { animate: true });
+    }
     _showPoiToast(mapObj, nearest, emoji);
   }
 }
@@ -4321,6 +4328,17 @@ function xmasDrawMap(opts) {
   xPoiBar.className = 'poi-toggle-bar';
   xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button>';
   xmasMapObj.getContainer().appendChild(xPoiBar);
+  // Reset-to-full-map button for xmas map
+  const xResetBtn = document.createElement('button');
+  xResetBtn.className = 'map-reset-btn';
+  xResetBtn.innerHTML = '⊞';
+  xResetBtn.title = 'Full map / Gesamte Karte';
+  xResetBtn.onclick = () => {
+    if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
+    else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [56, 56], maxZoom: opts.zoom });
+    else xmasMapObj.setView(opts.center, opts.zoom);
+  };
+  xmasMapObj.getContainer().appendChild(xResetBtn);
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
     if (p.onClick) m.on('click', p.onClick);
@@ -6158,6 +6176,13 @@ function initMap() {
   if (points.length) {
     L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(leafletMap);
     leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
+    // Reset-to-full-map button
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'map-reset-btn';
+    resetBtn.innerHTML = '⊞';
+    resetBtn.title = 'Full map / Gesamte Karte';
+    resetBtn.onclick = () => leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
+    leafletMap.getContainer().appendChild(resetBtn);
   }
 
   renderPois();
@@ -6751,7 +6776,7 @@ function updateGpsDistancePanel(lat, lng) {
         };
         if (!toast._dismissed) {
           clearTimeout(toast._hideTimer);
-          toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 8000);
+          toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 4000);
         } else {
           toast.classList.remove('show');
         }

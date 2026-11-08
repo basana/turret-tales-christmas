@@ -24,7 +24,7 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--cream); color: var(--ink); font-family: 'EB Garamond', Georgia, serif; }
-  body { padding: 0 16px 40px; max-width: 560px; margin: 0 auto; }
+  body { padding: 0 20px 40px; max-width: 560px; margin: 0 auto; }
   header { padding: 22px 0 10px; text-align: center; }
   .brand-row { display: flex; align-items: center; justify-content: center; gap: 6px; }
   .brand-emblem { width: 30.2px; height: 30.2px; object-fit: contain; opacity: 0.8; }
@@ -951,7 +951,7 @@ function wineMapTools(map, items) {
   nearToast.style.cssText = 'position:absolute;z-index:1000;bottom:12px;left:12px;right:60px;display:none;background:rgba(122,16,38,0.95);color:#F5ECD6;border-radius:14px;padding:10px 14px;box-shadow:0 4px 14px rgba(0,0,0,0.35);font:700 14px sans-serif;cursor:pointer;backdrop-filter:blur(4px)';
   // Apotheken + Toiletten toggle buttons
   const poiBar = document.createElement('div');
-  poiBar.style.cssText = 'position:absolute;z-index:800;bottom:50px;right:12px;display:flex;flex-direction:column;gap:6px';
+  poiBar.style.cssText = 'position:absolute;z-index:800;top:50%;right:12px;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px';
   const WINNINGEN_APO = [
     { name: 'Mosel-Apotheke', lat: 50.3122, lng: 7.5206, city: 'Winningen' },
     { name: 'Schloss-Apotheke', lat: 50.3590, lng: 7.5975, city: 'Koblenz' },

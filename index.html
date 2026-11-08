@@ -81,8 +81,8 @@
   .header-controls { flex: 0 0 auto; position: relative; z-index: 1002; }
   .header-controls { display: flex; align-items: center; gap: 6px; font-family: var(--sans); }
   /* Всплывающая реклама Food & Drinks (каждые 2 минуты) */
-  .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 2000; width: min(92vw, 400px); min-height: min(92vw, 400px); aspect-ratio: auto; box-sizing: border-box; background: url('frame-vignette.png') center / 100% 100% no-repeat, #F5ECD6; border: 0; border-radius: 0; padding: 64px 60px 56px; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; animation: foodPromoIn .35s ease-out; }
-  .food-promo-q { font-size: clamp(18px, 5vw, 22px); line-height: 1.22; margin: 0; padding: 0 9%; align-self: stretch; }
+  .food-promo { position: fixed; left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); z-index: 2000; width: min(92vw, 400px); min-height: min(92vw, 400px); aspect-ratio: auto; box-sizing: border-box; background: url('frame-vignette.png') center / 100% 100% no-repeat, #F5ECD6; border: 0; border-radius: 0; padding: 36px 32px 28px; box-shadow: 0 10px 28px rgba(60,30,10,0.35); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; animation: foodPromoIn .35s ease-out; }
+  .food-promo-q { font-size: clamp(20px, 5.6vw, 26px); line-height: 1.28; margin: 0; padding: 0 6%; align-self: stretch; }
   .food-promo-badge { position: relative; flex: 0 0 auto; width: clamp(132px, 44vw, 165px); height: clamp(132px, 44vw, 165px); margin: 0; display: flex; align-items: center; justify-content: center; }
   .food-promo-arc { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .food-promo-arc text { font-family: 'EB Garamond', Garamond, serif; font-weight: 700; font-size: 25px; fill: #A33A0E; }
@@ -996,15 +996,32 @@
   }
   .poi-apotheke { background: #e8f5e9; border-color: #4caf50; font-size: 20px; }
   .poi-wc { background: #e3f2fd; border-color: #2196f3; font-size: 20px; }
-  .poi-toggle-bar { position: absolute; z-index: 800; bottom: 60px; right: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .poi-toggle-btn { width: 48px; height: 48px; border-radius: 50%; border: 2.5px solid #fff; font-size: 22px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
+  .poi-toggle-bar { position: absolute; z-index: 800; bottom: 110px; right: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .poi-toggle-btn { width: 52px; height: 52px; border-radius: 50%; border: 2.5px solid #fff; font-size: 24px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
   .poi-toggle-btn.wc { background: #e3f2fd; }
-  .poi-toggle-btn.active { box-shadow: 0 0 0 4px var(--gold), 0 2px 10px rgba(0,0,0,0.35); animation: poiPulse 1.2s ease-out infinite; }
+  .poi-toggle-btn.active { animation: poiPulse 1.5s ease-out infinite; }
+  .poi-toggle-btn.active::before, .poi-toggle-btn.active::after {
+    content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
+    border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;
+  }
+  .poi-toggle-btn.active::before { animation: poiRing1 1.5s ease-out infinite; }
+  .poi-toggle-btn.active::after { animation: poiRing2 1.5s ease-out 0.4s infinite; }
   @keyframes poiPulse {
-    0% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 4px rgba(200,168,120,0.7); }
-    50% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 18px rgba(200,168,120,0); }
-    100% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 4px rgba(200,168,120,0); }
+    0% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 6px rgba(200,168,120,0.8); transform: scale(1); }
+    25% { transform: scale(1.08); }
+    50% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 28px rgba(200,168,120,0); transform: scale(1); }
+    100% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 6px rgba(200,168,120,0); }
+  }
+  @keyframes poiRing1 {
+    0% { box-shadow: 0 0 0 0 rgba(200,168,120,0.6); }
+    70% { box-shadow: 0 0 0 24px rgba(200,168,120,0); }
+    100% { box-shadow: 0 0 0 0 rgba(200,168,120,0); }
+  }
+  @keyframes poiRing2 {
+    0% { box-shadow: 0 0 0 0 rgba(200,168,120,0.4); }
+    70% { box-shadow: 0 0 0 36px rgba(200,168,120,0); }
+    100% { box-shadow: 0 0 0 0 rgba(200,168,120,0); }
   }
   .gps-user-halo {
     width: 22px; height: 22px; border-radius: 50%;
@@ -1133,7 +1150,7 @@
   .wine-promo { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2000; width: min(92vw, 380px); box-sizing: border-box; background: #F5ECD6; border: 1px solid #c8a878; padding: 26px 22px 20px; text-align: center; font-family: 'EB Garamond', Garamond, serif; color: #3a2a1a; box-shadow: 0 10px 28px rgba(60,30,10,0.35); }
   .wine-promo[hidden] { display: none; }
   .wine-promo-img { display: block; width: min(56vw, 200px); height: auto; margin: 0 auto 12px; }
-  .tour-promo-img { display: block; width: min(56vw, 200px); height: auto; margin: 0 auto 12px; }
+  .tour-promo-img { display: block; width: min(44vw, 160px); height: min(44vw, 160px); margin: 0 auto 8px; border-radius: 50%; object-fit: cover; }
   .wine-promo-q { font-size: 17px; line-height: 1.3; margin: 0 0 12px; }
   .wine-promo-link { display: inline-block; font-size: 17px; font-weight: 700; color: #7A1026; text-decoration: none; border-bottom: 1px solid #7A1026; }
   .wine-promo-close { position: absolute; top: 4px; right: 8px; background: none; border: 0; color: #7A1026; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
@@ -1266,8 +1283,8 @@
 <div class="food-promo tour-promo" id="tourPromo" hidden role="dialog" aria-label="Führungen">
   <button class="food-promo-close" id="tourPromoClose" aria-label="×">×</button>
   <img class="tour-promo-img" src="xmas-tour-emblem-engraved.webp" alt="">
-  <div id="tourPromoQ" class="food-promo-q"></div>
-  <button class="food-promo-link" id="tourPromoLink"></button>
+  <div id="tourPromoQ" class="food-promo-q" style="white-space:pre-line"></div>
+  <button class="food-promo-link" id="tourPromoLink" hidden></button>
 </div>
 <div class="food-promo poi-promo" id="poiPromo" hidden role="dialog" aria-label="Pharmacy / WC">
   <button class="food-promo-close" id="poiPromoClose" aria-label="×">×</button>
@@ -3905,28 +3922,28 @@ const TOUR_PROMO = { intervalMs: 420000, autoCloseMs: 30000, whatsapp: 'https://
 const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'castles', 'route'];
 const TOUR_PROMO_TEXT = {
   christmas: {
-    de: 'Weihnachtsmärkte mit Gästeführer: Koblenz im Advent, mit der Geschichte hinter jedem Platz.',
-    en: 'Christmas markets with a guide: Koblenz in Advent, with the story behind every square.',
-    ru: 'Рождественские рынки с гидом: Кобленц в адвенте и история каждой площади.',
-    link: { de: 'Anfrage per WhatsApp →', en: 'Ask on WhatsApp →', ru: 'Написать в WhatsApp →' }
+    de: 'Weihnachtsmarkt mit Gästeführer:\nGeschichte auf jedem Platz.',
+    en: 'Christmas market with a guide:\nThe story behind every square.',
+    ru: 'Рождественский рынок с гидом:\nИстория на каждой площади.',
+    link: { de: '', en: '', ru: '' }
   },
   wine: {
-    de: 'Weingüter in Winningen: Führung und Weinprobe an der Mosel, mit Blick auf die Lagen.',
-    en: 'Wine estates in Winningen: a guided walk and tasting on the Moselle, with views of the vineyards.',
-    ru: 'Винодельни Винингена: экскурсия и дегустация на Мозели с видом на виноградники.',
-    link: { de: 'Anfrage per WhatsApp →', en: 'Ask on WhatsApp →', ru: 'Написать в WhatsApp →' }
+    de: 'Weinprobe in Winningen:\nFührung durch die Mosel-Weingüter.',
+    en: 'Wine tasting in Winningen:\nA guided walk through Moselle vineyards.',
+    ru: 'Дегустация в Виннингене:\nЭкскурсия по мозельским виноградникам.',
+    link: { de: '', en: '', ru: '' }
   },
   castles: {
-    de: 'Marksburg privat: Führung auf der Burg, die nie erobert wurde, als Einzeltermin nach Absprache.',
-    en: 'Marksburg private tour: the castle that was never conquered, as a private visit by appointment.',
-    ru: 'Частная экскурсия в Марксбург: замок, который никогда не был взят, по договорённости.',
-    link: { de: 'Anfrage per WhatsApp →', en: 'Ask on WhatsApp →', ru: 'Написать в WhatsApp →' }
+    de: 'Marksburg privat:\nDie Burg, die nie erobert wurde.',
+    en: 'Marksburg private tour:\nThe castle that was never conquered.',
+    ru: 'Марксбург — частная экскурсия:\nЗамок, который никогда не был взят.',
+    link: { de: '', en: '', ru: '' }
   },
   route: {
-    de: 'Rhein- und Moselstrecken mit Gästeführer. Gruppen mit Mini-Bus oder Großbus (17 Plätze) auf Absprache.',
-    en: 'Rhine and Mosel routes with a guide. Groups by mini-bus or 17-seat coach, by arrangement.',
-    ru: 'Маршруты по Рейну и Мозели с гидом. Группы на мини-автобусе или на автобусе на 17 мест.',
-    link: { de: 'Anfrage per WhatsApp →', en: 'Ask on WhatsApp →', ru: 'Написать в WhatsApp →' }
+    de: 'Rhein und Mosel mit Gästeführer:\nGruppen auf Absprache.',
+    en: 'Rhine and Mosel with a guide:\nGroup tours by arrangement.',
+    ru: 'Рейн и Мозель с гидом:\nГруппы по договорённости.',
+    link: { de: '', en: '', ru: '' }
   }
 };
 let tourPromoLastAt = Date.now();
@@ -3964,7 +3981,8 @@ function tourPromoTick() {
   if (showTourPromo()) tourPromoLastAt = Date.now();
 }
 document.getElementById('tourPromoClose').addEventListener('click', hideTourPromo);
-document.getElementById('tourPromoLink').addEventListener('click', () => { hideTourPromo(); window.open(TOUR_PROMO.whatsapp, '_blank', 'noopener'); });
+// WhatsApp link temporarily disabled
+// document.getElementById('tourPromoLink').addEventListener('click', () => { hideTourPromo(); window.open(TOUR_PROMO.whatsapp, '_blank', 'noopener'); });
 setInterval(tourPromoTick, 15000);
 
 // ── POI-Popup «Аптека? Туалет?» ──────────────────────────────────
@@ -4345,9 +4363,20 @@ function xmasUpdateGpsPanel() {
       const walkMin = xmasWalkMin(nr.d);
       xToast.innerHTML = `⭐ ${nr.t.label}<br><span class="toast-dist">≈ ${formatDistance(nr.d)} · ${walkMin} ${xmasG('min')} 🚶</span>`;
       xToast.classList.add('show');
-      xToast.onclick = () => { if (xmasMapObj) xmasMapObj.setView(nr.t.ll, 16); };
-      clearTimeout(xToast._hideTimer);
-      xToast._hideTimer = setTimeout(() => xToast.classList.remove('show'), 8000);
+      xToast.onclick = () => {
+        if (xmasMapObj) xmasMapObj.setView(nr.t.ll, 17);
+        xToast.classList.remove('show');
+        clearTimeout(xToast._hideTimer);
+        // после движения карты — снова показать ближайший
+        xToast._dismissed = true;
+        if (xmasMapObj) xmasMapObj.once('moveend', () => { xToast._dismissed = false; xToast._lastLabel = null; xmasUpdateGpsPanel(); });
+      };
+      if (!xToast._dismissed) {
+        clearTimeout(xToast._hideTimer);
+        xToast._hideTimer = setTimeout(() => xToast.classList.remove('show'), 8000);
+      } else {
+        xToast.classList.remove('show');
+      }
     }
   } else if (xToast) {
     xToast.classList.remove('show');
@@ -4366,7 +4395,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>' + '<div class="poi-toggle-bar" style="bottom:50px"><button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button></div>';
+  const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>' + '<div class="poi-toggle-bar" style="bottom:110px"><button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
@@ -6405,9 +6434,20 @@ function updateGpsDistancePanel(lat, lng) {
         const walkMin = Math.ceil(nd * 1.3 / 75);
         toast.innerHTML = `⭐ ${nc.name}<br><span class="toast-dist">≈ ${formatDistance(nd)} · ${walkMin} min 🚶</span>`;
         toast.classList.add('show');
-        toast.onclick = () => { if (leafletMap) leafletMap.setView([nc.lat, nc.lng], 15); selectCastle(ni); };
-        clearTimeout(toast._hideTimer);
-        toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 8000);
+        toast.onclick = () => {
+          if (leafletMap) leafletMap.setView([nc.lat, nc.lng], 17);
+          selectCastle(ni);
+          toast.classList.remove('show');
+          clearTimeout(toast._hideTimer);
+          toast._dismissed = true;
+          if (leafletMap) leafletMap.once('moveend', () => { toast._dismissed = false; toast._lastId = null; updateGpsDistancePanel(gpsLastLat, gpsLastLng); });
+        };
+        if (!toast._dismissed) {
+          clearTimeout(toast._hideTimer);
+          toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 8000);
+        } else {
+          toast.classList.remove('show');
+        }
       }
     } else {
       toast.classList.remove('show');

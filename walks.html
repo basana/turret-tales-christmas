@@ -1134,7 +1134,8 @@ function wineMapTools(map, items, panelId) {
           const d = Math.hypot(user[0] - it.ll[0], user[1] - it.ll[1]);
           if (d < minD) { minD = d; nearest = idx; }
         });
-        map.fitBounds([[user[0], user[1]], items[nearest].ll], { paddingTopLeft: [24, 80], paddingBottomRight: [24, 50], maxZoom: 15 });
+        const allPts = items.map(it => it.ll).concat([[user[0], user[1]]]);
+        map.fitBounds(L.latLngBounds(allPts), { paddingTopLeft: [24, 80], paddingBottomRight: [24, 50], maxZoom: 15 });
       } else {
         map.panTo(user);
       }

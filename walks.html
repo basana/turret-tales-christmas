@@ -914,7 +914,54 @@ function wineMapTools(map, items) {
   gps.style.cssText = 'position:absolute;z-index:1000;top:78px;left:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:7px 12px;font:700 12px sans-serif;color:#5A4327;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,0.25)';
   const panel = document.createElement('div');
   panel.style.cssText = 'position:absolute;z-index:1000;top:122px;left:12px;display:none;flex-direction:column;gap:7px;max-width:230px;box-sizing:border-box';
-  [bar, gps, panel].forEach(el => { box.appendChild(el); L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); });
+  // "What's nearest?" toast at the bottom of the map
+  const nearToast = document.createElement('div');
+  nearToast.style.cssText = 'position:absolute;z-index:1000;bottom:12px;left:12px;right:60px;display:none;background:rgba(122,16,38,0.95);color:#F5ECD6;border-radius:14px;padding:10px 14px;box-shadow:0 4px 14px rgba(0,0,0,0.35);font:700 14px sans-serif;cursor:pointer;backdrop-filter:blur(4px)';
+  // Apotheken + Toiletten toggle buttons
+  const poiBar = document.createElement('div');
+  poiBar.style.cssText = 'position:absolute;z-index:800;bottom:50px;right:12px;display:flex;flex-direction:column;gap:6px';
+  const WINNINGEN_APO = [
+    { name: 'Mosel-Apotheke', lat: 50.3122, lng: 7.5206, city: 'Winningen' },
+    { name: 'Schloss-Apotheke', lat: 50.3590, lng: 7.5975, city: 'Koblenz' },
+  ];
+  const WINNINGEN_WC = [
+    { name: 'WC Bahnhof Winningen', lat: 50.3125, lng: 7.5195, city: 'Winningen' },
+    { name: 'WC Weindorf Winningen', lat: 50.3140, lng: 7.5230, city: 'Winningen' },
+  ];
+  let wApoL = null, wWcL = null;
+  function mkPoiBtn(emoji, title, cssExtra) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.style.cssText = 'width:42px;height:42px;border-radius:50%;border:2px solid #fff;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;transition:all .2s;' + cssExtra;
+    b.textContent = emoji;
+    b.title = title;
+    return b;
+  }
+  const apoBtn = mkPoiBtn('💊', 'Apotheken', 'background:#e8f5e9');
+  apoBtn.onclick = () => {
+    if (wApoL) { map.removeLayer(wApoL); wApoL = null; apoBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)'; return; }
+    wApoL = L.layerGroup();
+    WINNINGEN_APO.forEach(p => {
+      const ic = L.divIcon({ className: '', html: '<div style="width:26px;height:26px;border-radius:50%;background:#e8f5e9;border:2px solid #4caf50;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">💊</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+      L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(wApoL);
+    });
+    wApoL.addTo(map);
+    apoBtn.style.boxShadow = '0 0 0 3px #C9A05C, 0 2px 8px rgba(0,0,0,0.3)';
+  };
+  const wcBtn = mkPoiBtn('🚻', 'WC / Toiletten', 'background:#e3f2fd');
+  wcBtn.onclick = () => {
+    if (wWcL) { map.removeLayer(wWcL); wWcL = null; wcBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)'; return; }
+    wWcL = L.layerGroup();
+    WINNINGEN_WC.forEach(p => {
+      const ic = L.divIcon({ className: '', html: '<div style="width:26px;height:26px;border-radius:50%;background:#e3f2fd;border:2px solid #2196f3;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">🚻</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+      L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(wWcL);
+    });
+    wWcL.addTo(map);
+    wcBtn.style.boxShadow = '0 0 0 3px #C9A05C, 0 2px 8px rgba(0,0,0,0.3)';
+  };
+  poiBar.appendChild(apoBtn);
+  poiBar.appendChild(wcBtn);
+  [bar, gps, panel, nearToast, poiBar].forEach(el => { box.appendChild(el); L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); });
   if (WINE_VIKING_LL) L.marker(WINE_VIKING_LL, { icon: L.divIcon({ className: '', html: '<div style="background:#E30613;color:#fff;font:700 13px sans-serif;width:22px;height:22px;border-radius:50%;border:2px solid #fff;text-align:center;line-height:18px">V</div>', iconSize: [22, 22], iconAnchor: [11, 11] }) }).addTo(map).bindTooltip('Anleger Viking');
 
   // Поиск: точное имя из подсказок или Enter по части названия → карта и страница к карточке
@@ -948,8 +995,18 @@ function wineMapTools(map, items) {
   // Карточки под кнопкой GPS (только при включённом GPS)
   const CARD = 'background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:14px;padding:8px 12px;box-shadow:0 4px 14px rgba(90,67,39,0.25);font:13px sans-serif;color:#5A4327;box-sizing:border-box';
   let lastUser = null;
+  let nearToastTarget = null;
+  const updateNearToast = () => {
+    if (!lastUser || items.length === 0) { nearToast.style.display = 'none'; return; }
+    const nearest = items.map(it => ({ it, d: dist(lastUser, it.ll) })).sort((a, b) => a.d - b.d)[0];
+    const walkMin = Math.ceil(nearest.d * 1.3 / 75);
+    nearToast.innerHTML = `⭐ ${nearest.it.name}<br><span style="font-size:16px">≈ ${fmtD(nearest.d)} · ${walkMin} min 🚶</span>`;
+    nearToast.style.display = 'block';
+    nearToastTarget = nearest.it;
+  };
+  nearToast.addEventListener('click', () => { if (nearToastTarget) pick(nearToastTarget); });
   const renderPanel = () => {
-    if (!lastUser) { panel.style.display = 'none'; panel.innerHTML = ''; return; }
+    if (!lastUser) { panel.style.display = 'none'; panel.innerHTML = ''; updateNearToast(); return; }
     const sorted = items.map(it => ({ it, d: dist(lastUser, it.ll) })).sort((a, b) => a.d - b.d);
     let html = '';
     sorted.forEach((near, i) => {
@@ -962,6 +1019,7 @@ function wineMapTools(map, items) {
     html += `<button type="button" data-save="1" style="${CARD};font-weight:700;cursor:pointer;text-align:left">📌 Meinen Punkt speichern</button>`;
     panel.innerHTML = html;
     panel.style.display = 'flex';
+    updateNearToast();
   };
   panel.addEventListener('click', e => {
     const t = e.target.closest && e.target.closest('[data-go],[data-save],[data-clear]');

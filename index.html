@@ -90,6 +90,8 @@
   #shopPromoQ { white-space: pre-line; }
   .food-promo-link { font-size: clamp(19px, 5.4vw, 24px); font-weight: 700; color: #4a0f1c; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
   .food-promo[hidden] { display: none; }
+  .poi-promo-btn:active { transform: scale(1.12); }
+  .poi-promo .food-promo-q { white-space: pre-line; }
   @keyframes foodPromoIn { from { opacity: 0; transform: translate(-50%, -46%); } to { opacity: 1; transform: translate(-50%, -50%); } }
   .food-promo-icon { width: 58px; height: 58px; flex: 0 0 auto; object-fit: contain; border-radius: 50%; background: #fff; border: 1.5px solid #c8a878; padding: 4px; }
   .food-promo-text { flex: 1 1 auto; font-size: 15px; line-height: 1.35; }
@@ -992,13 +994,18 @@
     display: flex; align-items: center; justify-content: center; font-size: 13px;
     box-shadow: 0 2px 6px rgba(90,67,39,0.35);
   }
-  .poi-apotheke { background: #e8f5e9; border-color: #4caf50; font-size: 16px; }
-  .poi-wc { background: #e3f2fd; border-color: #2196f3; font-size: 16px; }
-  .poi-toggle-bar { position: absolute; z-index: 800; bottom: 50px; right: 12px; display: flex; flex-direction: column; gap: 6px; }
-  .poi-toggle-btn { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #fff; font-size: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: all .2s; }
+  .poi-apotheke { background: #e8f5e9; border-color: #4caf50; font-size: 20px; }
+  .poi-wc { background: #e3f2fd; border-color: #2196f3; font-size: 20px; }
+  .poi-toggle-bar { position: absolute; z-index: 800; bottom: 60px; right: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .poi-toggle-btn { width: 48px; height: 48px; border-radius: 50%; border: 2.5px solid #fff; font-size: 22px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
   .poi-toggle-btn.wc { background: #e3f2fd; }
-  .poi-toggle-btn.active { box-shadow: 0 0 0 3px var(--gold), 0 2px 8px rgba(0,0,0,0.3); }
+  .poi-toggle-btn.active { box-shadow: 0 0 0 4px var(--gold), 0 2px 10px rgba(0,0,0,0.35); animation: poiPulse 1.2s ease-out infinite; }
+  @keyframes poiPulse {
+    0% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 4px rgba(200,168,120,0.7); }
+    50% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 18px rgba(200,168,120,0); }
+    100% { box-shadow: 0 0 0 4px var(--gold), 0 0 0 4px rgba(200,168,120,0); }
+  }
   .gps-user-halo {
     width: 22px; height: 22px; border-radius: 50%;
     background: rgba(181,96,46,0.35); display: flex; align-items: center; justify-content: center;
@@ -1233,7 +1240,7 @@
 <div class="rotate-hint" id="rotateHint" role="dialog" aria-modal="true">
   <div class="rotate-hint-box">
     <span class="rotate-hint-icon">📱</span>
-    <p class="rotate-hint-text">Для навигации удобнее держать телефон вертикально.<small>For navigation, hold your phone upright.</small></p>
+    <p class="rotate-hint-text" id="rotateHintText"></p>
     <button class="rotate-hint-btn" id="rotateHintClose">OK</button>
   </div>
 </div>
@@ -1261,6 +1268,15 @@
   <img class="tour-promo-img" src="xmas-tour-emblem-engraved.webp" alt="">
   <div id="tourPromoQ" class="food-promo-q"></div>
   <button class="food-promo-link" id="tourPromoLink"></button>
+</div>
+<div class="food-promo poi-promo" id="poiPromo" hidden role="dialog" aria-label="Pharmacy / WC">
+  <button class="food-promo-close" id="poiPromoClose" aria-label="×">×</button>
+  <div id="poiPromoQ" class="food-promo-q"></div>
+  <div style="display:flex;gap:18px;justify-content:center;margin:12px 0">
+    <button class="poi-promo-btn" id="poiPromoPh" style="width:72px;height:72px;border-radius:50%;border:3px solid #c8a878;background:#fff;font-size:36px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.2);transition:transform .15s">💊</button>
+    <button class="poi-promo-btn" id="poiPromoWc" style="width:72px;height:72px;border-radius:50%;border:3px solid #c8a878;background:#fff;font-size:36px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.2);transition:transform .15s">🚻</button>
+  </div>
+  <div id="poiPromoHint" style="font-size:13px;color:#7a5a3a;margin-top:4px"></div>
 </div>
 <div class="wine-promo" id="winePromo" hidden role="dialog" aria-label="Weinproben">
   <button class="wine-promo-close" id="winePromoClose" aria-label="×">×</button>
@@ -1983,31 +1999,68 @@ let xmasApoLayer = null, xmasWcLayer = null;
 function _buildPoiLayer(mapObj, data, emoji, cssClass) {
   const lg = L.layerGroup();
   data.forEach(p => {
-    const ic = L.divIcon({ className: '', html: `<div class="poi-marker ${cssClass}">${emoji}</div>`, iconSize: [28, 28], iconAnchor: [14, 14] });
-    L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
+    const ic = L.divIcon({ className: '', html: `<div class="poi-marker ${cssClass}">${emoji}</div>`, iconSize: [34, 34], iconAnchor: [17, 17] });
+    const m = L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
+    m.on('click', () => {
+      mapObj.setView([p.lat, p.lng], 17, { animate: true });
+      _showPoiToast(mapObj, p, emoji);
+    });
   });
   lg.addTo(mapObj);
   return lg;
 }
+function _showPoiToast(mapObj, poi, emoji) {
+  // hide any existing nearest-destination toast
+  document.querySelectorAll('.nearest-toast').forEach(t => t.classList.remove('show'));
+  // find or create poi-toast
+  let toast = mapObj.getContainer().querySelector('.poi-info-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'nearest-toast poi-info-toast';
+    mapObj.getContainer().appendChild(toast);
+  }
+  let userPos = null;
+  if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) userPos = [gpsLastLat, gpsLastLng];
+  else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) userPos = xmasGpsPos;
+  if (userPos) {
+    const d = distanceMeters(userPos[0], userPos[1], poi.lat, poi.lng);
+    const walkMin = Math.ceil(d * 1.3 / 75);
+    toast.innerHTML = `${emoji} ${poi.name}<br><span class="toast-dist">≈ ${formatDistance(d)} · ${walkMin} min 🚶</span>`;
+  } else {
+    toast.innerHTML = `${emoji} ${poi.name} · ${poi.city}`;
+  }
+  toast.classList.add('show');
+  toast.onclick = () => { mapObj.setView([poi.lat, poi.lng], 17); };
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 8000);
+}
 function togglePoiLayer(type) {
   if (!leafletMap) return;
   if (type === 'apotheke') {
-    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; return; }
+    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); return; }
     apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
   } else {
-    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; return; }
+    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); return; }
     toilettenLayer = _buildPoiLayer(leafletMap, POI_TOILETTEN, '🚻', 'poi-wc');
   }
+  // hide nearest-destination toast when POI layer shown
+  const nt = document.getElementById('nearestToast'); if (nt) nt.classList.remove('show');
+}
+function _hidePoiToasts(mapObj) {
+  const t = mapObj.getContainer().querySelector('.poi-info-toast');
+  if (t) t.classList.remove('show');
 }
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
   if (type === 'apotheke') {
-    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; return; }
+    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); return; }
     xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
   } else {
-    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; return; }
+    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); return; }
     xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
   }
+  // hide nearest-market toast when POI layer shown
+  const xt = document.getElementById('xmasNearestToast'); if (xt) xt.classList.remove('show');
 }
 
 function renderPois() {
@@ -3748,6 +3801,7 @@ function showFoodPromo() {
   if (!document.getElementById('shopPromo').hidden) return false; // nicht zwei Fenster übereinander
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return false;
+  hideAllPopups('foodPromo');
   renderFoodPromoText();
   box.hidden = false;
   return true;
@@ -3828,6 +3882,7 @@ function showShopPromo() {
   if (currentView === 'food' || currentView === 'wine') return false; // не показывать поверх собственной страницы Food/Winemakers
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return false;
+  hideAllPopups('shopPromo');
   renderShopPromoText();
   box.hidden = false;
   return true;
@@ -3846,7 +3901,7 @@ setInterval(promoTick, 15000);
 
 // Окно с экскурсиями: в разделах Weihnachtsorte, Weingüter, Burgen и Route — не чаще раза в 4 минуты.
 // Крестик и автоматическое закрытие через 30 секунд.
-const TOUR_PROMO = { intervalMs: 240000, autoCloseMs: 30000, whatsapp: 'https://wa.me/491772850207' };
+const TOUR_PROMO = { intervalMs: 420000, autoCloseMs: 30000, whatsapp: 'https://wa.me/491772850207' };
 const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'castles', 'route'];
 const TOUR_PROMO_TEXT = {
   christmas: {
@@ -3896,9 +3951,9 @@ function showTourPromo() {
   const box = document.getElementById('tourPromo');
   if (!box || !box.hidden) return false;
   if (!TOUR_PROMO_VIEWS.includes(currentView)) return false;
-  if (!document.getElementById('foodPromo').hidden || !document.getElementById('shopPromo').hidden) return false;
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open')) return false;
+  hideAllPopups('tourPromo');
   renderTourPromo();
   box.hidden = false;
   tourPromoTimer = setTimeout(hideTourPromo, TOUR_PROMO.autoCloseMs);
@@ -3911,6 +3966,80 @@ function tourPromoTick() {
 document.getElementById('tourPromoClose').addEventListener('click', hideTourPromo);
 document.getElementById('tourPromoLink').addEventListener('click', () => { hideTourPromo(); window.open(TOUR_PROMO.whatsapp, '_blank', 'noopener'); });
 setInterval(tourPromoTick, 15000);
+
+// ── POI-Popup «Аптека? Туалет?» ──────────────────────────────────
+const POI_POPUP = { firstDelayMs: 30000, intervalMs: 120000, autoCloseMs: 15000 };
+const POI_POPUP_TEXT = {
+  de: { q: 'Brauchen Sie eine Apotheke\noder eine Toilette?', hint: 'Tippen Sie auf das Symbol' },
+  en: { q: 'Need a pharmacy\nor a restroom?', hint: 'Tap the icon' },
+  ru: { q: 'Нужна аптека\nили туалет?', hint: 'Нажмите на значок' },
+  fr: { q: 'Besoin d\'une pharmacie\nou des toilettes ?', hint: 'Appuyez sur l\'icône' },
+  nl: { q: 'Apotheek of toilet nodig?', hint: 'Tik op het pictogram' },
+  zh: { q: '需要药房还是洗手间？', hint: '点击图标' },
+  he: { q: 'צריכים בית מרקחת\nאו שירותים?', hint: 'לחצו על הסמל' }
+};
+let poiPopupNextAt = Date.now() + POI_POPUP.firstDelayMs;
+let poiPopupTimer = null;
+let poiPopupShownOnce = false;
+
+function poiPopupLang() {
+  const active = document.querySelector('.header-controls .pill-btn.active');
+  const l = (active && active.dataset.lang) || lang;
+  return POI_POPUP_TEXT[l] ? l : 'en';
+}
+
+function hidePoiPopup() {
+  const box = document.getElementById('poiPromo');
+  if (box) box.hidden = true;
+  clearTimeout(poiPopupTimer);
+}
+
+function showPoiPopup() {
+  const box = document.getElementById('poiPromo');
+  if (!box || !box.hidden) return false;
+  if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
+  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open')) return false;
+  // взаимоисключение: скрыть все другие промо
+  hideAllPopups('poiPromo');
+  const l = poiPopupLang();
+  const t = POI_POPUP_TEXT[l];
+  document.getElementById('poiPromoQ').textContent = t.q;
+  document.getElementById('poiPromoHint').textContent = t.hint;
+  box.hidden = false;
+  poiPopupTimer = setTimeout(hidePoiPopup, POI_POPUP.autoCloseMs);
+  return true;
+}
+
+function poiPopupTick() {
+  if (Date.now() < poiPopupNextAt) return;
+  if (showPoiPopup()) {
+    poiPopupNextAt = Date.now() + POI_POPUP.intervalMs;
+    poiPopupShownOnce = true;
+  }
+}
+
+document.getElementById('poiPromoClose').addEventListener('click', hidePoiPopup);
+document.getElementById('poiPromoPh').addEventListener('click', () => {
+  hidePoiPopup();
+  // активировать слой аптек на текущей карте
+  const btn = document.querySelector('.poi-toggle-btn.apotheke');
+  if (btn && !btn.classList.contains('active')) btn.click();
+});
+document.getElementById('poiPromoWc').addEventListener('click', () => {
+  hidePoiPopup();
+  const btn = document.querySelector('.poi-toggle-btn.wc');
+  if (btn && !btn.classList.contains('active')) btn.click();
+});
+setInterval(poiPopupTick, 5000);
+
+// ── Единый диспетчер: скрыть все попапы кроме указанного ──────────
+function hideAllPopups(except) {
+  if (except !== 'foodPromo') { const b = document.getElementById('foodPromo'); if (b && !b.hidden) b.hidden = true; }
+  if (except !== 'shopPromo') { const b = document.getElementById('shopPromo'); if (b && !b.hidden) b.hidden = true; }
+  if (except !== 'tourPromo') { hideTourPromo(); }
+  if (except !== 'poiPromo') { hidePoiPopup(); }
+  if (except !== 'winePromo') { const b = document.getElementById('winePromo'); if (b && !b.hidden) b.hidden = true; }
+}
 
 // Логотип и название «Rhine Guide» в шапке возвращают на начальный экран приложения
 function goStart() {
@@ -4206,16 +4335,23 @@ function xmasUpdateGpsPanel() {
     xmasUpdateGpsPanel();
   });
 
-  // Nearest market toast
+  // Nearest market toast — показывать только при смене ближайшего объекта
   const xToast = document.getElementById('xmasNearestToast');
   if (xToast && rows.length > 0) {
     const nr = rows[0];
-    const walkMin = xmasWalkMin(nr.d);
-    xToast.innerHTML = `⭐ ${nr.t.label}<br><span class="toast-dist">≈ ${formatDistance(nr.d)} · ${walkMin} ${xmasG('min')} 🚶</span>`;
-    xToast.classList.add('show');
-    xToast.onclick = () => { if (xmasMap) xmasMap.setView(nr.t.ll, 16); };
+    const newLabel = nr.t.label;
+    if (xToast._lastLabel !== newLabel) {
+      xToast._lastLabel = newLabel;
+      const walkMin = xmasWalkMin(nr.d);
+      xToast.innerHTML = `⭐ ${nr.t.label}<br><span class="toast-dist">≈ ${formatDistance(nr.d)} · ${walkMin} ${xmasG('min')} 🚶</span>`;
+      xToast.classList.add('show');
+      xToast.onclick = () => { if (xmasMapObj) xmasMapObj.setView(nr.t.ll, 16); };
+      clearTimeout(xToast._hideTimer);
+      xToast._hideTimer = setTimeout(() => xToast.classList.remove('show'), 8000);
+    }
   } else if (xToast) {
     xToast.classList.remove('show');
+    xToast._lastLabel = null;
   }
 }
 
@@ -6257,19 +6393,25 @@ function updateGpsDistancePanel(lat, lng) {
 
   gpsPanel.classList.add('show');
 
-  // "What's nearest?" toast at the bottom
+  // "What's nearest?" toast at the bottom — только при смене ближайшего объекта
   const toast = document.getElementById('nearestToast');
   if (toast) {
     const ni = findNearestCastleIndex(lat, lng);
     if (ni >= 0) {
       const nc = castles[ni];
-      const nd = distanceMeters(lat, lng, nc.lat, nc.lng);
-      const walkMin = Math.ceil(nd * 1.3 / 75);
-      toast.innerHTML = `⭐ ${nc.name}<br><span class="toast-dist">≈ ${formatDistance(nd)} · ${walkMin} min 🚶</span>`;
-      toast.classList.add('show');
-      toast.onclick = () => { if (leafletMap) leafletMap.setView([nc.lat, nc.lng], 15); selectCastle(ni); };
+      if (toast._lastId !== nc.id) {
+        toast._lastId = nc.id;
+        const nd = distanceMeters(lat, lng, nc.lat, nc.lng);
+        const walkMin = Math.ceil(nd * 1.3 / 75);
+        toast.innerHTML = `⭐ ${nc.name}<br><span class="toast-dist">≈ ${formatDistance(nd)} · ${walkMin} min 🚶</span>`;
+        toast.classList.add('show');
+        toast.onclick = () => { if (leafletMap) leafletMap.setView([nc.lat, nc.lng], 15); selectCastle(ni); };
+        clearTimeout(toast._hideTimer);
+        toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 8000);
+      }
     } else {
       toast.classList.remove('show');
+      toast._lastId = null;
     }
   }
 }
@@ -6437,6 +6579,20 @@ if ('serviceWorker' in navigator) {
   const closeBtn = document.getElementById('rotateHintClose');
   if (!hint || !closeBtn) return;
   const NAV_VIEWS = ['view-guide', 'view-castles', 'view-map', 'view-christmas'];
+  const ROTATE_TEXT = {
+    de: 'Für die Navigation das Telefon bitte hochkant halten.',
+    en: 'For navigation, hold your phone upright.',
+    ru: 'Для навигации удобнее держать телефон вертикально.',
+    fr: 'Pour la navigation, tenez votre téléphone en mode portrait.',
+    nl: 'Houd uw telefoon rechtop voor de navigatie.',
+    zh: '导航时请竖起手机。',
+    he: 'להחזיק את הטלפון אנכי לניווט.'
+  };
+  const textEl = document.getElementById('rotateHintText');
+  function updateRotateText() {
+    if (textEl) textEl.textContent = ROTATE_TEXT[lang] || ROTATE_TEXT.en;
+  }
+  updateRotateText();
   let dismissed = false;
 
   function isLandscapePhone() {
@@ -6453,6 +6609,7 @@ if ('serviceWorker' in navigator) {
     return !!v && NAV_VIEWS.indexOf(v.id) !== -1;
   }
   function update() {
+    updateRotateText();
     const show = !dismissed && isLandscapePhone() && !splashVisible() && navViewActive();
     hint.classList.toggle('show', show);
   }

@@ -99,13 +99,14 @@ body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);pad
 .nearest-toast{display:none;position:absolute;z-index:1000;bottom:12px;left:12px;right:60px;background:rgba(122,16,38,0.95);color:#F5ECD6;border-radius:14px;padding:10px 14px;box-shadow:0 4px 14px rgba(0,0,0,0.35);font:700 14px var(--sans);cursor:pointer;backdrop-filter:blur(4px)}
 .nearest-toast.show{display:block}
 .nearest-toast .toast-dist{font-size:16px}
-.poi-toggle-bar{position:absolute;z-index:800;bottom:50px;right:12px;display:flex;flex-direction:column;gap:6px}
-.poi-toggle-btn{width:42px;height:42px;border-radius:50%;border:2px solid #fff;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.poi-toggle-bar{position:absolute;z-index:800;bottom:60px;right:12px;display:flex;flex-direction:column;gap:8px}
+.poi-toggle-btn{width:48px;height:48px;border-radius:50%;border:2.5px solid #fff;font-size:22px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative}
 .poi-toggle-btn.apotheke{background:#e8f5e9}
 .poi-toggle-btn.wc{background:#e3f2fd}
-.poi-toggle-btn.active{box-shadow:0 0 0 3px var(--gold),0 2px 8px rgba(0,0,0,0.3)}
-.poi-apotheke{background:#e8f5e9;border-color:#4caf50;font-size:16px}
-.poi-wc{background:#e3f2fd;border-color:#2196f3;font-size:16px}
+.poi-toggle-btn.active{box-shadow:0 0 0 4px var(--gold),0 2px 10px rgba(0,0,0,0.35);animation:poiPulse 1.2s ease-out infinite}
+@keyframes poiPulse{0%{box-shadow:0 0 0 4px var(--gold),0 0 0 4px rgba(200,168,120,0.7)}50%{box-shadow:0 0 0 4px var(--gold),0 0 0 18px rgba(200,168,120,0)}100%{box-shadow:0 0 0 4px var(--gold),0 0 0 4px rgba(200,168,120,0)}}
+.poi-apotheke{background:#e8f5e9;border-color:#4caf50;font-size:20px}
+.poi-wc{background:#e3f2fd;border-color:#2196f3;font-size:20px}
 .gps-distance-value{font-size:15px;font-weight:700;color:var(--terracotta);line-height:1.2}
 .gps-distance-name{font-size:11.5px;color:var(--ink-soft);margin-top:1px}
 .gps-user-halo{width:22px;height:22px;border-radius:50%;background:rgba(181,96,46,.35);display:flex;align-items:center;justify-content:center;animation:gpsHaloPulse 1.8s ease-in-out infinite}
@@ -850,25 +851,42 @@ const MOSEL_TOILETTEN=[
   {name:'WC Bernkastel Altstadt',lat:49.9155,lng:7.0740,city:'Bernkastel-Kues'},
 ];
 let moselApoLayer=null,moselWcLayer=null;
+function _moselPoiLayer(data,emoji,cssClass){
+  const lg=L.layerGroup();
+  data.forEach(p=>{
+    const ic=L.divIcon({className:'',html:`<div class="poi-marker ${cssClass}" style="width:32px;height:32px;border-radius:50%;background:${cssClass==='poi-apotheke'?'#e8f5e9':'#e3f2fd'};border:2px solid ${cssClass==='poi-apotheke'?'#4caf50':'#2196f3'};display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 6px rgba(0,0,0,.3)">${emoji}</div>`,iconSize:[34,34],iconAnchor:[17,17]});
+    const m=L.marker([p.lat,p.lng],{icon:ic,zIndexOffset:500}).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
+    m.on('click',()=>{
+      map.setView([p.lat,p.lng],17,{animate:true});
+      _moselShowPoiToast(p,emoji);
+    });
+  });
+  lg.addTo(map);
+  return lg;
+}
+function _moselShowPoiToast(poi,emoji){
+  document.querySelectorAll('.nearest-toast').forEach(t=>t.classList.remove('show'));
+  let toast=document.getElementById('moselPoiToast');
+  if(!toast){toast=document.createElement('div');toast.className='nearest-toast';toast.id='moselPoiToast';document.getElementById('mapContainer').appendChild(toast)}
+  if(myPos){
+    const d=distanceMeters(myPos.lat,myPos.lng,poi.lat,poi.lng);
+    const wm=Math.ceil(d*1.3/75);
+    toast.innerHTML=`${emoji} ${poi.name}<br><span class="toast-dist">≈ ${formatDist(d)} · ${wm} min 🚶</span>`;
+  }else{toast.innerHTML=`${emoji} ${poi.name} · ${poi.city}`}
+  toast.classList.add('show');
+  toast.onclick=()=>{map.setView([poi.lat,poi.lng],17)};
+  clearTimeout(toast._ht);toast._ht=setTimeout(()=>toast.classList.remove('show'),8000);
+}
 function toggleMoselPoi(type){
   if(!map)return;
   if(type==='apotheke'){
-    if(moselApoLayer){map.removeLayer(moselApoLayer);moselApoLayer=null;return}
-    moselApoLayer=L.layerGroup();
-    MOSEL_APOTHEKEN.forEach(p=>{
-      const ic=L.divIcon({className:'',html:'<div class="poi-marker poi-apotheke" style="width:26px;height:26px;border-radius:50%;background:#e8f5e9;border:2px solid #4caf50;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">💊</div>',iconSize:[28,28],iconAnchor:[14,14]});
-      L.marker([p.lat,p.lng],{icon:ic,zIndexOffset:500}).bindTooltip(`${p.name} · ${p.city}`).addTo(moselApoLayer);
-    });
-    moselApoLayer.addTo(map);
+    if(moselApoLayer){map.removeLayer(moselApoLayer);moselApoLayer=null;const pt=document.getElementById('moselPoiToast');if(pt)pt.classList.remove('show');return}
+    moselApoLayer=_moselPoiLayer(MOSEL_APOTHEKEN,'💊','poi-apotheke');
   }else{
-    if(moselWcLayer){map.removeLayer(moselWcLayer);moselWcLayer=null;return}
-    moselWcLayer=L.layerGroup();
-    MOSEL_TOILETTEN.forEach(p=>{
-      const ic=L.divIcon({className:'',html:'<div class="poi-marker poi-wc" style="width:26px;height:26px;border-radius:50%;background:#e3f2fd;border:2px solid #2196f3;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)">🚻</div>',iconSize:[28,28],iconAnchor:[14,14]});
-      L.marker([p.lat,p.lng],{icon:ic,zIndexOffset:500}).bindTooltip(`${p.name} · ${p.city}`).addTo(moselWcLayer);
-    });
-    moselWcLayer.addTo(map);
+    if(moselWcLayer){map.removeLayer(moselWcLayer);moselWcLayer=null;const pt=document.getElementById('moselPoiToast');if(pt)pt.classList.remove('show');return}
+    moselWcLayer=_moselPoiLayer(MOSEL_TOILETTEN,'🚻','poi-wc');
   }
+  const nt=document.getElementById('nearestToast');if(nt)nt.classList.remove('show');
 }
 
 // ═══════════════════════════════════════

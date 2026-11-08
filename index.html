@@ -2051,14 +2051,33 @@ function _showPoiToast(mapObj, poi, emoji) {
   clearTimeout(toast._hideTimer);
   toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 8000);
 }
+function _zoomToNearestPoi(mapObj, poiList, emoji) {
+  // determine reference point: GPS position or map center
+  let ref;
+  if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
+  else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
+  else { const c = mapObj.getCenter(); ref = [c.lat, c.lng]; }
+  // find nearest
+  let nearest = null, minD = Infinity;
+  poiList.forEach(p => {
+    const d = distanceMeters(ref[0], ref[1], p.lat, p.lng);
+    if (d < minD) { minD = d; nearest = p; }
+  });
+  if (nearest) {
+    mapObj.setView([nearest.lat, nearest.lng], 17, { animate: true });
+    _showPoiToast(mapObj, nearest, emoji);
+  }
+}
 function togglePoiLayer(type) {
   if (!leafletMap) return;
   if (type === 'apotheke') {
     if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); return; }
     apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
+    _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
   } else {
     if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); return; }
     toilettenLayer = _buildPoiLayer(leafletMap, POI_TOILETTEN, '🚻', 'poi-wc');
+    _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
   }
   // hide nearest-destination toast when POI layer shown
   const nt = document.getElementById('nearestToast'); if (nt) nt.classList.remove('show');
@@ -2072,9 +2091,11 @@ function toggleXmasPoiLayer(type) {
   if (type === 'apotheke') {
     if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); return; }
     xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
+    _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
   } else {
     if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); return; }
     xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
+    _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
   }
   // hide nearest-market toast when POI layer shown
   const xt = document.getElementById('xmasNearestToast'); if (xt) xt.classList.remove('show');

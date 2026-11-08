@@ -542,6 +542,23 @@
     position: absolute; top: 14px; right: 14px; width: 26px; height: 26px; border-radius: 50%; border: none;
     background: rgba(90,67,39,0.12); color: var(--ink-soft); font-size: 13px; cursor: pointer;
   }
+  /* ── Контактная мини-форма ── */
+  .contact-form { margin-top: 14px; text-align: left; }
+  .contact-form input, .contact-form textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 8px;
+    background: #fff; font: 14px var(--sans); color: var(--ink); margin-bottom: 8px;
+    box-sizing: border-box;
+  }
+  .contact-form textarea { height: 70px; resize: vertical; }
+  .contact-form input::placeholder, .contact-form textarea::placeholder { color: #b0a080; }
+  .contact-send-row { display: flex; gap: 8px; margin-top: 4px; }
+  .contact-send-btn {
+    flex: 1; padding: 10px 0; border: none; border-radius: 8px; font: 600 13px var(--sans);
+    cursor: pointer; text-align: center; color: #fff; text-decoration: none; display: block;
+  }
+  .contact-send-btn.email { background: var(--terracotta); }
+  .contact-send-btn.wa { background: #25D366; color: #fff; }
+  .contact-send-btn.tg { background: #0088cc; }
 
   .stats { display: flex; gap: 12px; margin-bottom: 18px; font-family: var(--sans); }
   /* Оптический разделитель между плитками-указателями (только на входном
@@ -2010,6 +2027,7 @@ const POI_APOTHEKEN = [
 ];
 const POI_TOILETTEN = [
   { name: 'Öffentliches WC (Peter-Altmeier-Ufer)', lat: 50.36364, lng: 7.60364, city: 'Koblenz' },
+  { name: 'Öffentliches WC (Konrad-Adenauer-Ufer)', lat: 50.36061, lng: 7.60467, city: 'Koblenz' },
   { name: 'WC Hbf Koblenz', lat: 50.3530, lng: 7.5870, city: 'Koblenz' },
   { name: 'WC Forum Mittelrhein', lat: 50.3555, lng: 7.5920, city: 'Koblenz' },
   { name: 'WC Festung Ehrenbreitstein', lat: 50.3649, lng: 7.6141, city: 'Koblenz' },
@@ -4939,11 +4957,23 @@ function wineMapTools(map, items) {
     watchId = navigator.geolocation.watchPosition(pos => {
       const user = [pos.coords.latitude, pos.coords.longitude];
       lastUser = user;
-      if (!userLayer) userLayer = L.circleMarker(user, { radius: 7, color: '#fff', weight: 2, fillColor: '#1d6fd6', fillOpacity: 1 }).addTo(map);
+      const haloIcon = L.divIcon({
+        className: '', html: '<div class="gps-user-halo"></div>',
+        iconSize: [22, 22], iconAnchor: [11, 11]
+      });
+      if (!userLayer) userLayer = L.marker(user, { icon: haloIcon, zIndexOffset: 1000 }).addTo(map);
       else userLayer.setLatLng(user);
       if (!fitted) {
         fitted = true;
-        map.fitBounds(L.latLngBounds([user, ...items.map(i => i.ll)]), { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
+        // Find nearest item to show user + nearest together (like main nav)
+        let nearest = 0, minD = Infinity;
+        items.forEach((it, idx) => {
+          const d = Math.hypot(user[0] - it.ll[0], user[1] - it.ll[1]);
+          if (d < minD) { minD = d; nearest = idx; }
+        });
+        map.fitBounds([[user[0], user[1]], items[nearest].ll], { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
+      } else {
+        map.panTo(user);
       }
       renderPanel();
     }, () => { alert('GPS nicht verfügbar'); stop(); }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
@@ -5253,6 +5283,16 @@ const INFO_POPUPS = {
       body: `<p>Phone / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(same number for calls, WhatsApp and Telegram)</span></p>
         <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Get in touch to check availability and book a tour.</p>
+        <p style="margin:18px 0 6px; font-weight:700; color:var(--terracotta);">✉ Quick message</p>
+        <div class="contact-form">
+          <input type="text" id="cfName" placeholder="Your name" maxlength="60">
+          <textarea id="cfMsg" placeholder="Your message…" maxlength="500"></textarea>
+          <div class="contact-send-row">
+            <a class="contact-send-btn email" href="#" onclick="sendContactForm('email');return false">📧 Email</a>
+            <a class="contact-send-btn wa" href="#" onclick="sendContactForm('wa');return false">💬 WhatsApp</a>
+            <a class="contact-send-btn tg" href="#" onclick="sendContactForm('tg');return false">✈ Telegram</a>
+          </div>
+        </div>
         <p>Digital business card: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Open card →</a></p>
         <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Team TAYR &amp; Anatoly Basin</p></div>`
     },
@@ -5261,6 +5301,16 @@ const INFO_POPUPS = {
       body: `<p>Telefon / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(dieselbe Nummer für Anrufe, WhatsApp und Telegram)</span></p>
         <p>E-Mail: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Melden Sie sich, um freie Termine zu erfragen und eine Tour zu buchen.</p>
+        <p style="margin:18px 0 6px; font-weight:700; color:var(--terracotta);">✉ Kurznachricht</p>
+        <div class="contact-form">
+          <input type="text" id="cfName" placeholder="Ihr Name" maxlength="60">
+          <textarea id="cfMsg" placeholder="Ihre Nachricht…" maxlength="500"></textarea>
+          <div class="contact-send-row">
+            <a class="contact-send-btn email" href="#" onclick="sendContactForm('email');return false">📧 E-Mail</a>
+            <a class="contact-send-btn wa" href="#" onclick="sendContactForm('wa');return false">💬 WhatsApp</a>
+            <a class="contact-send-btn tg" href="#" onclick="sendContactForm('tg');return false">✈ Telegram</a>
+          </div>
+        </div>
         <p>Digitale Visitenkarte: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Visitenkarte öffnen →</a></p>
         <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Team TAYR &amp; Anatoly Basin</p></div>`
     },
@@ -5269,6 +5319,16 @@ const INFO_POPUPS = {
       body: `<p>Телефон / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(один и тот же номер для звонков, WhatsApp и Telegram)</span></p>
         <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Напишите или позвоните, чтобы узнать о свободных датах и забронировать экскурсию.</p>
+        <p style="margin:18px 0 6px; font-weight:700; color:var(--terracotta);">✉ Быстрое сообщение</p>
+        <div class="contact-form">
+          <input type="text" id="cfName" placeholder="Ваше имя" maxlength="60">
+          <textarea id="cfMsg" placeholder="Ваше сообщение…" maxlength="500"></textarea>
+          <div class="contact-send-row">
+            <a class="contact-send-btn email" href="#" onclick="sendContactForm('email');return false">📧 Email</a>
+            <a class="contact-send-btn wa" href="#" onclick="sendContactForm('wa');return false">💬 WhatsApp</a>
+            <a class="contact-send-btn tg" href="#" onclick="sendContactForm('tg');return false">✈ Telegram</a>
+          </div>
+        </div>
         <p>Цифровая визитка: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Открыть визитку →</a></p>
         <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Team TAYR &amp; Anatoly Basin</p></div>`
     }
@@ -5303,6 +5363,16 @@ const INFO_POPUPS = {
         <p>Phone / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(same number for calls, WhatsApp and Telegram)</span></p>
         <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Get in touch to check availability and book a tour.</p>
+        <p style="margin:18px 0 6px; font-weight:700; color:var(--terracotta);">✉ Quick message</p>
+        <div class="contact-form">
+          <input type="text" id="cfName" placeholder="Your name" maxlength="60">
+          <textarea id="cfMsg" placeholder="Your message…" maxlength="500"></textarea>
+          <div class="contact-send-row">
+            <a class="contact-send-btn email" href="#" onclick="sendContactForm('email');return false">📧 Email</a>
+            <a class="contact-send-btn wa" href="#" onclick="sendContactForm('wa');return false">💬 WhatsApp</a>
+            <a class="contact-send-btn tg" href="#" onclick="sendContactForm('tg');return false">✈ Telegram</a>
+          </div>
+        </div>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Guided tours</p>
         <p>As a certified guide (BVGD) I offer city walking tours, hikes in the vineyards and along the Rhine, themed excursions and travel companion services for groups — year-round around Koblenz and the Rhine Gorge.</p>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">About me</p>
@@ -5315,6 +5385,16 @@ const INFO_POPUPS = {
         <p>Telefon / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(dieselbe Nummer für Anrufe, WhatsApp und Telegram)</span></p>
         <p>E-Mail: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Melden Sie sich, um freie Termine zu erfragen und eine Tour zu buchen.</p>
+        <p style="margin:18px 0 6px; font-weight:700; color:var(--terracotta);">✉ Kurznachricht</p>
+        <div class="contact-form">
+          <input type="text" id="cfName" placeholder="Ihr Name" maxlength="60">
+          <textarea id="cfMsg" placeholder="Ihre Nachricht…" maxlength="500"></textarea>
+          <div class="contact-send-row">
+            <a class="contact-send-btn email" href="#" onclick="sendContactForm('email');return false">📧 E-Mail</a>
+            <a class="contact-send-btn wa" href="#" onclick="sendContactForm('wa');return false">💬 WhatsApp</a>
+            <a class="contact-send-btn tg" href="#" onclick="sendContactForm('tg');return false">✈ Telegram</a>
+          </div>
+        </div>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Geführte Touren</p>
         <p>Als zertifizierter Gästeführer (BVGD) biete ich Stadtführungen, Wanderungen durch die Weinberge und entlang des Rheins, Themenführungen und Reisebegleitung für Gruppen an – das ganze Jahr über, rund um Koblenz und das Rheintal.</p>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Über mich</p>
@@ -5327,6 +5407,16 @@ const INFO_POPUPS = {
         <p>Телефон / WhatsApp / Telegram:<br><a href="tel:+491772850207" style="font-weight:700;font-size:13.5px;">+49 177 285 0207</a><br><span style="color:#6b5a4a;font-size:13px;">(один и тот же номер для звонков, WhatsApp и Telegram)</span></p>
         <p>Email: <a href="mailto:allyearoundtour@gmail.com">allyearoundtour@gmail.com</a></p>
         <p>Напишите или позвоните, чтобы узнать о свободных датах и забронировать экскурсию.</p>
+        <p style="margin:18px 0 6px; font-weight:700; color:var(--terracotta);">✉ Быстрое сообщение</p>
+        <div class="contact-form">
+          <input type="text" id="cfName" placeholder="Ваше имя" maxlength="60">
+          <textarea id="cfMsg" placeholder="Ваше сообщение…" maxlength="500"></textarea>
+          <div class="contact-send-row">
+            <a class="contact-send-btn email" href="#" onclick="sendContactForm('email');return false">📧 Email</a>
+            <a class="contact-send-btn wa" href="#" onclick="sendContactForm('wa');return false">💬 WhatsApp</a>
+            <a class="contact-send-btn tg" href="#" onclick="sendContactForm('tg');return false">✈ Telegram</a>
+          </div>
+        </div>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Экскурсии</p>
         <p>Как сертифицированный гид (BVGD) провожу пешеходные экскурсии по городу, походы по виноградникам и вдоль Рейна, тематические экскурсии и сопровождение групп в поездках — круглый год, в Кобленце и Рейнском ущелье.</p>
         <p style="margin:18px 0 4px; font-weight:700; color:var(--terracotta);">Обо мне</p>
@@ -5464,6 +5554,28 @@ function openInfoPopup(kind) {
     backdrop.classList.add('visible');
   });
 }
+
+/* ── Send contact form via chosen channel ── */
+function sendContactForm(channel) {
+  const name = (document.getElementById('cfName')?.value || '').trim();
+  const msg  = (document.getElementById('cfMsg')?.value || '').trim();
+  if (!msg) { document.getElementById('cfMsg')?.focus(); return; }
+  const body = name ? name + ': ' + msg : msg;
+  const subj = name ? 'Tour inquiry from ' + name : 'Tour inquiry';
+  switch (channel) {
+    case 'email':
+      window.open('mailto:allyearoundtour@gmail.com?subject=' +
+        encodeURIComponent(subj) + '&body=' + encodeURIComponent(body), '_self');
+      break;
+    case 'wa':
+      window.open('https://wa.me/491772850207?text=' + encodeURIComponent(body), '_blank');
+      break;
+    case 'tg':
+      window.open('https://t.me/+491772850207?text=' + encodeURIComponent(body), '_blank');
+      break;
+  }
+}
+
 function closeMoreMenu() {
   const el = document.getElementById('moreMenu');
   const backdrop = document.getElementById('moreMenuBackdrop');

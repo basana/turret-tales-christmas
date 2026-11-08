@@ -152,6 +152,38 @@
 
   .contact { margin-top: 22px; background: var(--paper); border: 1px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: var(--fs-lead); line-height: 1.5; }
   .contact a { color: var(--maroon); }
+  /* ── Контактная мини-форма ── */
+  .contact-form { margin-top: 14px; text-align: left; }
+  .contact-form input, .contact-form textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 8px;
+    background: #fff; font: 14px var(--sans); color: var(--ink); margin-bottom: 8px;
+    box-sizing: border-box;
+  }
+  .contact-form textarea { height: 70px; resize: vertical; }
+  .contact-form input::placeholder, .contact-form textarea::placeholder { color: #b0a080; }
+  .contact-send-row { display: flex; gap: 8px; margin-top: 4px; }
+  .contact-send-btn {
+    flex: 1; padding: 10px 0; border: none; border-radius: 8px; font: 600 13px var(--sans);
+    cursor: pointer; text-align: center; color: #fff; text-decoration: none; display: block;
+  }
+  .contact-send-btn.email { background: var(--maroon); }
+  .contact-send-btn.wa { background: #25D366; color: #fff; }
+  .contact-send-btn.tg { background: #0088cc; }
+  /* === GPS-маркер пользователя с анимированным гало === */
+  .gps-user-halo {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(181,96,46,0.35); display: flex; align-items: center; justify-content: center;
+    animation: gpsHaloPulse 1.8s ease-in-out infinite;
+  }
+  .gps-user-halo::after {
+    content: ''; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--terracotta); border: 2px solid #fff; box-shadow: 0 0 4px rgba(0,0,0,0.4);
+  }
+  @keyframes gpsHaloPulse {
+    0% { box-shadow: 0 0 0 0 rgba(181,96,46,0.5); }
+    70% { box-shadow: 0 0 0 14px rgba(181,96,46,0); }
+    100% { box-shadow: 0 0 0 0 rgba(181,96,46,0); }
+  }
   .legal { margin-top: 18px; padding-top: 10px; border-top: 1px solid rgba(122,16,38,.25); font-family: var(--sans); font-size: var(--fs-micro); color: var(--soft); text-align: center; }
 
   /* === Заставка (splash) первого экрана — по образцу index.html / partner-map.html ===
@@ -1054,11 +1086,23 @@ function wineMapTools(map, items) {
       // Auto-update saved spot with current GPS position
       setSpot({ lat: user[0], lng: user[1], label: 'Mein Standort' });
       drawSpot();
-      if (!userLayer) userLayer = L.circleMarker(user, { radius: 7, color: '#fff', weight: 2, fillColor: '#1d6fd6', fillOpacity: 1 }).addTo(map);
+      const haloIcon = L.divIcon({
+        className: '', html: '<div class="gps-user-halo"></div>',
+        iconSize: [22, 22], iconAnchor: [11, 11]
+      });
+      if (!userLayer) userLayer = L.marker(user, { icon: haloIcon, zIndexOffset: 1000 }).addTo(map);
       else userLayer.setLatLng(user);
       if (!fitted) {
         fitted = true;
-        map.fitBounds(L.latLngBounds([user, ...items.map(i => i.ll)]), { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
+        // Find nearest item to show user + nearest together (like main nav)
+        let nearest = 0, minD = Infinity;
+        items.forEach((it, idx) => {
+          const d = Math.hypot(user[0] - it.ll[0], user[1] - it.ll[1]);
+          if (d < minD) { minD = d; nearest = idx; }
+        });
+        map.fitBounds([[user[0], user[1]], items[nearest].ll], { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
+      } else {
+        map.panTo(user);
       }
       renderPanel();
     }, () => { alert('GPS nicht verfügbar'); stop(); }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
@@ -1121,7 +1165,28 @@ function render() {
   if (view === 'walks') {
     editorialEl.innerHTML = `<img class="editorial-photo" src="guide-photo.webp" alt="Anatoly Basin">${t.letter}<span class="sig">— Anatoly Basin, Team TAYR</span>`;
   }
-  document.getElementById('t-contact').innerHTML = t.contact;
+  const cfLabels = {
+    de: { h: '✉ Kurznachricht', name: 'Ihr Name', msg: 'Ihre Nachricht…', em: '📧 E-Mail' },
+    en: { h: '✉ Quick message', name: 'Your name', msg: 'Your message…', em: '📧 Email' },
+    fr: { h: '✉ Message rapide', name: 'Votre nom', msg: 'Votre message…', em: '📧 E-mail' },
+    nl: { h: '✉ Snel bericht', name: 'Uw naam', msg: 'Uw bericht…', em: '📧 E-mail' },
+    ru: { h: '✉ Быстрое сообщение', name: 'Ваше имя', msg: 'Ваше сообщение…', em: '📧 Email' },
+    sv: { h: '✉ Snabbt meddelande', name: 'Ditt namn', msg: 'Ditt meddelande…', em: '📧 E-post' },
+    zh: { h: '✉ 快速消息', name: '您的姓名', msg: '您的留言…', em: '📧 邮件' },
+    he: { h: '✉ הודעה מהירה', name: 'שמך', msg: 'ההודעה שלך…', em: '📧 דוא"ל' }
+  };
+  const cf = cfLabels[lang] || cfLabels.en;
+  document.getElementById('t-contact').innerHTML = t.contact +
+    `<p style="margin:18px 0 6px; font-weight:700; color:var(--maroon);">${cf.h}</p>
+     <div class="contact-form">
+       <input type="text" id="cfName" placeholder="${cf.name}" maxlength="60">
+       <textarea id="cfMsg" placeholder="${cf.msg}" maxlength="500"></textarea>
+       <div class="contact-send-row">
+         <a class="contact-send-btn email" href="#" onclick="sendContactForm('email');return false">${cf.em}</a>
+         <a class="contact-send-btn wa" href="#" onclick="sendContactForm('wa');return false">💬 WhatsApp</a>
+         <a class="contact-send-btn tg" href="#" onclick="sendContactForm('tg');return false">✈ Telegram</a>
+       </div>
+     </div>`;
   document.title = t.title + ' · Turret Tales';
 
   document.getElementById('ptabs').innerHTML = Object.keys(tt).map(k =>
@@ -1227,6 +1292,27 @@ walksSplashEl.addEventListener('click', e => {
     imgs[i].classList.add('active');
   }, 4500);
 })();
+
+/* ── Send contact form via chosen channel ── */
+function sendContactForm(channel) {
+  const name = (document.getElementById('cfName')?.value || '').trim();
+  const msg  = (document.getElementById('cfMsg')?.value || '').trim();
+  if (!msg) { document.getElementById('cfMsg')?.focus(); return; }
+  const body = name ? name + ': ' + msg : msg;
+  const subj = name ? 'Tour inquiry from ' + name : 'Tour inquiry';
+  switch (channel) {
+    case 'email':
+      window.open('mailto:allyearoundtour@gmail.com?subject=' +
+        encodeURIComponent(subj) + '&body=' + encodeURIComponent(body), '_self');
+      break;
+    case 'wa':
+      window.open('https://wa.me/491772850207?text=' + encodeURIComponent(body), '_blank');
+      break;
+    case 'tg':
+      window.open('https://t.me/+491772850207?text=' + encodeURIComponent(body), '_blank');
+      break;
+  }
+}
 </script>
 <div class="wine-promo" id="winePromo" hidden role="dialog" aria-label="Weinproben">
   <button class="wine-promo-close" id="winePromoClose" aria-label="×">×</button>

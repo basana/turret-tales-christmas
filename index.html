@@ -953,7 +953,22 @@
     flex: 1; min-width: 0; border: none; background: transparent; outline: none;
     font-family: var(--sans); font-size: 13px; color: var(--ink);
   }
-  .map-search-input::placeholder { color: var(--ink-soft); }
+  .map-search-input::placeholder { color: var(--ink-soft); opacity: 0; }
+  .map-search-ticker {
+    position: absolute; left: 32px; top: 50%; transform: translateY(-50%);
+    font-family: var(--sans); font-size: 13px; color: var(--ink-soft);
+    pointer-events: none; overflow: hidden; white-space: nowrap;
+  }
+  .map-search-ticker span {
+    display: inline-block;
+    animation: tickerFade 3.5s ease-in-out infinite;
+  }
+  @keyframes tickerFade {
+    0%   { opacity: 0; transform: translateY(8px); }
+    12%  { opacity: 1; transform: translateY(0); }
+    80%  { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-8px); }
+  }
   .map-search-clear {
     flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; border: none;
     background: rgba(90,67,39,0.12); color: var(--ink-soft); font-size: 11px; cursor: pointer;
@@ -1474,6 +1489,7 @@
       <div class="map-search-wrap">
         <span class="map-search-icon">🔎</span>
         <input type="text" class="map-search-input" id="mapSearchInput" list="mapSearchList" autocomplete="off" autocapitalize="off" enterkeyhint="search">
+        <span class="map-search-ticker" id="mapSearchTicker"></span>
         <datalist id="mapSearchList"></datalist>
         <button class="map-search-clear" id="mapSearchClear" style="display:none;">✕</button>
       </div>
@@ -2571,7 +2587,8 @@ const UI = {
     guideNoteText: 'This page isn’t a complete archive or an exhaustive guidebook to the region. I’ve gathered here what cruise guests ask me about most often — what’s where, what’s worth seeing, and what this wonderful region has to offer. I hope it helps you get your bearings and enjoy your trip.',
     guideNoteSig: 'Anatoly Basin, certified tour guide',
     mapSearchPlaceholder: 'Find a town or castle…',
-    mapSearchNotFound: 'Not found. Try another name.'
+    mapSearchNotFound: 'Not found. Try another name.',
+    mapSearchTicker: ['Stolzenfels…', 'Marksburg…', 'Boppard…', 'Loreley…', 'Bacharach…', 'Koblenz…']
   },
   ru: {
     tabs: ['Рождество', 'Гид', 'Замки', 'Легенды', 'Инфо', 'Маршрут', 'Карта', 'Контакты'],
@@ -2621,7 +2638,8 @@ const UI = {
     guideNoteText: 'Эта страница — не исчерпывающий архив и не полный справочник по региону. Я собрал здесь то, о чём туристы спрашивают меня чаще всего: что где находится, что стоит посмотреть и чем этот удивительный край может порадовать гостей. Надеюсь, это поможет вам сориентироваться и получить удовольствие от поездки.',
     guideNoteSig: 'Anatoly Basin, сертифицированный гид',
     mapSearchPlaceholder: 'Найти город или замок…',
-    mapSearchNotFound: 'Не найдено. Попробуйте другое название.'
+    mapSearchNotFound: 'Не найдено. Попробуйте другое название.',
+    mapSearchTicker: ['Штольценфельс…', 'Марксбург…', 'Боппард…', 'Лорелей…', 'Бахарах…', 'Кобленц…']
   },
   de: {
     tabs: ['Weihnachten', 'Führer', 'Burgen', 'Sagen', 'Info', 'Route', 'Karte', 'Kontakt'],
@@ -2671,7 +2689,8 @@ const UI = {
     guideNoteText: 'Diese Seite ist kein vollständiges Archiv und kein erschöpfendes Nachschlagewerk zur Region. Ich habe hier zusammengetragen, wonach mich Kreuzfahrtgäste am häufigsten fragen: was wo liegt, was sich zu sehen lohnt und was diese wunderschöne Gegend ihren Gästen bietet. Ich hoffe, das hilft Ihnen bei der Orientierung und macht Ihre Reise noch schöner.',
     guideNoteSig: 'Anatoly Basin, zertifizierter Gästeführer',
     mapSearchPlaceholder: 'Stadt oder Burg suchen …',
-    mapSearchNotFound: 'Nicht gefunden. Versuchen Sie einen anderen Namen.'
+    mapSearchNotFound: 'Nicht gefunden. Versuchen Sie einen anderen Namen.',
+    mapSearchTicker: ['Stolzenfels…', 'Marksburg…', 'Boppard…', 'Loreley…', 'Bacharach…', 'Koblenz…']
   },
   fr: {
     tabs: ['Noël', 'Guide', 'Châteaux', 'Légendes', 'Infos', 'Itinéraire', 'Carte', 'Contact'],
@@ -2721,7 +2740,8 @@ const UI = {
     guideNoteText: 'Cette page n’est ni une archive exhaustive ni un guide complet de la région. J’y ai rassemblé ce que les croisiéristes me demandent le plus souvent : ce qui se trouve où, ce qui vaut la peine d’être vu, et ce que cette magnifique région a à offrir. J’espère que cela vous aidera à vous repérer et à profiter pleinement de votre voyage.',
     guideNoteSig: 'Anatoly Basin, guide touristique certifié',
     mapSearchPlaceholder: 'Chercher une ville ou un château…',
-    mapSearchNotFound: 'Introuvable. Essayez un autre nom.'
+    mapSearchNotFound: 'Introuvable. Essayez un autre nom.',
+    mapSearchTicker: ['Stolzenfels…', 'Marksburg…', 'Boppard…', 'Loreley…', 'Bacharach…', 'Koblenz…']
   },
   nl: {
     tabs: ['Kerst', 'Gids', 'Kastelen', 'Legenden', 'Info', 'Route', 'Kaart', 'Contact'],
@@ -2771,7 +2791,8 @@ const UI = {
     guideNoteText: 'Deze pagina is geen volledig archief en geen uitputtend naslagwerk over de regio. Ik heb hier verzameld waar cruisegasten mij het vaakst naar vragen: wat waar te vinden is, wat de moeite waard is om te zien, en wat deze prachtige streek haar gasten te bieden heeft. Ik hoop dat dit u helpt de weg te vinden en van uw reis te genieten.',
     guideNoteSig: 'Anatoly Basin, gecertificeerd gids',
     mapSearchPlaceholder: 'Zoek een stad of kasteel…',
-    mapSearchNotFound: 'Niet gevonden. Probeer een andere naam.'
+    mapSearchNotFound: 'Niet gevonden. Probeer een andere naam.',
+    mapSearchTicker: ['Stolzenfels…', 'Marksburg…', 'Boppard…', 'Loreley…', 'Bacharach…', 'Koblenz…']
   },
   zh: {
     tabs: ['圣诞', '向导', '城堡', '传说', '信息', '路线', '地图', '联系方式'],
@@ -2821,7 +2842,8 @@ const UI = {
     guideNoteText: '本页面并非该地区的完整档案或详尽指南。我在此收集了游轮游客最常问我的内容——哪里有什么、什么值得一看，以及这片美丽地区能为客人提供什么。希望它能帮助您理清方向，享受旅程。',
     guideNoteSig: 'Anatoly Basin，持证导游',
     mapSearchPlaceholder: '搜索城镇或城堡…',
-    mapSearchNotFound: '未找到，请尝试其他名称。'
+    mapSearchNotFound: '未找到，请尝试其他名称。',
+    mapSearchTicker: ['Stolzenfels…', 'Marksburg…', 'Boppard…', 'Loreley…', 'Bacharach…', 'Koblenz…']
   },
   he: {
     tabs: ['חג המולד', 'מדריך', 'טירות', 'אגדות', 'מידע', 'מסלול', 'מפה', 'צור קשר'],
@@ -2871,7 +2893,8 @@ const UI = {
     guideNoteText: 'עמוד זה אינו ארכיון מלא או מדריך מקיף לאזור. אספתי כאן את מה שאורחי שייט שואלים אותי הכי הרבה — מה נמצא איפה, מה שווה לראות, ומה האזור היפהפה הזה יכול להציע לאורחים. אני מקווה שזה יעזור לכם להתמצא וליהנות מהטיול.',
     guideNoteSig: 'אנטולי באסין, מדריך טיולים מוסמך',
     mapSearchPlaceholder: 'חיפוש עיר או טירה…',
-    mapSearchNotFound: 'לא נמצא. נסו שם אחר.'
+    mapSearchNotFound: 'לא נמצא. נסו שם אחר.',
+    mapSearchTicker: ['Stolzenfels…', 'Marksburg…', 'Boppard…', 'Loreley…', 'Bacharach…', 'Koblenz…']
   }
 };
 
@@ -6338,6 +6361,37 @@ if (mapSearchClearBtn) {
   });
 }
 renderMapSearchOptions();
+
+/* === ТИКЕР В ПОИСКОВОЙ СТРОКЕ (Airbnb-стиль) === */
+(function initSearchTicker() {
+  const input = document.getElementById('mapSearchInput');
+  const ticker = document.getElementById('mapSearchTicker');
+  if (!input || !ticker) return;
+  const t = i18n[lang] || i18n.en;
+  const items = t.mapSearchTicker || [];
+  if (!items.length) return;
+  let idx = 0, timer = null;
+  function show() {
+    ticker.innerHTML = '<span>' + items[idx] + '</span>';
+    idx = (idx + 1) % items.length;
+  }
+  function start() {
+    if (input.value) { ticker.style.display = 'none'; return; }
+    ticker.style.display = '';
+    show();
+    timer = setInterval(show, 3500);
+  }
+  function stop() {
+    clearInterval(timer); timer = null;
+    ticker.style.display = 'none';
+  }
+  input.addEventListener('focus', stop);
+  input.addEventListener('blur', () => { if (!input.value) start(); });
+  input.addEventListener('input', () => {
+    if (input.value) stop(); else if (!timer) start();
+  });
+  start();
+})();
 
 document.getElementById('prevBtn').addEventListener('click', () => { if (index > 0) { index--; document.body.classList.toggle('station-open', index > 0); renderGuide(); } });
 document.getElementById('nextBtn').addEventListener('click', () => { if (index < castles.length - 1) { index++; document.body.classList.toggle('station-open', index > 0); renderGuide(); } });

@@ -375,7 +375,7 @@ const STATIONS = [
     driveNext:{de:'→ 10 Min. / 9 km nach Beilstein',en:'→ 10 min / 9 km to Beilstein',ru:'→ 10 мин / 9 км до Байльштайна'}},
   {id:'beilstein',num:'07',section:'day2',
     name:{de:'Beilstein · „Dornröschen der Mosel"',en:'Beilstein · "Sleeping Beauty of the Moselle"',ru:'Байльштайн · «Спящая красавица Мозеля»'},
-    lat:50.1097,lng:7.2369,img:'mosel-beilstein.jpg',
+    lat:50.1097,lng:7.2369,img:'mosel-beilstein.jpg',imgPos:'top',
     desc:{de:'Nur rund 140 Einwohner, aber einer der romantischsten Orte an der Mosel. Unter Denkmalschutz. Ruine der Burg Metternich. „Wunderbare Schwarze Madonna" in der Klosterkirche St. Joseph.',en:'Only about 140 residents, one of the most romantic places on the Moselle. Protected monument. Metternich Castle ruins. "Miraculous Black Madonna" in St. Joseph monastery church.',ru:'Всего 140 жителей, но одно из романтичнейших мест на Мозеле. Памятник архитектуры. Руины замка Меттерних. «Чудотворная Чёрная Мадонна» в церкви Св. Иосифа.'},
     tips:{de:'Fähre von Ellenz-Poltersdorf. Burg Metternich: Eintritt frei.',en:'Ferry from Ellenz-Poltersdorf. Metternich Castle: free admission.',ru:'Паром из Элленц-Полтерсдорфа. Замок Меттерних: вход свободный.'},
     legend:{de:'Die „Wunderbare Schwarze Madonna" in der Klosterkirche wurde der Legende nach im 12. Jahrhundert von einem spanischen Karmelitermönch nach Beilstein gebracht. Das Bildnis soll Wunderheilungen bewirkt haben. Bis heute ist Beilstein ein Wallfahrtsort, und die kleine Kirche birgt das einzige gotische Chorgestühl an der Mosel.',en:'The "Miraculous Black Madonna" in the monastery church was, according to legend, brought to Beilstein in the 12th century by a Spanish Carmelite monk. The image is said to have performed miraculous healings. To this day Beilstein is a pilgrimage site, and the small church holds the only Gothic choir stalls on the Moselle.',ru:'«Чудотворная Чёрная Мадонна» в монастырской церкви, по легенде, была привезена в Байльштайн в XII веке испанским монахом-кармелитом. Говорят, образ совершал чудесные исцеления. До сих пор Байльштайн — место паломничества, а маленькая церковь хранит единственные готические хоры на Мозеле.'},
@@ -580,7 +580,7 @@ function renderList(){
     }
     const dist=distText(st);
     const imgHtml=st.img
-      ?`<img class="st-card-img" src="${st.img}" alt="${t(st.name)}" onerror="this.outerHTML='<div class=\\'st-card-placeholder\\'>🏰</div>'">`
+      ?`<img class="st-card-img" src="${st.img}" alt="${t(st.name)}"${st.imgPos?' style="object-position:'+st.imgPos+'"':''} onerror="this.outerHTML='<div class=\\'st-card-placeholder\\'>🏰</div>'">`
       :`<div class="st-card-placeholder">🏰</div>`;
     html+=`<div class="st-card" onclick="showDetail('${st.id}')">
       ${imgHtml}
@@ -604,7 +604,7 @@ function showDetail(id){
   if(!st)return;
   const dist=distText(st);
   const heroHtml=st.img
-    ?`<div class="detail-hero-wrap"><img class="detail-hero" src="${st.img}" alt="${t(st.name)}" onerror="this.outerHTML='<div class=\\'detail-hero-empty\\'>🏰</div>'"></div>`
+    ?`<div class="detail-hero-wrap"><img class="detail-hero" src="${st.img}" alt="${t(st.name)}"${st.imgPos?' style="object-position:'+st.imgPos+'"':''} onerror="this.outerHTML='<div class=\\'detail-hero-empty\\'>🏰</div>'"></div>`
     :`<div class="detail-hero-wrap"><div class="detail-hero-empty">🏰</div></div>`;
   let extras='';
   if(st.id==='winningen') extras=`<a class="info-link" href="walks.html" style="margin-top:10px">🥾 ${UI.walks[lang]}<span>Hexenpfad, Weinberge</span></a>`;

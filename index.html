@@ -916,12 +916,12 @@
 
   /* === ИКОНКА ЗАМКА НА КАРТЕ: терракотовый круг + белый силуэт === */
   .castle-marker {
-    width: 34px; height: 34px; border-radius: 50%;
+    width: 46px; height: 46px; border-radius: 50%;
     background: var(--terracotta); border: 2px solid #fff;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 2px 6px rgba(90,67,39,0.45);
   }
-  .castle-marker img { width: 18px; height: 18px; filter: invert(1) brightness(2); }
+  .castle-marker img { width: 26px; height: 26px; filter: invert(1) brightness(2); }
 
   /* === ЛЕГЕНДА КАРТЫ (справа сверху, не перекрывает маркеры) === */
   .map-legend {
@@ -957,7 +957,7 @@
   .map-search-input::placeholder { color: var(--ink-soft); opacity: 0; }
   .map-search-ticker {
     position: absolute; left: 32px; top: 50%; transform: translateY(-50%);
-    font-family: var(--sans); font-size: 13px; color: var(--ink-soft);
+    font-family: var(--sans); font-size: 15px; color: var(--ink-soft);
     pointer-events: none; overflow: hidden; white-space: nowrap;
   }
   .map-search-ticker span {
@@ -1045,7 +1045,7 @@
     transition: opacity .3s;
   }
   .poi-gps-hint.show { opacity: 1; pointer-events: auto; }
-  .poi-toggle-bar { position: absolute; z-index: 800; top: 30%; right: 12px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
+  .poi-toggle-bar { position: absolute; z-index: 800; top: 55%; right: 12px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
   .poi-toggle-btn { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; font-size: 36px; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
   .poi-toggle-btn.wc { background: #e3f2fd; }
@@ -6114,7 +6114,7 @@ function initHomeMapTeaser() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(homeMapTeaserMap);
     const points = [];
     castles.forEach(c => { if (typeof c.lat === 'number') points.push([c.lat, c.lng]); });
-    points.forEach(p => L.circleMarker(p, { radius: 5, color: '#fff', weight: 1.5, fillColor: '#7A1026', fillOpacity: 1 }).addTo(homeMapTeaserMap));
+    points.forEach(p => L.circleMarker(p, { radius: 8, color: '#fff', weight: 2, fillColor: '#7A1026', fillOpacity: 1 }).addTo(homeMapTeaserMap));
     if (points.length) {
       L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(homeMapTeaserMap);
       homeMapTeaserMap.fitBounds(points, { padding: [14, 14] });
@@ -6161,8 +6161,8 @@ function initMap() {
   const castleIcon = L.divIcon({
     className: '',
     html: '<div class="castle-marker"><img src="new-vector-castle.png" alt=""></div>',
-    iconSize: [34, 34],
-    iconAnchor: [17, 17],
+    iconSize: [46, 46],
+    iconAnchor: [23, 23],
     popupAnchor: [0, -17]
   });
 
@@ -6176,7 +6176,7 @@ function initMap() {
     let marker;
     if (TOWN_IDS.has(c.id)) {
       marker = L.circleMarker([markerLat, markerLng], {
-        radius: 7, color: '#fff', weight: 2, fillColor: '#8A6A34', fillOpacity: 1
+        radius: 10, color: '#fff', weight: 2.5, fillColor: '#8A6A34', fillOpacity: 1
       }).addTo(leafletMap);
     } else {
       marker = L.marker([markerLat, markerLng], { icon: castleIcon }).addTo(leafletMap);

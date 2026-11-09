@@ -6368,7 +6368,7 @@ renderMapSearchOptions();
   const input = document.getElementById('mapSearchInput');
   const ticker = document.getElementById('mapSearchTicker');
   if (!input || !ticker) return;
-  const t = i18n[lang] || i18n.en;
+  const t = UI[lang] || UI.en;
   const items = t.mapSearchTicker || [];
   if (!items.length) return;
   let idx = 0, timer = null;

@@ -690,9 +690,10 @@
   .splash img {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover; object-position: center 48%;
+    pointer-events: none;
   }
   .splash-gradient {
-    position: absolute; inset: 0;
+    position: absolute; inset: 0; pointer-events: none;
     /* Лёгкая подстраховка — основное затемнение теперь в самом фото. */
     background: linear-gradient(180deg, rgba(12,8,4,0) 55%, rgba(12,8,4,0.22) 100%);
   }

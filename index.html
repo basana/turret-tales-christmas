@@ -1029,7 +1029,7 @@
     transition: opacity .3s;
   }
   .poi-gps-hint.show { opacity: 1; pointer-events: auto; }
-  .poi-toggle-bar { position: absolute; z-index: 800; top: 30%; right: 12px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
+  .poi-toggle-bar { position: absolute; z-index: 800; top: 30%; right: 12px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
   .poi-toggle-btn { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; font-size: 36px; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
   .poi-toggle-btn.wc { background: #e3f2fd; }
@@ -1056,7 +1056,7 @@
     70% { box-shadow: 0 0 0 36px rgba(200,168,120,0); }
     100% { box-shadow: 0 0 0 0 rgba(200,168,120,0); }
   }
-  .map-reset-btn { position: absolute; z-index: 800; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 8px; border: 2px solid var(--gold); background: rgba(246,238,221,0.95); color: var(--ink); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+  .map-reset-btn { position: absolute; z-index: 800; top: 12px; right: 12px; width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; background: rgba(246,238,221,0.95); color: var(--ink); font-size: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
   .map-reset-btn:active { background: var(--gold); }
   .gps-user-halo {
     width: 22px; height: 22px; border-radius: 50%;
@@ -4323,19 +4323,15 @@ function xmasDrawMap(opts) {
   // POI buttons inside xmas map container
   const xPoiBar = document.createElement('div');
   xPoiBar.className = 'poi-toggle-bar';
-  xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button>';
+  // Reset button inside the same bar for uniform layout
+  const xResetHtml = '<button class="poi-toggle-btn" style="background:rgba(246,238,221,0.95);border-color:var(--gold,#c8a878)" id="xResetBtn" title="Full map / Gesamte Karte">⊞</button>';
+  xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button>';
   xmasMapObj.getContainer().appendChild(xPoiBar);
-  // Reset-to-full-map button for xmas map
-  const xResetBtn = document.createElement('button');
-  xResetBtn.className = 'map-reset-btn';
-  xResetBtn.innerHTML = '⊞';
-  xResetBtn.title = 'Full map / Gesamte Karte';
-  xResetBtn.onclick = () => {
+  document.getElementById('xResetBtn').onclick = () => {
     if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
     else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [56, 56], maxZoom: opts.zoom });
     else xmasMapObj.setView(opts.center, opts.zoom);
   };
-  xmasMapObj.getContainer().appendChild(xResetBtn);
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
     if (p.onClick) m.on('click', p.onClick);
@@ -5309,7 +5305,7 @@ const INFO_POPUPS = {
           </div>
         </div>
         <p>Digital business card: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Open card →</a></p>
-        <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Team TAYR &amp; Anatoly Basin</p></div>`
+        <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Anatoly Basin &amp; Team TAYR · Fotos, Texte &amp; Illustrationen</p></div>`
     },
     de: {
       title: 'Kontakt & Buchung',
@@ -5327,7 +5323,7 @@ const INFO_POPUPS = {
           </div>
         </div>
         <p>Digitale Visitenkarte: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Visitenkarte öffnen →</a></p>
-        <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Team TAYR &amp; Anatoly Basin</p></div>`
+        <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Anatoly Basin &amp; Team TAYR · Fotos, Texte &amp; Illustrationen</p></div>`
     },
     ru: {
       title: 'Контакты и бронирование',
@@ -5345,7 +5341,7 @@ const INFO_POPUPS = {
           </div>
         </div>
         <p>Цифровая визитка: <a href="https://www.qrcodechimp.page/page/rlugsqdxl7q8?v=chk1792581501" target="_blank" rel="noopener">Открыть визитку →</a></p>
-        <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Team TAYR &amp; Anatoly Basin</p></div>`
+        <div style="margin-top:18px;padding-top:10px;border-top:1px solid rgba(122,16,38,0.25);font-size:12px;line-height:1.5;color:#6b5a4a;"><p style="margin:0;">© 2026 Anatoly Basin &amp; Team TAYR · Fotos, Texte &amp; Illustrationen</p></div>`
     }
   },
   about: {

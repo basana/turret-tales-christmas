@@ -1031,7 +1031,7 @@ gpsSaveBtn.addEventListener('click',e=>{
 // ═══════════════════════════════════════
 function setOwner(){
   const who=new URLSearchParams(location.search).get('for');
-  const txt=who?'Vorschau für: '+who.slice(0,60)+' · © Anatoly Basin, Turret Tales':'© Anatoly Basin, Turret Tales';
+  const txt=who?'Vorschau für: '+who.slice(0,60)+' · © 2026 Anatoly Basin & Team TAYR · Fotos, Texte & Illustrationen':'© 2026 Anatoly Basin & Team TAYR · Fotos, Texte & Illustrationen';
   document.querySelectorAll('.owner').forEach(el=>el.textContent=txt);
 }
 

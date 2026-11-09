@@ -769,7 +769,7 @@
   .mode-switch-seg { padding: 7px 10px; color: #fff; }
   body:not(.xmas-on) .mode-switch-seg[data-m="std"] { background: #fff; color: #222; }
   body.xmas-on .mode-switch-seg[data-m="xmas"] { background: #fff; color: #7A1026; }
-  .splash-content { position: relative; z-index: 1; padding: 0 var(--pad) calc(64px + env(safe-area-inset-bottom)); color: var(--cream-text); }
+  .splash-content { position: relative; z-index: 4; padding: 0 var(--pad) calc(64px + env(safe-area-inset-bottom)); color: var(--cream-text); }
   .splash-eyebrow {
     font-family: var(--sans); font-size: 12.4px; letter-spacing: 0.19em; text-transform: uppercase;
     color: var(--cream-text); font-weight: 700; opacity: 0.86;
@@ -1223,13 +1223,13 @@
   </button>
   <div class="mode-switch-hit" id="modeSwitchHit" role="button" tabindex="0" aria-label="Switch version: Classic or Christmas"></div>
   <div class="splash-lang">
-    <span class="splash-lang-btn" data-lang="en">EN</span>
-    <span class="splash-lang-btn splash-lang-xmas" data-xh="de">DE</span>
-    <span class="splash-lang-btn splash-lang-xmas" data-xh="fr">FR</span>
-    <span class="splash-lang-btn splash-lang-xmas" data-xh="nl">NL</span>
-    <span class="splash-lang-btn" data-lang="ru">RU</span>
-    <span class="splash-lang-btn" data-lang="zh">中文</span>
-    <span class="splash-lang-btn" data-lang="he">עברית</span>
+    <span class="splash-lang-btn" data-lang="en" role="button" tabindex="0">EN</span>
+    <span class="splash-lang-btn splash-lang-xmas" data-xh="de" role="button" tabindex="0">DE</span>
+    <span class="splash-lang-btn splash-lang-xmas" data-xh="fr" role="button" tabindex="0">FR</span>
+    <span class="splash-lang-btn splash-lang-xmas" data-xh="nl" role="button" tabindex="0">NL</span>
+    <span class="splash-lang-btn" data-lang="ru" role="button" tabindex="0">RU</span>
+    <span class="splash-lang-btn" data-lang="zh" role="button" tabindex="0">中文</span>
+    <span class="splash-lang-btn" data-lang="he" role="button" tabindex="0">עברית</span>
   </div>
   <div class="splash-content">
     <p class="splash-eyebrow" id="splashEyebrow">Middle Rhine Valley</p>
@@ -6540,7 +6540,9 @@ renderInfo();
 /* СПЛЭШ-ЭКРАН */
 const splashEl = document.getElementById('splash');
 const dismissSplash = () => splashEl.classList.add('hide');
-document.getElementById('splashEnter').addEventListener('click', dismissSplash);
+const splashBtn = document.getElementById('splashEnter');
+splashBtn.addEventListener('click', dismissSplash);
+splashBtn.addEventListener('touchend', function(e) { e.preventDefault(); dismissSplash(); });
 
 /* PREMIUM-ЗНАЧОК И РАЗБЛОКИРОВКА ПО КОДУ */
 // Один код открывает премиум-контент во всём приложении.

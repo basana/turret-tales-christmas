@@ -539,7 +539,7 @@ function setLang(l){
 // ═══════════════════════════════════════
 // TABS (pill menu)
 // ═══════════════════════════════════════
-function showTab(id){
+function showTab(id, skipHistory){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.pill-btn').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -547,6 +547,7 @@ function showTab(id){
   if(pill)pill.classList.add('active');
   if(id==='mapPanel'&&!map)initMap();
   if(id==='mapPanel'&&map)map.invalidateSize();
+  if(!skipHistory) history.pushState({tab:id},'','#'+id);
 }
 
 // ═══════════════════════════════════════
@@ -642,6 +643,7 @@ function showDetail(id){
   document.querySelectorAll('.pill-btn').forEach(t=>t.classList.remove('active'));
   document.getElementById('detailPanel').classList.add('active');
   document.getElementById('detailPanel').scrollTop=0;
+  history.pushState({detail:id},'','#detail-'+id);
 }
 
 function startNav(lat,lng){
@@ -1043,6 +1045,23 @@ setLang(lang);
 renderList();
 renderSagen();
 renderRoute();renderRouteMap();
+
+// ═══════════════════════════════════════
+// BROWSER BACK / FORWARD
+// ═══════════════════════════════════════
+window.addEventListener('popstate', function(e){
+  const s = e.state;
+  if(s && s.detail){ showDetail(s.detail); return; }
+  if(s && s.tab){ showTab(s.tab, true); return; }
+  // default: go to list
+  showTab('list', true);
+});
+// handle initial hash (e.g. shared link)
+(function(){
+  const h = location.hash.slice(1);
+  if(h.startsWith('detail-')){ const id=h.replace('detail-',''); const st=STATIONS.find(s=>s.id===id); if(st) showDetail(id); }
+  else if(h && document.getElementById(h)){ showTab(h, true); }
+})();
 </script>
 </body>
 </html>

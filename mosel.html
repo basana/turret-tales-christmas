@@ -327,7 +327,7 @@ const STATIONS = [
   {id:'deutsches-eck',num:'01',section:'day1',
     name:{de:'Koblenz, Deutsches Eck',en:'Koblenz, Deutsches Eck',ru:'Кобленц, Немецкий угол'},
     lat:50.3647,lng:7.6056,img:'deutsches-eck-sunset.webp',
-    desc:{de:'Die einzige Stadt am Zusammenfluss zweier Flüsse und zweier weltberühmter Regionen. Am Zusammenfluss von Rhein und Mosel steht das monumentale Kaiser-Wilhelm-Denkmal. Das Deutsche Eck erhielt seinen Namen 1216 vom hier angesiedelten Deutschen Orden. Ausgangspunkt für Mosel-Kreuzfahrten und Fahrten flussaufwärts.',en:'The only city at the confluence of two rivers and two world-famous regions. At the confluence of Rhine and Moselle stands the monumental Kaiser Wilhelm memorial. The Deutsches Eck got its name in 1216 from the Teutonic Order settled here. Starting point for Moselle cruises upstream.',ru:'Единственный город у слияния двух рек и двух всемирно известных регионов. У слияния Рейна и Мозеля стоит монументальный памятник кайзеру Вильгельму I. Немецкий угол получил имя в 1216 году от обосновавшегося здесь Тевтонского ордена. Отправная точка для круизов вверх по Мозелю.'},
+    desc:{de:'<em><strong>Die einzige Stadt am Zusammenfluss zweier Flüsse<br>und zweier weltberühmter Regionen.</strong></em><br>Am Zusammenfluss von Rhein und Mosel steht das monumentale Kaiser-Wilhelm-Denkmal. Das Deutsche Eck erhielt seinen Namen 1216 vom hier angesiedelten Deutschen Orden. Ausgangspunkt für Mosel-Kreuzfahrten und Fahrten flussaufwärts.',en:'<em><strong>The only city at the confluence of two rivers<br>and two world-famous regions.</strong></em><br>At the confluence of Rhine and Moselle stands the monumental Kaiser Wilhelm memorial. The Deutsches Eck got its name in 1216 from the Teutonic Order settled here. Starting point for Moselle cruises upstream.',ru:'<em><strong>Единственный город у слияния двух рек<br>и двух всемирно известных регионов.</strong></em><br>У слияния Рейна и Мозеля стоит монументальный памятник кайзеру Вильгельму I. Немецкий угол получил имя в 1216 году от обосновавшегося здесь Тевтонского ордена. Отправная точка для круизов вверх по Мозелю.'},
     tips:{de:'Seilbahn zur Festung Ehrenbreitstein gegenüber.',en:'Cable car to Ehrenbreitstein Fortress opposite.',ru:'Канатная дорога к крепости Эренбрайтштайн напротив.'},
     legend:{de:'Der Deutsche Orden errichtete 1216 sein Ordenshaus an dieser Landzunge — seitdem trägt sie den Namen „Deutsches Eck". Als im 19. Jahrhundert ein Standort für das Kaiser-Wilhelm-Denkmal gesucht wurde, fiel die Wahl auf diesen symbolträchtigen Ort am Zusammenfluss zweier großer Ströme.',en:'The Teutonic Order established their house on this headland in 1216 — hence the name "German Corner". When a site was sought for the Kaiser Wilhelm monument in the 19th century, this symbolic confluence of two great rivers was chosen.',ru:'Тевтонский орден основал своё подворье на этой косе в 1216 году — с тех пор она носит имя «Немецкий угол». Когда в XIX веке искали место для памятника кайзеру Вильгельму, выбрали это символическое место у слияния двух великих рек.'},
     legendTitle:{de:'Der Deutsche Orden am Zusammenfluss',en:'The Teutonic Order at the Confluence',ru:'Тевтонский орден у слияния рек'},
@@ -588,7 +588,7 @@ function renderList(){
       <div class="st-card-body">
         <div class="st-num">${st.num} · ${t(SECTION_NAMES[st.section])}</div>
         <h3>${t(st.name)}</h3>
-        <p>${t(st.desc).slice(0,110)}…</p>
+        <p>${t(st.desc).replace(/<[^>]+>/g,'').slice(0,110)}…</p>
         ${dist?`<div class="st-dist">📍 ${dist}</div>`:''}
       </div>
     </div>`;
@@ -621,7 +621,7 @@ function showDetail(id){
       <div class="detail-btns">
         <button class="detail-nav-btn" onclick="startNav(${st.lat},${st.lng})">📍 ${UI.navigate[lang]}</button>
         ${st.pier?`<button class="detail-nav-btn pier" onclick="startNav(${st.pier.lat},${st.pier.lng})">⚓ Pier</button>`:''}
-        <button class="detail-nav-btn" style="background:#25d366;border-color:#25d366" onclick="window.open('https://wa.me/?text='+encodeURIComponent(t(st.name)+' — Mosel\\n'+t(st.desc).slice(0,120)+'\\n\\nhttps://turret-tales.netlify.app/mosel.html'),'_blank','noopener')">💬 WhatsApp</button>
+        <button class="detail-nav-btn" style="background:#25d366;border-color:#25d366" onclick="window.open('https://wa.me/?text='+encodeURIComponent(t(st.name)+' — Mosel\\n'+t(st.desc).replace(/<[^>]+>/g,'').slice(0,120)+'\\n\\nhttps://turret-tales.netlify.app/mosel.html'),'_blank','noopener')">💬 WhatsApp</button>
       </div>
       ${st.tips?`<div class="detail-info"><h4>${UI.tips[lang]}</h4><p>${t(st.tips)}</p></div>`:''}
       ${legendHtml}
@@ -827,7 +827,7 @@ function updateMarkers(){
     const m=L.marker([st.lat,st.lng],{icon}).addTo(map);
     // Tooltip on hover (not popup on click)
     const dist=distText(st);
-    const tooltipHtml=`<div class="tt-name">${t(st.name)}</div><div class="tt-desc">${t(st.desc).slice(0,80)}…</div>${dist?'<div class="tt-dist">📍 '+dist+'</div>':''}<a class="tt-link" href="#" onclick="event.preventDefault();showDetail('${st.id}')">Details →</a>`;
+    const tooltipHtml=`<div class="tt-name">${t(st.name)}</div><div class="tt-desc">${t(st.desc).replace(/<[^>]+>/g,'').slice(0,80)}…</div>${dist?'<div class="tt-dist">📍 '+dist+'</div>':''}<a class="tt-link" href="#" onclick="event.preventDefault();showDetail('${st.id}')">Details →</a>`;
     m.bindTooltip(tooltipHtml,{className:'mosel-tooltip',direction:'auto',offset:[0,-18],sticky:false,interactive:true});
     // Also allow click to open detail
     m.on('click',()=>showDetail(st.id));
@@ -1010,7 +1010,7 @@ gpsSaveBtn.addEventListener('click',e=>{
       if(!q){res.style.display='none';return}
       const hits=STATIONS.filter(s=>t(s.name).toLowerCase().includes(q)||t(s.desc).toLowerCase().includes(q));
       if(!hits.length){res.style.display='none';return}
-      res.innerHTML=hits.map(s=>`<div class="search-item" onclick="showDetail('${s.id}');document.getElementById('searchResults').style.display='none';document.getElementById('searchInput').value='';"><div class="si-name">${t(s.name)}</div><div class="si-sub">${t(s.desc).slice(0,60)}…</div></div>`).join('');
+      res.innerHTML=hits.map(s=>`<div class="search-item" onclick="showDetail('${s.id}');document.getElementById('searchResults').style.display='none';document.getElementById('searchInput').value='';"><div class="si-name">${t(s.name)}</div><div class="si-sub">${t(s.desc).replace(/<[^>]+>/g,'').slice(0,60)}…</div></div>`).join('');
       res.style.display='block';
     });
     sinp.addEventListener('focus',()=>{sinp.style.borderColor='var(--terracotta)';sinp.style.boxShadow='0 0 0 3px rgba(148,72,31,.12)'});

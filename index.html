@@ -6961,6 +6961,7 @@ if (gpsFollowBtn) {
   gpsFollowBtn.addEventListener('click', () => {
     if (!gpsActive || gpsLastLat === null || !leafletMap) return;
     gpsFollowMode = true;
+    leafletMap._gpsFitDone = true;
     gpsFollowBtn.classList.remove('show');
     markGpsProgrammaticView();
     leafletMap.panTo([gpsLastLat, gpsLastLng]);

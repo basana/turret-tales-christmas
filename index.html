@@ -988,6 +988,14 @@
   .gps-toggle-btn.active { background: linear-gradient(135deg, var(--terracotta), #8f4a22); color: #fff; border-color: rgba(255,255,255,0.75); }
   .gps-toggle-btn .lock-star { font-size: 11px; color: var(--terracotta); }
   .gps-toggle-btn.active .lock-star { display: none; }
+  .gps-follow-btn {
+    position: absolute; z-index: 1000; top: 78px; left: 112px; display: none;
+    align-items: center; gap: 6px; min-height: 38px; padding: 7px 12px;
+    border: 1px solid var(--gold); border-radius: 20px; background: rgba(246,238,221,.97);
+    color: var(--ink); font: 700 12px var(--sans); cursor: pointer;
+    box-shadow: 0 4px 14px rgba(90,67,39,.25);
+  }
+  .gps-follow-btn.show { display: inline-flex; }
   .nearest-toast { display:none; position:absolute; z-index:1000; bottom:12px; left:12px; right:60px; background:rgba(122,16,38,0.95); color:#F5ECD6; border-radius:14px; padding:10px 14px; box-shadow:0 4px 14px rgba(0,0,0,0.35); font:700 14px var(--sans); cursor:pointer; backdrop-filter:blur(4px); }
   .nearest-toast.show { display:block; }
   .nearest-toast .toast-dist { font-size:16px; }
@@ -1497,6 +1505,7 @@
       <button class="gps-toggle-btn" id="gpsToggleBtn">
         <span class="lock-star">✦</span><span>📍</span><span id="gpsToggleLabel">GPS</span>
       </button>
+      <button class="gps-follow-btn" id="gpsFollowBtn" type="button" aria-label="Return to GPS follow">↻ Follow</button>
       <div class="gps-panel" id="gpsPanel">
         <div class="gps-panel-row gps-route-row" id="gpsRouteRow">
           <div class="gps-route-text" id="gpsRouteText"></div>
@@ -2946,6 +2955,7 @@ const brokenImages = new Set();
 const IMG_VER = '20261015';
 const jpegAlt = new Set(); // картинки, найденные только как .jpeg (а не .jpg)
 let gpsActive = false;
+let gpsFollowMode = true;
 let gpsWatchId = null;
 let gpsMarker = null;
 let gpsLastLat = null, gpsLastLng = null;
@@ -6133,6 +6143,19 @@ function updateHomeMapTeaserLabel() {
 const homeMapTeaserEl = document.getElementById('homeMapTeaser');
 if (homeMapTeaserEl) homeMapTeaserEl.addEventListener('click', () => switchView('map'));
 
+function leaveGpsFollowMode() {
+  if (!gpsActive || !gpsFollowMode || (leafletMap && leafletMap._gpsProgrammaticView)) return;
+  gpsFollowMode = false;
+  const button = document.getElementById('gpsFollowBtn');
+  if (button) button.classList.add('show');
+}
+
+function markGpsProgrammaticView() {
+  if (!leafletMap) return;
+  leafletMap._gpsProgrammaticView = true;
+  setTimeout(() => { if (leafletMap) leafletMap._gpsProgrammaticView = false; }, 500);
+}
+
 function initMap() {
   if (leafletMap) {
     setTimeout(() => leafletMap.invalidateSize(), 50);
@@ -6203,6 +6226,10 @@ function initMap() {
   }
 
   renderPois();
+
+  // Любое ручное перемещение или изменение масштаба временно отдаёт камеру пользователю.
+  leafletMap.on('dragstart', leaveGpsFollowMode);
+  leafletMap.on('zoomstart', leaveGpsFollowMode);
 
   const savedSpot = getSavedSpot();
   if (savedSpot) {
@@ -6840,6 +6867,9 @@ function updateGpsDistancePanel(lat, lng) {
 
 function stopGps() {
   gpsActive = false;
+  gpsFollowMode = false;
+  const followButton = document.getElementById('gpsFollowBtn');
+  if (followButton) followButton.classList.remove('show');
   try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
   if (gpsWatchId !== null && navigator.geolocation) {
     navigator.geolocation.clearWatch(gpsWatchId);
@@ -6858,6 +6888,9 @@ function stopGps() {
 function startGps() {
   if (!navigator.geolocation) { gpsToggleLabel.textContent = UI[lang].gpsError; return; }
   gpsActive = true;
+  gpsFollowMode = true;
+  const followButton = document.getElementById('gpsFollowBtn');
+  if (followButton) followButton.classList.remove('show');
   try { localStorage.setItem('rhineGuideGpsActive', 'true'); } catch(e){}
   gpsToggleBtn.classList.add('active');
   gpsToggleLabel.textContent = UI[lang].gpsLocating;
@@ -6878,8 +6911,10 @@ function startGps() {
       } else if (leafletMap) {
         gpsMarker = L.marker([latitude, longitude], { icon: haloIcon, zIndexOffset: 1000 }).addTo(leafletMap);
       }
+      // Programmatic GPS camera changes must not be mistaken for a user's zoom gesture.
+      markGpsProgrammaticView();
       // First GPS fix: fitBounds to show user + nearest castle together
-      if (leafletMap && !leafletMap._gpsFitDone) {
+      if (leafletMap && !leafletMap._gpsFitDone && gpsFollowMode) {
         leafletMap._gpsFitDone = true;
         const ni = findNearestCastleIndex(latitude, longitude);
         if (ni >= 0) {
@@ -6888,13 +6923,13 @@ function startGps() {
         } else {
           leafletMap.panTo([latitude, longitude]);
         }
-      } else if (leafletMap) {
+      } else if (leafletMap && gpsFollowMode) {
         leafletMap.panTo([latitude, longitude]);
       }
 
       gpsLastLat = latitude; gpsLastLng = longitude;
       // POI re-zoom: on first GPS fix while POI active, zoom to nearest
-      if (!leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
+      if (gpsFollowMode && !leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
         leafletMap._poiGpsZoomed = true;
         if (apothekenLayer) _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
         else if (toilettenLayer) _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
@@ -6919,6 +6954,17 @@ function startGps() {
 function toggleGps() {
   if (gpsActive) stopGps();
   else startGps();
+}
+
+const gpsFollowBtn = document.getElementById('gpsFollowBtn');
+if (gpsFollowBtn) {
+  gpsFollowBtn.addEventListener('click', () => {
+    if (!gpsActive || gpsLastLat === null || !leafletMap) return;
+    gpsFollowMode = true;
+    gpsFollowBtn.classList.remove('show');
+    markGpsProgrammaticView();
+    leafletMap.panTo([gpsLastLat, gpsLastLng]);
+  });
 }
 
 if (gpsToggleBtn) {

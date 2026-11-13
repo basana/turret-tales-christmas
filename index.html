@@ -1053,7 +1053,7 @@
     transition: opacity .3s;
   }
   .poi-gps-hint.show { opacity: 1; pointer-events: auto; }
-  .poi-toggle-bar { position: absolute; z-index: 800; top: 250px; right: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .poi-toggle-bar { position: absolute; z-index: 800; top: 100px; right: 12px; display: flex; flex-direction: column; gap: 10px; }
   .poi-toggle-btn { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; font-size: 36px; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; transition: all .2s; position: relative; }
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
   .poi-toggle-btn.wc { background: #e3f2fd; }
@@ -1080,8 +1080,8 @@
     70% { box-shadow: 0 0 0 36px rgba(200,168,120,0); }
     100% { box-shadow: 0 0 0 0 rgba(200,168,120,0); }
   }
-  .map-reset-btn { position: absolute; z-index: 800; top: 12px; right: 12px; width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; background: rgba(246,238,221,0.95); color: var(--ink); font-size: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
-  .map-reset-btn:active { background: var(--gold); }
+  .poi-toggle-btn.map-reset-btn { background: rgba(246,238,221,0.97); border-color: var(--gold); color: var(--ink); font-size: 44px; line-height: 1; }
+  .poi-toggle-btn.map-reset-btn:active { background: var(--gold); }
   .gps-user-halo {
     width: 22px; height: 22px; border-radius: 50%;
     background: rgba(181,96,46,0.35); display: flex; align-items: center; justify-content: center;
@@ -6216,13 +6216,15 @@ function initMap() {
   if (points.length) {
     L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(leafletMap);
     leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
-    // Reset-to-full-map button
+    // Reset is the third member of the same right-side control stack.
     const resetBtn = document.createElement('button');
-    resetBtn.className = 'map-reset-btn';
-    resetBtn.innerHTML = '⊞';
+    resetBtn.type = 'button';
+    resetBtn.className = 'poi-toggle-btn map-reset-btn';
+    resetBtn.innerHTML = '⤢';
     resetBtn.title = 'Full map / Gesamte Karte';
-    resetBtn.onclick = () => leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
-    leafletMap.getContainer().appendChild(resetBtn);
+    resetBtn.setAttribute('aria-label', 'Show full map');
+    resetBtn.addEventListener('click', () => leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] }));
+    poiBar.appendChild(resetBtn);
   }
 
   renderPois();

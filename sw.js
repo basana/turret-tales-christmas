@@ -1,4 +1,5 @@
 const CACHE = 'rhine-design-test-v306';
+const APP_CACHE_PREFIX = 'rhine-design-test-';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {
@@ -11,19 +12,18 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))
+      Promise.all(
+        keys
+          .filter((key) => key.startsWith(APP_CACHE_PREFIX) && key !== CACHE)
+          .map((key) => caches.delete(key))
+      )
     ).then(() => self.clients.claim())
   );
 });
 
-// HTML (navigations + любой *.html, не только index.html) — сеть в приоритете,
-// кэш только как запасной вариант офлайн. Остальные файлы — как раньше,
-// кэш в приоритете.
-// Раньше тут проверялся только "index.html"/"/", поэтому walks.html,
-// partner-map.html и т.п. уходили в cache-first — если первая загрузка на
-// мобильной сети прервалась и в кэш попал битый/пустой ответ, страница потом
-// висела чёрным экраном даже после "жёсткой" перезагрузки (Service Worker
-// не сбрасывается обычным reload).
+// HTML: network first, own app cache as fallback.
+// Other resources: own app cache first, then network.
+// Always use this app's cache explicitly: Cache Storage is shared by origin.
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   let isHtmlPath = false;
@@ -39,12 +39,14 @@ self.addEventListener('fetch', (event) => {
           }
           return fresh;
         })
-        .catch(() => caches.match(req))
+        .catch(() => caches.open(CACHE).then((cache) => cache.match(req)))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(req).then((cached) => cached || fetch(req))
+    caches.open(CACHE).then((cache) =>
+      cache.match(req).then((cached) => cached || fetch(req))
+    )
   );
 });

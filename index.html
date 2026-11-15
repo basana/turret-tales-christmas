@@ -2187,15 +2187,17 @@ function _hideGpsHint(mapObj) {
   if (h) h.classList.remove('show');
 }
 function _zoomToNearestPoi(mapObj, poiList, emoji) {
-  // determine reference point: GPS position ONLY — never map center
+  // Determine reference point from GPS ONLY — never from the map center.
   let ref;
   if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
   else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
   else {
-    // No GPS — show hint, don't zoom to random location
+    // If GPS is still acquiring a fix, remember the latest POI request.
+    if (mapObj === leafletMap && gpsActive) mapObj._poiFocusPending = { poiList, emoji };
     _showGpsHint(mapObj);
     return;
   }
+  if (mapObj === leafletMap) mapObj._poiFocusPending = null;
   _hideGpsHint(mapObj);
   // find nearest
   let nearest = null, minD = Infinity;
@@ -2214,11 +2216,11 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
 function togglePoiLayer(type) {
   if (!leafletMap) return;
   if (type === 'apotheke') {
-    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!toilettenLayer) _stopPoiEmergency(); return; }
+    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; leafletMap._poiFocusPending = null; if (!toilettenLayer) _stopPoiEmergency(); return; }
     apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
   } else {
-    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!apothekenLayer) _stopPoiEmergency(); return; }
+    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; leafletMap._poiFocusPending = null; if (!apothekenLayer) _stopPoiEmergency(); return; }
     toilettenLayer = _buildPoiLayer(leafletMap, POI_TOILETTEN, '🚻', 'poi-wc');
     _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
   }
@@ -6140,6 +6142,7 @@ const homeMapTeaserEl = document.getElementById('homeMapTeaser');
 if (homeMapTeaserEl) homeMapTeaserEl.addEventListener('click', () => switchView('map'));
 
 function leaveGpsFollowMode() {
+  if (leafletMap && !leafletMap._gpsProgrammaticView) leafletMap._poiFocusPending = null;
   if (!gpsActive || !gpsFollowMode || (leafletMap && leafletMap._gpsProgrammaticView)) return;
   gpsFollowMode = false;
   const button = document.getElementById('gpsFollowBtn');
@@ -6926,8 +6929,13 @@ function startGps() {
       }
 
       gpsLastLat = latitude; gpsLastLng = longitude;
-      // POI re-zoom: only when GPS Follow still owns the camera.
-      if (gpsFollowMode && !leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
+      // A POI request made before the first GPS fix keeps camera priority.
+      if (leafletMap._poiFocusPending && (apothekenLayer || toilettenLayer)) {
+        const pending = leafletMap._poiFocusPending;
+        leafletMap._poiFocusPending = null;
+        leafletMap._poiGpsZoomed = true;
+        _zoomToNearestPoi(leafletMap, pending.poiList, pending.emoji);
+      } else if (gpsFollowMode && !leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
         leafletMap._poiGpsZoomed = true;
         if (apothekenLayer) _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
         else if (toilettenLayer) _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');

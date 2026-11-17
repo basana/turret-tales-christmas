@@ -2113,6 +2113,8 @@ const POI_EMERGENCY_TEXT = {
 };
 function _startPoiEmergency() {
   _poiEmergencyMode = true;
+  // При переходе к аптеке/туалету закрываем любые прежние окна и предложения.
+  PopupManager.closeOtherModals();
   hideAllPopups();
   clearTimeout(_poiEmergencyTimer);
   // Сервисная помощь не появляется только из-за истечения 30 секунд.
@@ -5147,6 +5149,11 @@ function renderWine() {
 }
 function switchView(viewName) {
   const prevView = currentView;
+  if (prevView !== viewName) {
+    // Не переносим старые предложения и окна на новый экран.
+    PopupManager.closeOtherModals();
+    hideAllPopups();
+  }
   currentView = viewName;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + viewName).classList.add('active');

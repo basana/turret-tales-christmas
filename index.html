@@ -6199,13 +6199,12 @@ function resetRhineMap(points) {
   if (mapPanel) mapPanel.classList.remove('open');
   selectedIndex = -1;
 
-  // If GPS is running, Reset returns camera control to GPS Follow.
+  // Keep GPS position updates, but leave the camera on the full-map view.
+  // The visitor can explicitly resume GPS Follow with its existing button.
   if (gpsActive) {
-    gpsFollowMode = true;
+    gpsFollowMode = false;
     const followButton = document.getElementById('gpsFollowBtn');
-    if (followButton) followButton.classList.remove('show');
-    leafletMap._gpsFitDone = false;
-    markGpsProgrammaticView();
+    if (followButton) followButton.classList.add('show');
   }
 
   if (points && points.length) {

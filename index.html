@@ -5215,9 +5215,10 @@ function trackNavForConfusion(viewName) {
   navConfusionHistory = navConfusionHistory.filter((e) => now - e.t < 20000).slice(-8);
   if (navConfusionHistory.length < 6) return;
 
-  const recent = navConfusionHistory.slice(-6);
+  const recent = navConfusionHistory.slice(-8);
+  const lastSix = recent.slice(-6);
   const distinctViews = new Set(recent.map((e) => e.view));
-  const alternating = recent.every((e, i) => i < 2 || e.view === recent[i - 2].view);
+  const alternating = lastSix.every((e, i) => i < 2 || e.view === lastSix[i - 2].view);
   // Помощь только при устойчивом быстром возврате между разделами,
   // а не при обычном последовательном изучении карты.
   if (distinctViews.size === 2 && alternating) {

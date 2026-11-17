@@ -4103,7 +4103,7 @@ setInterval(promoTick, 15000);
 // Окно с экскурсиями: в разделах Weihnachtsorte, Weingüter, Burgen и Route — не чаще раза в 4 минуты.
 // Крестик и автоматическое закрытие через 30 секунд.
 const TOUR_PROMO = { intervalMs: 420000, autoCloseMs: 30000, whatsapp: 'https://wa.me/491772850207' };
-const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'route'];
+const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'castles', 'route'];
 const TOUR_PROMO_TEXT = {
   christmas: {
     de: 'Weihnachtsmarkt mit Gästeführer:\nGeschichte auf jedem Platz.',
@@ -4132,6 +4132,8 @@ const TOUR_PROMO_TEXT = {
 };
 let tourPromoLastAt = Date.now();
 let tourPromoTimer = null;
+// Contextual tour invitations are shown at most once per relevant section per page session.
+const tourPromoShownViews = new Set();
 function tourPromoLang() {
   const active = document.querySelector('.header-controls .pill-btn.active');
   const l = (active && active.dataset.lang) || lang;
@@ -4264,7 +4266,7 @@ const PopupManager = (() => {
     // Food & Shop могут открываться только прямым действием посетителя:
     // их периодические таймеры отключены отдельно.
     if (kind === 'foodPromo' || kind === 'shopPromo') return true;
-    if (kind === 'tourPromo') return ['christmas','castles'].includes(currentView);
+    if (kind === 'tourPromo') return TOUR_PROMO_VIEWS.includes(currentView);
     if (kind === 'winePromo') return currentView === 'wine';
     if (kind === 'helpBubble') return true;
     if (kind === 'fbCard') return true;
@@ -5185,6 +5187,11 @@ function switchView(viewName) {
       if (!leafletMap) initMap();
       else leafletMap.invalidateSize();
     }, 50);
+  }
+  // Offer a guided tour only after the visitor chooses a relevant tourist section.
+  // No timer is involved; PopupManager blocks urgent POI tasks, open cards and active routes.
+  if (TOUR_PROMO_VIEWS.includes(viewName) && !tourPromoShownViews.has(viewName)) {
+    if (showTourPromo()) tourPromoShownViews.add(viewName);
   }
   trackNavForConfusion(viewName);
   navPush();

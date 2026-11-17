@@ -2102,6 +2102,7 @@ function _showPoiToast(mapObj, poi, emoji) {
 // ── POI Emergency mode: block popups, show "need help?" after 30s ──
 let _poiEmergencyMode = false;
 let _poiEmergencyTimer = null;
+let _poiEmergencyHelpShown = false;
 const POI_EMERGENCY_TEXT = {
   de: { q: 'Brauchen Sie Hilfe?', call: '📞 Anrufen', chat: '💬 WhatsApp' },
   en: { q: 'Need help?', call: '📞 Call', chat: '💬 WhatsApp' },
@@ -2113,6 +2114,7 @@ const POI_EMERGENCY_TEXT = {
 };
 function _startPoiEmergency() {
   _poiEmergencyMode = true;
+  _poiEmergencyHelpShown = false;
   // При переходе к аптеке/туалету закрываем любые прежние окна и предложения.
   PopupManager.closeOtherModals();
   hideAllPopups();
@@ -2122,6 +2124,7 @@ function _startPoiEmergency() {
 }
 function _stopPoiEmergency() {
   _poiEmergencyMode = false;
+  _poiEmergencyHelpShown = false;
   clearTimeout(_poiEmergencyTimer);
   const ep = document.getElementById('emergencyPopup');
   if (ep) ep.hidden = true;
@@ -5254,10 +5257,20 @@ function trackNavForConfusion(viewName) {
 function trackClickForConfusion(x, y) {
   const now = Date.now();
   clickConfusionHistory.push({ x, y, t: now });
-  clickConfusionHistory = clickConfusionHistory.filter((e) => now - e.t < 4000).slice(-6);
+  clickConfusionHistory = clickConfusionHistory.filter((e) => now - e.t < 5000).slice(-8);
 
-  const cluster = clickConfusionHistory.filter((e) => now - e.t < 4000 && Math.abs(e.x - x) < 45 && Math.abs(e.y - y) < 45);
-  if (cluster.length >= 3) {
+  const cluster = clickConfusionHistory.filter((e) => now - e.t < 5000 && Math.abs(e.x - x) < 45 && Math.abs(e.y - y) < 45);
+  // В режиме аптеки/туалета не показываем обычную подсказку поверх срочной задачи.
+  // Но если посетитель многократно безрезультатно нажимает в одном месте,
+  // предлагаем существующую прямую связь с гидом — без таймера и новой кнопки.
+  if (_poiEmergencyMode) {
+    if (cluster.length >= 5 && !_poiEmergencyHelpShown) {
+      _poiEmergencyHelpShown = true;
+      _showEmergencyPopup();
+    }
+    return;
+  }
+  if (cluster.length >= 6) {
     maybeShowHelpBubble('rage');
   }
 }

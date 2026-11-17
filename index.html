@@ -2102,6 +2102,7 @@ function _showPoiToast(mapObj, poi, emoji) {
 // ── POI Emergency mode: block popups, show "need help?" after 30s ──
 let _poiEmergencyMode = false;
 let _poiEmergencyTimer = null;
+let _poiEmergencyHelpShown = false;
 const POI_EMERGENCY_TEXT = {
   de: { q: 'Brauchen Sie Hilfe?', call: '📞 Anrufen', chat: '💬 WhatsApp' },
   en: { q: 'Need help?', call: '📞 Call', chat: '💬 WhatsApp' },
@@ -2113,12 +2114,17 @@ const POI_EMERGENCY_TEXT = {
 };
 function _startPoiEmergency() {
   _poiEmergencyMode = true;
+  _poiEmergencyHelpShown = false;
+  // При переходе к аптеке/туалету закрываем любые прежние окна и предложения.
+  PopupManager.closeOtherModals();
   hideAllPopups();
   clearTimeout(_poiEmergencyTimer);
-  _poiEmergencyTimer = setTimeout(_showEmergencyPopup, 30000);
+  // Сервисная помощь не появляется только из-за истечения 30 секунд.
+  // Существующее окно и каналы связи сохраняются для явного/обоснованного вызова.
 }
 function _stopPoiEmergency() {
   _poiEmergencyMode = false;
+  _poiEmergencyHelpShown = false;
   clearTimeout(_poiEmergencyTimer);
   const ep = document.getElementById('emergencyPopup');
   if (ep) ep.hidden = true;
@@ -2155,6 +2161,7 @@ function _showEmergencyPopup() {
   const chatBtn = document.getElementById('emergencyChat');
   chatBtn.textContent = t.chat;
   chatBtn.href = 'https://wa.me/491772850207?text=' + encodeURIComponent('I need help / Ich brauche Hilfe');
+  PopupManager.closeOtherModals('emergencyPopup');
   hideAllPopups('emergencyPopup');
   ep.hidden = false;
 }
@@ -3969,15 +3976,12 @@ function renderFoodPromoText() {
 const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 20000 };
 let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
 function promoTick() {
-  if (Date.now() < promoNextAt || promoShown >= PROMO.maxPerSession) return;
-  const order = promoShown % 2 === 0 ? [showFoodPromo, showShopPromo] : [showShopPromo, showFoodPromo];
-  if (!order[0]() && !order[1]()) return; // сейчас нельзя показать — попробуем на следующем тике
-  promoShown++;
-  promoNextAt = Date.now() + PROMO.cooldownMs;
-  setTimeout(() => { hideFoodPromo(); hideShopPromo(); }, PROMO.autoCloseMs);
+  // По согласованному правилу Food & Drinks и Souvenirs открываются
+  // только по выбору посетителя, без автоматических таймерных приглашений.
+  return;
 }
 function showFoodPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('foodPromo')) return false;
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return false;
   if (currentView === 'food' || currentView === 'wine') return false; // im Bereich Food & Drinks / Weingüter nicht anzeigen
@@ -4001,6 +4005,8 @@ const MIA_VOUCHER = {
   he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על הגלידה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' }
 };
 function openMiaVoucher() {
+  PopupManager.closeOtherModals('miaVoucher');
+  hideAllPopups();
   const l = MIA_VOUCHER[xmasLang] ? xmasLang : 'en';
   const t = MIA_VOUCHER[l];
   document.getElementById('mvBrand').textContent = t.brand;
@@ -4024,6 +4030,8 @@ const BUTA_VOUCHER = {
   he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על ההזמנה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' },
 };
 function openButaVoucher() {
+  PopupManager.closeOtherModals('miaVoucher');
+  hideAllPopups();
   const l = BUTA_VOUCHER[xmasLang] ? xmasLang : 'en';
   const t = BUTA_VOUCHER[l];
   document.getElementById('mvBrand').textContent = t.brand;
@@ -4059,7 +4067,7 @@ function renderShopPromoText() {
   const link = document.getElementById('shopPromoLink'); if (link) link.textContent = t.link;
 }
 function showShopPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('shopPromo')) return false;
   const box = document.getElementById('shopPromo');
   if (!box || !box.hidden) return false;
   if (!document.getElementById('foodPromo').hidden) return false;
@@ -4132,7 +4140,7 @@ function hideTourPromo() {
   clearTimeout(tourPromoTimer);
 }
 function showTourPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('tourPromo')) return false;
   const box = document.getElementById('tourPromo');
   if (!box || !box.hidden) return false;
   if (!TOUR_PROMO_VIEWS.includes(currentView)) return false;
@@ -4145,8 +4153,9 @@ function showTourPromo() {
   return true;
 }
 function tourPromoTick() {
-  if (Date.now() - tourPromoLastAt < TOUR_PROMO.intervalMs) return;
-  if (showTourPromo()) tourPromoLastAt = Date.now();
+  // Guided Tours больше не показывается по периодическому таймеру.
+  // Предложение должно вызываться только из релевантного пользовательского контекста.
+  return;
 }
 document.getElementById('tourPromoClose').addEventListener('click', hideTourPromo);
 // WhatsApp link temporarily disabled
@@ -4181,7 +4190,7 @@ function hidePoiPopup() {
 }
 
 function showPoiPopup() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('poiPromo')) return false;
   // Показывать только когда включён хотя бы один POI-слой (аптеки или туалеты)
   if (!apothekenLayer && !toilettenLayer) return false;
   const box = document.getElementById('poiPromo');
@@ -4200,11 +4209,9 @@ function showPoiPopup() {
 }
 
 function poiPopupTick() {
-  if (Date.now() < poiPopupNextAt) return;
-  if (showPoiPopup()) {
-    poiPopupNextAt = Date.now() + POI_POPUP.intervalMs;
-    poiPopupShownOnce = true;
-  }
+  // Убираем повторный вопрос Pharmacy / WC после того, как посетитель
+  // уже выбрал соответствующий слой. Точки показываются сразу.
+  return;
 }
 
 document.getElementById('poiPromoClose').addEventListener('click', hidePoiPopup);
@@ -4221,8 +4228,88 @@ document.getElementById('poiPromoWc').addEventListener('click', () => {
 });
 setInterval(poiPopupTick, 5000);
 
-// ── Единый диспетчер: скрыть все попапы кроме указанного ──────────
+// ── MAP NAVI Popup Manager: единые правила допуска автоматических окон ──
+const PopupManager = (() => {
+  const automaticIds = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','fbCard'];
+  const modalSelectors = '.modal.open, .premium-popup.open, .more-menu.open, #moreMenu.show, #moreMenu.visible, #moreMenuBackdrop.show, #moreMenuBackdrop.visible, #miaVoucher.open, .mv-overlay.open, #imgZoom:not([hidden]), #emergencyPopup:not([hidden])';
+  function splashActive() {
+    const splash = document.getElementById('splash');
+    return !!(splash && !splash.classList.contains('hide'));
+  }
+  function urgentContext() {
+    const poiLayerActive = !!(apothekenLayer || toilettenLayer) ||
+      !!document.querySelector('.poi-toggle-btn.active');
+    const textEntry = !!document.querySelector('input:focus, textarea:focus, [contenteditable="true"]:focus');
+    const readingObject = !!document.querySelector('#mapPanel.open');
+    return !!_poiEmergencyMode || poiLayerActive || textEntry || readingObject ||
+      !!document.querySelector(modalSelectors) ||
+      !!document.querySelector('.leaflet-routing-container, .route-active, [data-route-active="true"]');
+  }
+  function canShow(kind) {
+    if (splashActive() || urgentContext()) return false;
+    const alreadyOpen = automaticIds.some(id => {
+      const el = document.getElementById(id);
+      return el && !el.hidden && id !== kind;
+    });
+    if (alreadyOpen) return false;
+    // Food & Shop могут открываться только прямым действием посетителя:
+    // их периодические таймеры отключены отдельно.
+    if (kind === 'foodPromo' || kind === 'shopPromo') return true;
+    if (kind === 'tourPromo') return ['christmas','castles'].includes(currentView);
+    if (kind === 'winePromo') return currentView === 'wine';
+    if (kind === 'helpBubble') return true;
+    if (kind === 'fbCard') return true;
+    return false;
+  }
+  function hideAutomatic(except) {
+    automaticIds.forEach(id => {
+      if (id === except) return;
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+    const help = document.getElementById('helpBubble');
+    const backdrop = document.getElementById('helpBubbleBackdrop');
+    if (except !== 'helpBubble' && help) {
+      help.classList.remove('visible','show');
+      if (backdrop) backdrop.classList.remove('visible','show');
+    }
+  }
+  function closeOtherModals(except) {
+    if (except !== 'premiumPopup') {
+      const premium = document.getElementById('premiumPopup');
+      if (premium) premium.classList.remove('open');
+    }
+    if (except !== 'moreMenu') {
+      const menu = document.getElementById('moreMenu');
+      const backdrop = document.getElementById('moreMenuBackdrop');
+      if (menu) menu.classList.remove('open','visible','show');
+      if (backdrop) backdrop.classList.remove('open','visible','show');
+    }
+    if (except !== 'miaVoucher') {
+      const voucher = document.getElementById('miaVoucher');
+      if (voucher) voucher.classList.remove('open');
+    }
+    if (except !== 'emergencyPopup') {
+      const emergency = document.getElementById('emergencyPopup');
+      if (emergency) emergency.hidden = true;
+    }
+    if (except !== 'imgZoom') {
+      const zoom = document.getElementById('imgZoom');
+      if (zoom) zoom.hidden = true;
+    }
+    if (except !== 'helpBubble') {
+      const help = document.getElementById('helpBubble');
+      const backdrop = document.getElementById('helpBubbleBackdrop');
+      if (help) help.classList.remove('visible','show');
+      if (backdrop) backdrop.classList.remove('visible','show');
+    }
+  }
+  return { canShow, hideAutomatic, urgentContext, closeOtherModals };
+})();
+
+// ── Совместимость со старыми вызовами: скрыть автоматические окна ──
 function hideAllPopups(except) {
+  PopupManager.hideAutomatic(except);
   if (except !== 'foodPromo') { const b = document.getElementById('foodPromo'); if (b && !b.hidden) b.hidden = true; }
   if (except !== 'shopPromo') { const b = document.getElementById('shopPromo'); if (b && !b.hidden) b.hidden = true; }
   if (except !== 'tourPromo') { hideTourPromo(); }
@@ -4266,6 +4353,9 @@ if (guideNotePhotoEl) {
     const img = e.target && e.target.closest ? e.target.closest('.content img') : null;
     if (!img || !img.getAttribute('src')) return;
     if (img.closest('a, button, .leaflet-container, .quick-link, .xmas-hero, #guideNotePhoto, #mainPhoto, .map-legend-icon, .vignette-corner')) return;
+    // Просмотр фото — отдельное окно: не оставляем поверх него другие окна.
+    PopupManager.closeOtherModals('imgZoom');
+    hideAllPopups();
     big.src = img.currentSrc || img.src;
     box.hidden = false;
   });
@@ -5063,6 +5153,11 @@ function renderWine() {
 }
 function switchView(viewName) {
   const prevView = currentView;
+  if (prevView !== viewName) {
+    // Не переносим старые предложения и окна на новый экран.
+    PopupManager.closeOtherModals();
+    hideAllPopups();
+  }
   currentView = viewName;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + viewName).classList.add('active');
@@ -5140,35 +5235,49 @@ function trackNavForConfusion(viewName) {
   const now = Date.now();
   navConfusionHistory.push({ view: viewName, t: now });
   navConfusionHistory = navConfusionHistory.filter((e) => now - e.t < 20000).slice(-8);
+  if (navConfusionHistory.length < 6) return;
 
-  if (navConfusionHistory.length >= 4) {
-    const recent = navConfusionHistory.slice(-4);
-    const distinctViews = new Set(recent.map((e) => e.view));
-    // 4+ переключения за 20 секунд между всего 1-2 разделами — похоже на "не находит то, что искал"
-    if (distinctViews.size <= 2) {
-      maybeShowHelpBubble('pogo');
-      return;
-    }
+  const recent = navConfusionHistory.slice(-8);
+  const lastSix = recent.slice(-6);
+  const distinctViews = new Set(recent.map((e) => e.view));
+  const alternating = lastSix.every((e, i) => i < 2 || e.view === lastSix[i - 2].view);
+  // Помощь только при устойчивом быстром возврате между разделами,
+  // а не при обычном последовательном изучении карты.
+  if (distinctViews.size === 2 && alternating) {
+    maybeShowHelpBubble('pogo');
+    return;
   }
-  // 5+ переключений за 20 секунд вообще, по любым разделам (не только между 1-2) —
-  // общая хаотичность, человек явно что-то ищет и не находит
-  if (navConfusionHistory.length >= 5) {
-    maybeShowHelpBubble('chaotic');
+  // Более широкое переключение учитываем только при повторных возвратах
+  // к уже просмотренным разделам.
+  if (recent.length >= 7 && distinctViews.size <= 3) {
+    const revisits = recent.length - distinctViews.size;
+    if (revisits >= 4) maybeShowHelpBubble('chaotic');
   }
 }
 
 function trackClickForConfusion(x, y) {
   const now = Date.now();
   clickConfusionHistory.push({ x, y, t: now });
-  clickConfusionHistory = clickConfusionHistory.filter((e) => now - e.t < 4000).slice(-6);
+  clickConfusionHistory = clickConfusionHistory.filter((e) => now - e.t < 5000).slice(-8);
 
-  const cluster = clickConfusionHistory.filter((e) => now - e.t < 4000 && Math.abs(e.x - x) < 45 && Math.abs(e.y - y) < 45);
-  if (cluster.length >= 3) {
+  const cluster = clickConfusionHistory.filter((e) => now - e.t < 5000 && Math.abs(e.x - x) < 45 && Math.abs(e.y - y) < 45);
+  // В режиме аптеки/туалета не показываем обычную подсказку поверх срочной задачи.
+  // Но если посетитель многократно безрезультатно нажимает в одном месте,
+  // предлагаем существующую прямую связь с гидом — без таймера и новой кнопки.
+  if (_poiEmergencyMode) {
+    if (cluster.length >= 5 && !_poiEmergencyHelpShown) {
+      _poiEmergencyHelpShown = true;
+      _showEmergencyPopup();
+    }
+    return;
+  }
+  if (cluster.length >= 6) {
     maybeShowHelpBubble('rage');
   }
 }
 
 function maybeShowHelpBubble(reason) {
+  if (!PopupManager.canShow('helpBubble')) return;
   // Если человек "мечется"/тапает мимо именно на вкладке Карты и ещё не купил
   // премиум — скорее всего он ищет GPS/расстояние до замка. В этом случае
   // подсказка ведёт сразу к разблокировке, а не к общей ориентации.
@@ -5201,6 +5310,8 @@ function renderHelpBubbleText(mode) {
 }
 
 function showHelpBubble(mode) {
+  if (!PopupManager.canShow('helpBubble')) return;
+  PopupManager.hideAutomatic('helpBubble');
   const el = document.getElementById('helpBubble');
   const backdrop = document.getElementById('helpBubbleBackdrop');
   el.dataset.mode = mode || 'orient';
@@ -5573,6 +5684,8 @@ function renderQuickLinksText() {
 }
 
 function openInfoPopup(kind) {
+  PopupManager.closeOtherModals('moreMenu');
+  hideAllPopups();
   const data = INFO_POPUPS[kind][lang] || INFO_POPUPS[kind].en;
   const title = document.getElementById('moreMenuTitle');
   const body = document.getElementById('moreMenuBody');
@@ -6570,6 +6683,8 @@ const premiumUnlockedIntroEl = document.getElementById('premiumUnlockedIntro');
 let premiumPopupKind = 'view'; // 'view' (авторская картина) или 'gps' (GPS-автоопределение)
 
 function openPremiumPopup(kind) {
+  PopupManager.closeOtherModals('premiumPopup');
+  hideAllPopups();
   premiumPopupKind = kind;
   const t = UI[lang];
   const pTitle = document.getElementById('premiumPopupTitle');
@@ -7094,11 +7209,9 @@ if ('serviceWorker' in navigator) {
     document.getElementById('fbWa').href = 'https://wa.me/491772850207?text=Hello%20Anatoly%2C%20feedback%20on%20the%20Turret%20Tales%20navigator';
   }
   setTimeout(() => {
-    // Не показывать фидбэк, если уже есть другой попап
-    const anyOpen = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','emergencyPopup'].some(id => {
-      const el = document.getElementById(id); return el && !el.hidden;
-    });
-    if (anyOpen) return;
+    // Feedback — низший приоритет: только в спокойном контексте и без других окон.
+    if (!PopupManager.canShow('fbCard')) return;
+    PopupManager.hideAutomatic('fbCard');
     card.hidden = false;
     try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
   }, 90000);
@@ -7118,6 +7231,8 @@ if ('serviceWorker' in navigator) {
   let last = Date.now(), timer = null;
   function hide() { box.hidden = true; clearTimeout(timer); }
   function show() {
+    if (!PopupManager.canShow('winePromo')) return;
+    PopupManager.hideAutomatic('winePromo');
     const l = (typeof lang !== 'undefined' && TXT[lang]) ? lang : 'en';
     document.getElementById('winePromoQ').textContent = TXT[l][0];
     document.getElementById('winePromoLink').textContent = TXT[l][1];

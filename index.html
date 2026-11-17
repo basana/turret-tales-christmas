@@ -6162,6 +6162,64 @@ function pauseGpsFollowForPoi(mapObj) {
   if (button) button.classList.add('show');
 }
 
+// Restore the complete map state, not only its geographic bounds.
+function resetRhineMap(points) {
+  if (!leafletMap) return;
+
+  // Remove both optional POI layers and clear their visual controls.
+  if (apothekenLayer) {
+    leafletMap.removeLayer(apothekenLayer);
+    apothekenLayer = null;
+  }
+  if (toilettenLayer) {
+    leafletMap.removeLayer(toilettenLayer);
+    toilettenLayer = null;
+  }
+  leafletMap.getContainer().querySelectorAll('.poi-toggle-btn').forEach(button => {
+    button.classList.remove('active');
+  });
+
+  // Discard any delayed POI request and its related UI.
+  leafletMap._poiFocusPending = null;
+  leafletMap._poiGpsZoomed = false;
+  _hidePoiToasts(leafletMap);
+  _hideGpsHint(leafletMap);
+  _stopPoiEmergency();
+
+  const nearestToast = document.getElementById('nearestToast');
+  if (nearestToast) {
+    nearestToast.classList.remove('show');
+    clearTimeout(nearestToast._hideTimer);
+    nearestToast._lastId = null;
+    nearestToast._dismissed = false;
+  }
+
+  // Close the selected-object panel and clear its selection.
+  const mapPanel = document.getElementById('mapPanel');
+  if (mapPanel) mapPanel.classList.remove('open');
+  selectedIndex = -1;
+
+  // If GPS is running, Reset returns camera control to GPS Follow.
+  if (gpsActive) {
+    gpsFollowMode = true;
+    const followButton = document.getElementById('gpsFollowBtn');
+    if (followButton) followButton.classList.remove('show');
+    leafletMap._gpsFitDone = false;
+    markGpsProgrammaticView();
+  }
+
+  if (points && points.length) {
+    leafletMap.fitBounds(points, {
+      paddingTopLeft: [24, 130],
+      paddingBottomRight: [24, 24]
+    });
+  }
+
+  if (gpsActive && gpsLastLat !== null) {
+    updateGpsDistancePanel(gpsLastLat, gpsLastLng);
+  }
+}
+
 function initMap() {
   if (leafletMap) {
     setTimeout(() => leafletMap.invalidateSize(), 50);
@@ -6222,8 +6280,9 @@ function initMap() {
   if (points.length) {
     L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(leafletMap);
     leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
-    // Wire reset button (already in poi-toggle-bar)
-    document.getElementById('rhineResetBtn').onclick = () => leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
+    // Wire Reset to restore map bounds and clear all temporary map state.
+    const resetButton = document.getElementById('rhineResetBtn');
+    if (resetButton) resetButton.onclick = () => resetRhineMap(points);
   }
 
   renderPois();

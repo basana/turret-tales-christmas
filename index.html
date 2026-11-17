@@ -2115,7 +2115,8 @@ function _startPoiEmergency() {
   _poiEmergencyMode = true;
   hideAllPopups();
   clearTimeout(_poiEmergencyTimer);
-  _poiEmergencyTimer = setTimeout(_showEmergencyPopup, 30000);
+  // Сервисная помощь не появляется только из-за истечения 30 секунд.
+  // Существующее окно и каналы связи сохраняются для явного/обоснованного вызова.
 }
 function _stopPoiEmergency() {
   _poiEmergencyMode = false;
@@ -3969,15 +3970,12 @@ function renderFoodPromoText() {
 const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 20000 };
 let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
 function promoTick() {
-  if (Date.now() < promoNextAt || promoShown >= PROMO.maxPerSession) return;
-  const order = promoShown % 2 === 0 ? [showFoodPromo, showShopPromo] : [showShopPromo, showFoodPromo];
-  if (!order[0]() && !order[1]()) return; // сейчас нельзя показать — попробуем на следующем тике
-  promoShown++;
-  promoNextAt = Date.now() + PROMO.cooldownMs;
-  setTimeout(() => { hideFoodPromo(); hideShopPromo(); }, PROMO.autoCloseMs);
+  // По согласованному правилу Food & Drinks и Souvenirs открываются
+  // только по выбору посетителя, без автоматических таймерных приглашений.
+  return;
 }
 function showFoodPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('foodPromo')) return false;
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return false;
   if (currentView === 'food' || currentView === 'wine') return false; // im Bereich Food & Drinks / Weingüter nicht anzeigen
@@ -4001,6 +3999,7 @@ const MIA_VOUCHER = {
   he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על הגלידה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' }
 };
 function openMiaVoucher() {
+  hideAllPopups();
   const l = MIA_VOUCHER[xmasLang] ? xmasLang : 'en';
   const t = MIA_VOUCHER[l];
   document.getElementById('mvBrand').textContent = t.brand;
@@ -4024,6 +4023,7 @@ const BUTA_VOUCHER = {
   he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על ההזמנה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' },
 };
 function openButaVoucher() {
+  hideAllPopups();
   const l = BUTA_VOUCHER[xmasLang] ? xmasLang : 'en';
   const t = BUTA_VOUCHER[l];
   document.getElementById('mvBrand').textContent = t.brand;
@@ -4059,7 +4059,7 @@ function renderShopPromoText() {
   const link = document.getElementById('shopPromoLink'); if (link) link.textContent = t.link;
 }
 function showShopPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('shopPromo')) return false;
   const box = document.getElementById('shopPromo');
   if (!box || !box.hidden) return false;
   if (!document.getElementById('foodPromo').hidden) return false;
@@ -4132,7 +4132,7 @@ function hideTourPromo() {
   clearTimeout(tourPromoTimer);
 }
 function showTourPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('tourPromo')) return false;
   const box = document.getElementById('tourPromo');
   if (!box || !box.hidden) return false;
   if (!TOUR_PROMO_VIEWS.includes(currentView)) return false;
@@ -4145,8 +4145,9 @@ function showTourPromo() {
   return true;
 }
 function tourPromoTick() {
-  if (Date.now() - tourPromoLastAt < TOUR_PROMO.intervalMs) return;
-  if (showTourPromo()) tourPromoLastAt = Date.now();
+  // Guided Tours больше не показывается по периодическому таймеру.
+  // Предложение должно вызываться только из релевантного пользовательского контекста.
+  return;
 }
 document.getElementById('tourPromoClose').addEventListener('click', hideTourPromo);
 // WhatsApp link temporarily disabled
@@ -4181,7 +4182,7 @@ function hidePoiPopup() {
 }
 
 function showPoiPopup() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('poiPromo')) return false;
   // Показывать только когда включён хотя бы один POI-слой (аптеки или туалеты)
   if (!apothekenLayer && !toilettenLayer) return false;
   const box = document.getElementById('poiPromo');
@@ -4200,11 +4201,9 @@ function showPoiPopup() {
 }
 
 function poiPopupTick() {
-  if (Date.now() < poiPopupNextAt) return;
-  if (showPoiPopup()) {
-    poiPopupNextAt = Date.now() + POI_POPUP.intervalMs;
-    poiPopupShownOnce = true;
-  }
+  // Убираем повторный вопрос Pharmacy / WC после того, как посетитель
+  // уже выбрал соответствующий слой. Точки показываются сразу.
+  return;
 }
 
 document.getElementById('poiPromoClose').addEventListener('click', hidePoiPopup);
@@ -4221,8 +4220,54 @@ document.getElementById('poiPromoWc').addEventListener('click', () => {
 });
 setInterval(poiPopupTick, 5000);
 
-// ── Единый диспетчер: скрыть все попапы кроме указанного ──────────
+// ── MAP NAVI Popup Manager: единые правила допуска автоматических окон ──
+const PopupManager = (() => {
+  const automaticIds = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','fbCard'];
+  const modalSelectors = '.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open, #imgZoom:not([hidden])';
+  function splashActive() {
+    const splash = document.getElementById('splash');
+    return !!(splash && !splash.classList.contains('hide'));
+  }
+  function urgentContext() {
+    const poiLayerActive = !!(apothekenLayer || toilettenLayer) ||
+      !!document.querySelector('.poi-toggle-btn.active');
+    const textEntry = !!document.querySelector('input:focus, textarea:focus, [contenteditable="true"]:focus');
+    return !!_poiEmergencyMode || poiLayerActive || textEntry ||
+      !!document.querySelector(modalSelectors) ||
+      !!document.querySelector('.leaflet-routing-container, .route-active, [data-route-active="true"]');
+  }
+  function canShow(kind) {
+    if (splashActive() || urgentContext()) return false;
+    const alreadyOpen = automaticIds.some(id => {
+      const el = document.getElementById(id);
+      return el && !el.hidden && id !== kind;
+    });
+    if (alreadyOpen) return false;
+    if (kind === 'tourPromo') return ['christmas','castles'].includes(currentView);
+    if (kind === 'winePromo') return currentView === 'wine';
+    if (kind === 'helpBubble') return true;
+    if (kind === 'fbCard') return true;
+    return false;
+  }
+  function hideAutomatic(except) {
+    automaticIds.forEach(id => {
+      if (id === except) return;
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+    const help = document.getElementById('helpBubble');
+    const backdrop = document.getElementById('helpBubbleBackdrop');
+    if (except !== 'helpBubble' && help) {
+      help.classList.remove('visible','show');
+      if (backdrop) backdrop.classList.remove('visible','show');
+    }
+  }
+  return { canShow, hideAutomatic, urgentContext };
+})();
+
+// ── Совместимость со старыми вызовами: скрыть автоматические окна ──
 function hideAllPopups(except) {
+  PopupManager.hideAutomatic(except);
   if (except !== 'foodPromo') { const b = document.getElementById('foodPromo'); if (b && !b.hidden) b.hidden = true; }
   if (except !== 'shopPromo') { const b = document.getElementById('shopPromo'); if (b && !b.hidden) b.hidden = true; }
   if (except !== 'tourPromo') { hideTourPromo(); }
@@ -5169,6 +5214,7 @@ function trackClickForConfusion(x, y) {
 }
 
 function maybeShowHelpBubble(reason) {
+  if (!PopupManager.canShow('helpBubble')) return;
   // Если человек "мечется"/тапает мимо именно на вкладке Карты и ещё не купил
   // премиум — скорее всего он ищет GPS/расстояние до замка. В этом случае
   // подсказка ведёт сразу к разблокировке, а не к общей ориентации.
@@ -5201,6 +5247,8 @@ function renderHelpBubbleText(mode) {
 }
 
 function showHelpBubble(mode) {
+  if (!PopupManager.canShow('helpBubble')) return;
+  PopupManager.hideAutomatic('helpBubble');
   const el = document.getElementById('helpBubble');
   const backdrop = document.getElementById('helpBubbleBackdrop');
   el.dataset.mode = mode || 'orient';
@@ -5573,6 +5621,7 @@ function renderQuickLinksText() {
 }
 
 function openInfoPopup(kind) {
+  hideAllPopups();
   const data = INFO_POPUPS[kind][lang] || INFO_POPUPS[kind].en;
   const title = document.getElementById('moreMenuTitle');
   const body = document.getElementById('moreMenuBody');
@@ -6570,6 +6619,7 @@ const premiumUnlockedIntroEl = document.getElementById('premiumUnlockedIntro');
 let premiumPopupKind = 'view'; // 'view' (авторская картина) или 'gps' (GPS-автоопределение)
 
 function openPremiumPopup(kind) {
+  hideAllPopups();
   premiumPopupKind = kind;
   const t = UI[lang];
   const pTitle = document.getElementById('premiumPopupTitle');
@@ -7094,11 +7144,9 @@ if ('serviceWorker' in navigator) {
     document.getElementById('fbWa').href = 'https://wa.me/491772850207?text=Hello%20Anatoly%2C%20feedback%20on%20the%20Turret%20Tales%20navigator';
   }
   setTimeout(() => {
-    // Не показывать фидбэк, если уже есть другой попап
-    const anyOpen = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','emergencyPopup'].some(id => {
-      const el = document.getElementById(id); return el && !el.hidden;
-    });
-    if (anyOpen) return;
+    // Feedback — низший приоритет: только в спокойном контексте и без других окон.
+    if (!PopupManager.canShow('fbCard')) return;
+    PopupManager.hideAutomatic('fbCard');
     card.hidden = false;
     try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
   }, 90000);
@@ -7118,6 +7166,8 @@ if ('serviceWorker' in navigator) {
   let last = Date.now(), timer = null;
   function hide() { box.hidden = true; clearTimeout(timer); }
   function show() {
+    if (!PopupManager.canShow('winePromo')) return;
+    PopupManager.hideAutomatic('winePromo');
     const l = (typeof lang !== 'undefined' && TXT[lang]) ? lang : 'en';
     document.getElementById('winePromoQ').textContent = TXT[l][0];
     document.getElementById('winePromoLink').textContent = TXT[l][1];

@@ -6197,7 +6197,7 @@ function resetRhineMap(points) {
       const nearestIndex = findNearestCastleIndex(gpsLastLat, gpsLastLng);
       if (nearestIndex >= 0) {
         nearestToast._lastId = castles[nearestIndex].id;
-        nearestToast._dismissed = true;
+        nearestToast._dismissed = false;
       }
     }
   }

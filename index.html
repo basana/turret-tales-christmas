@@ -6192,6 +6192,14 @@ function resetRhineMap(points) {
     clearTimeout(nearestToast._hideTimer);
     nearestToast._lastId = null;
     nearestToast._dismissed = false;
+    // Prevent the GPS-panel refresh below from immediately recreating the toast.
+    if (gpsActive && gpsLastLat !== null) {
+      const nearestIndex = findNearestCastleIndex(gpsLastLat, gpsLastLng);
+      if (nearestIndex >= 0) {
+        nearestToast._lastId = castles[nearestIndex].id;
+        nearestToast._dismissed = true;
+      }
+    }
   }
 
   // Close the selected-object panel and clear its selection.

@@ -2156,6 +2156,7 @@ function _showEmergencyPopup() {
   const chatBtn = document.getElementById('emergencyChat');
   chatBtn.textContent = t.chat;
   chatBtn.href = 'https://wa.me/491772850207?text=' + encodeURIComponent('I need help / Ich brauche Hilfe');
+  PopupManager.closeOtherModals('emergencyPopup');
   hideAllPopups('emergencyPopup');
   ep.hidden = false;
 }
@@ -4225,7 +4226,7 @@ setInterval(poiPopupTick, 5000);
 // ── MAP NAVI Popup Manager: единые правила допуска автоматических окон ──
 const PopupManager = (() => {
   const automaticIds = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','fbCard'];
-  const modalSelectors = '.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open, #imgZoom:not([hidden])';
+  const modalSelectors = '.modal.open, .premium-popup.open, .more-menu.open, #moreMenu.show, #moreMenu.visible, #moreMenuBackdrop.show, #moreMenuBackdrop.visible, #miaVoucher.open, .mv-overlay.open, #imgZoom:not([hidden]), #emergencyPopup:not([hidden])';
   function splashActive() {
     const splash = document.getElementById('splash');
     return !!(splash && !splash.classList.contains('hide'));
@@ -4245,6 +4246,9 @@ const PopupManager = (() => {
       return el && !el.hidden && id !== kind;
     });
     if (alreadyOpen) return false;
+    // Food & Shop могут открываться только прямым действием посетителя:
+    // их периодические таймеры отключены отдельно.
+    if (kind === 'foodPromo' || kind === 'shopPromo') return true;
     if (kind === 'tourPromo') return ['christmas','castles'].includes(currentView);
     if (kind === 'winePromo') return currentView === 'wine';
     if (kind === 'helpBubble') return true;
@@ -4272,12 +4276,16 @@ const PopupManager = (() => {
     if (except !== 'moreMenu') {
       const menu = document.getElementById('moreMenu');
       const backdrop = document.getElementById('moreMenuBackdrop');
-      if (menu) menu.classList.remove('visible','show');
-      if (backdrop) backdrop.classList.remove('visible','show');
+      if (menu) menu.classList.remove('open','visible','show');
+      if (backdrop) backdrop.classList.remove('open','visible','show');
     }
     if (except !== 'miaVoucher') {
       const voucher = document.getElementById('miaVoucher');
       if (voucher) voucher.classList.remove('open');
+    }
+    if (except !== 'emergencyPopup') {
+      const emergency = document.getElementById('emergencyPopup');
+      if (emergency) emergency.hidden = true;
     }
     if (except !== 'imgZoom') {
       const zoom = document.getElementById('imgZoom');
@@ -4339,6 +4347,9 @@ if (guideNotePhotoEl) {
     const img = e.target && e.target.closest ? e.target.closest('.content img') : null;
     if (!img || !img.getAttribute('src')) return;
     if (img.closest('a, button, .leaflet-container, .quick-link, .xmas-hero, #guideNotePhoto, #mainPhoto, .map-legend-icon, .vignette-corner')) return;
+    // Просмотр фото — отдельное окно: не оставляем поверх него другие окна.
+    PopupManager.closeOtherModals('imgZoom');
+    hideAllPopups();
     big.src = img.currentSrc || img.src;
     box.hidden = false;
   });

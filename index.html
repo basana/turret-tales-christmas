@@ -4240,7 +4240,8 @@ const PopupManager = (() => {
     const poiLayerActive = !!(apothekenLayer || toilettenLayer) ||
       !!document.querySelector('.poi-toggle-btn.active');
     const textEntry = !!document.querySelector('input:focus, textarea:focus, [contenteditable="true"]:focus');
-    return !!_poiEmergencyMode || poiLayerActive || textEntry ||
+    const readingObject = !!document.querySelector('#mapPanel.open');
+    return !!_poiEmergencyMode || poiLayerActive || textEntry || readingObject ||
       !!document.querySelector(modalSelectors) ||
       !!document.querySelector('.leaflet-routing-container, .route-active, [data-route-active="true"]');
   }

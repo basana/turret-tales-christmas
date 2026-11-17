@@ -6201,8 +6201,8 @@ function resetRhineMap(points) {
 
   // Keep GPS position updates, but leave the camera on the full-map view.
   // The visitor can explicitly resume GPS Follow with its existing button.
+  gpsFollowMode = false;
   if (gpsActive) {
-    gpsFollowMode = false;
     const followButton = document.getElementById('gpsFollowBtn');
     if (followButton) followButton.classList.add('show');
   }

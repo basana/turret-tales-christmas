@@ -3999,6 +3999,7 @@ const MIA_VOUCHER = {
   he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על הגלידה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' }
 };
 function openMiaVoucher() {
+  PopupManager.closeOtherModals('miaVoucher');
   hideAllPopups();
   const l = MIA_VOUCHER[xmasLang] ? xmasLang : 'en';
   const t = MIA_VOUCHER[l];
@@ -4023,6 +4024,7 @@ const BUTA_VOUCHER = {
   he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על ההזמנה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' },
 };
 function openButaVoucher() {
+  PopupManager.closeOtherModals('miaVoucher');
   hideAllPopups();
   const l = BUTA_VOUCHER[xmasLang] ? xmasLang : 'en';
   const t = BUTA_VOUCHER[l];
@@ -4262,7 +4264,33 @@ const PopupManager = (() => {
       if (backdrop) backdrop.classList.remove('visible','show');
     }
   }
-  return { canShow, hideAutomatic, urgentContext };
+  function closeOtherModals(except) {
+    if (except !== 'premiumPopup') {
+      const premium = document.getElementById('premiumPopup');
+      if (premium) premium.classList.remove('open');
+    }
+    if (except !== 'moreMenu') {
+      const menu = document.getElementById('moreMenu');
+      const backdrop = document.getElementById('moreMenuBackdrop');
+      if (menu) menu.classList.remove('visible','show');
+      if (backdrop) backdrop.classList.remove('visible','show');
+    }
+    if (except !== 'miaVoucher') {
+      const voucher = document.getElementById('miaVoucher');
+      if (voucher) voucher.classList.remove('open');
+    }
+    if (except !== 'imgZoom') {
+      const zoom = document.getElementById('imgZoom');
+      if (zoom) zoom.hidden = true;
+    }
+    if (except !== 'helpBubble') {
+      const help = document.getElementById('helpBubble');
+      const backdrop = document.getElementById('helpBubbleBackdrop');
+      if (help) help.classList.remove('visible','show');
+      if (backdrop) backdrop.classList.remove('visible','show');
+    }
+  }
+  return { canShow, hideAutomatic, urgentContext, closeOtherModals };
 })();
 
 // ── Совместимость со старыми вызовами: скрыть автоматические окна ──
@@ -5185,20 +5213,22 @@ function trackNavForConfusion(viewName) {
   const now = Date.now();
   navConfusionHistory.push({ view: viewName, t: now });
   navConfusionHistory = navConfusionHistory.filter((e) => now - e.t < 20000).slice(-8);
+  if (navConfusionHistory.length < 6) return;
 
-  if (navConfusionHistory.length >= 4) {
-    const recent = navConfusionHistory.slice(-4);
-    const distinctViews = new Set(recent.map((e) => e.view));
-    // 4+ переключения за 20 секунд между всего 1-2 разделами — похоже на "не находит то, что искал"
-    if (distinctViews.size <= 2) {
-      maybeShowHelpBubble('pogo');
-      return;
-    }
+  const recent = navConfusionHistory.slice(-6);
+  const distinctViews = new Set(recent.map((e) => e.view));
+  const alternating = recent.every((e, i) => i < 2 || e.view === recent[i - 2].view);
+  // Помощь только при устойчивом быстром возврате между разделами,
+  // а не при обычном последовательном изучении карты.
+  if (distinctViews.size === 2 && alternating) {
+    maybeShowHelpBubble('pogo');
+    return;
   }
-  // 5+ переключений за 20 секунд вообще, по любым разделам (не только между 1-2) —
-  // общая хаотичность, человек явно что-то ищет и не находит
-  if (navConfusionHistory.length >= 5) {
-    maybeShowHelpBubble('chaotic');
+  // Более широкое переключение учитываем только при повторных возвратах
+  // к уже просмотренным разделам.
+  if (recent.length >= 7 && distinctViews.size <= 3) {
+    const revisits = recent.length - distinctViews.size;
+    if (revisits >= 4) maybeShowHelpBubble('chaotic');
   }
 }
 
@@ -5621,6 +5651,7 @@ function renderQuickLinksText() {
 }
 
 function openInfoPopup(kind) {
+  PopupManager.closeOtherModals('moreMenu');
   hideAllPopups();
   const data = INFO_POPUPS[kind][lang] || INFO_POPUPS[kind].en;
   const title = document.getElementById('moreMenuTitle');
@@ -6619,6 +6650,7 @@ const premiumUnlockedIntroEl = document.getElementById('premiumUnlockedIntro');
 let premiumPopupKind = 'view'; // 'view' (авторская картина) или 'gps' (GPS-автоопределение)
 
 function openPremiumPopup(kind) {
+  PopupManager.closeOtherModals('premiumPopup');
   hideAllPopups();
   premiumPopupKind = kind;
   const t = UI[lang];

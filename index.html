@@ -6362,7 +6362,7 @@ function initMap() {
   // POI buttons inside map container
   const poiBar = document.createElement('div');
   poiBar.className = 'poi-toggle-bar';
-  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\\'apotheke\\');this.classList.toggle(\\'active\\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\\'wc\\');this.classList.toggle(\\'active\\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="rhineResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
+  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="rhineResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
   leafletMap.getContainer().appendChild(poiBar);
 
   const points = [];

@@ -4448,7 +4448,7 @@ function xmasDrawMap(opts) {
   const xPoiBar = document.createElement('div');
   xPoiBar.className = 'poi-toggle-bar';
   // Reset button inside the same bar for uniform layout
-  xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\\'apotheke\\');this.classList.toggle(\\'active\\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\\'wc\\');this.classList.toggle(\\'active\\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="xResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
+  xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="xResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
   // Reset control follows the two POI controls in the shared vertical stack.
   xmasMapObj.getContainer().appendChild(xPoiBar);
   document.getElementById('xResetBtn').onclick = () => {

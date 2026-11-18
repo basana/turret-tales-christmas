@@ -126,19 +126,31 @@
   /* Telefon: Sprachknöpfe unter dem Titel, nie über der Emblem-Zeile */
   @media (max-width: 480px) { .header { flex-wrap: wrap; } .app-name-row { flex: 0 0 100%; } .header-controls { width: 100%; justify-content: center; flex-wrap: wrap; margin-top: 8px; position: relative; z-index: 1; } }
 
-  .xmas-wrap { padding: 16px; line-height: 1.5; }
-  .xmas-langs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-  .xmas-lang { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 6px 12px; border-radius: 999px; font-weight: 600; cursor: pointer; }
+  .xmas-wrap { padding: 8px 10px; line-height: 1.4; }
+  .xmas-langs { display: flex; gap: 5px; flex-wrap: nowrap; overflow-x: auto; margin-bottom: 7px; padding: 1px 0 3px; scrollbar-width: none; }
+  .xmas-langs::-webkit-scrollbar, .xmas-chips::-webkit-scrollbar { display: none; }
+  .xmas-lang { flex: 0 0 auto; border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; }
   .xmas-lang.active { background: #7A1026; color: #fff; }
   .xmas-title { font-size: 24px; color: #7A1026; margin: 4px 0 8px; }
   .xmas-intro, .xmas-block { margin: 10px 0; }
   .xmas-list { padding-left: 18px; }
   .xmas-list li { margin-bottom: 8px; }
   .xmas-small { font-size: 14px; opacity: 0.8; }
-  .xmas-gps-btn { display: block; width: 100%; padding: 12px; margin: 0 0 10px; border-radius: 12px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 15px; cursor: pointer; }
+  .xmas-gps-btn { display: flex; width: 46px; height: 46px; padding: 0; margin: 0; border-radius: 50%; border: 1px solid #7A1026; background: rgba(255,255,255,.97); color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 23px; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,.28); }
+  .xmas-gps-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .xmas-map-stage { position: relative; margin: 0 0 8px; }
+  .xmas-map-stage .xmas-search { position: absolute; z-index: 1001; top: 10px; left: 10px; right: 66px; width: auto; margin: 0; padding: 7px 10px; }
+  .xmas-map-stage .xmas-gps-btn { position: absolute; z-index: 1002; top: 9px; right: 10px; }
+  .xmas-map-stage .xmas-gps-btn .xmas-lock { position: absolute; top: -3px; right: -3px; background: #fff; border: 1px solid #7A1026; border-radius: 50%; padding: 0 3px; font-size: 10px; }
+  .xmas-map-stage .xmas-map { margin: 0; height: clamp(340px, 54svh, 520px); }
+  .xmas-map-stage .xmas-map-big { height: clamp(360px, 60svh, 560px); }
   .xmas-gps-btn.active { background: #7A1026; color: #F5ECD6; }
   .xmas-gps-panel { font-family: var(--sans); font-size: 14px; margin: 0 0 14px; }
-  .xmas-explain { background: #F5ECD6; border-left: 4px solid #7A1026; border-radius: 8px; padding: 10px 12px; margin: 0 0 12px; font-size: 14px; line-height: 1.45; font-family: var(--sans); color: var(--ink); }
+  .xmas-explain { background: transparent; border: 0; padding: 0; margin: 5px 0 10px; font-size: 12px; line-height: 1.4; font-family: var(--sans); color: var(--ink-soft); }
+  .xmas-explain summary { display: inline-block; cursor: pointer; padding: 3px 2px; color: var(--ink-soft); }
+  .xmas-explain[open] { background: #F5ECD6; border-left: 3px solid #7A1026; border-radius: 7px; padding: 7px 10px; }
+  .xmas-explain[open] summary { color: #7A1026; font-weight: 700; }
+  .xmas-explain-body { padding-top: 5px; }
   .xmas-gps-row { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #c8a878; }
   .xmas-gps-link { cursor: pointer; -webkit-tap-highlight-color: rgba(122,16,38,0.12); border-radius: 6px; padding: 8px 4px; margin: 0 -4px; }
   .xmas-gps-link:active { background: rgba(122,16,38,0.08); }
@@ -152,8 +164,8 @@
   .xmas-lock { color: var(--terracotta); font-size: 11px; }
   .xmas-berth { display: flex; align-items: center; gap: 6px; background: #fff; color: #222; border: 2px solid var(--bc, #1F4E79); border-radius: 999px; padding: 2px 9px 2px 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
   .xmas-berth-letter { width: 24px; height: 24px; border-radius: 50%; background: var(--bc, #1F4E79); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex: 0 0 auto; }
-  .xmas-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-  .xmas-chip { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 14px; }
+  .xmas-chips { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; margin-bottom: 8px; padding: 1px 0 3px; scrollbar-width: none; }
+  .xmas-chip { flex: 0 0 auto; border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 4px 9px; border-radius: 999px; cursor: pointer; font-size: 12px; }
   .xmas-chip.active { background: #7A1026; color: #fff; }
   .xmas-photo { min-height: 140px; border: 1.5px dashed #c8a878; border-radius: 10px; margin: 8px 0; background: rgba(245,236,214,0.6); }
   .xmas-card { margin-bottom: 14px; }
@@ -273,7 +285,9 @@
   .tab.tab-xmas, .tab.tab-xmas-light { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .tab.tab-xmas.active, .tab.tab-xmas-light.active { background: #7A1026 !important; color: #fff !important; font-weight: 700; }
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
-  .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
+  .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0; }
+  .xmas-wa-row { display: flex; justify-content: flex-end; margin: 4px 0 10px; }
+  .xmas-wa-row .btn-wa-share { width: 38px !important; height: 38px !important; border-radius: 50% !important; }
   .wine-emblem { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #7A1026; background: #fff; flex: none; display: flex; align-items: center; justify-content: center; }
   .wine-emblem-letter { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #7A1026; }
   .wine-pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #7A1026, 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -4508,7 +4522,8 @@ const XMAS_EXPLAIN_OVERVIEW = {
 };
 function xmasExplainHtml() {
   const dict = xmasTown ? XMAS_EXPLAIN : XMAS_EXPLAIN_OVERVIEW;
-  return `<div class="xmas-explain">${dict[xmasLang] || dict.en}</div>`;
+  const labels = { de: 'ⓘ Kartenhilfe', en: 'ⓘ Map help', ru: 'ⓘ Как пользоваться картой', fr: 'ⓘ Aide de la carte', nl: 'ⓘ Kaartinfo', zh: 'ⓘ 地图帮助', he: 'ⓘ עזרה במפה' };
+  return `<details class="xmas-explain"><summary>${labels[xmasLang] || labels.en}</summary><div class="xmas-explain-body">${dict[xmasLang] || dict.en}</div></details>`;
 }
 const XMAS_TOWN_THUMB_KEY = { koblenz: 'koblenz-hoerter', lahnstein: 'lahnstein-markt', boppard: 'boppard-markt', oberwesel: 'oberwesel-markt', bacharach: 'bacharach-markt', ruedesheim: 'ruedesheim-markt' };
 function xmasTownListHtml() {
@@ -4526,8 +4541,8 @@ let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker
 function xmasG(k) { return (XG[xmasLang] || XG.de)[k]; }
 function xmasWalkMin(d) { return Math.max(1, Math.round(d * 1.3 / 75)); } // Luftlinie x 1,3 Umweg, 75 m/min
 function xmasGpsBtnHtml() {
-  const lock = isPremiumUnlocked() ? '' : ' <span class="xmas-lock">✦</span>';
-  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn">📍 ${xmasG('btn')}${lock}</button>`;
+  const lock = isPremiumUnlocked() ? '' : '<span class="xmas-lock" aria-hidden="true">✦</span>';
+  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn" type="button" aria-label="${xmasG('btn')}" title="${xmasG('btn')}"><span aria-hidden="true">📍</span><span class="xmas-gps-label">${xmasG('btn')}</span>${lock}</button>`;
 }
 function xmasGpsTargets() {
   if (!xmasTown) return XMAS_ORDER.filter(k => XMAS_CITY[k] && XMAS_GEO[k]).flatMap(k => {
@@ -4698,17 +4713,17 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
+  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + xmasExplainHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
   } else if (!xmasTown) {
-    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + mapHtml;
+    body = mapHtml + `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasTownListHtml();
   } else {
     const c = XMAS_CITY[xmasTown];
     const TX = T_(c.text);
     const waXmasUrl = `https://wa.me/?text=${encodeURIComponent(TX.title + '\n' + TX.intro + '\n\nhttps://turret-tales.netlify.app/')}`;
-    body = `<h2 class="xmas-title">${TX.title}</h2><div style="text-align:right;margin:-8px 0 8px"><a href="${waXmasUrl}" target="_blank" rel="noopener" class="btn-wa-share" style="display:inline-flex;width:40px;height:40px;text-decoration:none;font-size:18px;border-radius:50%">💬</a></div>` + mapHtml + `<p class="xmas-intro">${TX.intro}</p>` +
+    body = `<h2 class="xmas-title">${TX.title}</h2>` + mapHtml + `<p class="xmas-intro">${TX.intro}</p><div class="xmas-wa-row"><a href="${waXmasUrl}" target="_blank" rel="noopener" class="btn-wa-share" aria-label="Share via WhatsApp" title="WhatsApp">💬</a></div>` +
       TX.cards.filter(k => k.title !== 'Mia Gelateria').map((k, i) => `
         <div class="route-card xmas-card" id="xmasCard${i}">
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>

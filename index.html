@@ -6452,6 +6452,9 @@ function initMap() {
 
     marker.on('click', () => {
       selectedIndex = i;
+      // Selecting a map object must always make that object the camera target.
+      markGpsProgrammaticView();
+      leafletMap.setView([c.lat, c.lng], Math.max(leafletMap.getZoom(), 14), { animate: false });
       showMapPanel(i);
       if (gpsActive && gpsLastLat !== null) updateGpsDistancePanel(gpsLastLat, gpsLastLng);
     });
@@ -6603,7 +6606,9 @@ function runMapSearch() {
   selectedIndex = i;
   if (leafletMap) {
     const c = castles[i];
-    if (leafletMap.getZoom() < 13) leafletMap.setView([c.lat, c.lng], 14, { animate: false });
+    // Search selection is an explicit focus request at every current zoom level.
+    markGpsProgrammaticView();
+    leafletMap.setView([c.lat, c.lng], Math.max(leafletMap.getZoom(), 14), { animate: false });
     showMapPanel(i);
   }
   input.blur();
@@ -6996,6 +7001,9 @@ function updateGpsDistancePanel(lat, lng) {
   const saveBtn = document.getElementById('gpsSaveSpotBtn');
   if (!gpsPanel) return;
   const t = UI[lang];
+  // An active pharmacy/toilet task owns the map context; castle guidance must
+  // not compete with its distance panel or urgent POI message.
+  const urgentPoiActive = !!(apothekenLayer || toilettenLayer);
 
   // --- Ближайший/выбранный замок ---
   const useSelected = selectedIndex >= 0 && typeof castles[selectedIndex]?.lat === 'number';
@@ -7106,6 +7114,14 @@ function updateGpsDistancePanel(lat, lng) {
       toast._lastId = null;
     }
   }
+
+  // Pharmacy/toilet mode has priority over castle distance panels and toasts.
+  // Keep the saved meeting-point row intact, but remove competing castle UI.
+  if (urgentPoiActive) {
+    castleRow.classList.remove('show');
+    if (routeRow) routeRow.classList.remove('show');
+    if (toast) toast.classList.remove('show');
+  }
 }
 
 function stopGps() {
@@ -7184,12 +7200,8 @@ function startGps() {
       }
       updateGpsDistancePanel(latitude, longitude);
 
-      const nearest = findNearestCastleIndex(latitude, longitude);
-      if (nearest >= 0 && nearest !== index) {
-        index = nearest;
-        document.body.classList.toggle('station-open', index > 0);
-        renderGuide();
-      }
+      // GPS position updates navigation state only. They must not silently
+      // switch the visitor's open guide/story to a different castle.
     },
     () => {
       gpsToggleLabel.textContent = UI[lang].gpsError;

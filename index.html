@@ -126,19 +126,31 @@
   /* Telefon: Sprachknöpfe unter dem Titel, nie über der Emblem-Zeile */
   @media (max-width: 480px) { .header { flex-wrap: wrap; } .app-name-row { flex: 0 0 100%; } .header-controls { width: 100%; justify-content: center; flex-wrap: wrap; margin-top: 8px; position: relative; z-index: 1; } }
 
-  .xmas-wrap { padding: 16px; line-height: 1.5; }
-  .xmas-langs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-  .xmas-lang { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 6px 12px; border-radius: 999px; font-weight: 600; cursor: pointer; }
+  .xmas-wrap { padding: 8px 10px; line-height: 1.4; }
+  .xmas-langs { display: flex; gap: 5px; flex-wrap: nowrap; overflow-x: auto; margin-bottom: 7px; padding: 1px 0 3px; scrollbar-width: none; }
+  .xmas-langs::-webkit-scrollbar, .xmas-chips::-webkit-scrollbar { display: none; }
+  .xmas-lang { flex: 0 0 auto; border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; }
   .xmas-lang.active { background: #7A1026; color: #fff; }
   .xmas-title { font-size: 24px; color: #7A1026; margin: 4px 0 8px; }
   .xmas-intro, .xmas-block { margin: 10px 0; }
   .xmas-list { padding-left: 18px; }
   .xmas-list li { margin-bottom: 8px; }
   .xmas-small { font-size: 14px; opacity: 0.8; }
-  .xmas-gps-btn { display: block; width: 100%; padding: 12px; margin: 0 0 10px; border-radius: 12px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 15px; cursor: pointer; }
+  .xmas-gps-btn { display: flex; width: 46px; height: 46px; padding: 0; margin: 0; border-radius: 50%; border: 1px solid #7A1026; background: rgba(255,255,255,.97); color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 23px; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,.28); }
+  .xmas-gps-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .xmas-map-stage { position: relative; margin: 0 0 8px; }
+  .xmas-map-stage .xmas-search { position: absolute; z-index: 1001; top: 10px; left: 10px; right: 66px; width: auto; margin: 0; padding: 7px 10px; }
+  .xmas-map-stage .xmas-gps-btn { position: absolute; z-index: 1002; top: 9px; right: 10px; }
+  .xmas-map-stage .xmas-gps-btn .xmas-lock { position: absolute; top: -3px; right: -3px; background: #fff; border: 1px solid #7A1026; border-radius: 50%; padding: 0 3px; font-size: 10px; }
+  .xmas-map-stage .xmas-map { margin: 0; height: clamp(340px, 54svh, 520px); }
+  .xmas-map-stage .xmas-map-big { height: clamp(360px, 60svh, 560px); }
   .xmas-gps-btn.active { background: #7A1026; color: #F5ECD6; }
   .xmas-gps-panel { font-family: var(--sans); font-size: 14px; margin: 0 0 14px; }
-  .xmas-explain { background: #F5ECD6; border-left: 4px solid #7A1026; border-radius: 8px; padding: 10px 12px; margin: 0 0 12px; font-size: 14px; line-height: 1.45; font-family: var(--sans); color: var(--ink); }
+  .xmas-explain { background: transparent; border: 0; padding: 0; margin: 5px 0 10px; font-size: 12px; line-height: 1.4; font-family: var(--sans); color: var(--ink-soft); }
+  .xmas-explain summary { display: inline-block; cursor: pointer; padding: 3px 2px; color: var(--ink-soft); }
+  .xmas-explain[open] { background: #F5ECD6; border-left: 3px solid #7A1026; border-radius: 7px; padding: 7px 10px; }
+  .xmas-explain[open] summary { color: #7A1026; font-weight: 700; }
+  .xmas-explain-body { padding-top: 5px; }
   .xmas-gps-row { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #c8a878; }
   .xmas-gps-link { cursor: pointer; -webkit-tap-highlight-color: rgba(122,16,38,0.12); border-radius: 6px; padding: 8px 4px; margin: 0 -4px; }
   .xmas-gps-link:active { background: rgba(122,16,38,0.08); }
@@ -152,8 +164,8 @@
   .xmas-lock { color: var(--terracotta); font-size: 11px; }
   .xmas-berth { display: flex; align-items: center; gap: 6px; background: #fff; color: #222; border: 2px solid var(--bc, #1F4E79); border-radius: 999px; padding: 2px 9px 2px 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
   .xmas-berth-letter { width: 24px; height: 24px; border-radius: 50%; background: var(--bc, #1F4E79); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex: 0 0 auto; }
-  .xmas-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-  .xmas-chip { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 14px; }
+  .xmas-chips { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; margin-bottom: 8px; padding: 1px 0 3px; scrollbar-width: none; }
+  .xmas-chip { flex: 0 0 auto; border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 4px 9px; border-radius: 999px; cursor: pointer; font-size: 12px; }
   .xmas-chip.active { background: #7A1026; color: #fff; }
   .xmas-photo { min-height: 140px; border: 1.5px dashed #c8a878; border-radius: 10px; margin: 8px 0; background: rgba(245,236,214,0.6); }
   .xmas-card { margin-bottom: 14px; }
@@ -273,7 +285,9 @@
   .tab.tab-xmas, .tab.tab-xmas-light { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .tab.tab-xmas.active, .tab.tab-xmas-light.active { background: #7A1026 !important; color: #fff !important; font-weight: 700; }
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
-  .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
+  .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0; }
+  .xmas-wa-row { display: flex; justify-content: flex-end; margin: 4px 0 10px; }
+  .xmas-wa-row .btn-wa-share { width: 38px !important; height: 38px !important; border-radius: 50% !important; }
   .wine-emblem { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #7A1026; background: #fff; flex: none; display: flex; align-items: center; justify-content: center; }
   .wine-emblem-letter { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #7A1026; }
   .wine-pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #7A1026, 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -818,12 +832,12 @@
 
   /* === ЗНАЧОК «ЭКСКУРСИЯ ВОЗМОЖНА» (там, где гид сам проводит туры) === */
   .tour-badge {
-    display: inline-flex; align-items: center; gap: 7px;
+    display: inline-flex; align-items: center; gap: 6px;
     background: rgba(181,96,46,0.10); border: 1px solid var(--terracotta); border-radius: 20px;
-    padding: 6px 13px; font-family: var(--sans); font-size: 12.5px; font-weight: 600;
-    color: var(--terracotta); margin: 0 0 14px; line-height: 1.35;
+    padding: 5px 10px; font-family: var(--sans); font-size: 10px; font-weight: 600;
+    color: var(--terracotta); margin: 0 0 11px; line-height: 1.3;
   }
-  .tour-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--terracotta); flex: 0 0 6px; }
+  .tour-badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--terracotta); flex: 0 0 5px; }
 
   /* === PREMIUM-ЗНАЧОК НА ФОТО СТАНЦИИ === */
   .premium-badge {
@@ -995,19 +1009,21 @@
   .nearest-toast .toast-dist { font-size:16px; }
   .nearest-toast.poi-info-toast { bottom:auto; top:56px; }
   .gps-panel {
-    position: absolute; z-index: 1000; top: 126px; left: 12px; display: none;
-    flex-direction: column; gap: 7px; max-width: 210px;
+    position: absolute; z-index: 1000; top: 120px; left: 12px; display: none;
+    flex-direction: column; gap: 4px; width: 158px; max-width: calc(100vw - 84px);
   }
   .gps-panel.show { display: flex; }
   .gps-panel-row {
-    display: none; align-items: center; gap: 8px;
+    display: none; align-items: center; gap: 8px; min-width: 0; max-width: 100%;
     background: rgba(246, 238, 221, 0.95); border: 1px solid var(--gold); border-radius: 12px;
-    padding: 8px 12px; font-family: var(--sans); color: var(--ink);
+    padding: 7px 9px; font-family: var(--sans); color: var(--ink); white-space: normal;
     box-shadow: 0 4px 14px rgba(90,67,39,0.25);
   }
   .gps-panel-row.show { display: flex; }
-  .gps-distance-value { font-size: 15px; font-weight: 700; color: var(--terracotta); line-height: 1.2; }
-  .gps-distance-name { font-size: 11.5px; color: var(--ink-soft); margin-top: 1px; }
+  #gpsDistancePanel { align-items: flex-start; flex-direction: column; gap: 2px; }
+  #gpsDistancePanel > * { max-width: 100%; overflow-wrap: anywhere; }
+  .gps-distance-value { font-size: 14px; font-weight: 700; color: var(--terracotta); line-height: 1.2; }
+  .gps-distance-name { font-size: 10.5px; color: var(--ink-soft); margin-top: 1px; line-height: 1.25; }
   .gps-spot-row .gps-distance-value { color: #3a6ea5; }
   .gps-route-row { padding: 6px 12px; opacity: 0.9; }
   .gps-route-text { font-size: 11.5px; font-weight: 600; color: var(--ink-soft); line-height: 1.3; }
@@ -1076,18 +1092,29 @@
   }
   .poi-toggle-btn.map-reset-btn { background: rgba(246,238,221,0.97); border-color: var(--gold); color: var(--ink); font-size: clamp(34px, 6.5vw, 44px); line-height: 1; }
   .gps-user-halo {
-    width: 22px; height: 22px; border-radius: 50%;
+    width: 38px; height: 38px; border-radius: 50%;
     background: rgba(181,96,46,0.35); display: flex; align-items: center; justify-content: center;
     animation: gpsHaloPulse 1.8s ease-in-out infinite;
   }
   .gps-user-halo::after {
-    content: ''; width: 10px; height: 10px; border-radius: 50%;
-    background: var(--terracotta); border: 2px solid #fff; box-shadow: 0 0 4px rgba(0,0,0,0.4);
+    content: ''; width: 17px; height: 17px; border-radius: 50%;
+    background: var(--terracotta); border: 3px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.4);
   }
   @keyframes gpsHaloPulse {
     0% { box-shadow: 0 0 0 0 rgba(181,96,46,0.5); }
-    70% { box-shadow: 0 0 0 14px rgba(181,96,46,0); }
+    70% { box-shadow: 0 0 0 24px rgba(181,96,46,0); }
     100% { box-shadow: 0 0 0 0 rgba(181,96,46,0); }
+  }
+  .xmas-target-halo {
+    width: 48px; height: 48px; border-radius: 50%; box-sizing: border-box;
+    border: 4px solid rgba(255,212,90,0.98); background: rgba(122,16,38,0.10);
+    box-shadow: 0 0 0 0 rgba(255,212,90,0.65);
+    animation: xmasTargetPulse 1.8s ease-out infinite;
+  }
+  @keyframes xmasTargetPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,212,90,0.65); }
+    70% { box-shadow: 0 0 0 24px rgba(255,212,90,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,212,90,0); }
   }
 
   /* === ПОМОЩНИК-ПОДСКАЗКА (ненавязчивый пузырь при признаках потерянности) === */
@@ -2106,6 +2133,7 @@ function _showPoiToast(mapObj, poi, emoji) {
 // ── POI Emergency mode: block popups, show "need help?" after 30s ──
 let _poiEmergencyMode = false;
 let _poiEmergencyTimer = null;
+let _poiEmergencyHelpShown = false;
 const POI_EMERGENCY_TEXT = {
   de: { q: 'Brauchen Sie Hilfe?', call: '📞 Anrufen', chat: '💬 WhatsApp' },
   en: { q: 'Need help?', call: '📞 Call', chat: '💬 WhatsApp' },
@@ -2117,12 +2145,17 @@ const POI_EMERGENCY_TEXT = {
 };
 function _startPoiEmergency() {
   _poiEmergencyMode = true;
+  _poiEmergencyHelpShown = false;
+  // При переходе к аптеке/туалету закрываем любые прежние окна и предложения.
+  PopupManager.closeOtherModals();
   hideAllPopups();
   clearTimeout(_poiEmergencyTimer);
-  _poiEmergencyTimer = setTimeout(_showEmergencyPopup, 30000);
+  // Сервисная помощь не появляется только из-за истечения 30 секунд.
+  // Существующее окно и каналы связи сохраняются для явного/обоснованного вызова.
 }
 function _stopPoiEmergency() {
   _poiEmergencyMode = false;
+  _poiEmergencyHelpShown = false;
   clearTimeout(_poiEmergencyTimer);
   const ep = document.getElementById('emergencyPopup');
   if (ep) ep.hidden = true;
@@ -2159,6 +2192,7 @@ function _showEmergencyPopup() {
   const chatBtn = document.getElementById('emergencyChat');
   chatBtn.textContent = t.chat;
   chatBtn.href = 'https://wa.me/491772850207?text=' + encodeURIComponent('I need help / Ich brauche Hilfe');
+  PopupManager.closeOtherModals('emergencyPopup');
   hideAllPopups('emergencyPopup');
   ep.hidden = false;
 }
@@ -3978,15 +4012,12 @@ function renderFoodPromoText() {
 const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 20000 };
 let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
 function promoTick() {
-  if (Date.now() < promoNextAt || promoShown >= PROMO.maxPerSession) return;
-  const order = promoShown % 2 === 0 ? [showFoodPromo, showShopPromo] : [showShopPromo, showFoodPromo];
-  if (!order[0]() && !order[1]()) return; // сейчас нельзя показать — попробуем на следующем тике
-  promoShown++;
-  promoNextAt = Date.now() + PROMO.cooldownMs;
-  setTimeout(() => { hideFoodPromo(); hideShopPromo(); }, PROMO.autoCloseMs);
+  // По согласованному правилу Food & Drinks и Souvenirs открываются
+  // только по выбору посетителя, без автоматических таймерных приглашений.
+  return;
 }
 function showFoodPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('foodPromo')) return false;
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return false;
   if (currentView === 'food' || currentView === 'wine') return false; // im Bereich Food & Drinks / Weingüter nicht anzeigen
@@ -4010,6 +4041,8 @@ const MIA_VOUCHER = {
   he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על הגלידה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' }
 };
 function openMiaVoucher() {
+  PopupManager.closeOtherModals('miaVoucher');
+  hideAllPopups();
   const l = MIA_VOUCHER[xmasLang] ? xmasLang : 'en';
   const t = MIA_VOUCHER[l];
   document.getElementById('mvBrand').textContent = t.brand;
@@ -4033,6 +4066,8 @@ const BUTA_VOUCHER = {
   he: { brand: 'Turret Tales · קופון', offer: '10% הנחה על ההזמנה שלכם', valid: 'בתוקף עד 31.12.2026 · לדוגמה', close: 'סגירה' },
 };
 function openButaVoucher() {
+  PopupManager.closeOtherModals('miaVoucher');
+  hideAllPopups();
   const l = BUTA_VOUCHER[xmasLang] ? xmasLang : 'en';
   const t = BUTA_VOUCHER[l];
   document.getElementById('mvBrand').textContent = t.brand;
@@ -4068,7 +4103,7 @@ function renderShopPromoText() {
   const link = document.getElementById('shopPromoLink'); if (link) link.textContent = t.link;
 }
 function showShopPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('shopPromo')) return false;
   const box = document.getElementById('shopPromo');
   if (!box || !box.hidden) return false;
   if (!document.getElementById('foodPromo').hidden) return false;
@@ -4095,7 +4130,7 @@ setInterval(promoTick, 15000);
 // Окно с экскурсиями: в разделах Weihnachtsorte, Weingüter, Burgen и Route — не чаще раза в 4 минуты.
 // Крестик и автоматическое закрытие через 30 секунд.
 const TOUR_PROMO = { intervalMs: 420000, autoCloseMs: 30000, whatsapp: 'https://wa.me/491772850207' };
-const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'route'];
+const TOUR_PROMO_VIEWS = ['wine', 'castles', 'route'];
 const TOUR_PROMO_TEXT = {
   christmas: {
     de: 'Weihnachtsmarkt mit Gästeführer:\nGeschichte auf jedem Platz.',
@@ -4124,6 +4159,8 @@ const TOUR_PROMO_TEXT = {
 };
 let tourPromoLastAt = Date.now();
 let tourPromoTimer = null;
+// Contextual tour invitations are shown at most once per relevant section per page session.
+const tourPromoShownViews = new Set();
 function tourPromoLang() {
   const active = document.querySelector('.header-controls .pill-btn.active');
   const l = (active && active.dataset.lang) || lang;
@@ -4141,7 +4178,7 @@ function hideTourPromo() {
   clearTimeout(tourPromoTimer);
 }
 function showTourPromo() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('tourPromo')) return false;
   const box = document.getElementById('tourPromo');
   if (!box || !box.hidden) return false;
   if (!TOUR_PROMO_VIEWS.includes(currentView)) return false;
@@ -4154,8 +4191,9 @@ function showTourPromo() {
   return true;
 }
 function tourPromoTick() {
-  if (Date.now() - tourPromoLastAt < TOUR_PROMO.intervalMs) return;
-  if (showTourPromo()) tourPromoLastAt = Date.now();
+  // Guided Tours больше не показывается по периодическому таймеру.
+  // Предложение должно вызываться только из релевантного пользовательского контекста.
+  return;
 }
 document.getElementById('tourPromoClose').addEventListener('click', hideTourPromo);
 // WhatsApp link temporarily disabled
@@ -4190,7 +4228,7 @@ function hidePoiPopup() {
 }
 
 function showPoiPopup() {
-  if (_poiEmergencyMode) return false;
+  if (!PopupManager.canShow('poiPromo')) return false;
   // Показывать только когда включён хотя бы один POI-слой (аптеки или туалеты)
   if (!apothekenLayer && !toilettenLayer) return false;
   const box = document.getElementById('poiPromo');
@@ -4209,11 +4247,9 @@ function showPoiPopup() {
 }
 
 function poiPopupTick() {
-  if (Date.now() < poiPopupNextAt) return;
-  if (showPoiPopup()) {
-    poiPopupNextAt = Date.now() + POI_POPUP.intervalMs;
-    poiPopupShownOnce = true;
-  }
+  // Убираем повторный вопрос Pharmacy / WC после того, как посетитель
+  // уже выбрал соответствующий слой. Точки показываются сразу.
+  return;
 }
 
 document.getElementById('poiPromoClose').addEventListener('click', hidePoiPopup);
@@ -4230,8 +4266,88 @@ document.getElementById('poiPromoWc').addEventListener('click', () => {
 });
 setInterval(poiPopupTick, 5000);
 
-// ── Единый диспетчер: скрыть все попапы кроме указанного ──────────
+// ── MAP NAVI Popup Manager: единые правила допуска автоматических окон ──
+const PopupManager = (() => {
+  const automaticIds = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','fbCard'];
+  const modalSelectors = '.modal.open, .premium-popup.open, .more-menu.open, #moreMenu.show, #moreMenu.visible, #moreMenuBackdrop.show, #moreMenuBackdrop.visible, #miaVoucher.open, .mv-overlay.open, #imgZoom:not([hidden]), #emergencyPopup:not([hidden])';
+  function splashActive() {
+    const splash = document.getElementById('splash');
+    return !!(splash && !splash.classList.contains('hide'));
+  }
+  function urgentContext() {
+    const poiLayerActive = !!(apothekenLayer || toilettenLayer) ||
+      !!document.querySelector('.poi-toggle-btn.active');
+    const textEntry = !!document.querySelector('input:focus, textarea:focus, [contenteditable="true"]:focus');
+    const readingObject = !!document.querySelector('#mapPanel.open');
+    return !!_poiEmergencyMode || poiLayerActive || textEntry || readingObject ||
+      !!document.querySelector(modalSelectors) ||
+      !!document.querySelector('.leaflet-routing-container, .route-active, [data-route-active="true"]');
+  }
+  function canShow(kind) {
+    if (splashActive() || urgentContext()) return false;
+    const alreadyOpen = automaticIds.some(id => {
+      const el = document.getElementById(id);
+      return el && !el.hidden && id !== kind;
+    });
+    if (alreadyOpen) return false;
+    // Food & Shop могут открываться только прямым действием посетителя:
+    // их периодические таймеры отключены отдельно.
+    if (kind === 'foodPromo' || kind === 'shopPromo') return true;
+    if (kind === 'tourPromo') return TOUR_PROMO_VIEWS.includes(currentView);
+    if (kind === 'winePromo') return currentView === 'wine';
+    if (kind === 'helpBubble') return true;
+    if (kind === 'fbCard') return true;
+    return false;
+  }
+  function hideAutomatic(except) {
+    automaticIds.forEach(id => {
+      if (id === except) return;
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+    const help = document.getElementById('helpBubble');
+    const backdrop = document.getElementById('helpBubbleBackdrop');
+    if (except !== 'helpBubble' && help) {
+      help.classList.remove('visible','show');
+      if (backdrop) backdrop.classList.remove('visible','show');
+    }
+  }
+  function closeOtherModals(except) {
+    if (except !== 'premiumPopup') {
+      const premium = document.getElementById('premiumPopup');
+      if (premium) premium.classList.remove('open');
+    }
+    if (except !== 'moreMenu') {
+      const menu = document.getElementById('moreMenu');
+      const backdrop = document.getElementById('moreMenuBackdrop');
+      if (menu) menu.classList.remove('open','visible','show');
+      if (backdrop) backdrop.classList.remove('open','visible','show');
+    }
+    if (except !== 'miaVoucher') {
+      const voucher = document.getElementById('miaVoucher');
+      if (voucher) voucher.classList.remove('open');
+    }
+    if (except !== 'emergencyPopup') {
+      const emergency = document.getElementById('emergencyPopup');
+      if (emergency) emergency.hidden = true;
+    }
+    if (except !== 'imgZoom') {
+      const zoom = document.getElementById('imgZoom');
+      if (zoom) zoom.hidden = true;
+    }
+    if (except !== 'helpBubble') {
+      const help = document.getElementById('helpBubble');
+      const backdrop = document.getElementById('helpBubbleBackdrop');
+      if (help) help.classList.remove('visible','show');
+      if (backdrop) backdrop.classList.remove('visible','show');
+    }
+  }
+  return { canShow, hideAutomatic, urgentContext, closeOtherModals };
+})();
+
+// ── Совместимость со старыми вызовами: скрыть автоматические окна ──
 function hideAllPopups(except) {
+  PopupManager.hideAutomatic(except);
   if (except !== 'foodPromo') { const b = document.getElementById('foodPromo'); if (b && !b.hidden) b.hidden = true; }
   if (except !== 'shopPromo') { const b = document.getElementById('shopPromo'); if (b && !b.hidden) b.hidden = true; }
   if (except !== 'tourPromo') { hideTourPromo(); }
@@ -4275,6 +4391,9 @@ if (guideNotePhotoEl) {
     const img = e.target && e.target.closest ? e.target.closest('.content img') : null;
     if (!img || !img.getAttribute('src')) return;
     if (img.closest('a, button, .leaflet-container, .quick-link, .xmas-hero, #guideNotePhoto, #mainPhoto, .map-legend-icon, .vignette-corner')) return;
+    // Просмотр фото — отдельное окно: не оставляем поверх него другие окна.
+    PopupManager.closeOtherModals('imgZoom');
+    hideAllPopups();
     big.src = img.currentSrc || img.src;
     box.hidden = false;
   });
@@ -4341,14 +4460,18 @@ function xmasDrawMap(opts) {
   const el = document.getElementById('xmasMap');
   if (!el || typeof L === 'undefined') return;
   if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
-  xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0 });
+  xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0, zoomControl: false });
+  L.control.zoom({ position: 'bottomleft' }).addTo(xmasMapObj);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
-  // Übersicht: genug Rand, damit Koblenz (oben) und Rüdesheim (rechts) mit ihren Beschriftungen ganz sichtbar bleiben
-  if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
+  // Все точки остаются внутри карты: вертикальные поля равны примерно 1/5 её высоты.
+  const fitPadding = () => {
+    const padY = Math.max(40, Math.round((el.clientHeight || 400) * 0.2));
+    return { paddingTopLeft: [24, padY], paddingBottomRight: [24, padY] };
+  };
+  if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { ...fitPadding(), maxZoom: 13 });
   else if (opts.pins && opts.pins.length > 1) {
-    // Все точки города сразу видны, с запасом по краям (подписи и маркеры не обрезаются)
     const pb = L.latLngBounds(opts.pins.map(p => p.ll));
-    xmasMapObj.fitBounds(pb, { padding: [56, 56], maxZoom: opts.zoom, animate: false });
+    xmasMapObj.fitBounds(pb, { ...fitPadding(), maxZoom: opts.zoom, animate: false });
   }
   else xmasMapObj.setView(opts.center, opts.zoom);
   if (xmasPendingFocus) { xmasMapObj.setView(xmasPendingFocus, 17, { animate: false }); xmasPendingFocus = null; }
@@ -4356,12 +4479,12 @@ function xmasDrawMap(opts) {
   const xPoiBar = document.createElement('div');
   xPoiBar.className = 'poi-toggle-bar';
   // Reset button inside the same bar for uniform layout
-  xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\\'apotheke\\');this.classList.toggle(\\'active\\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\\'wc\\');this.classList.toggle(\\'active\\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="xResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
+  xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="xResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
   // Reset control follows the two POI controls in the shared vertical stack.
   xmasMapObj.getContainer().appendChild(xPoiBar);
   document.getElementById('xResetBtn').onclick = () => {
-    if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
-    else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [56, 56], maxZoom: opts.zoom });
+    if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { ...fitPadding(), maxZoom: 13 });
+    else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { ...fitPadding(), maxZoom: opts.zoom });
     else xmasMapObj.setView(opts.center, opts.zoom);
   };
   opts.pins.forEach(p => {
@@ -4416,7 +4539,8 @@ const XMAS_EXPLAIN_OVERVIEW = {
 };
 function xmasExplainHtml() {
   const dict = xmasTown ? XMAS_EXPLAIN : XMAS_EXPLAIN_OVERVIEW;
-  return `<div class="xmas-explain">${dict[xmasLang] || dict.en}</div>`;
+  const labels = { de: 'ⓘ Kartenhilfe', en: 'ⓘ Map help', ru: 'ⓘ Как пользоваться картой', fr: 'ⓘ Aide de la carte', nl: 'ⓘ Kaartinfo', zh: 'ⓘ 地图帮助', he: 'ⓘ עזרה במפה' };
+  return `<details class="xmas-explain"><summary>${labels[xmasLang] || labels.en}</summary><div class="xmas-explain-body">${dict[xmasLang] || dict.en}</div></details>`;
 }
 const XMAS_TOWN_THUMB_KEY = { koblenz: 'koblenz-hoerter', lahnstein: 'lahnstein-markt', boppard: 'boppard-markt', oberwesel: 'oberwesel-markt', bacharach: 'bacharach-markt', ruedesheim: 'ruedesheim-markt' };
 function xmasTownListHtml() {
@@ -4429,13 +4553,13 @@ function xmasTownListHtml() {
     return `<div class="route-card xmas-card"><div class="xmas-town-top"><div class="xmas-town-text"><div class="route-kicker">${String(i + 1).padStart(2, '0')}</div><div class="castle-name">${T(XMAS_CITY[k].name)}</div></div></div>${thumbRow}<button class="xmas-town-btn" data-xc="${k}">${go}</button></div>`;
   }).join('') + '</div>';
 }
-let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasBerthMarkers = [];
+let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasTargetMarker = null, xmasBerthMarkers = [];
 
 function xmasG(k) { return (XG[xmasLang] || XG.de)[k]; }
 function xmasWalkMin(d) { return Math.max(1, Math.round(d * 1.3 / 75)); } // Luftlinie x 1,3 Umweg, 75 m/min
 function xmasGpsBtnHtml() {
-  const lock = isPremiumUnlocked() ? '' : ' <span class="xmas-lock">✦</span>';
-  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn">📍 ${xmasG('btn')}${lock}</button>`;
+  const lock = isPremiumUnlocked() ? '' : '<span class="xmas-lock" aria-hidden="true">✦</span>';
+  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn" type="button" aria-label="${xmasG('btn')}" title="${xmasG('btn')}"><span aria-hidden="true">📍</span><span class="xmas-gps-label">${xmasG('btn')}</span>${lock}</button>`;
 }
 function xmasGpsTargets() {
   if (!xmasTown) return XMAS_ORDER.filter(k => XMAS_CITY[k] && XMAS_GEO[k]).flatMap(k => {
@@ -4451,16 +4575,26 @@ function xmasGpsTargets() {
 function xmasBerthList() {
   return xmasTown ? (VIKING_BERTHS[xmasTown] || []).filter(b => b.ll) : [];
 }
+function xmasShowGpsTarget(target) {
+  if (!xmasMapObj || !target || !target.ll) return;
+  if (xmasTargetMarker) xmasMapObj.removeLayer(xmasTargetMarker);
+  const icon = L.divIcon({
+    className: '', html: '<div class="xmas-target-halo"></div>',
+    iconSize: [48, 48], iconAnchor: [24, 24]
+  });
+  xmasTargetMarker = L.marker(target.ll, { icon, zIndexOffset: 950, interactive: false }).addTo(xmasMapObj);
+}
 
 function xmasDrawGpsLayers() {
   if (!xmasMapObj || typeof L === 'undefined') return;
-  xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
+  if (xmasTargetMarker) xmasMapObj.removeLayer(xmasTargetMarker);
+  xmasGpsMarker = null; xmasSpotMarker = null; xmasTargetMarker = null; xmasBerthMarkers = [];
   xmasBerthList().forEach(b => {
     xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: `<div class="xmas-berth" style="--bc:${xmasCompanyStyle(b.co).bg}"><span class="xmas-berth-letter">${xmasCompanyStyle(b.co).letter}</span>${b.co} PIER</div>`, iconSize: null, iconAnchor: [0, 0] }) })
       .bindTooltip(`${b.co} PIER: ${b.name}`).addTo(xmasMapObj));
   });
   if (xmasGpsPos) {
-    xmasGpsMarker = L.marker([xmasGpsPos.lat, xmasGpsPos.lng], { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [22, 22], iconAnchor: [11, 11] }), zIndexOffset: 1000 }).addTo(xmasMapObj);
+    xmasGpsMarker = L.marker([xmasGpsPos.lat, xmasGpsPos.lng], { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [38, 38], iconAnchor: [19, 19] }), zIndexOffset: 1000 }).addTo(xmasMapObj);
   }
   const sp = getSavedSpot();
   if (sp) {
@@ -4478,11 +4612,28 @@ function xmasStartGps() {
     if (xmasMapObj) {
       if (xmasGpsMarker) xmasGpsMarker.setLatLng([xmasGpsPos.lat, xmasGpsPos.lng]);
       else xmasDrawGpsLayers();
-      // POI re-zoom: on first GPS fix while POI active, zoom to nearest
-      if (!xmasMapObj._poiGpsZoomed && (xmasApoLayer || xmasWcLayer)) {
-        xmasMapObj._poiGpsZoomed = true;
-        if (xmasApoLayer) _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
-        else if (xmasWcLayer) _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
+      // Первый GPS fix всегда показывает обе важные точки: пользователя и выбранный/ближайший рынок.
+      if (!xmasMapObj._gpsInitialFitDone) {
+        xmasMapObj._gpsInitialFitDone = true;
+        if (xmasApoLayer || xmasWcLayer) {
+          xmasMapObj._poiGpsZoomed = true;
+          if (xmasApoLayer) _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
+          else _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
+        } else {
+          const nearest = xmasGpsTargets()
+            .map(t => ({ t, d: distanceMeters(xmasGpsPos.lat, xmasGpsPos.lng, t.ll[0], t.ll[1]) }))
+            .sort((a, b) => a.d - b.d)[0];
+          if (nearest) {
+            xmasShowGpsTarget(nearest.t);
+            const padY = Math.max(40, Math.round(xmasMapObj.getSize().y * 0.2));
+            xmasMapObj.fitBounds(
+              [[xmasGpsPos.lat, xmasGpsPos.lng], nearest.t.ll],
+              { paddingTopLeft: [24, padY], paddingBottomRight: [24, padY], maxZoom: 15, animate: true }
+            );
+          } else {
+            xmasMapObj.panTo([xmasGpsPos.lat, xmasGpsPos.lng], { animate: true });
+          }
+        }
       }
     }
     xmasUpdateGpsPanel();
@@ -4499,7 +4650,8 @@ function xmasStopGps() {
   xmasGpsWatch = null; xmasGpsPos = null;
   try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
   if (xmasGpsMarker && xmasMapObj) xmasMapObj.removeLayer(xmasGpsMarker);
-  xmasGpsMarker = null;
+  if (xmasTargetMarker && xmasMapObj) xmasMapObj.removeLayer(xmasTargetMarker);
+  xmasGpsMarker = null; xmasTargetMarker = null;
   xmasSetGpsLabel(xmasG('btn'));
   const panel = document.getElementById('xmasGpsPanel'); if (panel) panel.innerHTML = '';
   const xToast = document.getElementById('xmasNearestToast'); if (xToast) xToast.classList.remove('show');
@@ -4507,9 +4659,11 @@ function xmasStopGps() {
 function xmasSetGpsLabel(text, on) {
   const b = document.getElementById('xmasGpsBtn');
   if (!b) return;
-  const lock = isPremiumUnlocked() ? '' : ' <span class="xmas-lock">✦</span>';
+  const label = b.querySelector('.xmas-gps-label');
+  if (label) label.textContent = text;
   b.classList.toggle('active', !!on || xmasGpsWatch !== null);
-  b.innerHTML = `📍 ${text}${lock}`;
+  b.setAttribute('aria-label', text);
+  b.title = text;
 }
 
 function xmasUpdateGpsPanel() {
@@ -4601,22 +4755,20 @@ function renderChristmas(townKey) {
   if (!el) return;
   const T_ = (o) => o[xmasLang] || o.en || o.de;
   xmasHeroCaption();
-  const langBtns = Object.keys(XMAS_LANG_LABELS).map(k =>
-    `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
+  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + xmasExplainHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
   } else if (!xmasTown) {
-    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + mapHtml;
+    body = mapHtml + `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasTownListHtml();
   } else {
     const c = XMAS_CITY[xmasTown];
     const TX = T_(c.text);
     const waXmasUrl = `https://wa.me/?text=${encodeURIComponent(TX.title + '\n' + TX.intro + '\n\nhttps://turret-tales.netlify.app/')}`;
-    body = `<h2 class="xmas-title">${TX.title}</h2><div style="text-align:right;margin:-8px 0 8px"><a href="${waXmasUrl}" target="_blank" rel="noopener" class="btn-wa-share" style="display:inline-flex;width:40px;height:40px;text-decoration:none;font-size:18px;border-radius:50%">💬</a></div>` + mapHtml + `<p class="xmas-intro">${TX.intro}</p>` +
+    body = `<h2 class="xmas-title">${TX.title}</h2>` + mapHtml + `<p class="xmas-intro">${TX.intro}</p><div class="xmas-wa-row"><a href="${waXmasUrl}" target="_blank" rel="noopener" class="btn-wa-share" aria-label="Share via WhatsApp" title="WhatsApp">💬</a></div>` +
       TX.cards.filter(k => k.title !== 'Mia Gelateria').map((k, i) => `
         <div class="route-card xmas-card" id="xmasCard${i}">
           <div class="route-kicker">${String(i + 1).padStart(2, '0')}</div>
@@ -4630,15 +4782,9 @@ function renderChristmas(townKey) {
   const backBtn = XMAS_MODE ? `<button class="xmas-back" id="xmasBack">${XMAS_BACK[xmasLang] || XMAS_BACK.de}</button>` : '';
   el.innerHTML = `<div class="xmas-wrap">
     ${backBtn}
-    <div class="xmas-langs">${langBtns}</div>
     <div class="xmas-chips">${chips}</div>
     ${body}
   </div>`;
-  el.querySelectorAll('.xmas-lang').forEach(b => b.addEventListener('click', () => {
-    xmasLang = b.dataset.xl;
-    try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
-    renderChristmas();
-  }));
   el.querySelectorAll('.xmas-chip').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc || null)));
   el.querySelectorAll('.xmas-town-btn, .xmas-thumb-btn').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
   const bk = document.getElementById('xmasBack');
@@ -4929,7 +5075,7 @@ function wineMapTools(map, items) {
   const panel = document.createElement('div');
   panel.style.cssText = 'position:absolute;z-index:1000;top:122px;left:12px;display:none;flex-direction:column;gap:7px;max-width:230px;box-sizing:border-box';
   [bar, gps, panel].forEach(el => { box.appendChild(el); L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); });
-  if (WINE_VIKING_LL) L.marker(WINE_VIKING_LL, { icon: L.divIcon({ className: '', html: '<div style="background:#E30613;color:#fff;font:700 13px sans-serif;width:22px;height:22px;border-radius:50%;border:2px solid #fff;text-align:center;line-height:18px">V</div>', iconSize: [22, 22], iconAnchor: [11, 11] }) }).addTo(map).bindTooltip('Anleger Viking');
+  if (WINE_VIKING_LL) L.marker(WINE_VIKING_LL, { icon: L.divIcon({ className: '', html: '<div style="background:#E30613;color:#fff;font:700 13px sans-serif;width:22px;height:22px;border-radius:50%;border:2px solid #fff;text-align:center;line-height:18px">V</div>', iconSize: [38, 38], iconAnchor: [19, 19] }) }).addTo(map).bindTooltip('Anleger Viking');
 
   // Поиск: точное имя из подсказок или Enter по части названия → карта и страница к карточке
   const input = bar.querySelector('#wmSearch');
@@ -5002,7 +5148,7 @@ function wineMapTools(map, items) {
       lastUser = user;
       const haloIcon = L.divIcon({
         className: '', html: '<div class="gps-user-halo"></div>',
-        iconSize: [22, 22], iconAnchor: [11, 11]
+        iconSize: [38, 38], iconAnchor: [19, 19]
       });
       if (!userLayer) userLayer = L.marker(user, { icon: haloIcon, zIndexOffset: 1000 }).addTo(map);
       else userLayer.setLatLng(user);
@@ -5072,6 +5218,11 @@ function renderWine() {
 }
 function switchView(viewName) {
   const prevView = currentView;
+  if (prevView !== viewName) {
+    // Не переносим старые предложения и окна на новый экран.
+    PopupManager.closeOtherModals();
+    hideAllPopups();
+  }
   currentView = viewName;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + viewName).classList.add('active');
@@ -5090,6 +5241,11 @@ function switchView(viewName) {
       if (!leafletMap) initMap();
       else leafletMap.invalidateSize();
     }, 50);
+  }
+  // Offer a guided tour only after the visitor chooses a relevant tourist section.
+  // No timer is involved; PopupManager blocks urgent POI tasks, open cards and active routes.
+  if (TOUR_PROMO_VIEWS.includes(viewName) && !tourPromoShownViews.has(viewName)) {
+    if (showTourPromo()) tourPromoShownViews.add(viewName);
   }
   trackNavForConfusion(viewName);
   navPush();
@@ -5149,35 +5305,49 @@ function trackNavForConfusion(viewName) {
   const now = Date.now();
   navConfusionHistory.push({ view: viewName, t: now });
   navConfusionHistory = navConfusionHistory.filter((e) => now - e.t < 20000).slice(-8);
+  if (navConfusionHistory.length < 6) return;
 
-  if (navConfusionHistory.length >= 4) {
-    const recent = navConfusionHistory.slice(-4);
-    const distinctViews = new Set(recent.map((e) => e.view));
-    // 4+ переключения за 20 секунд между всего 1-2 разделами — похоже на "не находит то, что искал"
-    if (distinctViews.size <= 2) {
-      maybeShowHelpBubble('pogo');
-      return;
-    }
+  const recent = navConfusionHistory.slice(-8);
+  const lastSix = recent.slice(-6);
+  const distinctViews = new Set(recent.map((e) => e.view));
+  const alternating = lastSix.every((e, i) => i < 2 || e.view === lastSix[i - 2].view);
+  // Помощь только при устойчивом быстром возврате между разделами,
+  // а не при обычном последовательном изучении карты.
+  if (distinctViews.size === 2 && alternating) {
+    maybeShowHelpBubble('pogo');
+    return;
   }
-  // 5+ переключений за 20 секунд вообще, по любым разделам (не только между 1-2) —
-  // общая хаотичность, человек явно что-то ищет и не находит
-  if (navConfusionHistory.length >= 5) {
-    maybeShowHelpBubble('chaotic');
+  // Более широкое переключение учитываем только при повторных возвратах
+  // к уже просмотренным разделам.
+  if (recent.length >= 7 && distinctViews.size <= 3) {
+    const revisits = recent.length - distinctViews.size;
+    if (revisits >= 4) maybeShowHelpBubble('chaotic');
   }
 }
 
 function trackClickForConfusion(x, y) {
   const now = Date.now();
   clickConfusionHistory.push({ x, y, t: now });
-  clickConfusionHistory = clickConfusionHistory.filter((e) => now - e.t < 4000).slice(-6);
+  clickConfusionHistory = clickConfusionHistory.filter((e) => now - e.t < 5000).slice(-8);
 
-  const cluster = clickConfusionHistory.filter((e) => now - e.t < 4000 && Math.abs(e.x - x) < 45 && Math.abs(e.y - y) < 45);
-  if (cluster.length >= 3) {
+  const cluster = clickConfusionHistory.filter((e) => now - e.t < 5000 && Math.abs(e.x - x) < 45 && Math.abs(e.y - y) < 45);
+  // В режиме аптеки/туалета не показываем обычную подсказку поверх срочной задачи.
+  // Но если посетитель многократно безрезультатно нажимает в одном месте,
+  // предлагаем существующую прямую связь с гидом — без таймера и новой кнопки.
+  if (_poiEmergencyMode) {
+    if (cluster.length >= 5 && !_poiEmergencyHelpShown) {
+      _poiEmergencyHelpShown = true;
+      _showEmergencyPopup();
+    }
+    return;
+  }
+  if (cluster.length >= 6) {
     maybeShowHelpBubble('rage');
   }
 }
 
 function maybeShowHelpBubble(reason) {
+  if (!PopupManager.canShow('helpBubble')) return;
   // Если человек "мечется"/тапает мимо именно на вкладке Карты и ещё не купил
   // премиум — скорее всего он ищет GPS/расстояние до замка. В этом случае
   // подсказка ведёт сразу к разблокировке, а не к общей ориентации.
@@ -5210,6 +5380,8 @@ function renderHelpBubbleText(mode) {
 }
 
 function showHelpBubble(mode) {
+  if (!PopupManager.canShow('helpBubble')) return;
+  PopupManager.hideAutomatic('helpBubble');
   const el = document.getElementById('helpBubble');
   const backdrop = document.getElementById('helpBubbleBackdrop');
   el.dataset.mode = mode || 'orient';
@@ -5582,6 +5754,8 @@ function renderQuickLinksText() {
 }
 
 function openInfoPopup(kind) {
+  PopupManager.closeOtherModals('moreMenu');
+  hideAllPopups();
   const data = INFO_POPUPS[kind][lang] || INFO_POPUPS[kind].en;
   const title = document.getElementById('moreMenuTitle');
   const body = document.getElementById('moreMenuBody');
@@ -6162,6 +6336,71 @@ function pauseGpsFollowForPoi(mapObj) {
   if (button) button.classList.add('show');
 }
 
+// Restore the complete map state, not only its geographic bounds.
+function resetRhineMap(points) {
+  if (!leafletMap) return;
+
+  // Remove both optional POI layers and clear their visual controls.
+  if (apothekenLayer) {
+    leafletMap.removeLayer(apothekenLayer);
+    apothekenLayer = null;
+  }
+  if (toilettenLayer) {
+    leafletMap.removeLayer(toilettenLayer);
+    toilettenLayer = null;
+  }
+  leafletMap.getContainer().querySelectorAll('.poi-toggle-btn').forEach(button => {
+    button.classList.remove('active');
+  });
+
+  // Discard any delayed POI request and its related UI.
+  leafletMap._poiFocusPending = null;
+  leafletMap._poiGpsZoomed = false;
+  _hidePoiToasts(leafletMap);
+  _hideGpsHint(leafletMap);
+  _stopPoiEmergency();
+
+  const nearestToast = document.getElementById('nearestToast');
+  if (nearestToast) {
+    nearestToast.classList.remove('show');
+    clearTimeout(nearestToast._hideTimer);
+    nearestToast._lastId = null;
+    nearestToast._dismissed = false;
+    // Prevent the GPS-panel refresh below from immediately recreating the toast.
+    if (gpsActive && gpsLastLat !== null) {
+      const nearestIndex = findNearestCastleIndex(gpsLastLat, gpsLastLng);
+      if (nearestIndex >= 0) {
+        nearestToast._lastId = castles[nearestIndex].id;
+        nearestToast._dismissed = false;
+      }
+    }
+  }
+
+  // Close the selected-object panel and clear its selection.
+  const mapPanel = document.getElementById('mapPanel');
+  if (mapPanel) mapPanel.classList.remove('open');
+  selectedIndex = -1;
+
+  // Keep GPS position updates, but leave the camera on the full-map view.
+  // The visitor can explicitly resume GPS Follow with its existing button.
+  gpsFollowMode = false;
+  if (gpsActive) {
+    const followButton = document.getElementById('gpsFollowBtn');
+    if (followButton) followButton.classList.add('show');
+  }
+
+  if (points && points.length) {
+    leafletMap.fitBounds(points, {
+      paddingTopLeft: [24, 130],
+      paddingBottomRight: [24, 24]
+    });
+  }
+
+  if (gpsActive && gpsLastLat !== null) {
+    updateGpsDistancePanel(gpsLastLat, gpsLastLng);
+  }
+}
+
 function initMap() {
   if (leafletMap) {
     setTimeout(() => leafletMap.invalidateSize(), 50);
@@ -6177,7 +6416,7 @@ function initMap() {
   // POI buttons inside map container
   const poiBar = document.createElement('div');
   poiBar.className = 'poi-toggle-bar';
-  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\\'apotheke\\');this.classList.toggle(\\'active\\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\\'wc\\');this.classList.toggle(\\'active\\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="rhineResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
+  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="rhineResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
   leafletMap.getContainer().appendChild(poiBar);
 
   const points = [];
@@ -6213,6 +6452,9 @@ function initMap() {
 
     marker.on('click', () => {
       selectedIndex = i;
+      // Selecting a map object must always make that object the camera target.
+      markGpsProgrammaticView();
+      leafletMap.setView([c.lat, c.lng], Math.max(leafletMap.getZoom(), 14), { animate: false });
       showMapPanel(i);
       if (gpsActive && gpsLastLat !== null) updateGpsDistancePanel(gpsLastLat, gpsLastLng);
     });
@@ -6222,8 +6464,9 @@ function initMap() {
   if (points.length) {
     L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(leafletMap);
     leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
-    // Wire reset button (already in poi-toggle-bar)
-    document.getElementById('rhineResetBtn').onclick = () => leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
+    // Wire Reset to restore map bounds and clear all temporary map state.
+    const resetButton = document.getElementById('rhineResetBtn');
+    if (resetButton) resetButton.onclick = () => resetRhineMap(points);
   }
 
   renderPois();
@@ -6363,7 +6606,9 @@ function runMapSearch() {
   selectedIndex = i;
   if (leafletMap) {
     const c = castles[i];
-    if (leafletMap.getZoom() < 13) leafletMap.setView([c.lat, c.lng], 14, { animate: false });
+    // Search selection is an explicit focus request at every current zoom level.
+    markGpsProgrammaticView();
+    leafletMap.setView([c.lat, c.lng], Math.max(leafletMap.getZoom(), 14), { animate: false });
     showMapPanel(i);
   }
   input.blur();
@@ -6604,6 +6849,8 @@ const premiumUnlockedIntroEl = document.getElementById('premiumUnlockedIntro');
 let premiumPopupKind = 'view'; // 'view' (авторская картина) или 'gps' (GPS-автоопределение)
 
 function openPremiumPopup(kind) {
+  PopupManager.closeOtherModals('premiumPopup');
+  hideAllPopups();
   premiumPopupKind = kind;
   const t = UI[lang];
   const pTitle = document.getElementById('premiumPopupTitle');
@@ -6754,6 +7001,9 @@ function updateGpsDistancePanel(lat, lng) {
   const saveBtn = document.getElementById('gpsSaveSpotBtn');
   if (!gpsPanel) return;
   const t = UI[lang];
+  // An active pharmacy/toilet task owns the map context; castle guidance must
+  // not compete with its distance panel or urgent POI message.
+  const urgentPoiActive = !!(apothekenLayer || toilettenLayer);
 
   // --- Ближайший/выбранный замок ---
   const useSelected = selectedIndex >= 0 && typeof castles[selectedIndex]?.lat === 'number';
@@ -6864,6 +7114,14 @@ function updateGpsDistancePanel(lat, lng) {
       toast._lastId = null;
     }
   }
+
+  // Pharmacy/toilet mode has priority over castle distance panels and toasts.
+  // Keep the saved meeting-point row intact, but remove competing castle UI.
+  if (urgentPoiActive) {
+    castleRow.classList.remove('show');
+    if (routeRow) routeRow.classList.remove('show');
+    if (toast) toast.classList.remove('show');
+  }
 }
 
 function stopGps() {
@@ -6905,7 +7163,7 @@ function startGps() {
 
       const haloIcon = L.divIcon({
         className: '', html: '<div class="gps-user-halo"></div>',
-        iconSize: [22, 22], iconAnchor: [11, 11]
+        iconSize: [38, 38], iconAnchor: [19, 19]
       });
       if (gpsMarker) {
         gpsMarker.setLatLng([latitude, longitude]);
@@ -6942,12 +7200,8 @@ function startGps() {
       }
       updateGpsDistancePanel(latitude, longitude);
 
-      const nearest = findNearestCastleIndex(latitude, longitude);
-      if (nearest >= 0 && nearest !== index) {
-        index = nearest;
-        document.body.classList.toggle('station-open', index > 0);
-        renderGuide();
-      }
+      // GPS position updates navigation state only. They must not silently
+      // switch the visitor's open guide/story to a different castle.
     },
     () => {
       gpsToggleLabel.textContent = UI[lang].gpsError;
@@ -7153,11 +7407,9 @@ if ('serviceWorker' in navigator) {
     document.getElementById('fbWa').href = 'https://wa.me/491772850207?text=Hello%20Anatoly%2C%20feedback%20on%20the%20Turret%20Tales%20navigator';
   }
   setTimeout(() => {
-    // Не показывать фидбэк, если уже есть другой попап
-    const anyOpen = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','emergencyPopup'].some(id => {
-      const el = document.getElementById(id); return el && !el.hidden;
-    });
-    if (anyOpen) return;
+    // Feedback — низший приоритет: только в спокойном контексте и без других окон.
+    if (!PopupManager.canShow('fbCard')) return;
+    PopupManager.hideAutomatic('fbCard');
     card.hidden = false;
     try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
   }, 90000);
@@ -7177,6 +7429,8 @@ if ('serviceWorker' in navigator) {
   let last = Date.now(), timer = null;
   function hide() { box.hidden = true; clearTimeout(timer); }
   function show() {
+    if (!PopupManager.canShow('winePromo')) return;
+    PopupManager.hideAutomatic('winePromo');
     const l = (typeof lang !== 'undefined' && TXT[lang]) ? lang : 'en';
     document.getElementById('winePromoQ').textContent = TXT[l][0];
     document.getElementById('winePromoLink').textContent = TXT[l][1];

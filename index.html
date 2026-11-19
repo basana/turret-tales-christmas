@@ -2116,6 +2116,8 @@ function _buildPoiLayer(mapObj, data, emoji, cssClass) {
     m.on('click', () => {
       pauseGpsFollowForPoi(mapObj);
       _setPoiRequestVisualState(mapObj, emoji, 'found', p);
+      if (mapObj === leafletMap) markGpsProgrammaticView();
+      else markMapProgrammaticView(mapObj);
       mapObj.setView([p.lat, p.lng], 17, { animate: true });
       _showPoiToast(mapObj, p, emoji);
     });
@@ -2317,7 +2319,8 @@ function togglePoiLayer(type) {
     if (apothekenLayer) {
       _setPoiRequestVisualState(leafletMap, '💊', 'idle'); leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false;
       leafletMap._poiFocusPending = toilettenLayer ? { poiList: POI_TOILETTEN, emoji: '🚻' } : null;
-      if (!toilettenLayer) { setMainMapIntent('free', true); _stopPoiEmergency(); }
+      if (toilettenLayer) _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
+      else { setMainMapIntent('free', true); _stopPoiEmergency(); }
       return;
     }
     _setPoiRequestVisualState(leafletMap, '💊', 'request');
@@ -2327,7 +2330,8 @@ function togglePoiLayer(type) {
     if (toilettenLayer) {
       _setPoiRequestVisualState(leafletMap, '🚻', 'idle'); leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false;
       leafletMap._poiFocusPending = apothekenLayer ? { poiList: POI_APOTHEKEN, emoji: '💊' } : null;
-      if (!apothekenLayer) { setMainMapIntent('free', true); _stopPoiEmergency(); }
+      if (apothekenLayer) _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
+      else { setMainMapIntent('free', true); _stopPoiEmergency(); }
       return;
     }
     _setPoiRequestVisualState(leafletMap, '🚻', 'request');
@@ -2347,7 +2351,8 @@ function toggleXmasPoiLayer(type) {
     if (xmasApoLayer) {
       _setPoiRequestVisualState(xmasMapObj, '💊', 'idle'); xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false;
       xmasMapObj._poiFocusPending = xmasWcLayer ? { poiList: POI_TOILETTEN, emoji: '🚻' } : null;
-      if (!xmasWcLayer) { setXmasMapIntent('free', true); _stopPoiEmergency(); }
+      if (xmasWcLayer) _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
+      else { setXmasMapIntent('free', true); _stopPoiEmergency(); }
       return;
     }
     _setPoiRequestVisualState(xmasMapObj, '💊', 'request');
@@ -2357,7 +2362,8 @@ function toggleXmasPoiLayer(type) {
     if (xmasWcLayer) {
       _setPoiRequestVisualState(xmasMapObj, '🚻', 'idle'); xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false;
       xmasMapObj._poiFocusPending = xmasApoLayer ? { poiList: POI_APOTHEKEN, emoji: '💊' } : null;
-      if (!xmasApoLayer) { setXmasMapIntent('free', true); _stopPoiEmergency(); }
+      if (xmasApoLayer) _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
+      else { setXmasMapIntent('free', true); _stopPoiEmergency(); }
       return;
     }
     _setPoiRequestVisualState(xmasMapObj, '🚻', 'request');
@@ -4867,7 +4873,7 @@ function xmasUpdateGpsPanel() {
       xToast.innerHTML = `⭐ ${nr.t.label}<br><span class="toast-dist">≈ ${formatDistance(nr.d)} · ${walkMin} ${xmasG('min')} 🚶</span>`;
       xToast.classList.add('show');
       xToast.onclick = () => {
-        if (xmasMapObj) xmasMapObj.setView(nr.t.ll, 17);
+        if (xmasMapObj) { setXmasMapIntent('selected', true); xmasMapObj.setView(nr.t.ll, 17); }
         xToast.classList.remove('show');
         clearTimeout(xToast._hideTimer);
         // после движения карты — снова показать ближайший

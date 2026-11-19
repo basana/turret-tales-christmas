@@ -4507,8 +4507,8 @@ function xmasSearchPick(val) {
   if (!v) return false;
   const e = xmasSearchEntries().find(x => x.label.toLowerCase() === v);
   if (!e) return false;
-  if (xmasTown !== e.key) { xmasPendingFocus = e.ll; xmasOpen(e.key); }
-  else if (xmasMapObj) xmasMapObj.setView(e.ll, 17, { animate: true });
+  if (xmasTown !== e.key) { xmasFollowMode = false; xmasPendingFocus = e.ll; xmasOpen(e.key); }
+  else if (xmasMapObj) { setXmasMapIntent('search', true); xmasMapObj.setView(e.ll, 17, { animate: true }); }
   return true;
 }
 document.addEventListener('change', e => { if (e.target && e.target.id === 'xmasSearch' && xmasSearchPick(e.target.value)) e.target.value = ''; });
@@ -4540,7 +4540,22 @@ function xmasDrawMap(opts) {
   xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="xResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
   // Reset control follows the two POI controls in the shared vertical stack.
   xmasMapObj.getContainer().appendChild(xPoiBar);
+  xmasMapObj.on('dragstart zoomstart', () => {
+    if (xmasFollowMode && !xmasMapObj._gpsProgrammaticView) setXmasMapIntent('free', true);
+  });
+  const xFollow = document.getElementById('xmasFollowBtn');
+  if (xFollow) xFollow.onclick = () => {
+    if (xmasGpsWatch === null || !xmasGpsPos || !xmasMapObj) return;
+    setXmasMapIntent('follow', true);
+    xmasMapObj._gpsInitialFitDone = true;
+    xFollow.hidden = true;
+    xmasMapObj.panTo([xmasGpsPos.lat, xmasGpsPos.lng], { animate: true });
+  };
   document.getElementById('xResetBtn').onclick = () => {
+    setXmasMapIntent('overview', true);
+    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; }
+    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; }
+    xPoiBar.querySelectorAll('.poi-toggle-btn').forEach(b => b.classList.remove('active','waiting','failed'));
     if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { ...fitPadding(), maxZoom: 13 });
     else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { ...fitPadding(), maxZoom: opts.zoom });
     else xmasMapObj.setView(opts.center, opts.zoom);
@@ -4613,11 +4628,12 @@ function xmasTownListHtml() {
 }
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasTargetMarker = null, xmasBerthMarkers = [];
 
+let xmasFollowMode = false;
 function xmasG(k) { return (XG[xmasLang] || XG.de)[k]; }
 function xmasWalkMin(d) { return Math.max(1, Math.round(d * 1.3 / 75)); } // Luftlinie x 1,3 Umweg, 75 m/min
 function xmasGpsBtnHtml() {
   const lock = isPremiumUnlocked() ? '' : '<span class="xmas-lock" aria-hidden="true">✦</span>';
-  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn" type="button" aria-label="${xmasG('btn')}" title="${xmasG('btn')}"><span aria-hidden="true">📍</span><span class="xmas-gps-label">${xmasG('btn')}</span>${lock}</button>`;
+  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn" type="button" aria-label="${xmasG('btn')}" title="${xmasG('btn')}"><span aria-hidden="true">📍</span><span class="xmas-gps-label">${xmasG('btn')}</span>${lock}</button><button class="xmas-follow-btn" id="xmasFollowBtn" type="button" hidden>↻ Follow</button>`;
 }
 function xmasGpsTargets() {
   if (!xmasTown) return XMAS_ORDER.filter(k => XMAS_CITY[k] && XMAS_GEO[k]).flatMap(k => {
@@ -4664,20 +4680,21 @@ function xmasStartGps() {
   if (!navigator.geolocation) { xmasSetGpsLabel(xmasG('err')); return; }
   if (xmasGpsWatch !== null) return;
   xmasSetGpsLabel(xmasG('locating'), true);
+  xmasFollowMode = true;
+  setXmasMapIntent('follow', true);
   xmasGpsWatch = navigator.geolocation.watchPosition(pos => {
     xmasGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     xmasSetGpsLabel(xmasG('btn'), true);
     if (xmasMapObj) {
       if (xmasGpsMarker) xmasGpsMarker.setLatLng([xmasGpsPos.lat, xmasGpsPos.lng]);
       else xmasDrawGpsLayers();
-      // Первый GPS fix всегда показывает обе важные точки: пользователя и выбранный/ближайший рынок.
-      if (!xmasMapObj._gpsInitialFitDone) {
+      // Pending POI requests outrank Follow; otherwise only Follow may move the camera.
+      if (xmasMapObj._poiFocusPending && (xmasApoLayer || xmasWcLayer)) {
+        const pending = xmasMapObj._poiFocusPending;
+        xmasMapObj._poiFocusPending = null;
+        _zoomToNearestPoi(xmasMapObj, pending.poiList, pending.emoji);
+      } else if (xmasFollowMode && xmasMapObj._navIntent === 'follow' && !xmasMapObj._gpsInitialFitDone) {
         xmasMapObj._gpsInitialFitDone = true;
-        if (xmasApoLayer || xmasWcLayer) {
-          xmasMapObj._poiGpsZoomed = true;
-          if (xmasApoLayer) _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
-          else _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
-        } else {
           const nearest = xmasGpsTargets()
             .map(t => ({ t, d: distanceMeters(xmasGpsPos.lat, xmasGpsPos.lng, t.ll[0], t.ll[1]) }))
             .sort((a, b) => a.d - b.d)[0];
@@ -4691,12 +4708,19 @@ function xmasStartGps() {
           } else {
             xmasMapObj.panTo([xmasGpsPos.lat, xmasGpsPos.lng], { animate: true });
           }
-        }
+      } else if (xmasFollowMode && xmasMapObj._navIntent === 'follow') {
+        xmasMapObj.panTo([xmasGpsPos.lat, xmasGpsPos.lng], { animate: true });
       }
     }
     xmasUpdateGpsPanel();
   }, () => {
     xmasSetGpsLabel(xmasG('err'));
+    xmasFollowMode = false;
+    const follow = document.getElementById('xmasFollowBtn'); if (follow) follow.hidden = true;
+    if (xmasMapObj && xmasMapObj._poiFocusPending) {
+      _setPoiRequestVisualState(xmasMapObj, xmasMapObj._poiFocusPending.emoji, 'error');
+      xmasMapObj._poiFocusPending = null;
+    }
     if (xmasGpsWatch !== null) navigator.geolocation.clearWatch(xmasGpsWatch);
     xmasGpsWatch = null;
     try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
@@ -4705,7 +4729,8 @@ function xmasStartGps() {
 }
 function xmasStopGps() {
   if (xmasGpsWatch !== null && navigator.geolocation) navigator.geolocation.clearWatch(xmasGpsWatch);
-  xmasGpsWatch = null; xmasGpsPos = null;
+  xmasGpsWatch = null; xmasGpsPos = null; xmasFollowMode = false;
+  const follow = document.getElementById('xmasFollowBtn'); if (follow) follow.hidden = true;
   try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
   if (xmasGpsMarker && xmasMapObj) xmasMapObj.removeLayer(xmasGpsMarker);
   if (xmasTargetMarker && xmasMapObj) xmasMapObj.removeLayer(xmasTargetMarker);
@@ -4758,7 +4783,7 @@ function xmasUpdateGpsPanel() {
     row.addEventListener('click', () => {
       const lat = parseFloat(row.dataset.lat);
       const lng = parseFloat(row.dataset.lng);
-      if (xmasMapObj && !isNaN(lat)) xmasMapObj.setView([lat, lng], 17, { animate: true });
+      if (xmasMapObj && !isNaN(lat)) { setXmasMapIntent('selected', true); xmasMapObj.setView([lat, lng], 17, { animate: true }); }
     });
   });
   const save = document.getElementById('xmasShipSave');
@@ -5137,7 +5162,23 @@ function wineMapTools(map, items) {
 
   // Поиск: точное имя из подсказок или Enter по части названия → карта и страница к карточке
   const input = bar.querySelector('#wmSearch');
-  const pick = it => { map.setView(it.ll, 16); if (it.go) it.go(); };
+  let wineFollowMode = false, wineLastUser = null;
+  const follow = document.createElement('button');
+  follow.type = 'button'; follow.textContent = '↻ Follow'; follow.hidden = true;
+  follow.style.cssText = 'position:absolute;z-index:1001;top:78px;right:12px;border:1px solid #C9A05C;border-radius:18px;padding:8px 12px;background:rgba(246,238,221,.96);color:#5A4327;font:700 12px sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,.25)';
+  box.appendChild(follow);
+  const setWineIntent = intent => {
+    map._navIntent = intent;
+    wineFollowMode = intent === 'follow';
+    follow.hidden = !(watchId !== null && !wineFollowMode);
+  };
+  map.on('dragstart zoomstart', () => { if (wineFollowMode && !map._gpsProgrammaticView) setWineIntent('free'); });
+  follow.addEventListener('click', () => {
+    if (watchId === null || !wineLastUser) return;
+    setWineIntent('follow'); fitted = true;
+    map.panTo(wineLastUser, { animate: true });
+  });
+  const pick = it => { setWineIntent('selected'); map.setView(it.ll, 16); if (it.go) it.go(); };
   input.addEventListener('input', () => { const it = items.find(i => i.name === input.value); if (it) pick(it); });
   input.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
@@ -5203,14 +5244,14 @@ function wineMapTools(map, items) {
     setOn(true);
     watchId = navigator.geolocation.watchPosition(pos => {
       const user = [pos.coords.latitude, pos.coords.longitude];
-      lastUser = user;
+      lastUser = user; wineLastUser = user;
       const haloIcon = L.divIcon({
         className: '', html: '<div class="gps-user-halo"></div>',
         iconSize: [46, 46], iconAnchor: [23, 23]
       });
       if (!userLayer) userLayer = L.marker(user, { icon: haloIcon, zIndexOffset: 1000 }).addTo(map);
       else userLayer.setLatLng(user);
-      if (!fitted) {
+      if (wineFollowMode && !fitted) {
         fitted = true;
         // Find nearest item to show user + nearest together (like main nav)
         let nearest = 0, minD = Infinity;
@@ -5219,13 +5260,20 @@ function wineMapTools(map, items) {
           if (d < minD) { minD = d; nearest = idx; }
         });
         map.fitBounds([[user[0], user[1]], items[nearest].ll], { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
-      } else {
+      } else if (wineFollowMode) {
         map.panTo(user);
       }
       renderPanel();
     }, () => { alert('GPS nicht verfügbar'); stop(); }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
   };
   gps.addEventListener('click', () => (watchId === null ? start() : stop()));
+  const originalStop = stop;
+  // Wrap stop so the shared Follow control always returns to its neutral state.
+  const stopGps = () => { originalStop(); setWineIntent('overview'); wineLastUser = null; follow.hidden = true; };
+  const originalStart = start;
+  const startGps = () => { setWineIntent('follow'); originalStart(); };
+  gps.onclick = null;
+  gps.addEventListener('click', () => (watchId === null ? startGps() : stopGps()));
   setOn(false);
   drawSpot();
 }
@@ -6373,12 +6421,47 @@ function updateHomeMapTeaserLabel() {
 const homeMapTeaserEl = document.getElementById('homeMapTeaser');
 if (homeMapTeaserEl) homeMapTeaserEl.addEventListener('click', () => switchView('map'));
 
+// Shared focus ownership for every interactive map. Only the latest user intent may move the camera.
+function setMapFocusIntent(mapObj, intent, clearPending = false) {
+  if (!mapObj) return;
+  mapObj._navIntent = intent;
+  mapObj._navIntentSeq = (mapObj._navIntentSeq || 0) + 1;
+  if (clearPending) mapObj._poiFocusPending = null;
+}
+function setMainMapIntent(intent, clearPending = false) {
+  if (!leafletMap) return;
+  setMapFocusIntent(leafletMap, intent, clearPending);
+  if (intent !== 'follow') {
+    gpsFollowMode = false;
+    const follow = document.getElementById('gpsFollowBtn');
+    if (follow && gpsActive) follow.classList.add('show');
+  } else {
+    gpsFollowMode = true;
+    const follow = document.getElementById('gpsFollowBtn');
+    if (follow) follow.classList.remove('show');
+  }
+}
+function setXmasMapIntent(intent, clearPending = false) {
+  if (!xmasMapObj) return;
+  setMapFocusIntent(xmasMapObj, intent, clearPending);
+  if (intent !== 'follow') {
+    xmasFollowMode = false;
+    const follow = document.getElementById('xmasFollowBtn');
+    if (follow && xmasGpsWatch !== null) follow.hidden = false;
+  } else {
+    xmasFollowMode = true;
+    const follow = document.getElementById('xmasFollowBtn');
+    if (follow) follow.hidden = true;
+  }
+}
+
 function leaveGpsFollowMode() {
-  if (leafletMap && !leafletMap._gpsProgrammaticView) leafletMap._poiFocusPending = null;
-  if (!gpsActive || !gpsFollowMode || (leafletMap && leafletMap._gpsProgrammaticView)) return;
-  gpsFollowMode = false;
-  const button = document.getElementById('gpsFollowBtn');
-  if (button) button.classList.add('show');
+  if (!leafletMap || leafletMap._gpsProgrammaticView) return;
+  if (gpsFollowMode || leafletMap._poiFocusPending) {
+    setMainMapIntent('free', true);
+    if (apothekenLayer) _setPoiRequestVisualState(leafletMap, '💊', 'idle');
+    if (toilettenLayer) _setPoiRequestVisualState(leafletMap, '🚻', 'idle');
+  }
 }
 
 function markGpsProgrammaticView() {
@@ -6388,10 +6471,8 @@ function markGpsProgrammaticView() {
 }
 
 function pauseGpsFollowForPoi(mapObj) {
-  if (mapObj !== leafletMap || !gpsActive) return;
-  gpsFollowMode = false;
-  const button = document.getElementById('gpsFollowBtn');
-  if (button) button.classList.add('show');
+  if (mapObj === leafletMap) setMainMapIntent('poi');
+  else if (mapObj === xmasMapObj) setXmasMapIntent('poi');
 }
 
 // Restore the complete map state, not only its geographic bounds.
@@ -6441,7 +6522,7 @@ function resetRhineMap(points) {
 
   // Keep GPS position updates, but leave the camera on the full-map view.
   // The visitor can explicitly resume GPS Follow with its existing button.
-  gpsFollowMode = false;
+  setMainMapIntent('overview', true);
   if (gpsActive) {
     const followButton = document.getElementById('gpsFollowBtn');
     if (followButton) followButton.classList.add('show');
@@ -6510,7 +6591,8 @@ function initMap() {
 
     marker.on('click', () => {
       selectedIndex = i;
-      // Selecting a map object must always make that object the camera target.
+      // A deliberate selection owns the camera until Follow is explicitly resumed.
+      setMainMapIntent('selected', true);
       markGpsProgrammaticView();
       leafletMap.setView([c.lat, c.lng], Math.max(leafletMap.getZoom(), 14), { animate: false });
       showMapPanel(i);
@@ -6663,6 +6745,7 @@ function runMapSearch() {
   if (wrap) wrap.classList.remove('not-found');
   selectedIndex = i;
   if (leafletMap) {
+    setMainMapIntent('search', true);
     const c = castles[i];
     // Search selection is an explicit focus request at every current zoom level.
     markGpsProgrammaticView();
@@ -7143,7 +7226,8 @@ function updateGpsDistancePanel(lat, lng) {
   // "What's nearest?" toast at the bottom — только при смене ближайшего объекта
   const toast = document.getElementById('nearestToast');
   if (toast) {
-    const ni = findNearestCastleIndex(lat, lng);
+    const mayAnnounceNearest = (!leafletMap || leafletMap._navIntent === 'follow') && selectedIndex < 0 && !urgentPoiActive;
+    const ni = mayAnnounceNearest ? findNearestCastleIndex(lat, lng) : -1;
     if (ni >= 0) {
       const nc = castles[ni];
       if (toast._lastId !== nc.id) {
@@ -7169,7 +7253,7 @@ function updateGpsDistancePanel(lat, lng) {
       }
     } else {
       toast.classList.remove('show');
-      toast._lastId = null;
+      if (mayAnnounceNearest) toast._lastId = null;
     }
   }
 
@@ -7206,6 +7290,7 @@ function startGps() {
   if (!navigator.geolocation) { gpsToggleLabel.textContent = UI[lang].gpsError; return; }
   gpsActive = true;
   gpsFollowMode = true;
+  if (leafletMap) setMapFocusIntent(leafletMap, 'follow', true);
   const followButton = document.getElementById('gpsFollowBtn');
   if (followButton) followButton.classList.remove('show');
   try { localStorage.setItem('rhineGuideGpsActive', 'true'); } catch(e){}
@@ -7231,7 +7316,7 @@ function startGps() {
       // GPS camera movement is programmatic and must not trigger Free View.
       if (gpsFollowMode) markGpsProgrammaticView();
       // First GPS fix: fitBounds to show user + nearest castle together
-      if (leafletMap && gpsFollowMode && !leafletMap._gpsFitDone) {
+      if (leafletMap && gpsFollowMode && leafletMap._navIntent === 'follow' && !leafletMap._gpsFitDone) {
         leafletMap._gpsFitDone = true;
         const ni = findNearestCastleIndex(latitude, longitude);
         if (ni >= 0) {
@@ -7240,7 +7325,7 @@ function startGps() {
         } else {
           leafletMap.panTo([latitude, longitude]);
         }
-      } else if (leafletMap && gpsFollowMode) {
+      } else if (leafletMap && gpsFollowMode && leafletMap._navIntent === 'follow') {
         leafletMap.panTo([latitude, longitude]);
       }
 
@@ -7251,10 +7336,6 @@ function startGps() {
         leafletMap._poiFocusPending = null;
         leafletMap._poiGpsZoomed = true;
         _zoomToNearestPoi(leafletMap, pending.poiList, pending.emoji);
-      } else if (gpsFollowMode && !leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
-        leafletMap._poiGpsZoomed = true;
-        if (apothekenLayer) _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
-        else if (toilettenLayer) _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
       }
       updateGpsDistancePanel(latitude, longitude);
 
@@ -7283,8 +7364,9 @@ const gpsFollowBtn = document.getElementById('gpsFollowBtn');
 if (gpsFollowBtn) {
   gpsFollowBtn.addEventListener('click', () => {
     if (!gpsActive || gpsLastLat === null || !leafletMap) return;
-    gpsFollowMode = true;
+    setMainMapIntent('follow', true);
     leafletMap._gpsFitDone = true;
+    leafletMap._poiGpsZoomed = true;
     gpsFollowBtn.classList.remove('show');
     markGpsProgrammaticView();
     leafletMap.panTo([gpsLastLat, gpsLastLng]);

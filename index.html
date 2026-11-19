@@ -4611,10 +4611,8 @@ function xmasDrawMap(opts) {
   };
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
-    if (p.onClick) {
-      m.on('click', () => setXmasMapIntent('selected', true));
-      m.on('click', p.onClick);
-    }
+    m.on('click', () => setXmasMapIntent('selected', true));
+    if (p.onClick) m.on('click', p.onClick);
     if (p.label) m.bindTooltip(String(p.label).split(' (')[0], { permanent: true, direction: 'bottom', offset: [0, 10], className: 'xmas-pin-label' });
   });
   xmasDrawGpsLayers();
@@ -5237,11 +5235,22 @@ function wineMapTools(map, items) {
   follow.type = 'button'; follow.textContent = '↻ Follow'; follow.hidden = true;
   follow.style.cssText = 'position:absolute;z-index:1001;top:78px;right:12px;border:1px solid #C9A05C;border-radius:18px;padding:8px 12px;background:rgba(246,238,221,.96);color:#5A4327;font:700 12px sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,.25)';
   box.appendChild(follow);
+  const reset = document.createElement('button');
+  reset.type = 'button'; reset.textContent = '⤢'; reset.setAttribute('aria-label','Show full map');
+  reset.style.cssText = 'position:absolute;z-index:1001;top:122px;right:12px;width:42px;height:42px;border:1px solid #C9A05C;border-radius:50%;background:rgba(246,238,221,.97);color:#5A4327;font:700 25px sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,.25)';
+  box.appendChild(reset);
   const setWineIntent = intent => {
     map._navIntent = intent;
     wineFollowMode = intent === 'follow';
     follow.hidden = !(watchId !== null && !wineFollowMode);
   };
+  map._setNavIntent = setWineIntent;
+  const initialBounds = map.getBounds();
+  reset.addEventListener('click', () => {
+    setWineIntent('overview');
+    map.fitBounds(initialBounds, { padding: [28, 28], maxZoom: 15, animate: true });
+    panel.style.display = 'none';
+  });
   map.on('dragstart zoomstart', () => { if (wineFollowMode && !map._gpsProgrammaticView) setWineIntent('free'); });
   follow.addEventListener('click', () => {
     if (watchId === null || !wineLastUser) return;
@@ -5384,6 +5393,7 @@ function renderWine() {
       ? L.divIcon({ className: '', html: `<div class="wine-pin"><img src="${w.icon}" alt="${w.name}"></div>`, iconSize: [56, 56], iconAnchor: [28, 28] })
       : L.divIcon({ className: '', html: `<div class="wine-pin"><span>${w.name.charAt(0)}</span></div>`, iconSize: [56, 56], iconAnchor: [28, 28] });
     L.marker(w.ll, { icon: wicon }).addTo(xmasWineMapObj).on('click', () => {
+      if (xmasWineMapObj._setNavIntent) xmasWineMapObj._setNavIntent('selected');
       const card = document.querySelectorAll('#view-wine .wine-list > .route-card')[i];
       if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });

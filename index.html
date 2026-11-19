@@ -4613,7 +4613,7 @@ function xmasDrawMap(opts) {
   };
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
-    m.on('click', () => setXmasMapIntent('selected', true));
+    m.on('click', () => { setXmasMapIntent('selected', true); markMapProgrammaticView(xmasMapObj); });
     if (p.onClick) m.on('click', p.onClick);
     if (p.label) m.bindTooltip(String(p.label).split(' (')[0], { permanent: true, direction: 'bottom', offset: [0, 10], className: 'xmas-pin-label' });
   });

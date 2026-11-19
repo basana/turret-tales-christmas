@@ -2280,7 +2280,7 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
   else {
     // If GPS is still acquiring a fix, remember the latest POI request.
     if (mapObj === leafletMap && gpsActive) mapObj._poiFocusPending = { poiList, emoji };
-    _setPoiRequestVisualState(mapObj, emoji, 'waiting');
+    // The request pulse transitions to the slower waiting state after 420 ms.
     _showGpsHint(mapObj);
     return;
   }

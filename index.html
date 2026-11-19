@@ -4689,7 +4689,14 @@ function xmasDrawGpsLayers() {
 }
 
 function xmasStartGps() {
-  if (!navigator.geolocation) { xmasSetGpsLabel(xmasG('err')); return; }
+  if (!navigator.geolocation) {
+    xmasSetGpsLabel(xmasG('err'));
+    if (xmasMapObj && xmasMapObj._poiFocusPending) {
+      _setPoiRequestVisualState(xmasMapObj, xmasMapObj._poiFocusPending.emoji, 'error');
+      xmasMapObj._poiFocusPending = null;
+    }
+    return;
+  }
   if (xmasGpsWatch !== null) return;
   xmasSetGpsLabel(xmasG('locating'), true);
   const pendingPoi = xmasMapObj && xmasMapObj._poiFocusPending;
@@ -4715,6 +4722,7 @@ function xmasStartGps() {
           if (nearest) {
             xmasShowGpsTarget(nearest.t);
             const padY = Math.max(40, Math.round(xmasMapObj.getSize().y * 0.2));
+            markMapProgrammaticView(xmasMapObj);
             xmasMapObj.fitBounds(
               [[xmasGpsPos.lat, xmasGpsPos.lng], nearest.t.ll],
               { paddingTopLeft: [24, padY], paddingBottomRight: [24, padY], maxZoom: 15, animate: true }
@@ -4742,6 +4750,10 @@ function xmasStartGps() {
   try { localStorage.setItem('rhineGuideGpsActive', 'true'); } catch(e){}
 }
 function xmasStopGps() {
+  if (xmasMapObj && xmasMapObj._poiFocusPending) {
+    _setPoiRequestVisualState(xmasMapObj, xmasMapObj._poiFocusPending.emoji, 'idle');
+    xmasMapObj._poiFocusPending = null;
+  }
   if (xmasGpsWatch !== null && navigator.geolocation) navigator.geolocation.clearWatch(xmasGpsWatch);
   xmasGpsWatch = null; xmasGpsPos = null; xmasFollowMode = false;
   const follow = document.getElementById('xmasFollowBtn'); if (follow) follow.hidden = true;
@@ -4817,7 +4829,7 @@ function xmasUpdateGpsPanel() {
 
   // Nearest market toast — показывать только при смене ближайшего объекта
   const xToast = document.getElementById('xmasNearestToast');
-  if (xToast && rows.length > 0) {
+  if (xToast && rows.length > 0 && xmasMapObj && xmasMapObj._navIntent === 'follow' && !xmasApoLayer && !xmasWcLayer) {
     const nr = rows[0];
     const newLabel = nr.t.label;
     if (xToast._lastLabel !== newLabel) {
@@ -5273,6 +5285,7 @@ function wineMapTools(map, items) {
           const d = Math.hypot(user[0] - it.ll[0], user[1] - it.ll[1]);
           if (d < minD) { minD = d; nearest = idx; }
         });
+        markMapProgrammaticView(map);
         map.fitBounds([[user[0], user[1]], items[nearest].ll], { paddingTopLeft: [24, 110], paddingBottomRight: [24, 40], maxZoom: 15 });
       } else if (wineFollowMode) {
         map.panTo(user);
@@ -6434,6 +6447,11 @@ const homeMapTeaserEl = document.getElementById('homeMapTeaser');
 if (homeMapTeaserEl) homeMapTeaserEl.addEventListener('click', () => switchView('map'));
 
 // Shared focus ownership for every interactive map. Only the latest user intent may move the camera.
+function markMapProgrammaticView(mapObj) {
+  if (!mapObj) return;
+  mapObj._gpsProgrammaticView = true;
+  setTimeout(() => { if (mapObj) mapObj._gpsProgrammaticView = false; }, 700);
+}
 function setMapFocusIntent(mapObj, intent, clearPending = false) {
   if (!mapObj) return;
   mapObj._navIntent = intent;
@@ -7256,7 +7274,9 @@ function updateGpsDistancePanel(lat, lng) {
         toast.classList.add('show');
         toast.onclick = () => {
           if (leafletMap) leafletMap.setView([nc.lat, nc.lng], 17);
-          selectCastle(ni);
+          selectedIndex = ni;
+          setMainMapIntent('selected', true);
+          showMapPanel(ni);
           toast.classList.remove('show');
           clearTimeout(toast._hideTimer);
           toast._dismissed = true;
@@ -7281,6 +7301,8 @@ function updateGpsDistancePanel(lat, lng) {
     castleRow.classList.remove('show');
     if (routeRow) routeRow.classList.remove('show');
     if (toast) toast.classList.remove('show');
+  } else if (xToast) {
+    xToast.classList.remove('show');
   }
 }
 
@@ -7291,6 +7313,11 @@ function stopGps() {
   const followButton = document.getElementById('gpsFollowBtn');
   if (followButton) followButton.classList.remove('show');
   try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
+  if (leafletMap && leafletMap._poiFocusPending) {
+    const pending = leafletMap._poiFocusPending;
+    _setPoiRequestVisualState(leafletMap, pending.emoji, 'idle');
+    leafletMap._poiFocusPending = null;
+  }
   if (gpsWatchId !== null && navigator.geolocation) {
     navigator.geolocation.clearWatch(gpsWatchId);
     gpsWatchId = null;
@@ -7306,7 +7333,15 @@ function stopGps() {
 }
 
 function startGps() {
-  if (!navigator.geolocation) { gpsToggleLabel.textContent = UI[lang].gpsError; return; }
+  if (!navigator.geolocation) {
+    gpsToggleLabel.textContent = UI[lang].gpsError;
+    if (leafletMap && leafletMap._poiFocusPending) {
+      const pending = leafletMap._poiFocusPending;
+      _setPoiRequestVisualState(leafletMap, pending.emoji, 'error');
+      leafletMap._poiFocusPending = null;
+    }
+    return;
+  }
   gpsActive = true;
   const pendingPoi = leafletMap && leafletMap._poiFocusPending;
   gpsFollowMode = !pendingPoi;

@@ -6745,7 +6745,7 @@ function syncMapCarousel(index) {
   el.querySelectorAll('.map-carousel-card').forEach(item => item.classList.toggle('active', item === card));
   card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 }
-function selectMapCarouselPoint(index, openDetails = false) {
+function selectMapCarouselPoint(index, openDetails = false, preservePanel = false) {
   const c = castles[index];
   if (!c || typeof c.lat !== 'number') return;
   selectedIndex = index;
@@ -6756,7 +6756,7 @@ function selectMapCarouselPoint(index, openDetails = false) {
   }
   const panel = document.getElementById('mapPanel');
   if (openDetails) showMapPanel(index);
-  else if (panel) panel.classList.remove('open');
+  else if (panel && !preservePanel) panel.classList.remove('open');
   const el = document.getElementById('mapCarousel');
   if (el) {
     const card = el.querySelector(`[data-map-index="${index}"]`);
@@ -6788,7 +6788,10 @@ function renderMapCarousel() {
         const d = Math.abs((r.left + r.right) / 2 - center);
         if (d < min) { min = d; nearest = card; }
       });
-      if (nearest) selectMapCarouselPoint(Number(nearest.dataset.mapIndex), false);
+      if (nearest) {
+        const panelOpen = !!document.getElementById('mapPanel')?.classList.contains('open');
+        selectMapCarouselPoint(Number(nearest.dataset.mapIndex), panelOpen, true);
+      }
     }, 140);
   }, { passive: true });
 }

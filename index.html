@@ -2281,8 +2281,8 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
   else if (mapObj === leafletMap && typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
   else {
     // If GPS is still acquiring a fix, remember the latest POI request.
-    if (mapObj === leafletMap && gpsActive) mapObj._poiFocusPending = { poiList, emoji };
-    else if (mapObj === xmasMapObj && xmasGpsWatch !== null) mapObj._poiFocusPending = { poiList, emoji };
+    if (mapObj === leafletMap) mapObj._poiFocusPending = { poiList, emoji };
+    else if (mapObj === xmasMapObj) mapObj._poiFocusPending = { poiList, emoji };
     pauseGpsFollowForPoi(mapObj);
     // The request pulse transitions to the slower waiting state after 420 ms.
     _showGpsHint(mapObj);
@@ -4522,9 +4522,11 @@ function xmasDrawMap(opts) {
   const el = document.getElementById('xmasMap');
   if (!el || typeof L === 'undefined') return;
   if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
+  xmasApoLayer = null; xmasWcLayer = null;
   xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0, zoomControl: false });
   L.control.zoom({ position: 'bottomleft' }).addTo(xmasMapObj);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
+  setMapFocusIntent(xmasMapObj, xmasFollowMode ? 'follow' : 'overview');
   // Все точки остаются внутри карты: вертикальные поля равны примерно 1/5 её высоты.
   const fitPadding = () => {
     const padY = Math.max(40, Math.round((el.clientHeight || 400) * 0.2));
@@ -4536,7 +4538,7 @@ function xmasDrawMap(opts) {
     xmasMapObj.fitBounds(pb, { ...fitPadding(), maxZoom: opts.zoom, animate: false });
   }
   else xmasMapObj.setView(opts.center, opts.zoom);
-  if (xmasPendingFocus) { xmasMapObj.setView(xmasPendingFocus, 17, { animate: false }); xmasPendingFocus = null; }
+  if (xmasPendingFocus) { setMapFocusIntent(xmasMapObj, 'search'); xmasMapObj.setView(xmasPendingFocus, 17, { animate: false }); xmasPendingFocus = null; }
   // POI buttons inside xmas map container
   const xPoiBar = document.createElement('div');
   xPoiBar.className = 'poi-toggle-bar';
@@ -4637,7 +4639,7 @@ function xmasG(k) { return (XG[xmasLang] || XG.de)[k]; }
 function xmasWalkMin(d) { return Math.max(1, Math.round(d * 1.3 / 75)); } // Luftlinie x 1,3 Umweg, 75 m/min
 function xmasGpsBtnHtml() {
   const lock = isPremiumUnlocked() ? '' : '<span class="xmas-lock" aria-hidden="true">✦</span>';
-  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn" type="button" aria-label="${xmasG('btn')}" title="${xmasG('btn')}"><span aria-hidden="true">📍</span><span class="xmas-gps-label">${xmasG('btn')}</span>${lock}</button><button class="xmas-follow-btn" id="xmasFollowBtn" type="button" ${xmasGpsWatch !== null && !xmasFollowMode ? '' : 'hidden'}>↻ Follow</button>`;
+  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn" type="button" aria-label="${xmasG('btn')}" title="${xmasG('btn')}"><span aria-hidden="true">📍</span><span class="xmas-gps-label">${xmasG('btn')}</span>${lock}</button>`;
 }
 function xmasGpsTargets() {
   if (!xmasTown) return XMAS_ORDER.filter(k => XMAS_CITY[k] && XMAS_GEO[k]).flatMap(k => {
@@ -4684,8 +4686,10 @@ function xmasStartGps() {
   if (!navigator.geolocation) { xmasSetGpsLabel(xmasG('err')); return; }
   if (xmasGpsWatch !== null) return;
   xmasSetGpsLabel(xmasG('locating'), true);
-  xmasFollowMode = true;
-  setXmasMapIntent('follow', true);
+  const pendingPoi = xmasMapObj && xmasMapObj._poiFocusPending;
+  xmasFollowMode = !pendingPoi;
+  if (xmasMapObj) setMapFocusIntent(xmasMapObj, pendingPoi ? 'poi' : 'follow');
+  const follow = document.getElementById('xmasFollowBtn'); if (follow) follow.hidden = !pendingPoi;
   xmasGpsWatch = navigator.geolocation.watchPosition(pos => {
     xmasGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     xmasSetGpsLabel(xmasG('btn'), true);
@@ -4845,7 +4849,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + xmasExplainHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
+  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button class="xmas-follow-btn" id="xmasFollowBtn" type="button" ${xmasGpsWatch !== null && !xmasFollowMode ? '' : 'hidden'}>↻ Follow</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + xmasExplainHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
@@ -6433,6 +6437,10 @@ function setMapFocusIntent(mapObj, intent, clearPending = false) {
 function setMainMapIntent(intent, clearPending = false) {
   if (!leafletMap) return;
   setMapFocusIntent(leafletMap, intent, clearPending);
+  if (intent !== 'poi') {
+    if (apothekenLayer) _setPoiRequestVisualState(leafletMap, '💊', 'idle');
+    if (toilettenLayer) _setPoiRequestVisualState(leafletMap, '🚻', 'idle');
+  }
   if (intent !== 'follow') {
     gpsFollowMode = false;
     const follow = document.getElementById('gpsFollowBtn');
@@ -6446,6 +6454,10 @@ function setMainMapIntent(intent, clearPending = false) {
 function setXmasMapIntent(intent, clearPending = false) {
   if (!xmasMapObj) return;
   setMapFocusIntent(xmasMapObj, intent, clearPending);
+  if (intent !== 'poi') {
+    if (xmasApoLayer) _setPoiRequestVisualState(xmasMapObj, '💊', 'idle');
+    if (xmasWcLayer) _setPoiRequestVisualState(xmasMapObj, '🚻', 'idle');
+  }
   if (intent !== 'follow') {
     xmasFollowMode = false;
     const follow = document.getElementById('xmasFollowBtn');
@@ -7144,7 +7156,7 @@ function updateGpsDistancePanel(lat, lng) {
   const t = UI[lang];
   // An active pharmacy/toilet task owns the map context; castle guidance must
   // not compete with its distance panel or urgent POI message.
-  const urgentPoiActive = !!(apothekenLayer || toilettenLayer);
+  const urgentPoiActive = !!(apothekenLayer || toilettenLayer) && (!leafletMap || leafletMap._navIntent === 'poi');
 
   // --- Ближайший/выбранный замок ---
   const useSelected = selectedIndex >= 0 && typeof castles[selectedIndex]?.lat === 'number';
@@ -7290,10 +7302,11 @@ function stopGps() {
 function startGps() {
   if (!navigator.geolocation) { gpsToggleLabel.textContent = UI[lang].gpsError; return; }
   gpsActive = true;
-  gpsFollowMode = true;
-  if (leafletMap) setMapFocusIntent(leafletMap, 'follow', true);
+  const pendingPoi = leafletMap && leafletMap._poiFocusPending;
+  gpsFollowMode = !pendingPoi;
+  if (leafletMap) setMapFocusIntent(leafletMap, pendingPoi ? 'poi' : 'follow');
   const followButton = document.getElementById('gpsFollowBtn');
-  if (followButton) followButton.classList.remove('show');
+  if (followButton) followButton.classList.toggle('show', !!pendingPoi);
   try { localStorage.setItem('rhineGuideGpsActive', 'true'); } catch(e){}
   gpsToggleBtn.classList.add('active');
   gpsToggleLabel.textContent = UI[lang].gpsLocating;

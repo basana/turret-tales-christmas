@@ -141,6 +141,8 @@
   .xmas-map-stage { position: relative; margin: 0 0 8px; }
   .xmas-map-stage .xmas-search { position: absolute; z-index: 1001; top: 10px; left: 10px; right: 66px; width: auto; margin: 0; padding: 7px 10px; }
   .xmas-map-stage .xmas-gps-btn { position: absolute; z-index: 1002; top: 9px; right: 10px; }
+  .xmas-map-stage .xmas-follow-btn { position: absolute; z-index: 1002; top: 64px; right: 10px; border: 1px solid #7A1026; border-radius: 18px; padding: 8px 12px; background: rgba(255,255,255,.97); color: #7A1026; font: 700 12px var(--sans); box-shadow: 0 2px 8px rgba(0,0,0,.22); cursor: pointer; }
+  .xmas-map-stage .xmas-follow-btn[hidden] { display: none; }
   .xmas-map-stage .xmas-gps-btn .xmas-lock { position: absolute; top: -3px; right: -3px; background: #fff; border: 1px solid #7A1026; border-radius: 50%; padding: 0 3px; font-size: 10px; }
   .xmas-map-stage .xmas-map { margin: 0; height: clamp(340px, 54svh, 520px); }
   .xmas-map-stage .xmas-map-big { height: clamp(360px, 60svh, 560px); }
@@ -2275,11 +2277,13 @@ function _setPoiRequestVisualState(mapObj, emoji, state, nearest) {
 function _zoomToNearestPoi(mapObj, poiList, emoji) {
   // Determine reference point from GPS ONLY — never from the map center.
   let ref;
-  if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
-  else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
+  if (mapObj === xmasMapObj && typeof xmasGpsPos !== 'undefined' && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
+  else if (mapObj === leafletMap && typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
   else {
     // If GPS is still acquiring a fix, remember the latest POI request.
     if (mapObj === leafletMap && gpsActive) mapObj._poiFocusPending = { poiList, emoji };
+    else if (mapObj === xmasMapObj && xmasGpsWatch !== null) mapObj._poiFocusPending = { poiList, emoji };
+    pauseGpsFollowForPoi(mapObj);
     // The request pulse transitions to the slower waiting state after 420 ms.
     _showGpsHint(mapObj);
     return;
@@ -4633,7 +4637,7 @@ function xmasG(k) { return (XG[xmasLang] || XG.de)[k]; }
 function xmasWalkMin(d) { return Math.max(1, Math.round(d * 1.3 / 75)); } // Luftlinie x 1,3 Umweg, 75 m/min
 function xmasGpsBtnHtml() {
   const lock = isPremiumUnlocked() ? '' : '<span class="xmas-lock" aria-hidden="true">✦</span>';
-  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn" type="button" aria-label="${xmasG('btn')}" title="${xmasG('btn')}"><span aria-hidden="true">📍</span><span class="xmas-gps-label">${xmasG('btn')}</span>${lock}</button><button class="xmas-follow-btn" id="xmasFollowBtn" type="button" hidden>↻ Follow</button>`;
+  return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn" type="button" aria-label="${xmasG('btn')}" title="${xmasG('btn')}"><span aria-hidden="true">📍</span><span class="xmas-gps-label">${xmasG('btn')}</span>${lock}</button><button class="xmas-follow-btn" id="xmasFollowBtn" type="button" ${xmasGpsWatch !== null && !xmasFollowMode ? '' : 'hidden'}>↻ Follow</button>`;
 }
 function xmasGpsTargets() {
   if (!xmasTown) return XMAS_ORDER.filter(k => XMAS_CITY[k] && XMAS_GEO[k]).flatMap(k => {
@@ -5237,7 +5241,7 @@ function wineMapTools(map, items) {
     if (watchId !== null) navigator.geolocation.clearWatch(watchId);
     watchId = null;
     if (userLayer) userLayer.remove();
-    userLayer = null; fitted = false; lastUser = null; setOn(false); renderPanel();
+    userLayer = null; fitted = false; lastUser = null; wineLastUser = null; setOn(false); setWineIntent('overview'); follow.hidden = true; renderPanel();
   };
   const start = () => {
     if (!navigator.geolocation) { alert('GPS nicht verfügbar'); return; }
@@ -5268,11 +5272,9 @@ function wineMapTools(map, items) {
   };
   gps.addEventListener('click', () => (watchId === null ? start() : stop()));
   const originalStop = stop;
-  // Wrap stop so the shared Follow control always returns to its neutral state.
   const stopGps = () => { originalStop(); setWineIntent('overview'); wineLastUser = null; follow.hidden = true; };
   const originalStart = start;
   const startGps = () => { setWineIntent('follow'); originalStart(); };
-  gps.onclick = null;
   gps.addEventListener('click', () => (watchId === null ? startGps() : stopGps()));
   setOn(false);
   drawSpot();
@@ -6457,11 +6459,9 @@ function setXmasMapIntent(intent, clearPending = false) {
 
 function leaveGpsFollowMode() {
   if (!leafletMap || leafletMap._gpsProgrammaticView) return;
-  if (gpsFollowMode || leafletMap._poiFocusPending) {
-    setMainMapIntent('free', true);
-    if (apothekenLayer) _setPoiRequestVisualState(leafletMap, '💊', 'idle');
-    if (toilettenLayer) _setPoiRequestVisualState(leafletMap, '🚻', 'idle');
-  }
+  setMainMapIntent('free', true);
+  if (apothekenLayer) _setPoiRequestVisualState(leafletMap, '💊', 'idle');
+  if (toilettenLayer) _setPoiRequestVisualState(leafletMap, '🚻', 'idle');
 }
 
 function markGpsProgrammaticView() {
@@ -6489,7 +6489,7 @@ function resetRhineMap(points) {
     toilettenLayer = null;
   }
   leafletMap.getContainer().querySelectorAll('.poi-toggle-btn').forEach(button => {
-    button.classList.remove('active');
+    button.classList.remove('active', 'waiting', 'failed');
   });
 
   // Discard any delayed POI request and its related UI.
@@ -7268,6 +7268,7 @@ function updateGpsDistancePanel(lat, lng) {
 
 function stopGps() {
   gpsActive = false;
+  if (leafletMap && leafletMap._navIntent === 'follow') setMapFocusIntent(leafletMap, 'free', true);
   gpsFollowMode = false;
   const followButton = document.getElementById('gpsFollowBtn');
   if (followButton) followButton.classList.remove('show');

@@ -5249,7 +5249,6 @@ function wineMapTools(map, items) {
   reset.addEventListener('click', () => {
     setWineIntent('overview');
     map.fitBounds(initialBounds, { padding: [28, 28], maxZoom: 15, animate: true });
-    panel.style.display = 'none';
   });
   map.on('dragstart zoomstart', () => { if (wineFollowMode && !map._gpsProgrammaticView) setWineIntent('free'); });
   follow.addEventListener('click', () => {

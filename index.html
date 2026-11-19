@@ -1070,15 +1070,16 @@
   .poi-toggle-btn.active { animation: poiPulse 1.5s ease-out infinite; }
   /* GPS wait: same button, quieter and slower; no layout or navigation changes. */
   .poi-toggle-btn.waiting { animation: poiPulse 2.3s ease-out infinite; filter: saturate(.58) brightness(.88); }
-  .poi-toggle-btn.waiting::before { animation-duration: 2.3s; opacity: .48; }
-  .poi-toggle-btn.waiting::after { animation-duration: 2.3s; opacity: .32; }
+  .poi-toggle-btn.failed { box-shadow: 0 0 0 3px #b3261e; }
+  .poi-toggle-btn.waiting::before { animation: poiRing1 2.3s ease-out infinite; opacity: .48; }
+  .poi-toggle-btn.waiting::after { animation: poiRing2 2.3s ease-out .4s infinite; opacity: .32; }
   .poi-marker.poi-marker-nearest { animation: poiNearestPulse 1s ease-out infinite; z-index: 1200; }
   @keyframes poiNearestPulse {
     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,190,55,.9); }
     50% { transform: scale(1.28); box-shadow: 0 0 0 22px rgba(255,190,55,0); }
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,190,55,0); }
   }
-  .poi-toggle-btn.active::before, .poi-toggle-btn.active::after {
+  .poi-toggle-btn.active::before, .poi-toggle-btn.active::after, .poi-toggle-btn.waiting::before, .poi-toggle-btn.waiting::after {
     content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
     border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;
   }
@@ -2262,8 +2263,13 @@ function _setPoiRequestVisualState(mapObj, emoji, state, nearest) {
   } else if (state === 'waiting') {
     button.classList.remove('active');
     button.classList.add('waiting');
-  } else {
+  } else if (state === 'error') {
     button.classList.remove('active', 'waiting');
+    button.classList.add('failed');
+    button._poiErrorTimer = setTimeout(() => button.classList.remove('failed'), 2600);
+  } else {
+    clearTimeout(button._poiErrorTimer);
+    button.classList.remove('active', 'waiting', 'failed');
   }
 }
 function _zoomToNearestPoi(mapObj, poiList, emoji) {
@@ -4531,7 +4537,7 @@ function xmasDrawMap(opts) {
   const xPoiBar = document.createElement('div');
   xPoiBar.className = 'poi-toggle-bar';
   // Reset button inside the same bar for uniform layout
-  xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="xResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
+  xPoiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="xResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
   // Reset control follows the two POI controls in the shared vertical stack.
   xmasMapObj.getContainer().appendChild(xPoiBar);
   document.getElementById('xResetBtn').onclick = () => {
@@ -4646,7 +4652,7 @@ function xmasDrawGpsLayers() {
       .bindTooltip(`${b.co} PIER: ${b.name}`).addTo(xmasMapObj));
   });
   if (xmasGpsPos) {
-    xmasGpsMarker = L.marker([xmasGpsPos.lat, xmasGpsPos.lng], { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [38, 38], iconAnchor: [19, 19] }), zIndexOffset: 1000 }).addTo(xmasMapObj);
+    xmasGpsMarker = L.marker([xmasGpsPos.lat, xmasGpsPos.lng], { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [46, 46], iconAnchor: [23, 23] }), zIndexOffset: 1000 }).addTo(xmasMapObj);
   }
   const sp = getSavedSpot();
   if (sp) {
@@ -5127,7 +5133,7 @@ function wineMapTools(map, items) {
   const panel = document.createElement('div');
   panel.style.cssText = 'position:absolute;z-index:1000;top:122px;left:12px;display:none;flex-direction:column;gap:7px;max-width:230px;box-sizing:border-box';
   [bar, gps, panel].forEach(el => { box.appendChild(el); L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); });
-  if (WINE_VIKING_LL) L.marker(WINE_VIKING_LL, { icon: L.divIcon({ className: '', html: '<div style="background:#E30613;color:#fff;font:700 13px sans-serif;width:22px;height:22px;border-radius:50%;border:2px solid #fff;text-align:center;line-height:18px">V</div>', iconSize: [38, 38], iconAnchor: [19, 19] }) }).addTo(map).bindTooltip('Anleger Viking');
+  if (WINE_VIKING_LL) L.marker(WINE_VIKING_LL, { icon: L.divIcon({ className: '', html: '<div style="background:#E30613;color:#fff;font:700 13px sans-serif;width:22px;height:22px;border-radius:50%;border:2px solid #fff;text-align:center;line-height:18px">V</div>', iconSize: [46, 46], iconAnchor: [23, 23] }) }).addTo(map).bindTooltip('Anleger Viking');
 
   // Поиск: точное имя из подсказок или Enter по части названия → карта и страница к карточке
   const input = bar.querySelector('#wmSearch');
@@ -5200,7 +5206,7 @@ function wineMapTools(map, items) {
       lastUser = user;
       const haloIcon = L.divIcon({
         className: '', html: '<div class="gps-user-halo"></div>',
-        iconSize: [38, 38], iconAnchor: [19, 19]
+        iconSize: [46, 46], iconAnchor: [23, 23]
       });
       if (!userLayer) userLayer = L.marker(user, { icon: haloIcon, zIndexOffset: 1000 }).addTo(map);
       else userLayer.setLatLng(user);
@@ -6468,7 +6474,7 @@ function initMap() {
   // POI buttons inside map container
   const poiBar = document.createElement('div');
   poiBar.className = 'poi-toggle-bar';
-  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="rhineResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
+  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\'apotheke\')" title="Apotheken" aria-label="Pharmacies">💊</button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\'wc\')" title="WC" aria-label="Toilets">🚻</button><button class="poi-toggle-btn map-reset-btn" id="rhineResetBtn" type="button" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
   leafletMap.getContainer().appendChild(poiBar);
 
   const points = [];
@@ -7215,7 +7221,7 @@ function startGps() {
 
       const haloIcon = L.divIcon({
         className: '', html: '<div class="gps-user-halo"></div>',
-        iconSize: [38, 38], iconAnchor: [19, 19]
+        iconSize: [46, 46], iconAnchor: [23, 23]
       });
       if (gpsMarker) {
         gpsMarker.setLatLng([latitude, longitude]);
@@ -7257,6 +7263,11 @@ function startGps() {
     },
     () => {
       gpsToggleLabel.textContent = UI[lang].gpsError;
+      if (leafletMap && leafletMap._poiFocusPending) {
+        const pending = leafletMap._poiFocusPending;
+        _setPoiRequestVisualState(leafletMap, pending.emoji, 'error');
+        leafletMap._poiFocusPending = null;
+      }
       setTimeout(() => stopGps(), 2500);
     },
     { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }

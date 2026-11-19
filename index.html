@@ -2305,6 +2305,8 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
     pauseGpsFollowForPoi(mapObj);
     _setPoiRequestVisualState(mapObj, emoji, 'found', nearest);
     // GPS is always available here (function returns early if not) — show user + nearest POI together
+    if (mapObj === leafletMap) markGpsProgrammaticView();
+    else markMapProgrammaticView(mapObj);
     mapObj.fitBounds([ref, [nearest.lat, nearest.lng]], { padding: [40, 40], maxZoom: 17, animate: true });
     _showPoiToast(mapObj, nearest, emoji);
   }
@@ -2312,7 +2314,12 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
 function togglePoiLayer(type) {
   if (!leafletMap) return;
   if (type === 'apotheke') {
-    if (apothekenLayer) { _setPoiRequestVisualState(leafletMap, '💊', 'idle'); leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; leafletMap._poiFocusPending = null; if (!toilettenLayer) _stopPoiEmergency(); return; }
+    if (apothekenLayer) {
+      _setPoiRequestVisualState(leafletMap, '💊', 'idle'); leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false;
+      leafletMap._poiFocusPending = toilettenLayer ? { poiList: POI_TOILETTEN, emoji: '🚻' } : null;
+      if (!toilettenLayer) { setMainMapIntent('free', true); _stopPoiEmergency(); }
+      return;
+    }
     _setPoiRequestVisualState(leafletMap, '💊', 'request');
     apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
@@ -6586,6 +6593,7 @@ function resetRhineMap(points) {
   }
 
   if (points && points.length) {
+    markGpsProgrammaticView();
     leafletMap.fitBounds(points, {
       paddingTopLeft: [24, 130],
       paddingBottomRight: [24, 24]
@@ -7294,7 +7302,7 @@ function updateGpsDistancePanel(lat, lng) {
         toast.innerHTML = `⭐ ${nc.name}<br><span class="toast-dist">≈ ${formatDistance(nd)} · ${walkMin} min 🚶</span>`;
         toast.classList.add('show');
         toast.onclick = () => {
-          if (leafletMap) leafletMap.setView([nc.lat, nc.lng], 17);
+          if (leafletMap) { markGpsProgrammaticView(); leafletMap.setView([nc.lat, nc.lng], 17); }
           selectedIndex = ni;
           setMainMapIntent('selected', true);
           showMapPanel(ni);

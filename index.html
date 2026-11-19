@@ -4553,7 +4553,7 @@ function xmasSearchPick(val) {
   const e = xmasSearchEntries().find(x => x.label.toLowerCase() === v);
   if (!e) return false;
   if (xmasTown !== e.key) { xmasFollowMode = false; xmasPendingFocus = e.ll; xmasOpen(e.key); }
-  else if (xmasMapObj) { setXmasMapIntent('search', true); xmasMapObj.setView(e.ll, 17, { animate: true }); }
+  else if (xmasMapObj) { setXmasMapIntent('search', true); markMapProgrammaticView(xmasMapObj); xmasMapObj.setView(e.ll, 17, { animate: true }); }
   return true;
 }
 document.addEventListener('change', e => { if (e.target && e.target.id === 'xmasSearch' && xmasSearchPick(e.target.value)) e.target.value = ''; });
@@ -4588,7 +4588,7 @@ function xmasDrawMap(opts) {
   // Reset control follows the two POI controls in the shared vertical stack.
   xmasMapObj.getContainer().appendChild(xPoiBar);
   xmasMapObj.on('dragstart zoomstart', () => {
-    if (xmasFollowMode && !xmasMapObj._gpsProgrammaticView) setXmasMapIntent('free', true);
+    if (!xmasMapObj._gpsProgrammaticView) setXmasMapIntent('free', true);
   });
   const xFollow = document.getElementById('xmasFollowBtn');
   if (xFollow) xFollow.onclick = () => {
@@ -4600,6 +4600,7 @@ function xmasDrawMap(opts) {
   };
   document.getElementById('xResetBtn').onclick = () => {
     setXmasMapIntent('overview', true);
+    markMapProgrammaticView(xmasMapObj);
     if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; }
     if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; }
     xPoiBar.querySelectorAll('.poi-toggle-btn').forEach(b => b.classList.remove('active','waiting','failed'));
@@ -4853,7 +4854,7 @@ function xmasUpdateGpsPanel() {
     row.addEventListener('click', () => {
       const lat = parseFloat(row.dataset.lat);
       const lng = parseFloat(row.dataset.lng);
-      if (xmasMapObj && !isNaN(lat)) { setXmasMapIntent('selected', true); xmasMapObj.setView([lat, lng], 17, { animate: true }); }
+      if (xmasMapObj && !isNaN(lat)) { setXmasMapIntent('selected', true); markMapProgrammaticView(xmasMapObj); xmasMapObj.setView([lat, lng], 17, { animate: true }); }
     });
   });
   const save = document.getElementById('xmasShipSave');
@@ -4882,7 +4883,7 @@ function xmasUpdateGpsPanel() {
       xToast.innerHTML = `⭐ ${nr.t.label}<br><span class="toast-dist">≈ ${formatDistance(nr.d)} · ${walkMin} ${xmasG('min')} 🚶</span>`;
       xToast.classList.add('show');
       xToast.onclick = () => {
-        if (xmasMapObj) { setXmasMapIntent('selected', true); xmasMapObj.setView(nr.t.ll, 17); }
+        if (xmasMapObj) { setXmasMapIntent('selected', true); markMapProgrammaticView(xmasMapObj); xmasMapObj.setView(nr.t.ll, 17); }
         xToast.classList.remove('show');
         clearTimeout(xToast._hideTimer);
         // после движения карты — снова показать ближайший
@@ -5250,15 +5251,16 @@ function wineMapTools(map, items) {
   const initialBounds = map.getBounds();
   reset.addEventListener('click', () => {
     setWineIntent('overview');
+    markMapProgrammaticView(map);
     map.fitBounds(initialBounds, { padding: [28, 28], maxZoom: 15, animate: true });
   });
-  map.on('dragstart zoomstart', () => { if (wineFollowMode && !map._gpsProgrammaticView) setWineIntent('free'); });
+  map.on('dragstart zoomstart', () => { if (!map._gpsProgrammaticView) setWineIntent('free'); });
   follow.addEventListener('click', () => {
     if (watchId === null || !wineLastUser) return;
     setWineIntent('follow'); fitted = true;
     map.panTo(wineLastUser, { animate: true });
   });
-  const pick = it => { setWineIntent('selected'); map.setView(it.ll, 16); if (it.go) it.go(); };
+  const pick = it => { setWineIntent('selected'); markMapProgrammaticView(map); map.setView(it.ll, 16); if (it.go) it.go(); };
   input.addEventListener('input', () => { const it = items.find(i => i.name === input.value); if (it) pick(it); });
   input.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;

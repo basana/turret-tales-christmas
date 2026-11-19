@@ -634,14 +634,21 @@
   .stat-table th { text-align: left; color: var(--terracotta); border-bottom: 1px solid var(--gold); padding: 4px; }
   .stat-table td { padding: 4px; border-bottom: 1px solid var(--gold); }
 
-  #view-map { position: relative; height: auto; padding: 0 0 34dvh !important; }
-  #mapDiv { width: 100%; height: 62dvh; min-height: 380px; border-radius: 12px; border: 1px solid var(--gold); }
+  #view-map { position: relative; height: auto; padding: 0 0 10px !important; }
+  #mapDiv { width: 100%; height: clamp(420px, 66dvh, 680px); min-height: 380px; border-radius: 12px; border: 1px solid var(--gold); }
+  .map-carousel { display:flex; align-items:stretch; gap:8px; min-height:78px; padding:8px 12px 10px; overflow-x:auto; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; scrollbar-width:none; box-sizing:border-box; }
+  .map-carousel::-webkit-scrollbar { display:none; }
+  .map-carousel-card { flex:0 0 clamp(132px, 38vw, 190px); min-width:0; scroll-snap-align:center; text-align:left; border:1px solid var(--gold); border-radius:12px; padding:8px 11px; background:rgba(246,238,221,.96); color:var(--ink); box-shadow:0 2px 7px rgba(90,67,39,.12); cursor:pointer; }
+  .map-carousel-card.active { border:2px solid var(--terracotta); background:var(--parchment-deep); box-shadow:0 3px 12px rgba(90,67,39,.22); }
+  .map-carousel-title { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:700 14px var(--sans); }
+  .map-carousel-meta { display:block; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:11px var(--sans); color:var(--ink-soft); }
+  #view-map > .nearest-toast { bottom:88px; }
 
   .map-panel {
-    position: absolute; z-index: 1000; left: 12px; right: 12px; bottom: calc(34dvh + 16px);
+    position: relative; z-index: 5; left: auto; right: auto; bottom: auto; margin:0 12px 12px;
     background: var(--parchment-deep); border: 1.5px solid var(--gold); border-radius: 14px;
     box-shadow: 0 10px 30px rgba(90, 67, 39, 0.35); padding: 16px 16px 14px;
-    min-height: 150px; box-sizing: border-box;
+    min-height: 0; box-sizing: border-box;
     display: none; font-family: var(--sans);
   }
   .map-panel.open { display: block; }
@@ -1529,6 +1536,7 @@
     <!-- КАРТА -->
     <div class="view" id="view-map">
       <div id="mapDiv"></div>
+      <div class="map-carousel" id="mapCarousel" aria-label="Places on the map"></div>
       <div class="map-search-wrap">
         <span class="map-search-icon">🔎</span>
         <input type="text" class="map-search-input" id="mapSearchInput" list="mapSearchList" autocomplete="off" autocapitalize="off" enterkeyhint="search">
@@ -6589,6 +6597,7 @@ function resetRhineMap(points) {
   const mapPanel = document.getElementById('mapPanel');
   if (mapPanel) mapPanel.classList.remove('open');
   selectedIndex = -1;
+  clearMapCarouselSelection();
 
   // Keep GPS position updates, but leave the camera on the full-map view.
   // The visitor can explicitly resume GPS Follow with its existing button.
@@ -6681,6 +6690,7 @@ function initMap() {
   }
 
   renderPois();
+  renderMapCarousel();
 
   // Manual map gestures switch to Free View; GPS continues updating the marker.
   leafletMap.on('dragstart', leaveGpsFollowMode);
@@ -6699,6 +6709,8 @@ function initMap() {
   document.getElementById('mapPanelClose').onclick = () => {
     document.getElementById('mapPanel').classList.remove('open');
     selectedIndex = -1;
+    setMainMapIntent('free', true);
+    clearMapCarouselSelection();
     if (gpsActive && gpsLastLat !== null) updateGpsDistancePanel(gpsLastLat, gpsLastLng);
   };
 
@@ -6720,8 +6732,69 @@ function initMap() {
   };
 }
 
+let mapCarouselScrollTimer = null;
+function clearMapCarouselSelection() {
+  const el = document.getElementById('mapCarousel');
+  if (el) el.querySelectorAll('.map-carousel-card').forEach(card => card.classList.remove('active'));
+}
+function syncMapCarousel(index) {
+  const el = document.getElementById('mapCarousel');
+  if (!el) return;
+  const card = el.querySelector(`[data-map-index="${index}"]`);
+  if (!card) return;
+  el.querySelectorAll('.map-carousel-card').forEach(item => item.classList.toggle('active', item === card));
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+function selectMapCarouselPoint(index, openDetails = false) {
+  const c = castles[index];
+  if (!c || typeof c.lat !== 'number') return;
+  selectedIndex = index;
+  if (leafletMap) {
+    setMainMapIntent('selected', true);
+    markGpsProgrammaticView();
+    leafletMap.setView([c.lat, c.lng], Math.max(leafletMap.getZoom(), 14), { animate: true });
+  }
+  const panel = document.getElementById('mapPanel');
+  if (openDetails) showMapPanel(index);
+  else if (panel) panel.classList.remove('open');
+  const el = document.getElementById('mapCarousel');
+  if (el) {
+    const card = el.querySelector(`[data-map-index="${index}"]`);
+    el.querySelectorAll('.map-carousel-card').forEach(item => item.classList.toggle('active', item === card));
+  }
+}
+function renderMapCarousel() {
+  const el = document.getElementById('mapCarousel');
+  if (!el) return;
+  const items = castles.map((c, index) => ({ c, index })).filter(x => typeof x.c.lat === 'number');
+  el.innerHTML = items.map(({c,index}) => {
+    const isTown = TOWN_IDS.has(c.id);
+    const meta = isTown ? (lang === 'ru' ? 'Городская прогулка' : 'Town walk') : (lang === 'ru' ? 'Замок' : 'Castle');
+    const place = c.town ? ` · ${c.town}` : '';
+    return `<button type="button" class="map-carousel-card" data-map-index="${index}" aria-label="${c.name}"><span class="map-carousel-title">${c.name}</span><span class="map-carousel-meta">${meta}${place}</span></button>`;
+  }).join('');
+  el.querySelectorAll('.map-carousel-card').forEach(card => {
+    card.addEventListener('click', () => selectMapCarouselPoint(Number(card.dataset.mapIndex), true));
+  });
+  el.addEventListener('scroll', () => {
+    clearTimeout(mapCarouselScrollTimer);
+    mapCarouselScrollTimer = setTimeout(() => {
+      const cards = [...el.querySelectorAll('.map-carousel-card')];
+      if (!cards.length) return;
+      const center = el.getBoundingClientRect().left + el.clientWidth / 2;
+      let nearest = null, min = Infinity;
+      cards.forEach(card => {
+        const r = card.getBoundingClientRect();
+        const d = Math.abs((r.left + r.right) / 2 - center);
+        if (d < min) { min = d; nearest = card; }
+      });
+      if (nearest) selectMapCarouselPoint(Number(nearest.dataset.mapIndex), false);
+    }, 140);
+  }, { passive: true });
+}
 function showMapPanel(i) {
   const c = castles[i];
+  syncMapCarousel(i);
   const panel = document.getElementById('mapPanel');
   if (!panel) return;
 
@@ -7297,7 +7370,8 @@ function updateGpsDistancePanel(lat, lng) {
   // "What's nearest?" toast at the bottom — только при смене ближайшего объекта
   const toast = document.getElementById('nearestToast');
   if (toast) {
-    const mayAnnounceNearest = !!(leafletMap && leafletMap._navIntent === 'follow') && selectedIndex < 0 && !urgentPoiActive;
+    const panelOpen = !!document.getElementById('mapPanel')?.classList.contains('open');
+    const mayAnnounceNearest = !!(leafletMap && leafletMap._navIntent === 'follow') && selectedIndex < 0 && !urgentPoiActive && !panelOpen;
     const ni = mayAnnounceNearest ? findNearestCastleIndex(lat, lng) : -1;
     if (ni >= 0) {
       const nc = castles[ni];

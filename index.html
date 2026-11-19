@@ -1068,6 +1068,16 @@
   .poi-toggle-btn.apotheke { background: #e8f5e9; }
   .poi-toggle-btn.wc { background: #e3f2fd; }
   .poi-toggle-btn.active { animation: poiPulse 1.5s ease-out infinite; }
+  /* GPS wait: same button, quieter and slower; no layout or navigation changes. */
+  .poi-toggle-btn.waiting { animation: poiPulse 2.3s ease-out infinite; filter: saturate(.58) brightness(.88); }
+  .poi-toggle-btn.waiting::before { animation-duration: 2.3s; opacity: .48; }
+  .poi-toggle-btn.waiting::after { animation-duration: 2.3s; opacity: .32; }
+  .poi-marker.poi-marker-nearest { animation: poiNearestPulse 1s ease-out infinite; z-index: 1200; }
+  @keyframes poiNearestPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,190,55,.9); }
+    50% { transform: scale(1.28); box-shadow: 0 0 0 22px rgba(255,190,55,0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,190,55,0); }
+  }
   .poi-toggle-btn.active::before, .poi-toggle-btn.active::after {
     content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
     border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;
@@ -1097,12 +1107,12 @@
     animation: gpsHaloPulse 1.8s ease-in-out infinite;
   }
   .gps-user-halo::after {
-    content: ''; width: 17px; height: 17px; border-radius: 50%;
+    content: ''; width: 20px; height: 20px; border-radius: 50%;
     background: var(--terracotta); border: 3px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.4);
   }
   @keyframes gpsHaloPulse {
     0% { box-shadow: 0 0 0 0 rgba(181,96,46,0.5); }
-    70% { box-shadow: 0 0 0 24px rgba(181,96,46,0); }
+    70% { box-shadow: 0 0 0 30px rgba(181,96,46,0); }
     100% { box-shadow: 0 0 0 0 rgba(181,96,46,0); }
   }
   .xmas-target-halo {
@@ -2093,11 +2103,15 @@ let apothekenLayer = null, toilettenLayer = null;
 let xmasApoLayer = null, xmasWcLayer = null;
 function _buildPoiLayer(mapObj, data, emoji, cssClass) {
   const lg = L.layerGroup();
+  lg._poiMarkers = [];
   data.forEach(p => {
     const ic = L.divIcon({ className: '', html: `<div class="poi-marker ${cssClass}">${emoji}</div>`, iconSize: [52, 52], iconAnchor: [26, 26] });
     const m = L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
+    m._poiData = p;
+    lg._poiMarkers.push(m);
     m.on('click', () => {
       pauseGpsFollowForPoi(mapObj);
+      _setPoiRequestVisualState(mapObj, emoji, 'found', p);
       mapObj.setView([p.lat, p.lng], 17, { animate: true });
       _showPoiToast(mapObj, p, emoji);
     });
@@ -2220,6 +2234,38 @@ function _hideGpsHint(mapObj) {
   const h = mapObj.getContainer().querySelector('.poi-gps-hint');
   if (h) h.classList.remove('show');
 }
+function _setPoiRequestVisualState(mapObj, emoji, state, nearest) {
+  if (!mapObj) return;
+  const isPharmacy = emoji === '💊';
+  const button = mapObj.getContainer().querySelector(isPharmacy ? '.poi-toggle-btn.apotheke' : '.poi-toggle-btn.wc');
+  const layer = isPharmacy
+    ? (mapObj === leafletMap ? apothekenLayer : xmasApoLayer)
+    : (mapObj === leafletMap ? toilettenLayer : xmasWcLayer);
+  if (layer && layer._poiMarkers) {
+    layer._poiMarkers.forEach(marker => {
+      const el = marker.getElement();
+      const node = el && el.querySelector('.poi-marker');
+      if (node) node.classList.toggle('poi-marker-nearest', !!nearest && marker._poiData === nearest);
+    });
+  }
+  if (!button) return;
+  clearTimeout(button._poiWaitTimer);
+  if (state === 'request') {
+    button.classList.remove('waiting');
+    button.classList.add('active');
+    button._poiWaitTimer = setTimeout(() => {
+      if (button.isConnected && button.classList.contains('active')) {
+        button.classList.remove('active');
+        button.classList.add('waiting');
+      }
+    }, 420);
+  } else if (state === 'waiting') {
+    button.classList.remove('active');
+    button.classList.add('waiting');
+  } else {
+    button.classList.remove('active', 'waiting');
+  }
+}
 function _zoomToNearestPoi(mapObj, poiList, emoji) {
   // Determine reference point from GPS ONLY — never from the map center.
   let ref;
@@ -2228,6 +2274,7 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
   else {
     // If GPS is still acquiring a fix, remember the latest POI request.
     if (mapObj === leafletMap && gpsActive) mapObj._poiFocusPending = { poiList, emoji };
+    _setPoiRequestVisualState(mapObj, emoji, 'waiting');
     _showGpsHint(mapObj);
     return;
   }
@@ -2242,6 +2289,7 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
   if (nearest) {
     // A requested POI owns the camera until the visitor explicitly resumes GPS Follow.
     pauseGpsFollowForPoi(mapObj);
+    _setPoiRequestVisualState(mapObj, emoji, 'found', nearest);
     // GPS is always available here (function returns early if not) — show user + nearest POI together
     mapObj.fitBounds([ref, [nearest.lat, nearest.lng]], { padding: [40, 40], maxZoom: 17, animate: true });
     _showPoiToast(mapObj, nearest, emoji);
@@ -2250,11 +2298,13 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
 function togglePoiLayer(type) {
   if (!leafletMap) return;
   if (type === 'apotheke') {
-    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; leafletMap._poiFocusPending = null; if (!toilettenLayer) _stopPoiEmergency(); return; }
+    if (apothekenLayer) { _setPoiRequestVisualState(leafletMap, '💊', 'idle'); leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; leafletMap._poiFocusPending = null; if (!toilettenLayer) _stopPoiEmergency(); return; }
+    _setPoiRequestVisualState(leafletMap, '💊', 'request');
     apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
   } else {
-    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; leafletMap._poiFocusPending = null; if (!apothekenLayer) _stopPoiEmergency(); return; }
+    if (toilettenLayer) { _setPoiRequestVisualState(leafletMap, '🚻', 'idle'); leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; leafletMap._poiFocusPending = null; if (!apothekenLayer) _stopPoiEmergency(); return; }
+    _setPoiRequestVisualState(leafletMap, '🚻', 'request');
     toilettenLayer = _buildPoiLayer(leafletMap, POI_TOILETTEN, '🚻', 'poi-wc');
     _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
   }
@@ -2268,11 +2318,13 @@ function _hidePoiToasts(mapObj) {
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
   if (type === 'apotheke') {
-    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasWcLayer) _stopPoiEmergency(); return; }
+    if (xmasApoLayer) { _setPoiRequestVisualState(xmasMapObj, '💊', 'idle'); xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasWcLayer) _stopPoiEmergency(); return; }
+    _setPoiRequestVisualState(xmasMapObj, '💊', 'request');
     xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
   } else {
-    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasApoLayer) _stopPoiEmergency(); return; }
+    if (xmasWcLayer) { _setPoiRequestVisualState(xmasMapObj, '🚻', 'idle'); xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasApoLayer) _stopPoiEmergency(); return; }
+    _setPoiRequestVisualState(xmasMapObj, '🚻', 'request');
     xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
     _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
   }

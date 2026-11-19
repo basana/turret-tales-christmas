@@ -1,4 +1,4 @@
-const CACHE = 'rhine-design-test-v306';
+const CACHE = 'rhine-design-test-v307';
 const APP_CACHE_PREFIX = 'rhine-design-test-';
 const ASSETS = ['./index.html', './manifest.json'];
 

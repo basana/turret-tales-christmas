@@ -4603,6 +4603,7 @@ function xmasDrawMap(opts) {
     if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; }
     if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; }
     xPoiBar.querySelectorAll('.poi-toggle-btn').forEach(b => b.classList.remove('active','waiting','failed'));
+    if (xmasTargetMarker) { xmasMapObj.removeLayer(xmasTargetMarker); xmasTargetMarker = null; }
     if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { ...fitPadding(), maxZoom: 13 });
     else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { ...fitPadding(), maxZoom: opts.zoom });
     else xmasMapObj.setView(opts.center, opts.zoom);
@@ -4794,6 +4795,7 @@ function xmasStopGps() {
   if (xmasMapObj && xmasMapObj._poiFocusPending) {
     _setPoiRequestVisualState(xmasMapObj, xmasMapObj._poiFocusPending.emoji, 'idle');
     xmasMapObj._poiFocusPending = null;
+    setMapFocusIntent(xmasMapObj, 'free');
   }
   if (xmasGpsWatch !== null && navigator.geolocation) navigator.geolocation.clearWatch(xmasGpsWatch);
   xmasGpsWatch = null; xmasGpsPos = null; xmasFollowMode = false;
@@ -7423,6 +7425,7 @@ function stopGps() {
     const pending = leafletMap._poiFocusPending;
     _setPoiRequestVisualState(leafletMap, pending.emoji, 'idle');
     leafletMap._poiFocusPending = null;
+    setMapFocusIntent(leafletMap, 'free');
   }
   if (gpsWatchId !== null && navigator.geolocation) {
     navigator.geolocation.clearWatch(gpsWatchId);

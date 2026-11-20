@@ -4453,6 +4453,9 @@ function xmasBerthList() {
 
 function xmasDrawGpsLayers() {
   if (!xmasMapObj || typeof L === 'undefined') return;
+  if (xmasGpsMarker) xmasMapObj.removeLayer(xmasGpsMarker);
+  if (xmasSpotMarker) xmasMapObj.removeLayer(xmasSpotMarker);
+  xmasBerthMarkers.forEach(m => { if (xmasMapObj.hasLayer(m)) xmasMapObj.removeLayer(m); });
   xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
   xmasBerthList().forEach(b => {
     xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: `<div class="xmas-berth" style="--bc:${xmasCompanyStyle(b.co).bg}"><span class="xmas-berth-letter">${xmasCompanyStyle(b.co).letter}</span>${b.co} PIER</div>`, iconSize: null, iconAnchor: [0, 0] }) })
@@ -4529,23 +4532,23 @@ function xmasUpdateGpsPanel() {
     try { localStorage.removeItem(XMAS_DEPART_KEY); } catch (e) {}
   }
 
-  let html = `<div class="xmas-ship-actions">
-    <button class="xmas-gps-save" id="xmasShipSave">${xmasG('saveShip')}</button>
-    <button class="xmas-gps-clear" id="xmasShipClear"${sp ? '' : ' disabled'}>${xmasG('clearShip')}</button>
-  </div>`;
-
+  let html = '';
   if (sp) {
     const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
     const shipWalkHtml = `<span class="xmas-ship-walk">≈ ${xmasWalkMin(d)} ${xmasG('min')}</span>`;
     html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${sp.lat}" data-lng="${sp.lng}"><span>↩ ${xmasG('ship')}: ${sp.label}</span><span class="xmas-ship-right">${shipWalkHtml}</span></div>`;
     html += `<div class="xmas-gps-depart-row"><label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label></div>`;
-    if (depart && /^\\d{2}:\\d{2}$/.test(depart)) {
+    if (depart && /^\d{2}:\d{2}$/.test(depart)) {
       const [hh, mm] = depart.split(':').map(Number);
       const dep = new Date(); dep.setHours(hh, mm, 0, 0);
       const margin = Math.round((dep - new Date()) / 60000 - xmasWalkMin(d));
       html += `<div class="xmas-gps-time ${margin >= 0 ? 'ok' : 'late'}">${(margin >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
     }
   }
+  html += `<div class="xmas-ship-actions">
+    <button class="xmas-gps-save" id="xmasShipSave">${xmasG('saveShip')}</button>
+    <button class="xmas-gps-clear" id="xmasShipClear"${sp ? '' : ' disabled'}>${xmasG('clearShip')}</button>
+  </div>`;
 
   html += rows.map(r => `<div class="xmas-gps-row xmas-gps-link" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => {
